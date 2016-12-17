@@ -304,10 +304,10 @@ public class SimpleUnitCell {
     m.mul2(matrixCartesianToFractional, m);
   }
   
-  public final void toFractional(T3 pt, boolean isAbsolute) {
+  public final void toFractional(T3 pt, boolean ignoreOffset) {
     if (matrixCartesianToFractional == null)
       return;
-    (isAbsolute ? matrixCtoFANoOffset : matrixCartesianToFractional)
+    (ignoreOffset ? matrixCtoFANoOffset : matrixCartesianToFractional)
         .rotTrans(pt);
   }
 

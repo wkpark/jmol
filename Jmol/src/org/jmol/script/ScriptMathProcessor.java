@@ -1697,14 +1697,14 @@ public class ScriptMathProcessor {
       case T.xyz:
         P3 pt = P3.newP((P3) x2.value);
         // assumes a fractional coordinate
-        vwr.toCartesian(pt, true);
+        vwr.toCartesian(pt, false);
         return addXPt(pt);
       case T.fracx:
       case T.fracy:
       case T.fracz:
       case T.fracxyz:
         P3 ptf = P3.newP((P3) x2.value);
-        vwr.toFractional(ptf, true);
+        vwr.toFractional(ptf, false);
         return (op.intValue == T.fracxyz ? addXPt(ptf)
             : addXFloat(op.intValue == T.fracx ? ptf.x
                 : op.intValue == T.fracy ? ptf.y : ptf.z));

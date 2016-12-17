@@ -730,13 +730,13 @@ public class Atom extends Point3fi implements Node {
     return (group.chain.model.ms.getMoleculeIndex(i, inModel) + 1);
   }
    
-  private float getFractionalCoord(boolean fixJavaFloat, char ch, boolean asAbsolute, P3 pt) {
-    pt = getFractionalCoordPt(fixJavaFloat, asAbsolute, pt);
+  private float getFractionalCoord(boolean fixJavaFloat, char ch, boolean ignoreOffset, P3 pt) {
+    pt = getFractionalCoordPt(fixJavaFloat, ignoreOffset, pt);
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
     
-  public P3 getFractionalCoordPt(boolean fixJavaFloat, boolean asAbsolute, P3 pt) {
-    // asAbsolute TRUE uses the original unshifted matrix
+  public P3 getFractionalCoordPt(boolean fixJavaFloat, boolean ignoreOffset, P3 pt) {
+    // ignoreOffset TRUE uses the original unshifted matrix
     SymmetryInterface c = getUnitCell();
     if (c == null) 
       return this;
@@ -744,7 +744,7 @@ public class Atom extends Point3fi implements Node {
       pt = P3.newP(this);
     else
       pt.setT(this);
-    c.toFractional(pt, asAbsolute);
+    c.toFractional(pt, ignoreOffset);
     if (fixJavaFloat)
       PT.fixPtFloats(pt, PT.FRACTIONAL_PRECISION);
     return pt;
@@ -1209,17 +1209,14 @@ public class Atom extends Point3fi implements Node {
     case T.theta:
     case T.straightness:
       return group.getGroupParameter(tokWhat);
-    case T.fracx:
-      return getFractionalCoord(!vwr.g.legacyJavaFloat, 'X', true, ptTemp);
-    case T.fracy:
-      return getFractionalCoord(!vwr.g.legacyJavaFloat, 'Y', true, ptTemp);
-    case T.fracz:
-      return getFractionalCoord(!vwr.g.legacyJavaFloat, 'Z', true, ptTemp);
     case T.fux:
+    case T.fracx:
       return getFractionalCoord(!vwr.g.legacyJavaFloat, 'X', false, ptTemp);
     case T.fuy:
+    case T.fracy:
       return getFractionalCoord(!vwr.g.legacyJavaFloat, 'Y', false, ptTemp);
     case T.fuz:
+    case T.fracz:
       return getFractionalCoord(!vwr.g.legacyJavaFloat, 'Z', false, ptTemp);
     case T.hydrophobicity:
       return getHydrophobicity();
@@ -1384,8 +1381,8 @@ public class Atom extends Point3fi implements Node {
     case T.coord:
       return P3.newP(this);
     case T.fracxyz:
-      return getFractionalCoordPt(!vwr.g.legacyJavaFloat, !group.chain.model.isJmolDataFrame,
-          ptTemp);
+      return getFractionalCoordPt(!vwr.g.legacyJavaFloat, false,
+          ptTemp); // was !group.chain.model.isJmolDataFrame
     case T.fuxyz:
       return getFractionalCoordPt(!vwr.g.legacyJavaFloat, false, ptTemp);
     case T.unitxyz:

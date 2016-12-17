@@ -2756,16 +2756,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   /**
-   * absolute or relative to origin of UNITCELL {x y z}
    * 
    * @param pt
-   * @param asAbsolute
-   *        TODO
+   * @param ignoreOffset set true for relative to {0 0 0}; otherwise relative to origin of UNITCELL {x y z}
    */
-  public void toFractional(T3 pt, boolean asAbsolute) {
+  public void toFractional(T3 pt, boolean ignoreOffset) {
     SymmetryInterface unitCell = getCurrentUnitCell();
     if (unitCell != null) {
-      unitCell.toFractional(pt, asAbsolute);
+      unitCell.toFractional(pt, ignoreOffset);
       if (!g.legacyJavaFloat)
         PT.fixPtFloats(pt, PT.FRACTIONAL_PRECISION);
     }

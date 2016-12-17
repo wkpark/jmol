@@ -60,7 +60,7 @@ public final class JC {
     // _#DOCACHE_ flag indicates that the loaded file should be saved in any state in full
     // ' at start indicates a Jmol script evaluation
     "ams", "'http://rruff.geo.arizona.edu/AMS/viewJmol.php?'+(0+'%file'==0? 'mineral':('%file'.length==7? 'amcsd':'id'))+'=%file&action=showcif#_DOCACHE_'",    
-    "dssr", "http://dssr-jmol.x3dna.org/report.php?id=%FILE&opts=--json=ebi",
+    "dssr", "http://dssr-jmol.x3dna.org/report.php?id=%FILE&opts=--json=ebi", //for debugging: -blocks",
     "dssrModel", "http://dssr-jmol.x3dna.org/report.php?POST?opts=--json=ebi&model=", // called in DSSR1.java
     "iucr", "http://scripts.iucr.org/cgi-bin/sendcif_yard?%FILE", // e.g. wf5113sup1
     "cod", "http://www.crystallography.net/cod/cif/%c1/%c2%c3/%c4%c5/%FILE.cif",

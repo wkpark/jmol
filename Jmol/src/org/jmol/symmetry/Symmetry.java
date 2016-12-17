@@ -454,9 +454,9 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
-  public void toFractional(T3 pt, boolean isAbsolute) {
+  public void toFractional(T3 pt, boolean ignoreOffset) {
     if (!isBio)
-      unitCell.toFractional(pt, isAbsolute);
+      unitCell.toFractional(pt, ignoreOffset);
   }
   
   @Override
@@ -724,15 +724,15 @@ public class Symmetry implements SymmetryInterface {
     if (ops == null || unitCell == null) {
       lst.addLast(pt0);
     } else {
-      unitCell.toFractional(pt0, true); // isAbsolute?
+      unitCell.toFractional(pt0, true); // ignoreOffset
       P3 pt1 = null;
       P3 pt2 = null;
       P3 pt3 = null;
       if (isRandom) {
         pt1 = P3.new3(rand2 + 4, rand3 + 5, rand1 + 6);
-        unitCell.toFractional(pt1, true); // isAbsolute?
+        unitCell.toFractional(pt1, true); // ignoreOffset
         pt2 = P3.new3(rand3 + 7, rand1 + 8, rand2 + 9);
-        unitCell.toFractional(pt2, true); // isAbsolute?
+        unitCell.toFractional(pt2, true); // ignoreOffset
       }
       Bspt bspt = new Bspt(3, 0);
       CubeIterator iter = bspt.allocateCubeIterator();
@@ -760,7 +760,7 @@ public class Symmetry implements SymmetryInterface {
         }
       }
       for (int j = lst.size(); --j >= 0;)
-        unitCell.toCartesian(lst.get(j), true);
+        unitCell.toCartesian(lst.get(j), true); // ignoreOffset
     }
     return lst;
   }

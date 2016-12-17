@@ -26,10 +26,7 @@
 
 12/17/2016	
 Release Note: switching to semantic versioning (http://semver.org/)
-Release Note: incrementing will be at the xx.x.xx level; digits after that are a date stamp
-Release Note: for example, the version after 14.8.1020161217-beta will be 14.8.11yyyymmdd-beta
 Release Note: When releasing stable version, remove "-beta"
-Release Note: (note that semantic versioning does not specify the value of the increment)
 	
 -->
 	
@@ -45,16 +42,6 @@ Release Note: (note that semantic versioning does not specify the value of the i
 	          />
   <echo message="version=${version}" />
 
-	<loadresource property="versionNoDate">
-	  <string value="${version}"/>
-	  <filterchain>
-	    <tokenfilter>
-		      <replaceregex pattern="([0-9]+[.][0-9]+[.][0-9][0-9])(.*)" replace="\1"/>
-	    </tokenfilter>
-	  </filterchain>
-	</loadresource>
-	<echo message="versionNoDate: ${versionNoDate}"/>
-	
 	<loadresource property="versionMajorMinor">
 	  <string value="${version}"/>
 	  <filterchain>
@@ -65,17 +52,28 @@ Release Note: (note that semantic versioning does not specify the value of the i
 	</loadresource>
 	<echo message="versionMajorMinor: ${versionMajorMinor}"/>
 	
-	<loadresource property="betaFlag">
+	<loadresource property="versionMajorMinorPatch">
 	  <string value="${version}"/>
 	  <filterchain>
 	    <tokenfilter>
-	      <replaceregex pattern="([^-]*)([-].*)" replace="\2"/>
+		      <replaceregex pattern="([0-9]+[.][0-9]+)+[.][0-9]+)(.*)" replace="\1"/>
+	    </tokenfilter>
+	  </filterchain>
+	</loadresource>
+	<echo message="versionMajorMinorPatch: ${versionMajorMinorPatch}"/>
+
+		<loadresource property="betaFlag">
+	  <string value="${version}"/>
+	  <filterchain>
+	    <tokenfilter>
+	      <replaceregex pattern="([^-]*)(-beta)(.*)" replace="\2"/>
 	    </tokenfilter>
 	  </filterchain>
 	</loadresource>
 	<echo message="betaFlag: ${betaFlag}"/>
 
 	<property name="path.release"    value="Jmol${betaFlag}/Jmol ${versionMajorMinor}" />
+	<echo message="path.release: ${path.release}"/>
 
 
 	<!-- Copying files to website -->

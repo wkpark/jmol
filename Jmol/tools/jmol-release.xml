@@ -12,7 +12,7 @@
     </classpath>
   </taskdef>
 
-  <property name="zipOnly"         value="true" />
+  <property name="sendZip"         value="true" />
   <property name="dist.dir"        value="build/dist" />
   <property name="src.dir"         value="src" />
   <property name="temp.dir"        value="build/release" />
@@ -119,13 +119,18 @@ Release Note: (note that semantic versioning does not specify the value of the i
     <delete dir="${temp.dir}" />
     <mkdir dir="${temp.dir}" />
     <mkdir dir="${temp.dir}/${uploadPath}" />
+  	
+  	<if>
+     <equals arg1="${sendZip}" arg2="true" />
+  	 <then>
     <copy todir="${temp.dir}/${uploadPath}"
           file="${dist.dir}/Jmol-${version}-binary.zip" />
     <copy tofile="${temp.dir}/${uploadPath}/README-${version}.properties"
           file="${dist.dir}/Jmol.properties" />
-
+    </then>
+  	</if>
   	<if>
-     <equals arg1="${zipOnly}" arg2="false" />
+     <equals arg1="${betaFlag}" arg2="" />
   	 <then>
 	    <copy todir="${temp.dir}/${uploadPath}"
 	          file="${dist.dir}/Jmol-${version}-binary.tar.gz" />

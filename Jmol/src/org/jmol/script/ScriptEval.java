@@ -8352,8 +8352,8 @@ public class ScriptEval extends ScriptExpr {
             if (chk)
               return;
             isColor = false;
-            ColorEncoder ce = vwr.cm.getColorEncoder(scheme);
-            if (ce == null)
+            ColorEncoder ce = (scheme == null ? (ColorEncoder) getShapeProperty(shapeType, "colorEncoder") : null);
+            if (ce == null && (ce = vwr.cm.getColorEncoder(scheme)) == null)
               return;
             ce.isTranslucent = (isTranslucent && translucentLevel == Float.MAX_VALUE);
             ce.setRange(min, max, min > max);

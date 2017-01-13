@@ -947,6 +947,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     if (property == "atoms") {
       return thisMesh.surfaceAtoms;
     }    
+    if (property == "colorEncoder")
+      return thisMesh.colorEncoder;
     return null;
   }
 

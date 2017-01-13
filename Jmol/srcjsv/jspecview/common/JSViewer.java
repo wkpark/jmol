@@ -1783,7 +1783,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 				return pl;
 			} catch (Exception e) {
 			}
-		return new PrintLayout();
+		return new PrintLayout(pd());
 	}
 
 	public void setIRmode(String mode) {

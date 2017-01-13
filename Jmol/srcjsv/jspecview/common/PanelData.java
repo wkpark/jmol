@@ -1357,6 +1357,15 @@ public class PanelData implements EventManager {
 		// TODO Auto-generated method stub
 		
 	}
+	
+
+	public void setDefaultPrintOptions(PrintLayout pl) {
+		 pl.showGrid = gridOn;
+		 pl.showXScale = getBoolean(ScriptToken.XSCALEON);	
+		 pl.showYScale = getBoolean(ScriptToken.YSCALEON);	
+		 pl.showTitle = titleOn;
+	}
+
 
 	public JSVDialog showDialog(AType type) {
 		AnnotationData ad = getDialog(type);

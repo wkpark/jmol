@@ -96,7 +96,7 @@ public class AwtPrintDialog extends JDialog implements JSVPrintDialog {
   @Override
 	public AwtPrintDialog set(Object frame, PrintLayout pl, boolean isJob) {
     if (pl == null)
-      pl = new PrintLayout();
+      pl = new PrintLayout(null);
     this.pl = pl;
     try {
       jbInit(isJob);
@@ -440,7 +440,7 @@ public class AwtPrintDialog extends JDialog implements JSVPrintDialog {
 	 * 
 	 */
 	void printButton_actionPerformed(boolean asPDF) {
-		plNew = new PrintLayout();
+		plNew = new PrintLayout(null);
 		plNew.layout = layoutButtonGroup.getSelection().getActionCommand()
 				.toLowerCase();
 		plNew.font = null;

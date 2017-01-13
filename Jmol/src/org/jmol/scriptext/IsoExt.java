@@ -1730,7 +1730,7 @@ public class IsoExt extends ScriptExt {
           } else if (isSign) {
             invPO();
           }
-        } else if (!isSign && discreteColixes == null) {
+        } else if (!isSign && discreteColixes == null && colorScheme == null) {
           invPO();
         }
         continue;

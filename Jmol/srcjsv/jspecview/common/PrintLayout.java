@@ -7,6 +7,12 @@ package jspecview.common;
 
 public class PrintLayout {
 	
+	public PrintLayout(PanelData pd) {
+		if (pd != null) {
+			 asPDF = true;
+			 pd.setDefaultPrintOptions(this);					 
+		}
+	}
 	public int imageableX = 0;
 	public int imageableY = 0;
 	public int paperHeight = (int) (Math.min(11f, 11.69f) * 72);

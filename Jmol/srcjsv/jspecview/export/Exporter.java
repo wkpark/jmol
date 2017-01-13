@@ -207,25 +207,30 @@ public class Exporter implements ExportInterface {
 
 	@SuppressWarnings("resource")
 	private String printPDF(JSViewer viewer, String pdfFileName, boolean isBase64) {
-		
+
 		boolean isJob = (pdfFileName == null || pdfFileName.length() == 0);
 		if (!isBase64 && !viewer.si.isSigned())
 			return "Error: Applet must be signed for the PRINT command.";
 		PanelData pd = viewer.pd();
 		if (pd == null)
 			return null;
-		pd.closeAllDialogsExcept(AType.NONE);
+		boolean useDialog = false;
 		PrintLayout pl;
 		/**
-		 * @j2sNative
+		 * @j2sNative 
 		 * 
-		 *            pl = new jspecview.common.PrintLayout(); pl.asPDF = true;
+		 * useDialog = false;
+		 * 
 		 */
 		{
-			pl = viewer.getDialogPrint(isJob);
-			if (pl == null)
-				return null;
+			pd.closeAllDialogsExcept(AType.NONE);
+			useDialog = true;
 		}
+    pl = viewer.getDialogPrint(isJob);
+		if (pl == null)
+			return null;
+    if (!useDialog)
+			pl.asPDF = true; // JavaScript only
 		if (isJob && pl.asPDF) {
 			isJob = false;
 			pdfFileName = "PDF";
@@ -240,13 +245,14 @@ public class Exporter implements ExportInterface {
 			if (file == null)
 				return null;
 			if (!viewer.isJS)
-				viewer.setProperty("directoryLastExportedFile", helper
-						.setDirLastExported(file.getParentAsFile().getFullPath()));
+				viewer.setProperty("directoryLastExportedFile",
+						helper.setDirLastExported(file.getParentAsFile().getFullPath()));
 			pdfFileName = file.getFullPath();
 		}
 		String s = null;
 		try {
-			OC out = (isJob ? null : viewer.getOutputChannel(isBase64 ? null : pdfFileName, true));
+			OC out = (isJob ? null : viewer.getOutputChannel(isBase64 ? null
+					: pdfFileName, true));
 			String printJobTitle = pd.getPrintJobTitle(true);
 			if (pl.showTitle) {
 				printJobTitle = jsvp.getInput("Title?", "Title for Printing",

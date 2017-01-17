@@ -112,7 +112,7 @@ public interface SwingController {
    * Convey to the HTML object that this component's text
    * has been changed.
    * 
-   *   if (c.visible)
+   *   if (c._visible)
    *     $("#" + c.id).show();
    *   else
    *     $("#" + c.id).hide();  

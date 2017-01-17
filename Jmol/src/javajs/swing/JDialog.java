@@ -59,6 +59,8 @@ public class JDialog extends Container {
     if (tf && html == null)
       setDialog();
     super.setVisible(tf);
+    if (tf)
+    	toFront();
   }
 
   public void dispose() {
@@ -121,6 +123,15 @@ public class JDialog extends Container {
     return sb.toString();
   }
 
+	public void toFront() {
+		/**
+		 * @j2sNative
+		 * 
+		 * SwingController.setFront(this);
+		 * 
+		 */
+		{}
+	}
 
 
 }

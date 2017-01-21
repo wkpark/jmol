@@ -73,6 +73,7 @@ public class GenNBOReader extends MOReader {
   private String nboType = "";
   private int nOrbitals0;
   private boolean isArchive;
+  private boolean betaOnly;
 
   
   @Override
@@ -94,6 +95,7 @@ public class GenNBOReader extends MOReader {
      */
     String line1 = rd().trim();
     isArchive = (line1.indexOf("$GENNBO") >= 0 || line1.indexOf("$NBO") >= 0); // GENNBO 6
+    betaOnly =  checkFilterKey("BETA");
     if (isArchive) {
       readData47();
       return;
@@ -148,7 +150,12 @@ public class GenNBOReader extends MOReader {
   
   private void readMOs() throws Exception {
     nOrbitals0 = orbitals.size();
+    // get the labels
     getFile46();
+    if (betaOnly) {
+      discardLinesUntilContains("BETA");
+      line = null;
+    }
     boolean isMO = !nboType.equals("AO");
     int nAOs = nOrbitals;
     nOrbitals = orbitals.size();
@@ -244,6 +251,11 @@ public class GenNBOReader extends MOReader {
     return (readData31(null) && (reader = readerSave) != null);
   }
 
+  /**
+   * read the labels from xxxx.46
+   * 
+   * @throws Exception
+   */
   private void getFile46() throws Exception {
     String data = getFileData(".46");
     BufferedReader readerSave = reader;
@@ -468,9 +480,16 @@ public class GenNBOReader extends MOReader {
     return true;
   }
 
+  /**
+   * read labels
+   * 
+   * @throws Exception
+   */
   private void readData46() throws Exception {
     String[] tokens = PT.getTokens(rd());
     int ipt = 1;
+    if (betaOnly)
+      haveNboOrbitals = true;
     if (tokens[1].equals("ALPHA")) {
       ipt = 2;
       if (haveNboOrbitals) {

@@ -217,7 +217,7 @@ public class NBOService {
     String s = "<" + job.cmd + ">";
     currJob = job;
     nboDialog.inputFileHandler.writeToFile(serverDir + "/" + job.cmd, job.sb.toString());
-    nboDialog.setStatus(job.statusInfo);
+    nboDialog.setStatus(job.statusInfo + " (sending job.cmd)");
     sendCmd(s);
   }
 

@@ -592,10 +592,12 @@ abstract class NBODialogConfig extends JDialog {
    * @param chFormat
    *        p, b, r ("red"), i, etc.
    */
-  protected synchronized void log(final String line, final char chFormat) {
+  protected synchronized void log(String line, char chFormat) {
     if (line.trim().equals("") || jpNBOLog == null)
       return;
     if (line.trim().length() >= 1) {
+      line = PT.rep(line.trim(), "<", "&lt;");
+      line = PT.rep(line.trim(), ">", "&gt;");
       String format0 = "" + chFormat;
       String format1 = format0;
       String fontFamily = jpNBOLog.getFont().getFamily();
@@ -605,14 +607,11 @@ abstract class NBODialogConfig extends JDialog {
       }
 
       if (format0.equals("p"))
-        jpNBOLog.setText("<html><body style=\"font-family: " + fontFamily
-            + "\"" + (bodyText = bodyText + line + "<br>") + "</html>");
+        jpNBOLog.setText("<html>" + (bodyText = bodyText + line + "<br />") + "</html>");
       else
-        jpNBOLog.setText("<html><body style=\"font-family: "
-            + fontFamily
-            + "\" "
+        jpNBOLog.setText("<html>"
             + (bodyText = bodyText + "<" + format0 + ">" + line + "</"
-                + format1 + "><br>") + "</html>");
+                + format1 + "><br />") + "</html>");
     }
     jpNBOLog.setCaretPosition(jpNBOLog.getDocument().getLength());
   }

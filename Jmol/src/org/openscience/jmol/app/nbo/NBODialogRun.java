@@ -82,7 +82,7 @@ abstract class NBODialogRun extends NBODialogModel {
   protected static final String[] keywordList = {
       "CMO: Bonding character of canonical MO's",
       "DIPOLE: Dipole moment analysis",
-      "NBBP: Natural bond-bond polarizability indeces",
+      "NBBP: Natural bond-bond polarizability indices",
       "NBCP: Natural bond critical point analysis",
       "NCE: Natural coulomb electrostatics analysis",
       "NCU: Natural cluster unit analysis",

@@ -141,7 +141,6 @@ public class NBODialog extends NBODialogSearch {
    */
   public NBODialog(JFrame f, Viewer vwr, NBOService nboService) {
     super(f);
-    Dimension d = f.getSize();
     setTitle("NBOPro6@Jmol");
     ImageIcon img = null;
     String imageName = "org/openscience/jmol/app/images/nbo6logo.gif";
@@ -173,7 +172,7 @@ public class NBODialog extends NBODialogSearch {
   }
   
   private void createDialog(Rectangle bounds) {
-    dialogMode = 'h';
+    dialogMode = DIALOG_HOME;
     // createDialog(Math.max(570, 615);
     setBounds(bounds.x + bounds.width - 75, bounds.y, 615, Math.max(bounds.height, 660));
     addWindowListener(new WindowAdapter() {
@@ -396,7 +395,7 @@ public class NBODialog extends NBODialogSearch {
     lab.setFont(f);
     JTextPane tp = new JTextPane();
     tp.setContentType("text/html");
-    tp.setText("<HTML><center>Frank Weinhold<Br><I>(Acknowledgments: Eric Glendening, John Carpenter, " +
+    tp.setText("<HTML><center>Frank Weinhold<br><I>(Acknowledgments: Eric Glendening, John Carpenter, " +
         "Mark Muyskens, Isaac Mades, Scott Ostrander, John Blair, Craig Weinhold)</I></center></HTML>");
     tp.setEditable(false);
     tp.setBackground(null);
@@ -467,7 +466,7 @@ public class NBODialog extends NBODialogSearch {
     tp.setMaximumSize(new Dimension(430,60));
     tp.setContentType("text/html");
     tp.setBackground(null);
-    tp.setText("<HTML><center>Mark Wendt and Frank Weinhold<Br><I> (Acknowledgments: Eric Glendening, John Carpenter, " +
+    tp.setText("<HTML><center>Mark Wendt and Frank Weinhold<br><I> (Acknowledgments: Eric Glendening, John Carpenter, " +
         "Mark Muyskens, Scott Ostrander, Zdenek Havlas, Dave Anderson)</I></center></HTML>");
     c.gridx = 1;
     c.gridy = 5;

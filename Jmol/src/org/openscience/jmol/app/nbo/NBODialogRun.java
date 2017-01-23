@@ -115,11 +115,11 @@ abstract class NBODialogRun extends NBODialogModel {
 
     //INPUT/////////////////////////
     if (inputFileHandler == null) {
-      inputFileHandler = new NBOFileHandler("", "47", 2, "47", (NBODialog) this);
+      inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_RUN, "47", (NBODialog) this);
       inputFileHandler.browse.setEnabled(false);
     } else
       inputFileHandler = new NBOFileHandler(inputFileHandler.jobStem, inputFileHandler.tfExt.getText(),
-          2, "47", (NBODialog) this);
+          NBOFileHandler.MODE_RUN, "47", (NBODialog) this);
     inputFileHandler.browse.setEnabled(false);
 
     Box box = Box.createHorizontalBox();

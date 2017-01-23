@@ -45,6 +45,13 @@ class NBOFileHandler extends JPanel {
   protected NBODialog dialog;
   protected boolean canReRun;
 
+
+  protected final static int MODE_MODEL_USE = 1;
+  protected final static int MODE_RUN = 2;
+  protected final static int MODE_VIEW = 3;
+  protected final static int MODE_SEARCH = 4;
+  protected final static int MODE_MODEL_SAVE = 5;
+  
   public NBOFileHandler(String name, String ext, final int mode, String useExt,
       NBODialog d) {
     dialog = d;
@@ -95,18 +102,15 @@ class NBOFileHandler extends JPanel {
         browsePressed();
       }
     });
-    if (mode != 3 && mode != 4) {
+    if (mode != MODE_VIEW && mode != MODE_SEARCH) {
       add(tfExt, c);
       c.gridy = 1;
       add(new JLabel("  ext"), c);
     }
     c.gridx = 3;
     c.gridy = 0;
-    c.gridheight = 1;
-    if (mode != 5)
-      browse = new JButton("...");
-    else
-      browse = new JButton("Save");
+    c.gridheight = 2;
+    browse = new JButton(mode == MODE_MODEL_SAVE ? "Save" : "Browse");
     browse.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {

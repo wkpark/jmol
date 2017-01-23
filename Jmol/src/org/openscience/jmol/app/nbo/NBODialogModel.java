@@ -189,7 +189,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     addListenersAndSize(jComboUse, jrFileIn);
     inputBox.add(p2);
 
-    inputFileHandler = new NBOFileHandler("", "", 1, INPUT_FILE_EXTENSIONS,
+    inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, INPUT_FILE_EXTENSIONS,
         (NBODialog) this) {
 
       @Override
@@ -455,7 +455,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     jComboSave = new JComboBox<String>(SAVE_OPTIONS);
 
     jComboSave.setFont(monoFont);
-    saveFileHandler = new NBOFileHandler("", "", 5,
+    saveFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_SAVE,
         OUTPUT_FILE_EXTENSIONS, (NBODialog) this) {
       @Override
       protected boolean browsePressed() {

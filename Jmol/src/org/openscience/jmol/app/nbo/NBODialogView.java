@@ -141,7 +141,7 @@ abstract class NBODialogView extends NBODialogRun {
     panel.add(inputBox);
 
     //if(fileHndlr == null)
-    inputFileHandler = new NBOFileHandler("", "47", 3, "47", (NBODialog) this);
+    inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_VIEW, "47", (NBODialog) this);
     
     //else
     //  fileHndlr = new FileHndlr(fileHndlr.jobStem,"47",3,"47",(NBODialog)this);

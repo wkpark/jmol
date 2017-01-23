@@ -605,21 +605,19 @@ abstract class NBODialogConfig extends JDialog {
       return;
     if (line.trim().length() >= 1) {
       line = PT.rep(line.trim(), "<", "&lt;");
-      line = PT.rep(line.trim(), ">", "&gt;");
+      line = PT.rep(line, ">", "&gt;");
+      line = PT.rep(line,"&lt;br&gt;", "<br>");
       String format0 = "" + chFormat;
       String format1 = format0;
-      String fontFamily = jpNBOLog.getFont().getFamily();
+//      String fontFamily = jpNBOLog.getFont().getFamily();
       if (chFormat == 'r') {
         format0 = "b style=color:red";
         format1 = "b";
       }
 
-      if (format0.equals("p"))
-        jpNBOLog.setText("<html>" + (bodyText = bodyText + line + "<br />") + "</html>");
-      else
-        jpNBOLog.setText("<html>"
-            + (bodyText = bodyText + "<" + format0 + ">" + line + "</"
-                + format1 + "><br />") + "</html>");
+      if (!format0.equals("p"))
+        line  = "<" + format0 + ">" + line + "</" + format1 + ">";
+      jpNBOLog.setText("<html>" + (bodyText = bodyText + line + "\n<br>") + "</html>");
     }
     jpNBOLog.setCaretPosition(jpNBOLog.getDocument().getLength());
   }
@@ -641,12 +639,12 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void runScriptQueued(String script) {
-    logInfo("$ " + PT.rep(script, "\n", "<br>"), Logger.LEVEL_DEBUG);
+    logInfo("_$ " + PT.rep(script, "\n", "<br>"), Logger.LEVEL_DEBUG);
     vwr.script(script);
   }
 
   synchronized protected String runScriptNow(String script) {
-    logInfo("$ " + script, Logger.LEVEL_DEBUG);
+    logInfo("!$ " + script, Logger.LEVEL_DEBUG);
     return PT.trim(vwr.runScript(script), "\n");
   }
 

@@ -486,51 +486,49 @@ public class GenNBOReader extends MOReader {
    * @throws Exception
    */
   private void readData46() throws Exception {
-    String[] tokens = PT.getTokens(rd());
-    int ipt = 1;
-    if (betaOnly)
-      haveNboOrbitals = true;
-    if (tokens[1].equals("ALPHA")) {
-      ipt = 2;
-      if (haveNboOrbitals) {
-        tokens = PT.getTokens(discardLinesUntilContains("BETA"));
-        alphaBeta = "beta";
-      } else {
-        alphaBeta = "alpha";
-        haveNboOrbitals = true;
+    Map<String, String[]> map = new Hashtable<String, String[]>();
+    String[] tokens = new String[0];
+    rd();
+    while (line != null && line.length() > 0) {
+      tokens = PT.getTokens(line);
+      String type = tokens[0];
+      String ab = (tokens.length == 2 ? "" : tokens[1]);
+      String count = tokens[tokens.length - 1];
+      String key = (ab.equals("BETA") ? "beta_" : "") + type;
+      if (parseIntStr(count) != nOrbitals) {
+        Logger.error("file 46 number of orbitals does not match nOrbitals: "
+            + nOrbitals);
+        return;
       }
-      line = tokens[0] + " " + tokens[2];
-    }
-    if (parseIntStr(tokens[ipt]) != nOrbitals) {
-      Logger.error("file 46 number of orbitals does not match nOrbitals: "
-          + nOrbitals);
-      return;
-    }
-    SB sb = new SB();
-    sb.append(line);
-    while (rd() != null && line.indexOf("ALPHA") < 0
-        && line.indexOf("BETA") < 0)
-      sb.append(line);
-    sb.appendC(' ');
-    String data = PT.rep(sb.toString(), " )", ")");
-    int n = data.length() - 1;
-    sb = new SB();
-    for (int i = 0; i < n; i++) {
-      char c = data.charAt(i);
-      switch (c) {
-      case '(':
-      case '-':
-        if (data.charAt(i + 1) == ' ')
-          i++;
-        break;
-      case ' ':
-        if (PT.isDigit(data.charAt(i + 1)) || data.charAt(i + 1) == '(')
-          continue;
-        break;
+      SB sb = new SB();
+      while (rd() != null && line.length() > 4 && "NA NB AO NH".indexOf(line.substring(2, 4)) < 0)
+        sb.append(line);
+      sb.appendC(' ');
+      String data = PT.rep(sb.toString(), " )", ")");
+      sb = new SB();
+      for (int i = 0, n = data.length() - 1; i < n; i++) { 
+        char c = data.charAt(i);
+        switch (c) {
+        case '(':
+        case '-':
+          if (data.charAt(i + 1) == ' ')
+            i++;
+          break;
+        case ' ':
+          if (PT.isDigit(data.charAt(i + 1)) || data.charAt(i + 1) == '(')
+            continue;
+          break;
+        }
+        sb.appendC(c);
       }
-      sb.appendC(c);
+      tokens = PT.getTokens(sb.toString());
+      map.put(key, tokens);
     }
-    tokens = PT.getTokens(sb.toString());
+    String type = nboType;
+    if (type.charAt(0) == 'P')
+      type = type.substring(1);
+    tokens = map.get((betaOnly ? "beta_" : "") + type);
+    moData.put("nboLabelMap", map);
     moData.put("nboLabels", tokens);
     for (int i = 0; i < nOrbitals; i++)
       setMO(new Hashtable<String, Object>());

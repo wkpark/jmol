@@ -586,8 +586,7 @@ abstract class ScriptExpr extends ScriptParam {
                 && allContext) {
               if (name.startsWith("_")) {
                 v = (name.equals("_") ? vwr.ms.getAuxiliaryInfo(null) : name
-                    .equals("_m") && vwr.am.cmi >= 0 ? vwr.ms
-                    .getModelAuxiliaryInfo(vwr.am.cmi) : null);
+                    .equals("_m") ? vwr.getCurrentModelAuxInfo() : null);
               }
               if (v == null)
                 v = getContextVariableAsVariable(name, false);

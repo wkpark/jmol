@@ -2341,6 +2341,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         checkProtected);
     return data[1];
   }
+  
+  public String getAsciiFileOrNull(String name) {
+    String[] data = new String[] {name, null};
+    return (fm.getFileDataAsString(data, -1, false, false, false) ? data[1] : null);
+  }
 
   // ///////////////////////////////////////////////////////////////
   // delegated to ModelManager
@@ -7940,12 +7945,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   @Override
-  public void writeTextFile(String fileName, String data) {
+  public String writeTextFile(String fileName, String data) {
     Map<String, Object> params = new Hashtable<String, Object>();
     params.put("fileName", fileName);
     params.put("type", "txt");
     params.put("text", data);
-    outputToFile(params);
+    return outputToFile(params);
   }
 
   /**
@@ -9479,6 +9484,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public void playAudio(String fileNameOrDataURI) {
     sm.playAudio(fileNameOrDataURI);
+  }
+
+  public Map<String, Object> getCurrentModelAuxInfo() {
+    return (am.cmi >= 0 ? ms.getModelAuxiliaryInfo(am.cmi) : null);
   }
 
 

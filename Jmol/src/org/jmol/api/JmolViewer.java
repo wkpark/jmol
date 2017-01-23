@@ -282,7 +282,7 @@ abstract public class JmolViewer {
   abstract public Object getScreenImageBuffer(Object g, boolean isImageWrite);
   abstract public void releaseScreenImage();
   
-  abstract public void writeTextFile(String string, String data);
+  abstract public String writeTextFile(String string, String data);
   
   /**
    * 

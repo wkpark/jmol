@@ -36,6 +36,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -47,6 +48,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javajs.swing.SwingConstants;
+import javajs.util.PT;
+import javajs.util.SB;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -62,7 +65,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
@@ -71,11 +73,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jmol.c.CBK;
 import org.jmol.viewer.Viewer;
+
 /**
  * A dialog for interacting with NBOServer
  * 
- * The NBODialog class includes all public entry points. In addition, there are
- * several superclasses:
+ * The NBODialog class includes all public entry points.
+ * 
+ * There is really only ONE dialog -- This one. To help in managing the
+ * different aspects of the task, there are several superclasses:
  * 
  * JDialog NBODialogConfig
  * 
@@ -89,7 +94,7 @@ import org.jmol.viewer.Viewer;
  * 
  * ---------- NBODialog
  * 
- * All of these are one object, just separated this way to allow some 
+ * All of these are one object, just separated this way to allow some
  * compartmentalization of tasks along the lines of NBOPro6.
  * 
  * 
@@ -136,7 +141,8 @@ public class NBODialog extends NBODialogSearch {
    */
   public NBODialog(JFrame f, Viewer vwr, NBOService nboService) {
     super(f);
-    setTitle("JNBOPro6");
+    Dimension d = f.getSize();
+    setTitle("NBOPro6@Jmol");
     ImageIcon img = null;
     String imageName = "org/openscience/jmol/app/images/nbo6logo.gif";
     URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
@@ -147,14 +153,12 @@ public class NBODialog extends NBODialogSearch {
     this.vwr = vwr;
     this.nboService = nboService;
     this.setLayout(new BorderLayout());
-    runScriptQueued("set bondpicking true");
-    runScriptQueued("set multipleBondSpacing -0.5");
-    
+    sendDefaultScript();
     //get saved properties
     
     nboService.nboDialog = this;
 
-    createDialog(570, 615);
+    createDialog(f.getBounds());
 
   }
   
@@ -168,9 +172,10 @@ public class NBODialog extends NBODialogSearch {
     return c;
   }
   
-  private void createDialog(int width, int height) {
+  private void createDialog(Rectangle bounds) {
     dialogMode = 'h';
-    setSize(new Dimension(width, height));
+    // createDialog(Math.max(570, 615);
+    setBounds(bounds.x + bounds.width - 75, bounds.y, 615, Math.max(bounds.height, 660));
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -207,7 +212,7 @@ public class NBODialog extends NBODialogSearch {
         try {
           Desktop.getDesktop().browse(new URI(url));
         } catch (Exception e1) {
-          vwr.alert("Could not open help pages");
+          alertError("Could not open help pages");
         } 
         
       }
@@ -227,14 +232,13 @@ public class NBODialog extends NBODialogSearch {
     getContentPane().add(licenseInfo,BorderLayout.SOUTH);
     //centerPanel.setLeftComponent(mainPage());
     this.dialogMode = DIALOG_HOME;
-    this.setVisible(true);
     this.getContentPane().add(topPanel,BorderLayout.NORTH);    
-    
     settingsPanel = buildSettingsPanel();
     settingsDialog = new JDialog(this,"Settings");
     settingsDialog.add(settingsPanel);
     settingsDialog.setSize(new Dimension(350,360));
     settingsDialog.setLocation(this.getX() + 100,this.getY()+100);
+    this.setVisible(true);
   }
   
   /**
@@ -287,7 +291,7 @@ public class NBODialog extends NBODialogSearch {
     b.add(Box.createRigidArea(new Dimension(20,0)));
     
     b.add(getMainButton((searchButton = new JButton("Search")),'s',f));
-    b.add(Box.createRigidArea(new Dimension(60,50)));
+    b.add(Box.createRigidArea(new Dimension(30,50)));
     
     b.add(getMainButton(new JButton("Settings"),'c',new Font("Arial",Font.PLAIN,14)));
     b.add(Box.createRigidArea(new Dimension(20,0)));
@@ -326,7 +330,9 @@ public class NBODialog extends NBODialogSearch {
   private JPanel mainPage(){
     JPanel p = new JPanel();
     p.setBackground(Color.white);
-    haveService = nboService.restartIfNecessary();
+    
+    
+   haveService = nboService.restartIfNecessary(); // BH temporarily
     
     p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
     //Header stuff////////////
@@ -348,7 +354,7 @@ public class NBODialog extends NBODialogSearch {
     icon.setBorder(BorderFactory.createLineBorder(Color.black));
     
     p.add(b);
-    lab = new JLabel("JNBOPro6");
+    lab = new JLabel("NBOPro6@Jmol");
     lab.setFont(new Font("Arial",Font.BOLD,26));
     lab.setForeground(Color.red);
     p.add(lab);
@@ -395,9 +401,9 @@ public class NBODialog extends NBODialogSearch {
     tp.setEditable(false);
     tp.setBackground(null);
     tp.setPreferredSize(new Dimension(430,60));
-    c.gridx = 0;
+    c.gridx = 1;
     c.gridy = 1;
-    c.gridwidth = 5;
+    c.gridwidth = 3;
     c.fill = GridBagConstraints.HORIZONTAL;
     p2.add(tp,c);
   
@@ -430,9 +436,9 @@ public class NBODialog extends NBODialogSearch {
     tp.setBackground(null);
     tp.setText("<HTML><center>Eric Glendening, Jay Badenhoop, Alan Reed, John Carpenter, Jon Bohmann, " +
     		"Christine Morales, and Frank Weinhold</center></HTML>");
-    c.gridx = 0;
+    c.gridx = 1;
     c.gridy = 3;
-    c.gridwidth = 4;
+    c.gridwidth = 3;
     p2.add(tp,c);
   
     //VIEW//////////////
@@ -463,9 +469,9 @@ public class NBODialog extends NBODialogSearch {
     tp.setBackground(null);
     tp.setText("<HTML><center>Mark Wendt and Frank Weinhold<Br><I> (Acknowledgments: Eric Glendening, John Carpenter, " +
         "Mark Muyskens, Scott Ostrander, Zdenek Havlas, Dave Anderson)</I></center></HTML>");
-    c.gridx = 0;
+    c.gridx = 1;
     c.gridy = 5;
-    c.gridwidth = 4;
+    c.gridwidth = 3;
     p2.add(tp,c);
   
     //SEARCH/////////////
@@ -495,9 +501,9 @@ public class NBODialog extends NBODialogSearch {
     tp.setContentType("text/html");
     tp.setBackground(null);
     tp.setText("<HTML><center>Frank Weinhold</center></HTML>");
-    c.gridx = 0;
+    c.gridx = 1;
     c.gridy = 7;
-    c.gridwidth = 4;
+    c.gridwidth = 3;
     p2.add(tp,c);
   
     p.add(p2);
@@ -512,9 +518,9 @@ public class NBODialog extends NBODialogSearch {
                 "http://nbo6.chem.wisc.edu/jmol_help/NBOPro6_man.pdf";
             Desktop.getDesktop().browse(new URI(url));
           } catch (IOException ex) {
-            vwr.alert("Could open NBOPro6 manual");
+            alertError("Could open NBOPro6 manual");
           } catch (URISyntaxException e) {
-            vwr.alert("Could open NBOPro6 manual");
+            alertError("Could open NBOPro6 manual");
           }
       }
       }
@@ -529,7 +535,9 @@ public class NBODialog extends NBODialogSearch {
     t.setForeground(Color.RED);
     t.setBackground(null);
     t.setAlignmentX(0.5f);
+    t.setMaximumSize(new Dimension(10000, 80));
     p.add(t);
+
     centerPanel.setDividerLocation(355);
     return p;
   }
@@ -543,21 +551,21 @@ public class NBODialog extends NBODialogSearch {
     settingsBox.setVisible(true);
     nboOutput.add(settingsBox,BorderLayout.NORTH);
     nboOutput.add(s,BorderLayout.CENTER);
-    JLabel lab = new JLabel("Session Dialog");
+    JLabel lab = new JLabel("Session Log");
     lab.setFont(nboFont);
     s.add(lab, BorderLayout.PAGE_START);
     JScrollPane p1 = new JScrollPane();
-    if(jpNboOutput == null){
-      jpNboOutput = new JTextPane();
-      jpNboOutput.setEditable(false);
-      jpNboOutput.setBorder(null);
-      jpNboOutput.setFont(new Font("Arial", Font.PLAIN, 16));
+    if(jpNBOLog == null){
+      jpNBOLog = new JTextPane();
+      jpNBOLog.setEditable(false);
+      jpNBOLog.setBorder(null);
+      jpNBOLog.setFont(new Font("Arial", Font.PLAIN, 16));
       bodyText = "";
     }
-    jpNboOutput.setContentType("text/html");
-    jpNboOutput.setFont(new Font("Arial",Font.PLAIN,10));
+    jpNBOLog.setContentType("text/html");
+    jpNBOLog.setFont(new Font("Arial",Font.PLAIN,10));
     setComponents(s,Color.WHITE,Color.BLACK);
-    p1.getViewport().add(jpNboOutput);
+    p1.getViewport().add(jpNBOLog);
     p1.setBorder(null);
     s.add(p1, BorderLayout.CENTER);
     JPanel box = new JPanel(new GridLayout(2,1));
@@ -584,14 +592,14 @@ public class NBODialog extends NBODialogSearch {
           myChooser.setFileFilter(new FileNameExtensionFilter(".txt",".txt"));
           myChooser.setFileHidingEnabled(true);
           
-          int button = myChooser.showSaveDialog(jpNboOutput);
+          int button = myChooser.showSaveDialog(jpNBOLog);
           if (button == JFileChooser.APPROVE_OPTION) {
             String output = bodyText.replaceAll("<br>",sep);
             output = output.replaceAll("<b>", "");
             output = output.replaceAll("</b>", "");
             output = output.replaceAll("<i>","");
             output = output.replaceAll("</i>","");
-            vwr.writeTextFile(myChooser.getSelectedFile().toString(), output);
+            inputFileHandler.writeToFile(myChooser.getSelectedFile().toString(), output);
           }
         }
       });
@@ -602,36 +610,37 @@ public class NBODialog extends NBODialogSearch {
 
   public void close() {
     if(modulePanel != null)
-      fileHndlr.clearInputFile();
+      inputFileHandler.clearInputFile();
     runScriptQueued("mo delete; nbo delete; select off");
     dispose();
   }
   
 
   protected void openPanel(char type) {
-    if(type == 'c'){
-      if(settingsDialog.isVisible()){
+    if (type == 'c') {
+      if (settingsDialog.isVisible()) {
         return;
       }
       settingsDialog.setVisible(true);
       return;
     }
-    if(nboService.isWorking){
-      int i = JOptionPane.showConfirmDialog(this, 
-          "NBOServe is working. Cancel current job?\n" +
-          "This could affect input/output files\n" +
-          "if GenNBO is running.", "Message", JOptionPane.YES_NO_OPTION);
-      if(i==JOptionPane.NO_OPTION){
+    if (nboService.isWorking) {
+      int i = JOptionPane.showConfirmDialog(this,
+          "NBOServe is working. Cancel current job?\n"
+              + "This could affect input/output files\n"
+              + "if GenNBO is running.", "Message", JOptionPane.YES_NO_OPTION);
+      if (i == JOptionPane.NO_OPTION) {
         return;
       }
     }
-    runScriptQueued("zap");
+    if (false)
+      runScriptQueued("zap"); // BH ??
     nboService.restart();
-    if(dialogMode == DIALOG_HOME){
+    if (dialogMode == DIALOG_HOME) {
       remove(homePanel);
-      add(centerPanel,BorderLayout.CENTER);
-      if(type != 'c')
-      dialogMode = type;
+      add(centerPanel, BorderLayout.CENTER);
+      if (type != 'c')
+        dialogMode = type;
     }
     switch (dialogMode) {
     case DIALOG_VIEW:
@@ -644,48 +653,48 @@ public class NBODialog extends NBODialogSearch {
     this.settingsBox.setVisible(false);
     if (!checkEnabled())
       type = 'c';
-    if(topPanel!=null){
+    if (topPanel != null) {
       topPanel.remove(icon);
     }
     switch (type) {
     case 'm':
       dialogMode = DIALOG_MODEL;
       centerPanel.setLeftComponent(modulePanel = buildModelPanel());
-      icon = new JLabel(new ImageIcon(this.getClass()
-          .getResource("nbomodel_logo.gif")));
+      icon = new JLabel(new ImageIcon(this.getClass().getResource(
+          "nbomodel_logo.gif")));
       setThis(modelButton);
       break;
     case 'r':
       dialogMode = DIALOG_RUN;
       centerPanel.setLeftComponent(modulePanel = buildRunPanel());
-      icon = new JLabel(new ImageIcon(this.getClass()
-          .getResource("nborun_logo.gif")));
+      icon = new JLabel(new ImageIcon(this.getClass().getResource(
+          "nborun_logo.gif")));
       setThis(runButton);
       break;
     case 'v':
       dialogMode = DIALOG_VIEW;
       centerPanel.setLeftComponent(modulePanel = buildViewPanel());
-      icon = new JLabel(new ImageIcon(this.getClass()
-          .getResource("nboview_logo.gif")));
+      icon = new JLabel(new ImageIcon(this.getClass().getResource(
+          "nboview_logo.gif")));
       setThis(viewButton);
       break;
     case 's':
       dialogMode = DIALOG_SEARCH;
       centerPanel.setLeftComponent(modulePanel = buildSearchPanel());
       //settingsBox.setVisible(true);
-      icon = new JLabel(new ImageIcon(this.getClass()
-          .getResource("nbosearch_logo.gif")));
+      icon = new JLabel(new ImageIcon(this.getClass().getResource(
+          "nbosearch_logo.gif")));
       setThis(searchButton);
       break;
     }
     centerPanel.setDividerLocation(350);
-    if(topPanel!=null)
-      topPanel.add(icon,BorderLayout.EAST);
+    if (topPanel != null)
+      topPanel.add(icon, BorderLayout.EAST);
     this.statusLab.setText("");
     invalidate();
     setVisible(true);
-//    if(type != 'c')
-//      runScriptQueued("zap");
+    //    if(type != 'c')
+    //      runScriptQueued("zap");
   }
   
   protected void setThis(JButton btn) {
@@ -767,29 +776,18 @@ public class NBODialog extends NBODialogSearch {
     }
   }
   
-  protected void notifyList(DefaultComboBoxModel<String> list){
-    switch(dialogMode){
-    case DIALOG_VIEW:
-      notifyList_v(list);
-      break;
-    case DIALOG_SEARCH:
-      notifyList_s(list);
-      break;
-    }
-  }
-
   void alert(String msg) {
     try {
       switch (dialogMode) {
       case DIALOG_MODEL:
-        appendOutputWithCaret(msg,'b');
-        return;
       case DIALOG_RUN:
       case DIALOG_VIEW:
       case DIALOG_SEARCH:
+        log(msg,'b');
+        break;
       }
     } catch (Exception e) {
-      vwr.alert(msg);
+      alertError(msg);
     }
   }  
   
@@ -801,39 +799,57 @@ public class NBODialog extends NBODialogSearch {
    */
   protected void clearOutput(){
     bodyText = "";
-    String fontFamily = jpNboOutput.getFont().getFamily();
-    jpNboOutput.setText("<html><body style=\"font-family: " + fontFamily +
+    String fontFamily = jpNBOLog.getFont().getFamily();
+    jpNBOLog.setText("<html><body style=\"font-family: " + fontFamily +
         bodyText + "</html>" );
   }
 
   protected boolean checkJmolNBO(){
     return(vwr.ms.getInfo(vwr.am.cmi, "nboType") != null ||
-        FileHndlr.getExt(fileHndlr.inputFile).equals("47"));
+        NBOFileHandler.getExt(inputFileHandler.inputFile).equals("47"));
   }
     
-  public void addLine(int type, String line) {
-    if(line==null)
-      return;
-    switch (type) {
-    case DIALOG_MODEL:
-      if(line.contains("NBOModel can't")){
-
-        appendOutputWithCaret(line,'b');
-//      }else if(this.editMode==VALUE)
-//        appendOutputWithCaret("   " + line,'b');
-      }else{
-        appendOutputWithCaret("   " + line.charAt(1)+"<sub>"+line.substring(2)+"</sub>",'b');
-        //editMode = DIALOG_MODEL;
-      }
-        break;
-    case DIALOG_SEARCH:
-      appendOutputWithCaret("-  " + line, 'b');
-      break;
-    }
-  }
-
-  public void setStatus(String statusInfo) {  
+  public void setStatus(String statusInfo) {
+    if (statusInfo.length() > 0)
+      log(statusInfo, 'b');  
+      
       statusLab.setText(statusInfo);
   }
 
+  public void processEnd(int dialogMode, DefaultComboBoxModel<String> list) {
+    statusLab.setText("");
+    switch (dialogMode) {
+    case NBOService.MODE_IMAGE:
+      String fname = inputFileHandler.inputFile.getParent() + "\\" + inputFileHandler.jobStem
+          + ".bmp";
+      File f = new File(fname);
+      final SB title = new SB();
+      String id = "id " + PT.esc(title.toString().trim());
+      String script = "image " + id + " close;image id \"\" "
+          + PT.esc(f.toString().replace('\\', '/'));
+      runScriptQueued(script);
+      break;
+    case NBOService.MODE_RUN:
+      inputFileHandler.setInputFile(inputFileHandler.inputFile);
+      break;
+    case DIALOG_VIEW:
+      if (list != null) 
+        setLastOrbitalSelection();
+      break;
+    case DIALOG_SEARCH:
+      if (list != null)
+        setSearchList(list);
+      break;
+    }
+    setStatus("OK mode=" + dialogMode);
+  }
+
+  public void loadFromHandler(File file) {
+    isNewJob = true;
+    if (dialogMode == DIALOG_VIEW) 
+      setViewerBasis();
+     else
+      loadModelFileQueued(file, false, false);
+  }
+  
 }

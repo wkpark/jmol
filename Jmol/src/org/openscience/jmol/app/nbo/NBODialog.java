@@ -236,7 +236,7 @@ public class NBODialog extends NBODialogSearch {
     settingsPanel = buildSettingsPanel();
     settingsDialog = new JDialog(this,"Settings");
     settingsDialog.add(settingsPanel);
-    settingsDialog.setSize(new Dimension(350,360));
+    settingsDialog.setSize(new Dimension(350,400));
     settingsDialog.setLocation(this.getX() + 100,this.getY()+100);
     this.setVisible(true);
   }

@@ -953,7 +953,9 @@ abstract class NBODialogView extends NBODialogRun {
   protected void showJmolMO(String type, int i) {
     if (!type.startsWith("P") && !type.equals("MO"))
       type = "P" + type;
-    runScriptQueued("MO TYPE " + type + "; MO " + i);
+    String script = "MO TYPE " + type + "; MO " + i;
+    runScriptQueued(script);
+    log(script, 'b');
   }
 
   protected void showJmolNBO(String type, int i) {
@@ -962,7 +964,9 @@ abstract class NBODialogView extends NBODialogRun {
     if (dialogMode == NBODialog.DIALOG_SEARCH)
       if (!type.startsWith("P") && !type.equals("MO") && !type.equals("AO"))
         type = "P" + type;
-    runScriptQueued("NBO TYPE " + type + "; NBO " + i);
+    String script = "NBO TYPE " + type + "; NBO " + i;
+    runScriptQueued(script);
+    log(script, 'b');
   }
 
   protected void basisSel() {

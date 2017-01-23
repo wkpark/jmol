@@ -121,6 +121,8 @@ abstract class NBODialogConfig extends JDialog {
 
   protected String reqInfo;
 
+  protected boolean debugVerbose;
+
   protected NBODialogConfig(JFrame f) {
     super(f);
   }
@@ -352,12 +354,18 @@ abstract class NBODialogConfig extends JDialog {
 
       }
     });
+    JCheckBox jb = new JCheckBox("Verbose Debugging");
+    settingsBox.add(jb);
+    jb.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        debugVerbose =  ((JCheckBox) e.getSource()).isSelected();
+      }
+    });
     if (viewOps.equals("nboView"))
       jCheckNboView.doClick();
     else
       opacity.setValue((int) (opacityOp * 10));
-
-    settingsBox.setMaximumSize(new Dimension(350, 180));
     settingsBox.setBorder(BorderFactory.createLineBorder(Color.black));
     filePanel.add(settingsBox);
     return filePanel;
@@ -593,7 +601,7 @@ abstract class NBODialogConfig extends JDialog {
    *        p, b, r ("red"), i, etc.
    */
   protected synchronized void log(String line, char chFormat) {
-    if (line.trim().equals("") || jpNBOLog == null)
+    if (line.trim().equals("") || jpNBOLog == null || !debugVerbose && chFormat == 'i')
       return;
     if (line.trim().length() >= 1) {
       line = PT.rep(line.trim(), "<", "&lt;");

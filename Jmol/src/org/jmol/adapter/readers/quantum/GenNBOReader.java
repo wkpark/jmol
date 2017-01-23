@@ -496,12 +496,12 @@ public class GenNBOReader extends MOReader {
       String count = tokens[tokens.length - 1];
       String key = (ab.equals("BETA") ? "beta_" : "") + type;
       if (parseIntStr(count) != nOrbitals) {
-        Logger.error("file 46 number of orbitals does not match nOrbitals: "
+        Logger.error("file 46 number of orbitals (" + count + ") does not match nOrbitals: "
             + nOrbitals);
         return;
       }
       SB sb = new SB();
-      while (rd() != null && line.length() > 4 && "NA NB AO NH".indexOf(line.substring(2, 4)) < 0)
+      while (rd() != null && line.length() > 4 && " NA NB AO NH".indexOf(line.substring(1, 4)) < 0)
         sb.append(line);
       sb.appendC(' ');
       String data = PT.rep(sb.toString(), " )", ")");

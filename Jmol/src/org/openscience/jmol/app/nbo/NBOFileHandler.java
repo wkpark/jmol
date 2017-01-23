@@ -345,10 +345,14 @@ class NBOFileHandler extends JPanel {
   //useful file manipulation methods /////////////////////////////
 
   protected static File newNBOFile(File f, String ext) {
-    String fname = f.toString().replace('\\', '/');
-    int pt = fname.lastIndexOf(".");
-    return new File((pt < 0 ? fname : fname.substring(0, pt)) + "." + ext);
+    return new File(pathWithoutExtension(f.toString().replace('\\', '/')) + "." + ext);
   }
+
+  protected static String pathWithoutExtension(String fname) {
+    int pt = fname.lastIndexOf(".");
+    return (pt < 0 ? fname : fname.substring(0, pt));
+  }
+
 
   protected void clearInputFile() {
 //    if (jobStem.length() == 0)

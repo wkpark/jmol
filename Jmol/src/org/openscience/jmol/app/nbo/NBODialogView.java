@@ -1002,8 +1002,7 @@ abstract class NBODialogView extends NBODialogRun {
       betaList = list;
     else
       alphaList = list;
-    String s = getJmolFilename();
-    loadModelFileQueued(f, f.getAbsolutePath().equals(s), false);
+    loadModelFileQueued(f, NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(NBOFileHandler.pathWithoutExtension(getJmolFilename())), false);
   }
 
   protected void setLastOrbitalSelection() {
@@ -1390,46 +1389,50 @@ abstract class NBODialogView extends NBODialogRun {
       runScriptQueued("select bonds " + bonds + ";wireframe 0");
       return;
     }
-    
+
     Map<String, Object> moData = (Map<String, Object>) vwr
         .getCurrentModelAuxInfo().get("moData");
     String type = basis.getSelectedItem().toString();
     if (type.charAt(0) == 'P')
       type = type.substring(1);
     boolean isBeta = isOpenShell && !alphaSpin.isSelected();
-    String[] a = ((Map<String, String[]>) moData.get("nboLabelMap"))
-        .get((isBeta ? "beta_" : "") + type);
-    DefaultComboBoxModel<String> list = (isBeta ? betaList : alphaList);
-    for (int i = 0; i < a.length; i++)
-      list.addElement((i + 1) + ". " + a[i]);
-    orbitals.setModel(list);
-    setLastOrbitalSelection();
+    try {
+      String[] a = ((Map<String, String[]>) moData.get("nboLabelMap"))
+          .get((isBeta ? "beta_" : "") + type);
+      DefaultComboBoxModel<String> list = (isBeta ? betaList : alphaList);
+      for (int i = 0; i < a.length; i++)
+        list.addElement((i + 1) + ". " + a[i]);
+      orbitals.setModel(list);
+      setLastOrbitalSelection();
 
-    resetValues();
-    settingsBox.setVisible(true);
-    //    for(int i = 0; i < 5; i++)
-    //      panel.getComponents()[i].setVisible(true);
-    if (!inputFileHandler.getChooseList())
-      logInfo("Error reading $CHOOSE list", Logger.LEVEL_ERROR);
-    showAtomNums(true);
+      resetValues();
+      settingsBox.setVisible(true);
+      //    for(int i = 0; i < 5; i++)
+      //      panel.getComponents()[i].setVisible(true);
+      if (!inputFileHandler.getChooseList())
+        logInfo("Error reading $CHOOSE list", Logger.LEVEL_ERROR);
+      showAtomNums(true);
 
-    if (!useWireMesh) {
-      runScriptQueued("nbo nomesh fill translucent " + opacityOp);
-      runScriptQueued("mo nomesh fill translucent " + opacityOp);
-    }
+      if (!useWireMesh) {
+        runScriptQueued("nbo nomesh fill translucent " + opacityOp);
+        runScriptQueued("mo nomesh fill translucent " + opacityOp);
+      }
 
-    runScriptQueued("nbo color " + color2 + " " + color1);
-    runScriptQueued("mo color " + color2 + " " + color1);
-    if (isOpenShell) {
-      alphaSpin.setVisible(true);
-      betaSpin.setVisible(true);
-    } else {
-      alphaSpin.setVisible(false);
-      betaSpin.setVisible(false);
-    }
-    setBonds(true);
-    for (int i = 0; i < panel.getComponentCount(); i++) {
-      panel.getComponent(i).setVisible(true);
+      runScriptQueued("nbo color " + color2 + " " + color1);
+      runScriptQueued("mo color " + color2 + " " + color1);
+      if (isOpenShell) {
+        alphaSpin.setVisible(true);
+        betaSpin.setVisible(true);
+      } else {
+        alphaSpin.setVisible(false);
+        betaSpin.setVisible(false);
+      }
+      setBonds(true);
+      for (int i = 0; i < panel.getComponentCount(); i++) {
+        panel.getComponent(i).setVisible(true);
+      }
+    } catch (NullPointerException e) {
+      log(e.getMessage() + " reading file", 'r');
     }
   }
 

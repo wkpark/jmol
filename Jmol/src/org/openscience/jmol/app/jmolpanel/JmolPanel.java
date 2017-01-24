@@ -120,6 +120,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   JsonNioServer serverService;
   public NBOService nboService;
 
+  // Called by NBODialog
+  
+  public void setNBOService(NBOService service) {
+    this.nboService = service;
+  }
+
   protected String appletContext;
   protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
   protected DisplayPanel display;
@@ -1112,12 +1118,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
     @Override
     public void actionPerformed(ActionEvent arg0) {
-      getNBOService();
-
-      if (nboDialog == null)
-        nboDialog = new NBODialog(frame, vwr, nboService);
-      else
-        nboDialog.setVisible(true);
+      startNBO(null);
     }
   }
     
@@ -1164,20 +1165,35 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 //    nodes[3].setEnabled(true); // view    
 //    nodes[4].setEnabled(true); // search
   }
+
+  /**
+   * @param type
+   *        unused
+   */
   void startNBO(String type) {
-    
-    // this next is the problem
-    getNBOService();
+
+    String nboServerPath = historyFile.getProperty("nboServerPath", null);
+    if (nboServerPath == null) {
+      vwr.alert("NBOServe.exe has not been installed. See http://nbo6.chem.wisc.edu/new6_css.htm for additional information");
+      return;
+    }
 
     if (nboDialog == null)
-      nboDialog = new NBODialog(frame, vwr, nboService);
-    else
+      nboDialog = (NBODialog) getInstanceWithParams("org.openscience.jmol.app.nbo.NBODialog",
+          new Class[] { JFrame.class, Viewer.class },
+          new Object[] { frame, vwr });
+    if (nboDialog != null)
       nboDialog.setVisible(true);
-    //if (type != null)
-      //nboDialog.openPanel(type.charAt(0));
-    
   }
 
+  public static Object getInstanceWithParams(String name, Class[] classes, Object... params) {
+    try {
+      Class<?> cl = Class.forName(name);
+      return  cl.getConstructor(classes).newInstance(params);
+    } catch (Exception e) {
+      return null;
+    }
+  }
   class UguideAction extends AbstractAction {
 
     public UguideAction() {
@@ -1818,11 +1834,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   public void syncScript(String script) {
     vwr.syncScript(script, "~", 0);
-  }
-
-  public NBOService getNBOService() {
-    return (nboService == null ? (nboService = new NBOService(vwr))
-        : nboService);
   }
 
   public void updateConsoleFont() {

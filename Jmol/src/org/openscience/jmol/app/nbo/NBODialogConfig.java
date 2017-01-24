@@ -628,7 +628,7 @@ abstract class NBODialogConfig extends JDialog {
 
   protected void sendDefaultScript() {
     
-    runScriptNow(DEFAULT_SCRIPT);
+    runScriptQueued(DEFAULT_SCRIPT);
   }
 
   protected void runScriptQueued(String script) {

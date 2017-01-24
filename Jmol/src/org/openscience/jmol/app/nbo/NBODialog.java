@@ -132,32 +132,29 @@ public class NBODialog extends NBODialogSearch {
   /**
    * Creates a dialog for getting info related to output frames in nbo format.
    * 
-   * @param f
-   *        The frame assosiated with the dialog
+   * @param jmolFrame
+   *        The Jmol frame associated with the dialog
    * @param vwr
    *        The interacting display we are reproducing (source of view angle
    *        info etc)
-   * @param nboService
    */
-  public NBODialog(JFrame f, Viewer vwr, NBOService nboService) {
-    super(f);
+  public NBODialog(JFrame jmolFrame, Viewer vwr) {
+    super(jmolFrame);
     setTitle("NBOPro6@Jmol");
-    ImageIcon img = null;
-    String imageName = "org/openscience/jmol/app/images/nbo6logo.gif";
-    URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
-    if (imageUrl != null) {
-      img =  new ImageIcon(imageUrl);
-    }
-    this.setIconImage(img.getImage());
     this.vwr = vwr;
-    this.nboService = nboService;
+    
+    this.nboService = new NBOService(vwr);
+    String imageName = "org/openscience/jmol/app/images/nbo6logo20x20.gif";
+    URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
+    if (imageUrl != null)
+      this.setIconImage(new ImageIcon(imageUrl).getImage());
     this.setLayout(new BorderLayout());
     sendDefaultScript();
     //get saved properties
     
     nboService.nboDialog = this;
 
-    createDialog(f.getBounds());
+    createDialog(jmolFrame.getBounds());
 
   }
   
@@ -217,7 +214,7 @@ public class NBODialog extends NBODialogSearch {
       }
     };
     
-    licenseInfo = new JLabel("Licence not found", SwingConstants.CENTER);
+    licenseInfo = new JLabel("License not found", SwingConstants.CENTER);
     //licenseInfo.setBackground(null);
 
     licenseInfo.setOpaque(true);
@@ -335,7 +332,8 @@ public class NBODialog extends NBODialogSearch {
     
     p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
     //Header stuff////////////
-    ImageIcon imageIcon = new ImageIcon(this.getClass().getResource("nbo6logo.gif"));
+    ImageIcon imageIcon = getIcon("nbo6logo");        
+
     Image image = imageIcon.getImage(); 
     Image newimg = image.getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH); 
     imageIcon = new ImageIcon(newimg);
@@ -541,6 +539,10 @@ public class NBODialog extends NBODialogSearch {
     return p;
   }
 
+  private ImageIcon getIcon(String name) {
+    return new ImageIcon(this.getClass().getResource(name + ".gif"));
+  }
+
   protected void nboOutput() {
     nboOutput = new JPanel(new BorderLayout());
     settingsBox = new JPanel(new BorderLayout());
@@ -658,30 +660,26 @@ public class NBODialog extends NBODialogSearch {
     case 'm':
       dialogMode = DIALOG_MODEL;
       centerPanel.setLeftComponent(modulePanel = buildModelPanel());
-      icon = new JLabel(new ImageIcon(this.getClass().getResource(
-          "nbomodel_logo.gif")));
+      icon = new JLabel(getIcon("nbomodel_logo"));
       setThis(modelButton);
       break;
     case 'r':
       dialogMode = DIALOG_RUN;
       centerPanel.setLeftComponent(modulePanel = buildRunPanel());
-      icon = new JLabel(new ImageIcon(this.getClass().getResource(
-          "nborun_logo.gif")));
+      icon = new JLabel(getIcon("nborun_logo"));
       setThis(runButton);
       break;
     case 'v':
       dialogMode = DIALOG_VIEW;
       centerPanel.setLeftComponent(modulePanel = buildViewPanel());
-      icon = new JLabel(new ImageIcon(this.getClass().getResource(
-          "nboview_logo.gif")));
+      icon = new JLabel(getIcon("nboview_logo"));
       setThis(viewButton);
       break;
     case 's':
       dialogMode = DIALOG_SEARCH;
       centerPanel.setLeftComponent(modulePanel = buildSearchPanel());
       //settingsBox.setVisible(true);
-      icon = new JLabel(new ImageIcon(this.getClass().getResource(
-          "nbosearch_logo.gif")));
+      icon = new JLabel(getIcon("nbosearch_logo"));
       setThis(searchButton);
       break;
     }
@@ -848,5 +846,5 @@ public class NBODialog extends NBODialogSearch {
      else
       loadModelFileQueued(file, false, false);
   }
-  
+
 }

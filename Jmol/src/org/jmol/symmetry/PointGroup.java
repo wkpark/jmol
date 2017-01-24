@@ -168,15 +168,29 @@ class PointGroup {
 
 
   /**
+   * Determine the point group of a set of points or atoms, allowing additionally
+   * for considering the point group of vibrational modes.
    * 
-   * @param pgLast
-   * @param center TODO
-   * @param atomset
-   * @param bsAtoms
+   * The two parameters used are "distanceTolerance" and "linearTolerance"
+   * 
+   * "distanceTolerance is the distance an atom must be within relative to its symmetry-projected
+   * idealized position. 
+   * 
+   * "linearTolerance" has dimension degrees and sets the maximum
+   * deviation that two potential symmetry axes can have to be considered
+   * "colinear" or "perpendicular" in the final symmetry model. Its default is 8
+   * deg.
+   * 
+   * 
+   * @param pgLast helpful to speed checking; may be null
+   * @param center  known center atom; may be null
+   * @param atomset the set of points or atoms to consider
+   * @param bsAtoms possibly some subset of atomset
    * @param haveVibration
-   * @param distanceTolerance
-   * @param linearTolerance
-   * @param localEnvOnly
+   * @param distanceTolerance  atom-position tolerance
+   * @param linearTolerance    symmetry-axis direction tolerance
+   * @param localEnvOnly set false to additionally consider valence (number of bonds) of atoms
+   * 
    * @return a PointGroup
    */
   

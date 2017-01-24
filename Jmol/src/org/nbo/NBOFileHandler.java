@@ -1,4 +1,4 @@
-package org.openscience.jmol.app.nbo;
+package org.gennbo;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;

@@ -271,10 +271,7 @@ public class NBOService {
   }
   
   String startProcess(boolean sync, @SuppressWarnings("unused") final int mode) {
-    //this.dialogMode = mode;
     try {
-      //if (cantStartServer)
-        //return null;
       System.out.println("starting NBO process sync=" + sync);
       File pathToExecutable = new File(serverPath);
       ProcessBuilder builder = new ProcessBuilder(serverPath);
@@ -450,7 +447,7 @@ public class NBOService {
     nboDialog.logInfo(line, isFortranError(line) ? Logger.LEVEL_ERROR : Logger.LEVEL_DEBUG);
     }
     
-  private boolean isFortranError(String line) {
+  protected boolean isFortranError(String line) {
     return line.indexOf("Permission denied") >= 0
         || line.indexOf("PGFIO-F") >= 0
         || line.indexOf("Invalid command") >= 0;

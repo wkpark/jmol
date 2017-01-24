@@ -262,11 +262,9 @@ abstract class NBODialogSearch extends NBODialogView {
     moRb.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        runScriptQueued("nbo delete;");
-        if (!useWireMesh)
-          runScriptQueued("nbo nomesh fill translucent " + opacityOp);
-
-        runScriptQueued("nbo color " + color2 + " " + color1);
+        runScriptNow("nbo delete;"
+           + (!useWireMesh ? "nbo nomesh fill translucent " + opacityOp : "")
+           + "nbo color " + color2 + " " + color1);
         showJmolNBO("MO", orb2.getSelectedIndex() + 1);
       }
     });
@@ -440,12 +438,7 @@ abstract class NBODialogSearch extends NBODialogView {
     keyWdBtn.setText("<html><font color=black>" + keyProp + "</font></html>");
     keyWdBtn.setVisible(true);
     runScriptNow("mo delete;nbo delete");
-    if (!useWireMesh) {
-      runScriptQueued("nbo nomesh fill translucent " + opacityOp);
-      runScriptQueued("mo nomesh fill translucent " + opacityOp);
-    }
-    runScriptQueued("nbo color " + color2 + " " + color1);
-    runScriptQueued("mo color " + color2 + " " + color1);
+    colorMeshes();
     opList.removeAll();
 
     ButtonGroup btnGroup = new ButtonGroup();
@@ -788,13 +781,11 @@ abstract class NBODialogSearch extends NBODialogView {
         at1.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            if (at2 == null)
-              runScriptQueued("select on; select {*}["
-                  + (at1.getSelectedIndex() + 1) + "]");
-            else
-              runScriptQueued("select on; select remove{*}; "
-                  + "select add {*}[" + (at1.getSelectedIndex() + 1)
-                  + "]; select add {*}[" + (at2.getSelectedIndex() + 1) + "]");
+            runScriptNow(at2 == null ? "select on; select {*}["
+                + (at1.getSelectedIndex() + 1) + "]"
+                : "select on; select remove{*}; " + "select add {*}["
+                    + (at1.getSelectedIndex() + 1) + "]; select add {*}["
+                    + (at2.getSelectedIndex() + 1) + "]");
           }
         });
         l2.add(at1);
@@ -805,7 +796,7 @@ abstract class NBODialogSearch extends NBODialogView {
         at2.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            runScriptQueued("select on; select remove{*}; " + "select add {*}["
+            runScriptNow("select on; select remove{*}; " + "select add {*}["
                 + (at1.getSelectedIndex() + 1) + "]; select add {*}["
                 + (at2.getSelectedIndex() + 1) + "]");
           }
@@ -876,12 +867,7 @@ abstract class NBODialogSearch extends NBODialogView {
     if (relabel) {
       showAtomNums(alphaSpin.isSelected());
       relabel = false;
-      if (!useWireMesh) {
-        runScriptQueued("nbo nomesh fill translucent " + opacityOp);
-        runScriptQueued("mo nomesh fill translucent " + opacityOp);
-      }
-      runScriptQueued("nbo color " + color2 + " " + color1);
-      runScriptQueued("mo color " + color2 + " " + color1);
+      colorMeshes();
     }
     final SB sb = new SB();
     sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
@@ -1164,7 +1150,7 @@ abstract class NBODialogSearch extends NBODialogView {
       }
     }
     if (nboView) {
-      runScriptQueued("select add {*}.bonds;color bonds lightgrey;"
+      runScriptNow("select add {*}.bonds;color bonds lightgrey;"
           + "wireframe 0.1;select remove {*}");
     }
     for (int i = 0; i < vwr.ms.ac; i++) {
@@ -1191,9 +1177,9 @@ abstract class NBODialogSearch extends NBODialogView {
         else
           sb.append(";");
       }
-      runScriptQueued(sb.toString());
+      runScriptNow(sb.toString());
     }
-    runScriptQueued("select remove{*}; " + "select add (atomno="
+    runScriptNow("select remove{*}; " + "select add (atomno="
         + (at1.getSelectedIndex() + 1) + ");" + "select add (atomno="
         + (at2.getSelectedIndex() + 1) + ");");
 
@@ -1363,16 +1349,10 @@ abstract class NBODialogSearch extends NBODialogView {
     if (keywordNumber == KEYWD_CMO) {
       if (vwr.ms.mc == 1)
         return;
-      runScriptQueued("frame 0");
+      runScriptQueued("frame 0;refresh");
       isNewJob = false;
     }
-    if (!useWireMesh) {
-      runScriptQueued("nbo nomesh fill translucent " + opacityOp);
-      runScriptQueued("mo nomesh fill translucent " + opacityOp);
-    }
-    runScriptQueued("nbo color " + color2 + " " + color1);
-    runScriptQueued("mo color " + color2 + " " + color1);
-
+    colorMeshes();
     rbSelection = -1;
     if (isOpenShell) {
       alphaSpin.setVisible(true);
@@ -1427,7 +1407,7 @@ abstract class NBODialogSearch extends NBODialogView {
   protected void processLabel(String line, int count) {
     double val = Double.parseDouble(line);
     val = round(val, 4);
-    runScriptQueued("select{*}[" + (count) + "];label " + val);
+    runScriptNow("select{*}[" + (count) + "];label " + val);
   }
 
   protected void processLabelBonds(String line) {
@@ -1439,7 +1419,7 @@ abstract class NBODialogSearch extends NBODialogView {
       float x = (vwr.ms.at[at1].x - vwr.ms.at[at2].x) / 2;
       float y = (vwr.ms.at[at1].y - vwr.ms.at[at2].y) / 2;
       float z = (vwr.ms.at[at1].z - vwr.ms.at[at2].z) / 2;
-      runScriptQueued("select (atomno = " + at1 + ");" + "label \"" + toks[2]
+      runScriptNow("select (atomno = " + at1 + ");" + "label \"" + toks[2]
           + "\";set labeloffset {" + x + "," + y + "," + (z) + "}");
     }
   }

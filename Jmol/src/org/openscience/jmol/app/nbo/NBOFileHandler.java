@@ -7,10 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
 
 import javajs.util.PT;
 import javajs.util.SB;
@@ -45,13 +43,12 @@ class NBOFileHandler extends JPanel {
   protected NBODialog dialog;
   protected boolean canReRun;
 
-
   protected final static int MODE_MODEL_USE = 1;
   protected final static int MODE_RUN = 2;
   protected final static int MODE_VIEW = 3;
   protected final static int MODE_SEARCH = 4;
   protected final static int MODE_MODEL_SAVE = 5;
-  
+
   public NBOFileHandler(String name, String ext, final int mode, String useExt,
       NBODialog d) {
     dialog = d;
@@ -221,63 +218,63 @@ class NBOFileHandler extends JPanel {
     }
   }
 
+  /**
+   * Read input parameters from .47 file
+   * 
+   * @return [ pre-keyword params, keywords, post-keyword params ]
+   */
   protected String[] read47File() {
     String[] fileData = new String[] { "", "", "" };
     String nboKeywords = "";
-
-    BufferedReader b = null;
-    try {
-      b = new BufferedReader(new FileReader(inputFile));
-    } catch (FileNotFoundException e1) {
-      return fileData;
-    }
     SB data = new SB();
-    String line;
-    try {
-      while ((line = b.readLine()) != null) {
-        data.append(line + sep);
-      }
-      b.close();
-    } catch (IOException e) {
+    if (!readFileBuffered(inputFile, data))
       return fileData;
-    }
-    String[] tokens = PT.split(data.toString(), "$END");
-    boolean atParams = false;
-    SB fout = new SB(), fout2 = new SB();
-    if (tokens.length <= 0)
+    String s = PT.trim(data.toString(), "\t\r\n ");
+    String[] tokens = PT.split(s, "$END");
+    if (tokens.length == 0)
       return fileData;
-    for (int i = 0;;) {
-      String s = tokens[i];
-      s = PT.trim(s, "\t\r\n ");
-      if (!atParams) {
-        if (s.indexOf("$NBO") >= 0) {
-          atParams = true;
-          if (PT.split(s, "$NBO").length > 1)
-            nboKeywords = (PT.split(s, "$NBO")[1]);
-          else
-            nboKeywords = "";
-          //cleanNBOKeylist("");
-          s = PT.split(s, "$NBO")[0];
-          dialog.logInfo("$NBO: " + nboKeywords, Logger.LEVEL_INFO);
-        }
-        if (!s.equals(""))
-          fout.append(s).append(sep);
-        if (++i == tokens.length)
-          break;
-        if (!atParams)
-          fout.append("$END").append(sep);
-      } else {
-        fout2.append(s).append(sep);
-        if (++i == tokens.length)
-          break;
-        fout2.append("$END").append(sep);
-
+    SB preParams = new SB();
+    SB postParams = new SB();
+    SB params = preParams;
+    // ignore everything after the last $END token
+    for (int i = 0, n = tokens.length - 1; i < n; i++) {
+      s = PT.trim(tokens[i], "\t\r\n ");
+      if (params == preParams && s.indexOf("$NBO") >= 0) {
+        String[] prePost = PT.split(s, "$NBO");
+        if (prePost[0].length() > 0)
+          params.append(s).append(sep);
+        nboKeywords = prePost[1];
+        params = postParams;
+        continue;
       }
+      params.append(s).append(sep).append("$END").append(sep);
     }
-    fileData[0] = fout.toString();
+    dialog.logInfo("$NBO: " + nboKeywords, Logger.LEVEL_INFO);
+    fileData[0] = preParams.toString();
     fileData[1] = nboKeywords;
-    fileData[2] = fout2.toString();
+    fileData[2] = postParams.toString();
     return fileData;
+  }
+
+  /**
+   * Read a file reducing lines to
+   * 
+   * @param inputFile
+   * @param data
+   * @return true if successful; false if not
+   */
+  private boolean readFileBuffered(File inputFile, SB data) {
+    try {
+      BufferedReader b = null;
+      b = new BufferedReader(new FileReader(inputFile));
+      String line;
+      while ((line = b.readLine()) != null)
+        data.append(line + sep);
+      b.close();
+      return true;
+    } catch (IOException e) {
+    }
+    return false;
   }
 
   /**
@@ -294,8 +291,8 @@ class NBOFileHandler extends JPanel {
     String[] tokens = PT.split(fdata, "\n $CHOOSE");
     int i = 1;
     if (tokens.length < 2) {
-      dialog.logInfo("An error occurred during run, view .nbo output?",
-          Logger.LEVEL_ERROR);
+      dialog.logInfo("$CHOOSE record was not found in " + f,
+          Logger.LEVEL_INFO);
       return false;
     }
     if (tokens[1].trim().startsWith("keylist")) {
@@ -349,7 +346,8 @@ class NBOFileHandler extends JPanel {
   //useful file manipulation methods /////////////////////////////
 
   protected static File newNBOFile(File f, String ext) {
-    return new File(pathWithoutExtension(f.toString().replace('\\', '/')) + "." + ext);
+    return new File(pathWithoutExtension(f.toString().replace('\\', '/')) + "."
+        + ext);
   }
 
   protected static String pathWithoutExtension(String fname) {
@@ -357,12 +355,11 @@ class NBOFileHandler extends JPanel {
     return (pt < 0 ? fname : fname.substring(0, pt));
   }
 
-
   protected void clearInputFile() {
-//    if (jobStem.length() == 0)
-//      return;
-//    for (String ext : EXT_ARRAY)
-//      new File(dialog.nboService.serverDir + "/" + jobStem + "." + ext).delete();
+    //    if (jobStem.length() == 0)
+    //      return;
+    //    for (String ext : EXT_ARRAY)
+    //      new File(dialog.nboService.serverDir + "/" + jobStem + "." + ext).delete();
     inputFile = null;
     if (dialog.dialogMode == 'v')
       dialog.resetView();
@@ -387,7 +384,8 @@ class NBOFileHandler extends JPanel {
     if (tfExt != null)
       tfExt.setText(ext);
     if (dialog.saveFileHandler != null && this != dialog.saveFileHandler)
-      dialog.saveFileHandler.setInput(dir, name, PT.isOneOf(ext, NBODialogConfig.OUTPUT_FILE_EXTENSIONS) ? ext : "");      
+      dialog.saveFileHandler.setInput(dir, name,
+          PT.isOneOf(ext, NBODialogConfig.OUTPUT_FILE_EXTENSIONS) ? ext : "");
     //System.out.println("-------" + f + n + "/" + e);
     if (dir != null && name != null && ext != null)
       inputFile = new File(dir + "\\" + name + "." + ext);

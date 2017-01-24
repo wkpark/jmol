@@ -37,7 +37,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -74,9 +73,9 @@ abstract class NBODialogRun extends NBODialogModel {
   }
 
   protected static boolean ALLOW_SELECT_ALL = false;
-  
+
   protected static final String ARCHIVE_DIR = "http://nbo6.chem.wisc.edu/jmol_nborxiv/";
-      
+
   protected static final String RUN_EXTENSIONS = "47;gau;gms";
 
   protected static final String[] keywordList = {
@@ -115,11 +114,13 @@ abstract class NBODialogRun extends NBODialogModel {
 
     //INPUT/////////////////////////
     if (inputFileHandler == null) {
-      inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_RUN, "47", (NBODialog) this);
+      inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_RUN,
+          "47", (NBODialog) this);
       inputFileHandler.browse.setEnabled(false);
     } else
-      inputFileHandler = new NBOFileHandler(inputFileHandler.jobStem, inputFileHandler.tfExt.getText(),
-          NBOFileHandler.MODE_RUN, "47", (NBODialog) this);
+      inputFileHandler = new NBOFileHandler(inputFileHandler.jobStem,
+          inputFileHandler.tfExt.getText(), NBOFileHandler.MODE_RUN, "47",
+          (NBODialog) this);
     inputFileHandler.browse.setEnabled(false);
 
     Box box = Box.createHorizontalBox();
@@ -196,7 +197,7 @@ abstract class NBODialogRun extends NBODialogModel {
   @Override
   protected void showAtomNums(boolean alpha) {
     if (!showAtNum) {
-      runScriptQueued("select {*};label off; select remove {*}");
+      runScriptNow("select {*};label off; select remove {*}");
       return;
     }
     SB sb = new SB();
@@ -218,13 +219,11 @@ abstract class NBODialogRun extends NBODialogModel {
         sb.append("%a;");
       }
     }
-    runScriptQueued(sb.toString());
-    sb = new SB();
     String color = (nboView) ? "black" : "gray";
     sb.append("select {*};color labels white;");
     sb.append("select {H*};color labels " + color + ";"
         + "set labeloffset 0 0 {*}; select remove {*};");
-    runScriptQueued(sb.toString());
+    runScriptNow(sb.toString());
 
   }
 
@@ -241,9 +240,8 @@ abstract class NBODialogRun extends NBODialogModel {
           //sList.addElement(s);
           tmp += s.toUpperCase() + " ";
         }
-    if (plotFileName != null)
-      if (plotFileName.getText().equals(""))
-        plotFileName.setText(inputFileHandler.jobStem);
+    if (plotFileName != null && plotFileName.getText().equals(""))
+      plotFileName.setText(inputFileHandler.jobStem);
     return tmp;
   }
 
@@ -289,7 +287,7 @@ abstract class NBODialogRun extends NBODialogModel {
     }
     if (nboView) {
       String s2 = runScriptNow("print {*}.bonds");
-      runScriptQueued("select " + s2 + ";color bonds lightgrey");
+      runScriptNow("select " + s2 + ";color bonds lightgrey");
     }
   }
 
@@ -587,22 +585,29 @@ abstract class NBODialogRun extends NBODialogModel {
       nboKeywords = fileData[1];
     }
     //Check the plot file names match job name, warn user otherwise
-    String jobName;
-    if (plotFileName == null) {
-      jobName = inputFileHandler.jobStem;
-    } else
-      jobName = plotFileName.getText().trim();
+    inputFileHandler.jobStem = inputFileHandler.jobStem.trim();
+    String jobName = (plotFileName == null ? inputFileHandler.jobStem
+        : plotFileName.getText().trim());
+
+    // BH Q: Would it be reasonable if the NO option is chosen to put that other job name in to the jobStem field, and also copy the .47 file to that? Or use that?
+    // Or, would it be better to ask this question immediately upon file loading so that it doesn't come up, and make it so that
+    // you always MUST have these two the same?
 
     if (!jobName.equals(inputFileHandler.jobStem)) {
       int i = JOptionPane
           .showConfirmDialog(
               null,
-              "Warning, plot files are being created with name "
+              "Warning! Plot files are being created with name \""
                   + jobName
-                  + ".\nChange to match job name?\n(view will not work correctly if not)",
+                  + "\", which does not match your file name \""
+                  + inputFileHandler.jobStem
+                  + "\"\nDo you want to change that to \""
+                  + inputFileHandler.jobStem
+                  + "\" so that all files related to this job are under the same name, and View will work correctly?",
               "Warning", JOptionPane.YES_NO_OPTION);
+      // BH adds setting of plotFileName
       if (i == JOptionPane.YES_OPTION)
-        jobName = inputFileHandler.jobStem;
+        plotFileName.setText(jobName = inputFileHandler.jobStem);
     }
 
     for (String x : keywords.split(" ")) {
@@ -667,8 +672,8 @@ abstract class NBODialogRun extends NBODialogModel {
       JTextPane tp = new JTextPane();
       d.add(tp, BorderLayout.CENTER);
       d.setSize(new Dimension(500, 600));
-      tp.setText(inputFileHandler.getFileData(NBOFileHandler.newNBOFile(newFile, "nbo")
-          .toString()));
+      tp.setText(inputFileHandler.getFileData(NBOFileHandler.newNBOFile(
+          newFile, "nbo").toString()));
       d.setVisible(true);
     }
   }
@@ -679,8 +684,6 @@ abstract class NBODialogRun extends NBODialogModel {
     private JCheckBox[] jcLinks;
     private JTextField tfPath;
     private String baseDir;
-    
-    
 
     public ArchiveViewer(NBODialog d, String url) {
       super(d, "NBO Archive Files");
@@ -764,7 +767,7 @@ abstract class NBODialogRun extends NBODialogModel {
       JPanel filePanel = new JPanel(new FlowLayout());
       if (startsWith == null)
         startsWith = "";
-      ButtonGroup bg = null;//new ButtonGroup();
+      ButtonGroup bg = (ALLOW_SELECT_ALL ? null : new ButtonGroup());
       for (int i = 0; i < links.length; i += 6) {
         Box box = Box.createVerticalBox();
         for (int j = 0; j < 6; j++) {
@@ -802,7 +805,7 @@ abstract class NBODialogRun extends NBODialogModel {
         downloadFiles();
       }
     }
-  
+
     public void downloadFiles() {
       File f = null;
       logInfo("saving to " + tfPath.getText().trim(), Logger.LEVEL_INFO);
@@ -853,8 +856,7 @@ abstract class NBODialogRun extends NBODialogModel {
       setVisible(false);
       dispose();
     }
-}
-
+  }
 
   /**
    * Structure for maintaining contents of $CHOOSE list

@@ -186,7 +186,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     p2.add(jtLineInput);
     p2.add(jrFileIn);
     p2.add(jComboUse);
-    addListenersAndSize(jComboUse, jrFileIn);
+    addFocusListeners(jComboUse, jrFileIn);
     inputBox.add(p2);
 
     inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, INPUT_FILE_EXTENSIONS,
@@ -230,6 +230,10 @@ abstract class NBODialogModel extends NBODialogConfig {
         return false;
       }
     };
+    // BH adding focus for these as well
+    addFocusListeners(inputFileHandler.tfDir, jrFileIn);
+    addFocusListeners(inputFileHandler.tfExt, jrFileIn);
+    addFocusListeners(inputFileHandler.tfName, jrFileIn);
     inputBox.add(inputFileHandler);
     return inputBox;
   }
@@ -557,21 +561,20 @@ abstract class NBODialogModel extends NBODialogConfig {
     String sel = "";
     for (String x : s)
       sel += " " + (Integer.parseInt(x) - 1);
-    runScriptQueued("select on ({" + sel + " })");
+    runScriptNow("select on ({" + sel + " })");
   }
 
   private void createInput(final JTextField field, JRadioButton radio) {
-
     field.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         getModelFromTextBox(field);
       }
     });
-    addListenersAndSize(field, radio);
+    addFocusListeners(field, radio);
   }
 
-  private void addListenersAndSize(final JComponent field,
+  private void addFocusListeners(final JComponent field,
                                    final JRadioButton radio) {
     field.addFocusListener(new FocusListener() {
       @Override
@@ -907,7 +910,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       selected = (" " + selected).replace(" " + atomno + " ", " ").trim();
       if (selected.length() > 0)
         selected += " ";
-      runScriptQueued("select remove {*}[" + atomno + "];measure off;");
+      runScriptNow("select remove {*}[" + atomno + "];measure off;");
       String[] split = selected.split(" ");
       for (int i = 0; i < atomNumBox.length; i++)
         atomNumBox[i].setText(i >= split.length ? "" : "  " + split[i]);
@@ -915,7 +918,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       selected += atomno + " ";
     }
     
-    System.out.println(atomno + " / " + selected);
+  //  System.out.println(atomno + " / " + selected);
     int cnt = (selected.equals("") ? 1 : selected.split(" ").length);
     switch (editMode) {
     case ALTER:
@@ -938,14 +941,14 @@ abstract class NBODialogModel extends NBODialogConfig {
         break;
       case 2:
         desc = "distance: ";
-        runScriptQueued("measure off;measure " + selected 
+        runScriptNow("measure off;measure " + selected 
             + "\"2:%0.4VALUE //A\"" + ";measure " + selected
             + "\"2:%0.4VALUE //A\"");
         break;
       case 3:
       case 4:
         desc = (cnt == 3 ? "angle: " : "dihedral angle: ");
-        runScriptQueued("measure off;measure " + selected);
+        runScriptNow("measure off;measure " + selected);
         break;
       }
       if (script == null) {
@@ -1016,7 +1019,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
     if (cnt == 0 || isSelected)
       return;
-    runScriptQueued("select add {*}[" + atomno + "]");
+    runScriptNow("select add {*}[" + atomno + "]");
       atomNumBox[cnt - 1].setText("  " + atomno);
 
   }
@@ -1033,13 +1036,9 @@ abstract class NBODialogModel extends NBODialogConfig {
       if (currVal != null)
         currVal.setText("atomic number: " + runScriptNow(script));
     } else {
-      if (cnt == 2) {
-        runScriptQueued("measure off;measure " + selected
-            + "\"2:%0.4VALUE //A\"" + ";measure " + selected
-            + "\"2:%0.4VALUE //A\"");
-      } else {
-        runScriptQueued("measure off;measure " + selected + " ");
-      }
+      runScriptNow("measure off;measure " + selected + " " + (cnt == 2 ? 
+             "\"2:%0.4VALUE //A\"" + ";measure " + selected
+            + "\"2:%0.4VALUE //A\"" :""));
       script = "print measure({*}[";
       for (int i = 0; i < ats.length - 1; i++)
         script += ats[i] + "],{*}[";
@@ -1087,7 +1086,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       redo.setEnabled(true);
     else
       redo.setEnabled(false);
-    runScriptQueued("select none; select on;refresh");
+    runScriptNow("select none; select on;refresh");
   }
 
   protected void showConfirmationDialog(String st, File newFile, String ext) {
@@ -1122,7 +1121,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       s = s.replaceAll("\\\\", "");
     if (statusInfo.indexOf("Editing") >= 0)
       s = "save orientation o1;" + s + ";restore orientation o1";
-    runScriptQueued(s);// + ";rotate best;none; select on;");
+    runScriptNow(s);// + ";rotate best;none; select on;");
   }
 
 }

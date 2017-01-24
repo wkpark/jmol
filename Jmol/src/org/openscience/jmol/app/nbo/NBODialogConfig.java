@@ -193,10 +193,7 @@ abstract class NBODialogConfig extends JDialog {
     jCheckSelHalo.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (!((JCheckBox) e.getSource()).isSelected())
-          runScriptQueued("select off");
-        else
-          runScriptQueued("select on");
+        runScriptNow("select " + ((JCheckBox) e.getSource()).isSelected());
       }
     });
     jCheckSelHalo.doClick();
@@ -210,11 +207,8 @@ abstract class NBODialogConfig extends JDialog {
         orbColor1 = new Color(Integer.parseInt(toks[0]));
         orbColor2 = new Color(Integer.parseInt(toks[1]));
         opacityOp = Float.parseFloat(toks[2]);
-        if (toks[3].contains("true")) {
-          useWireMesh = true;
-          runScriptQueued("nbo nofill mesh");
-        } else
-          runScriptQueued("nbo fill nomesh");
+        useWireMesh = toks[3].contains("true");
+        runScriptNow("nbo " + (useWireMesh ? "nofill mesh" : "fill nomesh"));
       } else {
         orbColor1 = Color.cyan;
         orbColor2 = Color.yellow;
@@ -250,7 +244,7 @@ abstract class NBODialogConfig extends JDialog {
         orbColor1 = ((Color) colorBox1.getSelectedItem());
         color1 = "[" + orbColor1.getRed() + " " + orbColor1.getGreen() + " "
             + orbColor1.getBlue() + "]";
-        runScriptQueued("nbo color " + color2 + " " + color1 + ";mo color "
+        runScriptNow("nbo color " + color2 + " " + color1 + ";mo color "
             + color2 + " " + color1);
         java.util.Properties props = new java.util.Properties();
         props.setProperty("viewOptions",
@@ -268,7 +262,7 @@ abstract class NBODialogConfig extends JDialog {
         orbColor2 = ((Color) colorBox2.getSelectedItem());
         color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
             + orbColor2.getBlue() + "]";
-        runScriptQueued("nbo color " + color2 + " " + color1 + ";mo color "
+        runScriptNow("nbo color " + color2 + " " + color1 + ";mo color "
             + color2 + " " + color1);
         java.util.Properties props = new java.util.Properties();
         props.setProperty("viewOptions",
@@ -301,7 +295,7 @@ abstract class NBODialogConfig extends JDialog {
       @Override
       public void stateChanged(ChangeEvent e) {
         opacityOp = (float) opacity.getValue() / 10;
-        runScriptQueued("nbo translucent " + opacityOp + ";mo translucent "
+        runScriptNow("nbo translucent " + opacityOp + ";mo translucent "
             + opacityOp);
         java.util.Properties props = new java.util.Properties();
         props.setProperty("viewOptions",
@@ -322,9 +316,9 @@ abstract class NBODialogConfig extends JDialog {
         useWireMesh = !useWireMesh;
         if (useWireMesh) {
           opacity.setValue(0);
-          runScriptQueued("nbo nofill mesh;mo nofill mesh");
+          runScriptNow("nbo nofill mesh;mo nofill mesh");
         } else
-          runScriptQueued("nbo fill nomesh;mo fill nomesh");
+          runScriptNow("nbo fill nomesh;mo fill nomesh");
         java.util.Properties props = new java.util.Properties();
         props.setProperty("viewOptions",
             orbColor1.getRGB() + "," + orbColor2.getRGB() + "," + opacityOp
@@ -490,8 +484,7 @@ abstract class NBODialogConfig extends JDialog {
     } catch (IOException e) {
       alertError("Atom colors not found");
     }
-    runScriptNow(atomColors);
-    runScriptQueued("refresh");
+    runScriptNow(atomColors + ";refresh");
   }
 
   /**
@@ -523,7 +516,7 @@ abstract class NBODialogConfig extends JDialog {
    */
   protected void showAtomNums(boolean alpha) {
     if (!showAtNum) {
-      runScriptQueued("select {*};label off; select remove {*}");
+      runScriptNow("select {*};label off; select remove {*}");
       return;
     }
     SB sb = new SB();
@@ -536,7 +529,7 @@ abstract class NBODialogConfig extends JDialog {
     sb.append("select {H*};color labels " + color + ";"
         + "set labeloffset 0 0 {*}; select remove {*};");
 
-    runScriptQueued(sb.toString());
+    runScriptNow(sb.toString());
   }
 
   //  protected void rawCmd(String name, final String cmd, final int mode) {
@@ -601,7 +594,7 @@ abstract class NBODialogConfig extends JDialog {
    *        p, b, r ("red"), i, etc.
    */
   protected synchronized void log(String line, char chFormat) {
-    if (line.trim().equals("") || jpNBOLog == null || !debugVerbose && chFormat == 'i')
+    if (line.trim().equals("") || jpNBOLog == null || !debugVerbose && "b|r".indexOf("" + chFormat) < 0)
       return;
     if (line.trim().length() >= 1) {
       line = PT.rep(line.trim(), "<", "&lt;");
@@ -635,7 +628,7 @@ abstract class NBODialogConfig extends JDialog {
 
   protected void sendDefaultScript() {
     
-    runScriptQueued(DEFAULT_SCRIPT);
+    runScriptNow(DEFAULT_SCRIPT);
   }
 
   protected void runScriptQueued(String script) {
@@ -785,6 +778,14 @@ abstract class NBODialogConfig extends JDialog {
     if (saveOrientation)
       s = "save orientation o1;" + s + ";restore orientation o1";
     runScriptQueued(s);
+  }
+
+  protected void colorMeshes() {
+    runScriptNow((useWireMesh ? "nbo mesh nofill translucent " + opacityOp
+        + ";mo mesh nofill translucent " + opacityOp : 
+          "nbo nomesh fill translucent " + opacityOp
+          + ";mo nomesh fill translucent " + opacityOp) 
+        + ";nbo color " + color2 + " " + color1 + ";mo color " + color2 + " " + color1);
   }
 
 

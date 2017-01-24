@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -131,7 +132,7 @@ abstract class NBODialogView extends NBODialogRun {
     panel = new JPanel();
     viewState = VIEW_STATE_MAIN;
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    runScriptQueued("set bondpicking true");
+    runScriptNow("set bondpicking true");
 
     //JOBFILE////////
     panel.add(titleBox(" Select Job ", new HelpBtn("view_job_help.htm")));
@@ -141,8 +142,9 @@ abstract class NBODialogView extends NBODialogRun {
     panel.add(inputBox);
 
     //if(fileHndlr == null)
-    inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_VIEW, "47", (NBODialog) this);
-    
+    inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_VIEW,
+        "47", (NBODialog) this);
+
     //else
     //  fileHndlr = new FileHndlr(fileHndlr.jobStem,"47",3,"47",(NBODialog)this);
 
@@ -159,10 +161,18 @@ abstract class NBODialogView extends NBODialogRun {
     basis.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (alphaList != null)
-          alphaList = betaList = null;
-        basisSel();
-      }
+        EventQueue.invokeLater(new Runnable() {
+
+          @Override
+          public void run() {
+
+            if (alphaList != null)
+              alphaList = betaList = null;
+            basisSel();
+          }
+        });
+        
+    }
     });
     betaSpin = new JRadioButton("<html>&#x3B2</html>");
     alphaSpin = new JRadioButton("<html>&#x3B1</html>");
@@ -173,29 +183,41 @@ abstract class NBODialogView extends NBODialogRun {
     betaSpin.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (betaSpin.isSelected()) {
-          setBonds(false);
-          showAtomNums(false);
-        }
-        if (nboView) {
-          String s2 = runScriptNow("print {*}.bonds");
-          runScriptQueued("select " + s2 + ";color bonds lightgrey");
-        }
-        basisSel();
+        EventQueue.invokeLater(new Runnable() {
+
+          @Override
+          public void run() {
+            if (betaSpin.isSelected()) {
+              setBonds(false);
+              showAtomNums(false);
+            }
+            if (nboView) {
+              runScriptNow("select *;color bonds lightgrey");
+            }
+            basisSel();
+          }
+
+        });
       }
     });
     alphaSpin.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (alphaSpin.isSelected()) {
-          setBonds(true);
-          showAtomNums(true);
-        }
-        if (nboView) {
-          String s2 = runScriptNow("print {*}.bonds");
-          runScriptQueued("select " + s2 + ";color bonds lightgrey");
-        }
-        basisSel();
+        EventQueue.invokeLater(new Runnable() {
+
+          @Override
+          public void run() {
+            if (alphaSpin.isSelected()) {
+              setBonds(true);
+              showAtomNums(true);
+            }
+            if (nboView) {
+              runScriptNow("select*;color bonds lightgrey");
+            }
+            basisSel();
+          }
+
+        });
       }
     });
     horizBox.add(alphaSpin);
@@ -292,7 +314,8 @@ abstract class NBODialogView extends NBODialogRun {
 
     String fileType = runScriptNow("print _fileType");
     if (fileType.equals("GenNBO")) {
-      File f = new File(runScriptNow("select within(model, visible); print _modelFile"));
+      File f = new File(
+          runScriptNow("select within(model, visible); print _modelFile"));
       inputFileHandler.setInputFile(NBOFileHandler.newNBOFile(f, "47"));
     }
 
@@ -301,7 +324,8 @@ abstract class NBODialogView extends NBODialogRun {
 
   protected void doSelectOrbital() {
     int fileNum = 31 + basis.getSelectedIndex();
-    File f = NBOFileHandler.newNBOFile(inputFileHandler.inputFile, "" + fileNum);
+    File f = NBOFileHandler
+        .newNBOFile(inputFileHandler.inputFile, "" + fileNum);
     int[] selected = orbitals.getSelectedIndices();
     int size = selected.length - 1;
     if (size < 0)
@@ -321,14 +345,14 @@ abstract class NBODialogView extends NBODialogRun {
       if (PT.isOneOf("" + (selected[i] + 1), selectedOrbs))
         continue;
       selectedOrbs += (selected[i] + 1) + ";";
-      runScriptNow("frame " + (i / 2 + 1) + ".1");
+      runScriptQueued("frame " + (i / 2 + 1) + ".1");
       if (size % 2 == 0)
         showJmolNBO(type, selected[i] + 1);
       else
         showJmolMO(type, selected[i] + 1);
     }
     String frame = (startingModelCount + modelCount - 1) + ".1";
-    runScriptQueued("frame " + startingModelCount + ".1 " + frame);
+    runScriptQueued("frame " + startingModelCount + ".1 " + frame + ";refresh");
   }
 
   private void viewSettings() {
@@ -455,10 +479,8 @@ abstract class NBODialogView extends NBODialogRun {
 
   protected void setOrbitalColors(char plusMinus) {
     currSign = plusMinus;
-    if (plusMinus == '+')
-      runScriptQueued("nbo color " + color2 + " " + color1);
-    else
-      runScriptQueued("nbo color " + color1 + " " + color2);
+    runScriptNow("nbo color "
+        + (plusMinus == '+' ? color2 + " " + color1 : color1 + " " + color2));
   }
 
   private String getPlaneParams() {
@@ -533,8 +555,7 @@ abstract class NBODialogView extends NBODialogRun {
       public void windowClosing(WindowEvent e) {
         planeDef = planeFields[0].getText() + ";" + planeFields[1].getText()
             + ";" + planeFields[2].getText();
-        runScriptQueued("select off");
-        runScriptNow("set bondpicking true");
+        runScriptNow("select off;set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -546,8 +567,7 @@ abstract class NBODialogView extends NBODialogRun {
         d.dispose();
         planeDef = planeFields[0].getText() + ";" + planeFields[1].getText()
             + ";" + planeFields[2].getText();
-        runScriptQueued("select off");
-        runScriptNow("set bondpicking true");
+        runScriptNow("select off;set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -622,8 +642,7 @@ abstract class NBODialogView extends NBODialogRun {
       @Override
       public void windowClosing(WindowEvent e) {
         vectorDef = vectorFields[0].getText() + ";" + vectorFields[1].getText();
-        runScriptQueued("select off");
-        runScriptNow("set bondpicking true");
+        runScriptNow("select off;set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -632,8 +651,7 @@ abstract class NBODialogView extends NBODialogRun {
       public void actionPerformed(ActionEvent e) {
         d.dispose();
         vectorDef = vectorFields[0].getText() + ";" + vectorFields[1].getText();
-        runScriptQueued("select off");
-        runScriptNow("set bondpicking true");
+        runScriptNow("select off;set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -972,7 +990,8 @@ abstract class NBODialogView extends NBODialogRun {
   protected void basisSel() {
     newModel = true;
     int fileNum = 31 + basis.getSelectedIndex();
-    File f = NBOFileHandler.newNBOFile(inputFileHandler.inputFile, "" + fileNum);
+    File f = NBOFileHandler
+        .newNBOFile(inputFileHandler.inputFile, "" + fileNum);
     if (!f.exists()) {
       runJob("PLOT", inputFileHandler.inputFile, "gennbo");
       return;
@@ -1002,7 +1021,10 @@ abstract class NBODialogView extends NBODialogRun {
       betaList = list;
     else
       alphaList = list;
-    loadModelFileQueued(f, NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(NBOFileHandler.pathWithoutExtension(getJmolFilename())), false);
+    loadModelFileQueued(
+        f,
+        NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(
+            NBOFileHandler.pathWithoutExtension(getJmolFilename())), false);
   }
 
   protected void setLastOrbitalSelection() {
@@ -1034,7 +1056,8 @@ abstract class NBODialogView extends NBODialogRun {
       sb.append("a U" + i + " " + tmp2 + sep);
       tmp2 = "";
     }
-    inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt", sb.toString());
+    inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt",
+        sb.toString());
 
     sb = new SB();
     sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
@@ -1080,7 +1103,8 @@ abstract class NBODialogView extends NBODialogRun {
         sb.append("a V_U" + i + " " + tmp2 + sep);
         tmp2 = "";
       }
-      inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt", sb.toString());
+      inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt",
+          sb.toString());
       sb = new SB();
       sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
       sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
@@ -1154,7 +1178,8 @@ abstract class NBODialogView extends NBODialogRun {
         sb.append("a V_U" + i + " " + tmp2 + sep);
         tmp2 = "";
       }
-      inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt", sb.toString());
+      inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt",
+          sb.toString());
       sb = new SB();
       sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
       sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
@@ -1377,16 +1402,9 @@ abstract class NBODialogView extends NBODialogRun {
       return;
     if (!newModel) {
       String frame = (startingModelCount + modelCount - 1) + ".1";
-      runScriptNow("frame " + frame);
-      if (!useWireMesh) {
-        runScriptNow("nbo nomesh fill translucent " + opacityOp);
-        runScriptNow("mo nomesh fill translucent " + opacityOp);
-      }
-
-      runScriptNow("nbo color " + color2 + " " + color1);
-      runScriptNow("mo color " + color2 + " " + color1);
-      String bonds = runScriptNow("print {visible}.bonds");
-      runScriptQueued("select bonds " + bonds + ";wireframe 0");
+      runScriptQueued("frame " + frame + ";refesh");
+      colorMeshes();
+      runScriptQueued("var b = {visible}.bonds;select bonds @b;wireframe 0;refresh");
       return;
     }
 
@@ -1412,25 +1430,12 @@ abstract class NBODialogView extends NBODialogRun {
       if (!inputFileHandler.getChooseList())
         logInfo("Error reading $CHOOSE list", Logger.LEVEL_ERROR);
       showAtomNums(true);
-
-      if (!useWireMesh) {
-        runScriptQueued("nbo nomesh fill translucent " + opacityOp);
-        runScriptQueued("mo nomesh fill translucent " + opacityOp);
-      }
-
-      runScriptQueued("nbo color " + color2 + " " + color1);
-      runScriptQueued("mo color " + color2 + " " + color1);
-      if (isOpenShell) {
-        alphaSpin.setVisible(true);
-        betaSpin.setVisible(true);
-      } else {
-        alphaSpin.setVisible(false);
-        betaSpin.setVisible(false);
-      }
+      colorMeshes();
+      alphaSpin.setVisible(isOpenShell);
+      betaSpin.setVisible(isOpenShell);
       setBonds(true);
-      for (int i = 0; i < panel.getComponentCount(); i++) {
+      for (int i = 0; i < panel.getComponentCount(); i++)
         panel.getComponent(i).setVisible(true);
-      }
     } catch (NullPointerException e) {
       log(e.getMessage() + " reading file", 'r');
     }
@@ -1442,23 +1447,23 @@ abstract class NBODialogView extends NBODialogRun {
     else
       basis.setSelectedIndex(BASIS_MO);
     // TODO
-    
+
   }
 
-//  @Override
-//  protected void showConfirmationDialog(String st, File newFile, String ext) {
-//    int i = JOptionPane.showConfirmDialog(this, st, "Message",
-//        JOptionPane.YES_NO_OPTION);
-//    if (i == JOptionPane.YES_OPTION) {
-//      JDialog d = new JDialog(this);
-//      d.setLayout(new BorderLayout());
-//      JTextPane tp = new JTextPane();
-//      d.add(tp, BorderLayout.CENTER);
-//      d.setSize(new Dimension(500, 600));
-//      tp.setText(fileHndlr.getFileData(FileHndlr.newNBOFile(newFile, "nbo")
-//          .toString()));
-//      d.setVisible(true);
-//    }
-//  }
+  //  @Override
+  //  protected void showConfirmationDialog(String st, File newFile, String ext) {
+  //    int i = JOptionPane.showConfirmDialog(this, st, "Message",
+  //        JOptionPane.YES_NO_OPTION);
+  //    if (i == JOptionPane.YES_OPTION) {
+  //      JDialog d = new JDialog(this);
+  //      d.setLayout(new BorderLayout());
+  //      JTextPane tp = new JTextPane();
+  //      d.add(tp, BorderLayout.CENTER);
+  //      d.setSize(new Dimension(500, 600));
+  //      tp.setText(fileHndlr.getFileData(FileHndlr.newNBOFile(newFile, "nbo")
+  //          .toString()));
+  //      d.setVisible(true);
+  //    }
+  //  }
 
 }

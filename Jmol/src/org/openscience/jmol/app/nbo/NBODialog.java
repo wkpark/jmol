@@ -610,7 +610,7 @@ public class NBODialog extends NBODialogSearch {
   public void close() {
     if(modulePanel != null)
       inputFileHandler.clearInputFile();
-    runScriptQueued("mo delete; nbo delete; select off");
+    runScriptNow("mo delete; nbo delete; select off");
     dispose();
   }
   
@@ -632,8 +632,7 @@ public class NBODialog extends NBODialogSearch {
         return;
       }
     }
-    if (false)
-      runScriptQueued("zap"); // BH ??
+    //  runScriptNow("zap"); // BH why??
     nboService.restart();
     if (dialogMode == DIALOG_HOME) {
       remove(homePanel);
@@ -644,7 +643,7 @@ public class NBODialog extends NBODialogSearch {
     switch (dialogMode) {
     case DIALOG_VIEW:
     case DIALOG_SEARCH:
-      runScriptQueued("mo delete; nbo delete; select off");
+      runScriptNow("mo delete; nbo delete; select off");
       break;
     }
     nboService.jobQueue.clear();
@@ -755,7 +754,7 @@ public class NBODialog extends NBODialogSearch {
       if (vwr.ms.ac == 0) 
         return;
       if (nboView)
-        runScriptQueued("select add {*}.bonds;color bonds lightgrey;" +
+        runScriptNow("select add {*}.bonds;color bonds lightgrey;" +
           "wireframe 0.1;select remove {*}");
       switch (dialogMode) {
       case DIALOG_MODEL:
@@ -810,8 +809,7 @@ public class NBODialog extends NBODialogSearch {
     
   public void setStatus(String statusInfo) {
     if (statusInfo.length() > 0)
-      log(statusInfo, 'b');  
-      
+      log(statusInfo, 'p');  
       statusLab.setText(statusInfo);
   }
 
@@ -826,7 +824,7 @@ public class NBODialog extends NBODialogSearch {
       String id = "id " + PT.esc(title.toString().trim());
       String script = "image " + id + " close;image id \"\" "
           + PT.esc(f.toString().replace('\\', '/'));
-      runScriptQueued(script);
+      runScriptNow(script);
       break;
     case NBOService.MODE_RUN:
       inputFileHandler.setInputFile(inputFileHandler.inputFile);

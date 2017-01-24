@@ -1180,8 +1180,11 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (nboDialog == null)
       nboDialog = (NBODialog) getInstanceWithParams("org.openscience.jmol.app.nbo.NBODialog",
           new Class[] { JFrame.class, Viewer.class }, frame, vwr );
-    if (nboDialog != null)
+    if (nboDialog == null) {
+      vwr.alert("The NBODialog class could not be found.");
+    } else {
       nboDialog.setVisible(true);
+    }
   }
 
   public static Object getInstanceWithParams(String name, Class<?>[] classes, Object... params) {

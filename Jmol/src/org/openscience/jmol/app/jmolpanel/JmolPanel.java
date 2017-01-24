@@ -23,34 +23,6 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
-import org.jmol.api.Interface;
-import org.jmol.api.JmolAbstractButton;
-import org.jmol.api.JmolAdapter;
-import org.jmol.awt.FileDropper;
-import org.jmol.awt.Platform;
-import org.jmol.console.JmolButton;
-import org.jmol.console.JmolToggleButton;
-import org.jmol.dialog.Dialog;
-import org.jmol.i18n.GT;
-import org.openscience.jmol.app.jmolpanel.console.AppConsole;
-import org.openscience.jmol.app.jmolpanel.console.ConsoleTextArea;
-import org.openscience.jmol.app.jsonkiosk.BannerFrame;
-import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
-import org.openscience.jmol.app.jsonkiosk.JsonNioServer;
-import org.openscience.jmol.app.jsonkiosk.KioskFrame;
-import org.openscience.jmol.app.nbo.NBODialog;
-import org.openscience.jmol.app.nbo.NBOService;
-import org.openscience.jmol.app.surfacetool.SurfaceTool;
-import org.jmol.script.T;
-import org.jmol.util.Logger;
-import org.jmol.util.Parser;
-import org.jmol.viewer.Viewer;
-import org.openscience.jmol.app.HistoryFile;
-import org.openscience.jmol.app.Jmol;
-import org.openscience.jmol.app.JmolApp;
-import org.openscience.jmol.app.SplashInterface;
-import org.openscience.jmol.app.webexport.WebExport;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -75,10 +47,9 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -106,6 +77,34 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+
+import org.jmol.api.Interface;
+import org.jmol.api.JmolAbstractButton;
+import org.jmol.api.JmolAdapter;
+import org.jmol.awt.FileDropper;
+import org.jmol.awt.Platform;
+import org.jmol.console.JmolButton;
+import org.jmol.console.JmolToggleButton;
+import org.jmol.dialog.Dialog;
+import org.jmol.i18n.GT;
+import org.jmol.script.T;
+import org.jmol.util.Logger;
+import org.jmol.util.Parser;
+import org.jmol.viewer.Viewer;
+import org.openscience.jmol.app.HistoryFile;
+import org.openscience.jmol.app.Jmol;
+import org.openscience.jmol.app.JmolApp;
+import org.openscience.jmol.app.SplashInterface;
+import org.openscience.jmol.app.jmolpanel.console.AppConsole;
+import org.openscience.jmol.app.jmolpanel.console.ConsoleTextArea;
+import org.openscience.jmol.app.jsonkiosk.BannerFrame;
+import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
+import org.openscience.jmol.app.jsonkiosk.JsonNioServer;
+import org.openscience.jmol.app.jsonkiosk.KioskFrame;
+import org.openscience.jmol.app.nbo.NBODialog;
+import org.openscience.jmol.app.nbo.NBOService;
+import org.openscience.jmol.app.surfacetool.SurfaceTool;
+import org.openscience.jmol.app.webexport.WebExport;
 
 public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient {
 
@@ -1180,13 +1179,12 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
     if (nboDialog == null)
       nboDialog = (NBODialog) getInstanceWithParams("org.openscience.jmol.app.nbo.NBODialog",
-          new Class[] { JFrame.class, Viewer.class },
-          new Object[] { frame, vwr });
+          new Class[] { JFrame.class, Viewer.class }, frame, vwr );
     if (nboDialog != null)
       nboDialog.setVisible(true);
   }
 
-  public static Object getInstanceWithParams(String name, Class[] classes, Object... params) {
+  public static Object getInstanceWithParams(String name, Class<?>[] classes, Object... params) {
     try {
       Class<?> cl = Class.forName(name);
       return  cl.getConstructor(classes).newInstance(params);

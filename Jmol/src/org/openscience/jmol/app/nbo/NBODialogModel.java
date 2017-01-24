@@ -741,7 +741,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("CMD symmetry");
     log("Symmetry: ", 'p');
     nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
-        "Getting symmetry...");
+        "symmetry...");
   }
 
   protected void getModelFromTextBox(JTextField textBox) {
@@ -771,7 +771,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       saveFileHandler.setInput(null, "line", "mol");
       sb.append("CMD " + s);
       nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
-          "Getting model from line input...");
+          "model from line input...");
     }
     textBox.setText(model);
     log(s, 'i');
@@ -1116,7 +1116,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   protected void processModelEnd(String s, String statusInfo) {
     if (statusInfo.indexOf("Sending ") >= 0)
       return;
-    log(statusInfo, 'r');
+    log("<< " + statusInfo, 'r');
     if (s.contains("\\"))
       s = s.replaceAll("\\\\", "");
     if (statusInfo.indexOf("Editing") >= 0)

@@ -443,8 +443,9 @@ public class NBOService {
     return null;
   }
 
+  private int lineNo = 0;
   protected void logServerLine(String line) {
-    nboDialog.logInfo(line, isFortranError(line) ? Logger.LEVEL_ERROR : Logger.LEVEL_DEBUG);
+    nboDialog.logInfo((++lineNo) + "< " + line, isFortranError(line) ? Logger.LEVEL_ERROR : Logger.LEVEL_DEBUG);
     }
     
   protected boolean isFortranError(String line) {

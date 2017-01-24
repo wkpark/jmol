@@ -101,10 +101,11 @@ import org.openscience.jmol.app.jsonkiosk.BannerFrame;
 import org.openscience.jmol.app.jsonkiosk.JsonNioClient;
 import org.openscience.jmol.app.jsonkiosk.JsonNioServer;
 import org.openscience.jmol.app.jsonkiosk.KioskFrame;
-import org.openscience.jmol.app.nbo.NBODialog;
-import org.openscience.jmol.app.nbo.NBOService;
 import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.openscience.jmol.app.webexport.WebExport;
+
+import org.gennbo.NBODialog;
+import org.gennbo.NBOService;
 
 public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient {
 
@@ -1178,7 +1179,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
 
     if (nboDialog == null)
-      nboDialog = (NBODialog) getInstanceWithParams("org.openscience.jmol.app.nbo.NBODialog",
+      nboDialog = (NBODialog) getInstanceWithParams("org.gennbo.NBODialog",
           new Class[] { JFrame.class, Viewer.class }, frame, vwr );
     if (nboDialog == null) {
       vwr.alert("The NBODialog class could not be found.");

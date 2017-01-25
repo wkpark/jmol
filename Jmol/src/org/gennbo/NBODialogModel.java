@@ -962,10 +962,11 @@ abstract class NBODialogModel extends NBODialogConfig {
         s = s2[1];
         double val = Double.parseDouble(s);
         val = round(val, 2);
-        currVal.setText(desc + val);
+        currVal.setText("current value: " + val);
       } else {
-        currVal.setText(desc + runScriptNow(script));
+        currVal.setText("current value: " + runScriptNow(script));
       }
+      valLab.setText("new " + desc);
       break;
     case CLIP:
       if (cnt == 2) {

@@ -142,12 +142,8 @@ public class NBODialog extends NBODialogSearch {
     super(jmolFrame);
     setTitle("NBOPro6@Jmol");
     this.vwr = vwr;
-    
     this.nboService = new NBOService(vwr);
-    String imageName = "org/openscience/jmol/app/images/nbo6logo20x20.gif";
-    URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
-    if (imageUrl != null)
-      this.setIconImage(new ImageIcon(imageUrl).getImage());
+    this.setIconImage(getIcon("nbo6logo20x20").getImage());
     this.setLayout(new BorderLayout());
     sendDefaultScript();
     //get saved properties
@@ -540,7 +536,7 @@ public class NBODialog extends NBODialogSearch {
   }
 
   private ImageIcon getIcon(String name) {
-    return new ImageIcon(this.getClass().getResource(name + ".gif"));
+    return new ImageIcon(this.getClass().getResource("image/" + name + ".gif"));
   }
 
   protected void nboOutput() {
@@ -795,9 +791,8 @@ public class NBODialog extends NBODialogSearch {
    */
   protected void clearOutput(){
     bodyText = "";
-    String fontFamily = jpNBOLog.getFont().getFamily();
-    jpNBOLog.setText("<html><body style=\"font-family: " + fontFamily +
-        bodyText + "</html>" );
+   // String fontFamily = jpNBOLog.getFont().getFamily();
+    jpNBOLog.setText("");
   }
 
   protected boolean checkJmolNBO(){

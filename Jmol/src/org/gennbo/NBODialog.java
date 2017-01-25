@@ -584,6 +584,8 @@ public class NBODialog extends NBODialogSearch {
     btn.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+          if (jpNBOLog == null)
+            return;
           JFileChooser myChooser = new JFileChooser();
           myChooser.setFileFilter(new FileNameExtensionFilter(".txt",".txt"));
           myChooser.setFileHidingEnabled(true);
@@ -788,7 +790,8 @@ public class NBODialog extends NBODialogSearch {
   protected void clearOutput(){
     bodyText = "";
    // String fontFamily = jpNBOLog.getFont().getFamily();
-    jpNBOLog.setText("");
+    if (jpNBOLog != null)
+      jpNBOLog.setText("");
   }
 
   protected boolean checkJmolNBO(){

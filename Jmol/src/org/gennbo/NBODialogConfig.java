@@ -65,6 +65,7 @@ import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
+import org.gennbo.NBODialogRun.ChooseList;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -81,6 +82,16 @@ abstract class NBODialogConfig extends JDialog {
 
   protected static final String sep = System.getProperty("line.separator");
 
+  final static protected Font nboFont = new Font("Arial", Font.BOLD, 16);
+  final static protected Font monoFont = new Font("Monospaced", Font.BOLD, 16);
+  final static protected Font titleFont = new Font("Arial", Font.BOLD
+      | Font.ITALIC, 18);
+
+  private static final int MODE_PATH_SERVICE = 0;
+  private static final int MODE_PATH_WORKING = 1;
+
+  final static protected Color titleColor = Color.blue;
+
   protected Viewer vwr;
   protected NBOService nboService;
 
@@ -94,28 +105,18 @@ abstract class NBODialogConfig extends JDialog {
 
   protected NBOFileHandler inputFileHandler;
   protected NBOFileHandler saveFileHandler;
-
-  final static protected Font nboFont = new Font("Arial", Font.BOLD, 16);
-  final static protected Font monoFont = new Font("Monospaced", Font.BOLD, 16);
-  final static protected Font titleFont = new Font("Arial", Font.BOLD
-      | Font.ITALIC, 18);
-
-  private static final int MODE_PATH_SERVICE = 0;
-  private static final int MODE_PATH_WORKING = 1;
-
-  final static protected Color titleColor = Color.blue;
+  protected char dialogMode;
 
   protected JTextPane jpNBOLog;
   protected JSlider opacity = new JSlider();
   protected JPanel settingsPanel;  
   protected JComboBox<Color> colorBox1, colorBox2;
-  protected JCheckBox jCheckAtomNum, jCheckSelHalo, jCheckDebugVerbose, jCheckNboView, jCheckWireMesh; 
-
+  protected JCheckBox jCheckAtomNum, jCheckSelHalo, jCheckDebugVerbose, jCheckNboView, jCheckWireMesh;
+  
+  protected ChooseList chooseList;
 
   protected String bodyText = "";
-
   protected boolean showAtNum, nboView, useWireMesh;
-  protected char dialogMode;
 
   protected Color orbColor1, orbColor2;
   protected String color1, color2;
@@ -553,27 +554,41 @@ abstract class NBODialogConfig extends JDialog {
   //    }
   //  }
 
+
   /**
    * label atoms: (number lone pairs)+atomnum
-   * 
-   * @param alpha
+   * @param alpha 
    */
   protected void showAtomNums(boolean alpha) {
     if (!showAtNum) {
-      runScriptNow("select {*};label off; select none");
+      runScriptNow("select {*};label off; select remove {*}");
       return;
     }
     SB sb = new SB();
-    sb.append("select {*};label %a;");
-    String color = "black";
-    if (!nboView)
-      color = "gray";
-
+    sb.append("select {*};font label bold;label %a;");
+    if (chooseList != null) {
+      Hashtable<String, String> lonePairs = (alpha) ? chooseList.lonePairs
+          : chooseList.lonePairs_b;
+      Hashtable<String, String> loneV = chooseList.lv;
+      for (int i = 1; i <= vwr.ms.ac; i++) {
+        sb.append("select (atomno=" + i + ");label ");
+        String atNum = new Integer(i).toString();
+        String lp, lv;
+        if ((lp = lonePairs.get(atNum)) != null)
+          if (!lp.equals("0"))
+            sb.append("<sup>(" + lp + ")</sup>");
+        if ((lv = loneV.get(atNum)) != null)
+          if (!lv.equals("0"))
+            sb.append("<sub>[" + lv + "]</sub>");
+        sb.append("%a;");
+      }
+    }
+    String color = (nboView) ? "black" : "gray";
     sb.append("select {*};color labels white;");
     sb.append("select {H*};color labels " + color + ";"
-        + "set labeloffset 0 0 {*}; select none;");
-
+        + "set labeloffset 0 0 {*}; select remove {*};");
     runScriptNow(sb.toString());
+
   }
 
   //  protected void rawCmd(String name, final String cmd, final int mode) {

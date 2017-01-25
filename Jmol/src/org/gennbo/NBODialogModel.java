@@ -1059,7 +1059,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       loadModelToNBO(runScriptNow("print data({selected},'cfi')"));
       return;
     }
-    clearSelected();
+    // BH? clearSelected();
 
     showAtomNums(false);
 
@@ -1121,7 +1121,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (s.contains("\\"))
       s = s.replaceAll("\\\\", "");
     if (statusInfo.indexOf("Editing") >= 0)
-      s = "save orientation o1;" + s + ";restore orientation o1";
+      s = "save orientation o1;load " + s + ";restore orientation o1;refresh";
     runScriptNow(s);// + ";rotate best;none; select on;");
   }
 

@@ -101,8 +101,6 @@ abstract class NBODialogRun extends NBODialogModel {
   protected String nboKeywords;
   protected boolean isOpenShell;
 
-  protected ChooseList chooseList;
-
   protected JPanel buildRunPanel() {
     panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -197,42 +195,6 @@ abstract class NBODialogRun extends NBODialogModel {
     box.add(btn);
     bg.add(btn);
     return box;
-  }
-
-  /**
-   * label atoms: (number lone pairs)+atomnum
-   */
-  @Override
-  protected void showAtomNums(boolean alpha) {
-    if (!showAtNum) {
-      runScriptNow("select {*};label off; select remove {*}");
-      return;
-    }
-    SB sb = new SB();
-    sb.append("select {*};label %a;");
-    if (chooseList != null) {
-      Hashtable<String, String> lonePairs = (alpha) ? chooseList.lonePairs
-          : chooseList.lonePairs_b;
-      Hashtable<String, String> loneV = chooseList.lv;
-      for (int i = 1; i <= vwr.ms.ac; i++) {
-        sb.append("select (atomno=" + i + ");label ");
-        String atNum = new Integer(i).toString();
-        String lp, lv;
-        if ((lp = lonePairs.get(atNum)) != null)
-          if (!lp.equals("0"))
-            sb.append("<sup>(" + lp + ")</sup>");
-        if ((lv = loneV.get(atNum)) != null)
-          if (!lv.equals("0"))
-            sb.append("<sub>[" + lv + "]</sub>");
-        sb.append("%a;");
-      }
-    }
-    String color = (nboView) ? "black" : "gray";
-    sb.append("select {*};color labels white;");
-    sb.append("select {H*};color labels " + color + ";"
-        + "set labeloffset 0 0 {*}; select remove {*};");
-    runScriptNow(sb.toString());
-
   }
 
   protected String cleanNBOKeylist(String params) {

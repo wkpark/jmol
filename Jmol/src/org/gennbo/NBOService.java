@@ -217,6 +217,7 @@ public class NBOService {
    */
   protected void setServerPath(String path) {
     serverPath = NBOFileHandler.fixPath(path);
+    setNBOProperty("serverPath", path);
   }
 
   protected boolean isEnabled() {
@@ -576,7 +577,7 @@ public class NBOService {
     String arch = System.getenv("PROCESSOR_ARCHITECTURE");
     File f = new File(getServerPath("gennbo.bat"));
     if (!f.exists()) {
-      vwr.alert(f + " not found, make sure gennbo.bat is in same directory as nboserve.exe");
+      vwr.alert(f + " not found, make sure gennbo.bat is in same directory as " + exeName);
       return false;
     }
     String wow64Arch = System.getenv("PROCESSOR_ARCHITEW6432");

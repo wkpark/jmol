@@ -1857,6 +1857,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   public static void setPluginOption(String pluginName, String key,
                                      String value) {
     pluginFile.addProperty(pluginName + "_" + key, value);
+    pluginFile.save();
   }
 
   public static String getPluginOption(String pluginName, String key, String defaultValue) {

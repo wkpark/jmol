@@ -440,23 +440,13 @@ abstract class NBODialogConfig extends JDialog {
    */
   protected void doPathBrowseClicked(final JTextField tf, String fname, int mode) {
     JFileChooser myChooser = new JFileChooser();
-    String exe = "";
-    switch (mode) {
-    case MODE_PATH_SERVICE:
-      exe = "exe";
-      myChooser.setFileFilter(new FileNameExtensionFilter(exe, exe));
-      myChooser.setFileHidingEnabled(true);
-      myChooser.setSelectedFile(new File(fname));
-      break;
-    case MODE_PATH_WORKING:
-      myChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-      myChooser.setSelectedFile(new File(fname + "/ "));
-      break;
-    }
+    myChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    myChooser.setSelectedFile(new File(fname + "/ "));
     int button = myChooser.showDialog(this, GT._("Select"));
     if (button == JFileChooser.APPROVE_OPTION) {
       File newFile = myChooser.getSelectedFile();
       tf.setText(PT.rep(newFile.toString(), "\\", "/"));
+      tf.postActionEvent();
     }
   }
 

@@ -231,6 +231,8 @@ public class NBODialog extends NBODialogSearch {
     settingsDialog.setSize(new Dimension(350,400));
     settingsDialog.setLocation(this.getX() + 100,this.getY()+100);
     this.setVisible(true);
+    if (nboService.isOffLine())
+      settingsDialog.setVisible(true);
   }
   
   /**
@@ -615,9 +617,6 @@ public class NBODialog extends NBODialogSearch {
 
   protected void openPanel(char type) {
     if (type == 'c') {
-      if (settingsDialog.isVisible()) {
-        return;
-      }
       settingsDialog.setVisible(true);
       return;
     }

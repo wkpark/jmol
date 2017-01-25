@@ -87,6 +87,8 @@ abstract class NBODialogConfig extends JDialog {
   final static protected Font titleFont = new Font("Arial", Font.BOLD
       | Font.ITALIC, 18);
 
+  private static final String JMOL_LABEL_FONT = "16 bold";
+
   private static final int MODE_PATH_SERVICE = 0;
   private static final int MODE_PATH_WORKING = 1;
 
@@ -565,7 +567,7 @@ abstract class NBODialogConfig extends JDialog {
       return;
     }
     SB sb = new SB();
-    sb.append("select {*};font label bold;label %a;");
+    sb.append("select {*};font label " + JMOL_LABEL_FONT + ";label %a;");
     if (chooseList != null) {
       Hashtable<String, String> lonePairs = (alpha) ? chooseList.lonePairs
           : chooseList.lonePairs_b;

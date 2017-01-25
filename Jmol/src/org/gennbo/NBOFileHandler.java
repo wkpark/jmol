@@ -153,6 +153,8 @@ class NBOFileHandler extends JPanel {
     //return false;
     if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
       return true;
+    // DP? if(!inputFile.getAbsolutePath().endsWith(".47"))
+    // DP?  inputFile = newNBOFile(inputFile, "47");
     if (!useExt.equals("47")) {
       jobStem = NBOFileHandler.getJobStem(inputFile);
       dialog.loadModelFromNBO(fileDir, jobStem, useExt);
@@ -287,67 +289,6 @@ class NBOFileHandler extends JPanel {
     return false;
   }
 
-  /**
-   * gets a valid $CHOOSE list from nbo file if it exists and corrects the bonds
-   * in the jmol model
-   * 
-   * @return false if output contains error
-   */
-  protected boolean getChooseList() {
-    File f = newNBOFile(inputFile, "nbo");
-    if (!f.exists() || f.length() == 0)
-      return false;
-    String fdata = getFileData(f.toString());
-    String[] tokens = PT.split(fdata, "\n $CHOOSE");
-    int i = 1;
-    if (tokens.length < 2) {
-      dialog.logInfo("$CHOOSE record was not found in " + f,
-          Logger.LEVEL_INFO);
-      return false;
-    }
-    if (tokens[1].trim().startsWith("keylist")) {
-      if (!tokens[1].contains("Structure accepted:")) {
-        if (tokens[1].contains("missing END?")) {
-          dialog.logInfo("Plot files not found. Have you used RUN yet?",
-              Logger.LEVEL_ERROR);
-          return false;
-        } else if (tokens[2].contains("ignoring")) {
-          dialog.alert("Ignoring $CHOOSE list");
-        } else {
-          return false;
-        }
-      }
-      i = 3;
-    }
-    String data = tokens[i].substring(0, tokens[i].indexOf("$END"));
-
-    dialog.setChooseList(data);
-
-    return true;
-  }
-
-  protected String[] getRSList() {
-    String data = getFileData(newNBOFile(inputFile, "nbo").toString());
-    String[] toks = PT.split(data,
-        "TOPO matrix for the leading resonance structure:\n");
-    if (toks.length < 2) {
-      if (toks[0].contains("0 candidate reference structure(s)"))
-        dialog
-            .alertError("0 candidate reference structure(s) calculated by SR LEWIS"
-                + "Candidate reference structure taken from NBO search");
-      return null;
-    }
-    String[] toks2 = PT
-        .split(toks[1],
-            "---------------------------------------------------------------------------");
-    String[] rsList = new String[2];
-    rsList[0] = toks2[0].substring(toks2[0].lastIndexOf('-'),
-        toks2[0].indexOf("Res")).trim();
-    rsList[0] = rsList[0].replace("-\n", "");
-    rsList[1] = toks2[1];
-    return rsList;
-  }
-
   public void clear() {
     tfName.setText("");
     tfExt.setText("");
@@ -410,6 +351,10 @@ class NBOFileHandler extends JPanel {
 
   public void setBrowseEnabled(boolean b) {
     btnBrowse.setEnabled(b);
+  }
+
+  public String getInputFile(String name) {
+    return getFileData(newNBOFile(inputFile, name).toString());
   }
 
 }

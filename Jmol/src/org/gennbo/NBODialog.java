@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import javajs.swing.SwingConstants;
 import javajs.util.PT;
@@ -109,8 +108,6 @@ public class NBODialog extends NBODialogSearch {
   private JPanel topPanel;
   protected JButton modelButton, runButton, viewButton, searchButton;
   
-  protected JPanel settingsPanel;
-  
   private JPanel homePanel;
 
   boolean isJmolNBO;
@@ -119,6 +116,8 @@ public class NBODialog extends NBODialogSearch {
 
   protected JLabel statusLab;
   protected JPanel nboOutput;
+
+  private NBOPlugin nboPlugin;
   
   static final char DIALOG_CONFIG = 'c';
   static final char DIALOG_MODEL = 'm';
@@ -137,19 +136,20 @@ public class NBODialog extends NBODialogSearch {
    * @param vwr
    *        The interacting display we are reproducing (source of view angle
    *        info etc)
+   * @param plugin 
    */
-  public NBODialog(JFrame jmolFrame, Viewer vwr) {
+  public NBODialog(NBOPlugin plugin, JFrame jmolFrame, Viewer vwr) {
     super(jmolFrame);
-    setTitle("NBOPro6@Jmol");
+    setTitle("NBOPro6@Jmol " + plugin.getVersion());
+    nboPlugin = plugin;
     this.vwr = vwr;
-    this.nboService = new NBOService(vwr);
+    this.nboService = new NBOService(this, vwr);
     this.setIconImage(getIcon("nbo6logo20x20").getImage());
     this.setLayout(new BorderLayout());
     sendDefaultScript();
+    
     //get saved properties
     
-    nboService.nboDialog = this;
-
     createDialog(jmolFrame.getBounds());
 
   }
@@ -171,14 +171,10 @@ public class NBODialog extends NBODialogSearch {
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        //TODO
-//        nboService.manager.clearQueue();
-//        //nboService.manager.
-//        nboService.closeProcess();
+        nboService.closeProcess(); 
         close();
       }
     });
-    //final NBODialog dialog = this;
 
     placeNBODialog(this);
     helpBtn = new HelpBtn(""){
@@ -225,11 +221,12 @@ public class NBODialog extends NBODialogSearch {
     //centerPanel.setLeftComponent(mainPage());
     this.dialogMode = DIALOG_HOME;
     this.getContentPane().add(topPanel,BorderLayout.NORTH);    
-    settingsPanel = buildSettingsPanel();
     settingsDialog = new JDialog(this,"Settings");
-    settingsDialog.add(settingsPanel);
     settingsDialog.setSize(new Dimension(350,400));
     settingsDialog.setLocation(this.getX() + 100,this.getY()+100);
+    settingsPanel = new JPanel();
+    buildSettingsPanel(settingsPanel);
+    settingsDialog.add(settingsPanel);
     this.setVisible(true);
     if (nboService.isOffLine())
       settingsDialog.setVisible(true);
@@ -643,7 +640,7 @@ public class NBODialog extends NBODialogSearch {
       runScriptNow("mo delete; nbo delete; select off");
       break;
     }
-    nboService.jobQueue.clear();
+    nboService.clearQueue();
     nboService.isWorking = false;
     this.settingsBox.setVisible(false);
     if (!checkEnabled())
@@ -840,5 +837,4 @@ public class NBODialog extends NBODialogSearch {
      else
       loadModelFileQueued(file, false, false);
   }
-
 }

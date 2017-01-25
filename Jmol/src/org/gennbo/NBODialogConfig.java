@@ -33,10 +33,7 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -64,7 +61,6 @@ import javax.swing.JTextPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
@@ -111,6 +107,10 @@ abstract class NBODialogConfig extends JDialog {
 
   protected JTextPane jpNBOLog;
   protected JSlider opacity = new JSlider();
+  protected JPanel settingsPanel;  
+  protected JComboBox<Color> colorBox1, colorBox2;
+  protected JCheckBox jCheckAtomNum, jCheckSelHalo, jCheckDebugVerbose, jCheckNboView, jCheckWireMesh; 
+
 
   protected String bodyText = "";
 
@@ -149,22 +149,33 @@ abstract class NBODialogConfig extends JDialog {
 
   /**
    * Creates a dialog for getting info related to output frames in nbo format.
+   * @param settingsPanel 
    * 
    * @return settings panel
    */
   @SuppressWarnings("unchecked")
-  protected JPanel buildSettingsPanel() {
+  protected JPanel buildSettingsPanel(JPanel settingsPanel) {
+    settingsPanel.removeAll();
     checkNBOStatus();
     String viewOpts = getOrbitalDisplayOptions();
 
-    JPanel filePanel = new JPanel();
-    filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.Y_AXIS));
-    addPathSetting(filePanel, MODE_PATH_SERVICE);
-    addPathSetting(filePanel, MODE_PATH_WORKING);
+    settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
+    addPathSetting(settingsPanel, MODE_PATH_SERVICE);
+    addPathSetting(settingsPanel, MODE_PATH_WORKING);
 
     //Settings
-    filePanel.add(createTitleBox(" Settings ", null));
-    JCheckBox jCheckAtomNum = new JCheckBox("Show Atom Numbers");//.setAlignmentX(0.5f);
+    
+    JButton jbDefaults = new JButton("Set Defaults");
+    jbDefaults.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        setDefaults();
+      }
+      
+    });
+    settingsPanel.add(createTitleBox(" Settings ", jbDefaults)); 
+    jCheckAtomNum = new JCheckBox("Show Atom Numbers");//.setAlignmentX(0.5f);
     jCheckAtomNum.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -176,22 +187,18 @@ abstract class NBODialogConfig extends JDialog {
     jCheckAtomNum.setSelected(true);
     Box settingsBox = createBorderBox(true);
     settingsBox.add(jCheckAtomNum);
-
-    JCheckBox jCheckSelHalo = new JCheckBox("Show selection halos on atoms");
+    
+    jCheckSelHalo = new JCheckBox("Show selection halos on atoms");
     jCheckSelHalo.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        runScriptNow("select " + ((JCheckBox) e.getSource()).isSelected());
+        runScriptNow("select " + jCheckSelHalo.isSelected());
       }
     });
     jCheckSelHalo.doClick();
     settingsBox.add(jCheckSelHalo);
 
-    color1 = "[" + orbColor1.getRed() + " " + orbColor1.getGreen() + " "
-        + orbColor1.getBlue() + "]";
-    color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
-        + orbColor2.getBlue() + "]";
-    final JCheckBox jCheckWireMesh = new JCheckBox(
+    jCheckWireMesh = new JCheckBox(
         "Use wire mesh for orbital display");
 
     settingsBox.add(jCheckWireMesh);
@@ -199,8 +206,9 @@ abstract class NBODialogConfig extends JDialog {
         Color.cyan, Color.blue, Color.magenta, };
 
     JPanel displayOps = new JPanel(new GridLayout(1, 4));
-    displayOps.add(new JLabel("(+) color: "));
-    final JComboBox<Color> colorBox1 = new JComboBox<Color>(colors);
+    JLabel label = new JLabel("     (+) color: ");
+    displayOps.add(label);
+    colorBox1 = new JComboBox<Color>(colors);
     colorBox1.setRenderer(new ColorRenderer());
     colorBox1.setSelectedItem(orbColor1);
     displayOps.add(colorBox1);
@@ -208,20 +216,16 @@ abstract class NBODialogConfig extends JDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         orbColor1 = ((Color) colorBox1.getSelectedItem());
-        color1 = "[" + orbColor1.getRed() + " " + orbColor1.getGreen() + " "
-            + orbColor1.getBlue() + "]";
         setOrbitalDisplayOptions();
       }
     });
 
-    displayOps.add(new JLabel("  (-) color: "));
-    final JComboBox<Color> colorBox2 = new JComboBox<Color>(colors);
+    displayOps.add(new JLabel("     (-) color: "));
+    colorBox2 = new JComboBox<Color>(colors);
     colorBox2.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         orbColor2 = ((Color) colorBox2.getSelectedItem());
-        color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
-            + orbColor2.getBlue() + "]";
         setOrbitalDisplayOptions();
       }
     });
@@ -266,7 +270,8 @@ abstract class NBODialogConfig extends JDialog {
     });
     if (useWireMesh)
       jCheckWireMesh.setSelected(true);
-    JCheckBox jCheckNboView = new JCheckBox("Emulate NBO View");
+    
+    jCheckNboView = new JCheckBox("Emulate NBO View");
     settingsBox.add(jCheckNboView);
     jCheckNboView.addActionListener(new ActionListener() {
       @Override
@@ -278,14 +283,15 @@ abstract class NBODialogConfig extends JDialog {
           if (jCheckWireMesh.isSelected())
             jCheckWireMesh.doClick();
           opacity.setValue(3);
-        } else
-          resetColorScheme();
-
+        } else {
+          setDefaults();
+          runScriptNow("background black;set defaultcolors Jmol;refresh;");
+        }
       }
     });
-    JCheckBox jb = new JCheckBox("Verbose Debugging");
-    settingsBox.add(jb);
-    jb.addActionListener(new ActionListener() {
+    jCheckDebugVerbose = new JCheckBox("Verbose Debugging");
+    settingsBox.add(jCheckDebugVerbose);
+    jCheckDebugVerbose.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         debugVerbose = ((JCheckBox) e.getSource()).isSelected();
@@ -297,11 +303,35 @@ abstract class NBODialogConfig extends JDialog {
       opacity.setValue((int) (opacityOp * 10));
     }
     settingsBox.setBorder(BorderFactory.createLineBorder(Color.black));
-    filePanel.add(settingsBox);
-    return filePanel;
+    settingsPanel.add(settingsBox);
+    return settingsPanel;
+  }
+
+  protected void setDefaults() {
+    
+    nboService.setNBOProperty("orbitalDisplayOptions", "default");
+    getOrbitalDisplayOptions();
+    opacity.setValue((int) (opacityOp * 10));
+    colorBox1.setSelectedItem(orbColor1);
+    colorBox2.setSelectedItem(orbColor2);
+    
+    jCheckWireMesh.setSelected(useWireMesh);
+    //jCheckWireMesh.doClick();
+    jCheckAtomNum.setSelected(true);
+    //jCheckAtomNum.doClick();
+    jCheckSelHalo.setSelected(true);
+    //jCheckSelHalo.doClick();
+    jCheckDebugVerbose.setSelected(false);
+    //jCheckDebugVerbose.doClick();
+    jCheckNboView.setSelected(false);
+    //jCheckNboView.doClick();
   }
 
   protected void setOrbitalDisplayOptions() {
+    color1 = "[" + orbColor1.getRed() + " " + orbColor1.getGreen() + " "
+        + orbColor1.getBlue() + "]";
+    color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
+        + orbColor2.getBlue() + "]";
     String script = "nbo color " + color2 + " " + color1 + ";mo color "
         + color2 + " " + color1 + ";";
     script += (useWireMesh ? "nbo nofill mesh;mo nofill mesh"
@@ -314,8 +344,8 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   private String getOrbitalDisplayOptions() {
-    String options = nboService.getNBOProperty("orbitalDisplayOptions", null);
-    if (options == null) {
+    String options = nboService.getNBOProperty("orbitalDisplayOptions", "default");
+    if (options.equals("default")) {
       orbColor1 = Color.blue;
       orbColor2 = Color.red;
       opacityOp = 0;
@@ -336,7 +366,7 @@ abstract class NBODialogConfig extends JDialog {
     return options;
   }
 
-  private void addPathSetting(JPanel filePanel, final int mode) {
+  private void addPathSetting(JPanel panel, final int mode) {
     //GUI for NBO path selection
     String title = "";
     String path = "";
@@ -359,11 +389,11 @@ abstract class NBODialogConfig extends JDialog {
       }
       
     });
-    filePanel.add(createTitleBox(title, null));
+    panel.add(createTitleBox(title, null));
     Box serverBox = createBorderBox(true);
     serverBox.add(createPathBox(tfPath, mode));
     serverBox.setMaximumSize(new Dimension(350, 50));
-    filePanel.add(serverBox);
+    panel.add(serverBox);
 
     //Job files
     //    
@@ -499,23 +529,14 @@ abstract class NBODialogConfig extends JDialog {
    * Sets color scheme to emulate look of NBO view
    */
   protected void setNBOColorScheme() {
-    nboView = true;
-    String atomColors = "";
-    String fname = "org/openscience/jmol/app/nbo/help/atomColors.txt";
     try {
-      atomColors = GuiMap.getResourceString(this, fname);
+      String atomColors = "";
+      atomColors = GuiMap.getResourceString(this, "org/gennbo/help/atomColors.txt");
+      runScriptNow(atomColors + ";refresh");
+      nboView = true;
     } catch (IOException e) {
       alertError("Atom colors not found");
     }
-    runScriptNow(atomColors + ";refresh");
-  }
-
-  /**
-   * Resets Jmol look and feel
-   */
-  protected void resetColorScheme() {
-    nboView = false;
-    runScriptNow("background black;set defaultcolors Jmol;refresh;");
   }
 
   //  /**
@@ -539,7 +560,7 @@ abstract class NBODialogConfig extends JDialog {
    */
   protected void showAtomNums(boolean alpha) {
     if (!showAtNum) {
-      runScriptNow("select {*};label off; select remove {*}");
+      runScriptNow("select {*};label off; select none");
       return;
     }
     SB sb = new SB();
@@ -550,7 +571,7 @@ abstract class NBODialogConfig extends JDialog {
 
     sb.append("select {*};color labels white;");
     sb.append("select {H*};color labels " + color + ";"
-        + "set labeloffset 0 0 {*}; select remove {*};");
+        + "set labeloffset 0 0 {*}; select none;");
 
     runScriptNow(sb.toString());
   }
@@ -617,8 +638,7 @@ abstract class NBODialogConfig extends JDialog {
    *        p, b, r ("red"), i, etc.
    */
   protected synchronized void log(String line, char chFormat) {
-    if (line.trim().equals("") || jpNBOLog == null || !debugVerbose
-        && "b|r".indexOf("" + chFormat) < 0)
+    if (dontLog(line, chFormat))
       return;
     if (line.trim().length() >= 1) {
       line = PT.rep(line.trim(), "<", "&lt;");
@@ -638,6 +658,13 @@ abstract class NBODialogConfig extends JDialog {
           + "</html>");
     }
     jpNBOLog.setCaretPosition(jpNBOLog.getDocument().getLength());
+  }
+
+  private boolean dontLog(String line, char chFormat) {
+    return (jpNBOLog == null 
+    || line.trim().equals("")
+    || line.indexOf("read/unit=5/attempt to read past end") >= 0
+    || !debugVerbose && "b|r".indexOf("" + chFormat) < 0);
   }
 
   protected void alertError(String line) {

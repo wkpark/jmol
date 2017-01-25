@@ -481,6 +481,7 @@ abstract class NBODialogView extends NBODialogRun {
 
   protected void setOrbitalColors(char plusMinus) {
     currSign = plusMinus;
+    // just for one orbital?
     runScriptNow("nbo color "
         + (plusMinus == '+' ? color2 + " " + color1 : color1 + " " + color2));
   }
@@ -1427,10 +1428,7 @@ abstract class NBODialogView extends NBODialogRun {
 
       resetValues();
       settingsBox.setVisible(true);
-      //    for(int i = 0; i < 5; i++)
-      //      panel.getComponents()[i].setVisible(true);
-      if (!inputFileHandler.getChooseList())
-        logInfo("Error reading $CHOOSE list", Logger.LEVEL_ERROR);
+      getChooseList();
       showAtomNums(true);
       colorMeshes();
       alphaSpin.setVisible(isOpenShell);

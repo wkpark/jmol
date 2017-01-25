@@ -1000,7 +1000,7 @@ abstract class NBODialogSearch extends NBODialogView {
       if (list.equals(list3)) {
         changeKey(nrt);
         //Parsing RS list here ensures RS list will be in .nbo file
-        parseRsList(inputFileHandler.getRSList());
+        parseRsList(getRSList());
         unit.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
@@ -1045,6 +1045,29 @@ abstract class NBODialogSearch extends NBODialogView {
       }
     }
   }
+
+  protected String[] getRSList() {
+    String data = inputFileHandler.getInputFile("nbo");
+    String[] toks = PT.split(data,
+        "TOPO matrix for the leading resonance structure:\n");
+    if (toks.length < 2) {
+      if (toks[0].contains("0 candidate reference structure(s)"))
+        alertError("0 candidate reference structure(s) calculated by SR LEWIS"
+                + "Candidate reference structure taken from NBO search");
+      return null;
+    }
+    String[] toks2 = PT
+        .split(toks[1],
+            "---------------------------------------------------------------------------");
+    String[] rsList = new String[2];
+    rsList[0] = toks2[0].substring(toks2[0].lastIndexOf('-'),
+        toks2[0].indexOf("Res")).trim();
+    rsList[0] = rsList[0].replace("-\n", "");
+    rsList[1] = toks2[1];
+    return rsList;
+  }
+
+
 
   /**
    * Takes two strings from .nbo file and parses RS list information toks[0] =
@@ -1361,8 +1384,8 @@ abstract class NBODialogSearch extends NBODialogView {
       alphaSpin.setVisible(false);
       betaSpin.setVisible(false);
     }
-    if (!inputFileHandler.getChooseList())
-      alertError("Error reading $CHOOSE list");
+
+    getChooseList();
     showAtomNums(true);
     setBonds(true);
 

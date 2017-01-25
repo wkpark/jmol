@@ -52,8 +52,10 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
+import javajs.util.Lst;
 import javajs.util.PT;
 
 import javax.swing.AbstractAction;
@@ -94,6 +96,7 @@ import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.HistoryFile;
 import org.openscience.jmol.app.Jmol;
 import org.openscience.jmol.app.JmolApp;
+import org.openscience.jmol.app.JmolPlugin;
 import org.openscience.jmol.app.SplashInterface;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.jmolpanel.console.ConsoleTextArea;
@@ -118,19 +121,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   StatusBar status;
   int startupWidth, startupHeight;
   JsonNioServer serverService;
-  public NBOService nboService;
 
   // Called by NBODialog
   
-  public void setNBOService(NBOService service) {
-    this.nboService = service;
-  }
-
   protected String appletContext;
   protected PropertyChangeSupport pcs = new PropertyChangeSupport(this);
   protected DisplayPanel display;
   protected GaussianDialog gaussianDialog;
-  protected NBODialog nboDialog;
   protected RecentFilesDialog recentFiles;
   protected AtomSetChooser atomSetChooser;
   public JFrame frame;
@@ -284,23 +281,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     getDialogs();
     say(GT._("Initializing Script Window..."));
     vwr.getProperty("DATA_API", "getAppConsole", Boolean.TRUE);
-
-    // Setup Plugin system
-    // say(GT._("Loading plugins..."));
-    // pluginManager = new CDKPluginManager(
-    // System.getProperty("user.home") + System.getProperty("file.separator")
-    // + ".jmol", new JmolEditBus(vwr)
-    // );
-    // pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DirBrowserPlugin");
-    // pluginManager.loadPlugin("org.openscience.cdkplugin.dirbrowser.DadmlBrowserPlugin");
-    // pluginManager.loadPlugins(
-    // System.getProperty("user.home") + System.getProperty("file.separator")
-    // + ".jmol/plugins"
-    // );
-    // feature to allow for globally installed plugins
-    // if (System.getProperty("plugin.dir") != null) {
-    // pluginManager.loadPlugins(System.getProperty("plugin.dir"));
-    // }
 
     // install the command table
     say(GT._("Building Command Hooks..."));
@@ -608,6 +588,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     dispose(frame, saveSize);
     return true;
   }
+  
+  Map<String, JmolPlugin> plugins = new Hashtable<String, JmolPlugin>();
 
   void dispose(JFrame f, boolean saveSize) {
     // Save window positions and status in the history
@@ -623,14 +605,16 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       serverService.close();
       serverService = null;
     }
-    if(nboDialog != null){
-      nboDialog.close();
-      nboDialog = null;
+    
+    for (Entry<String, JmolPlugin> e : plugins.entrySet()) {
+      try {
+        e.getValue().destroy();
+      } catch (Throwable err) {
+        // ignore
+      }
     }
-    if(nboService != null){
-      nboService.closeProcess();
-      nboService = null;
-    }
+    plugins.clear();
+
     if (numWindows <= 1) {
       // Close Jmol
       report(GT._("Closing Jmol..."));
@@ -1173,19 +1157,24 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    */
   void startNBO(String type) {
 
-    String nboServerPath = historyFile.getProperty("nboServerPath", null);
+    String nboServerPath = getPluginOption("NBO", "serverPath", null);
     if (nboServerPath == null) {
       vwr.alert("NBOServe.exe has not been installed. See http://nbo6.chem.wisc.edu/new6_css.htm for additional information");
-      return;
     }
+    showPlugin("NBO", "org.gennbo.NBOPlugin");
+  }
 
-    if (nboDialog == null)
-      nboDialog = (NBODialog) getInstanceWithParams("org.gennbo.NBODialog",
-          new Class[] { JFrame.class, Viewer.class }, frame, vwr );
-    if (nboDialog == null) {
-      vwr.alert("The NBODialog class could not be found.");
-    } else {
-      nboDialog.setVisible(true);
+  private void showPlugin(String name, String path) {
+    try {      
+      JmolPlugin p = plugins.get(name);
+      if (p == null) {
+        plugins.put(name, p = (JmolPlugin) Interface.getInterface(path, vwr,
+            "plugin"));
+        p.start(frame, vwr);
+      }
+      p.setVisible(true);
+    } catch (Throwable e) {
+      System.out.println("Error creating plugin " + name);
     }
   }
 
@@ -1708,10 +1697,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       gaussianDialog.dispose();
       gaussianDialog = null;
     }
-    if (nboDialog != null) {
-      nboDialog.dispose();
-      nboDialog = null;
-    }
+
+    
     boolean doTranslate = GT.setDoTranslate(true);
     getDialogs();
     GT.setDoTranslate(doTranslate);

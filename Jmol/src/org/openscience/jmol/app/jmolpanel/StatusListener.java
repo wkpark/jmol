@@ -43,6 +43,7 @@ import org.jmol.c.CBK;
 import org.jmol.dialog.Dialog;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
+import org.openscience.jmol.app.JmolPlugin;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.webexport.WebExport;
 
@@ -122,8 +123,9 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   @SuppressWarnings("unchecked")
   @Override
   public void notifyCallback(CBK type, Object[] data) {
-    if (jmol.nboDialog != null)
-      jmol.nboDialog.notifyCallback(type, data);
+    if (!jmol.plugins.isEmpty())
+      for (JmolPlugin p : jmol.plugins.values())
+        p.notifyCallback(type, data);
     String strInfo = (data == null || data[1] == null ? null : data[1]
         .toString());
     Map<String, Object> info;
@@ -149,10 +151,10 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         if (jmol.frame != null) {
           //Font f = jmol.frame.getFont();
           //if (f != null) {
-            //int m = jmol.frame.getFontMetrics(f).stringWidth("M");
-            //int n = jmol.frame.getWidth() / m;
-            //if (n < menuName.length())
-              //menuName = menuName.substring(0, n) + "...";
+          //int m = jmol.frame.getFontMetrics(f).stringWidth("M");
+          //int n = jmol.frame.getWidth() / m;
+          //if (n < menuName.length())
+          //menuName = menuName.substring(0, n) + "...";
           //}
           jmol.frame.setTitle(menuName);
         }
@@ -190,7 +192,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         String service = (String) info.get("service");
         if ("nbo".equals(service)) {
           if ("showPanel".equals(info.get("action")))
-          jmol.startNBO(null);
+            jmol.startNBO(null);
           //else
           //jmol.getNBOService().processRequest(info, 0);
         }

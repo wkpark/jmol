@@ -109,7 +109,7 @@ import org.gennbo.NBOService;
 
 public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient {
 
-  public static HistoryFile historyFile;
+  protected static HistoryFile historyFile, pluginFile;
 
   public Viewer vwr;
 
@@ -221,6 +221,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     this.startupWidth = startupWidth;
     this.startupHeight = startupHeight;
     historyFile = jmolApp.historyFile;
+    pluginFile = jmolApp.pluginFile;
     numWindows++;
 
     try {
@@ -1847,6 +1848,19 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   public Object getPreference(String key) {
     return preferencesDialog.currentProperties.get(key);
+  }
+
+  public static String getJmolProperty(String key, String defaultValue) {
+    return historyFile.getProperty(key, defaultValue);
+  }
+
+  public static void setPluginOption(String pluginName, String key,
+                                     String value) {
+    pluginFile.addProperty(pluginName + "_" + key, value);
+  }
+
+  public static String getPluginOption(String pluginName, String key, String defaultValue) {
+    return pluginFile.getProperty(pluginName + "_" + key, defaultValue);  
   }
 
 }

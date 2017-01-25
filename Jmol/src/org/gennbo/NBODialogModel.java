@@ -110,12 +110,12 @@ abstract class NBODialogModel extends NBODialogConfig {
     panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    panel.add(titleBox(" Input Model ", new HelpBtn(
+    panel.add(createTitleBox(" Input Model ", new HelpBtn(
         "model_input_intro_help.htm")));
     panel.add(useBox());
     panel.add(editBox(panel)).setVisible(false);
     panel.add(
-        titleBox(" Save Model ", new HelpBtn("model_save_intro_help.htm")))
+        createTitleBox(" Save Model ", new HelpBtn("model_save_intro_help.htm")))
         .setVisible(false);
     panel.add(saveBox()).setVisible(false);
     if (vwr.ms.ac > 0) {
@@ -132,7 +132,7 @@ abstract class NBODialogModel extends NBODialogConfig {
    */
   private Component useBox() {
 
-    Box inputBox = borderBox(true);
+    Box inputBox = createBorderBox(true);
     inputBox.setMaximumSize(new Dimension(355, 155));
 
     final JRadioButton jrJmolIn = new JRadioButton("NIH/PubChem");
@@ -250,8 +250,8 @@ abstract class NBODialogModel extends NBODialogConfig {
     topBox.add(undo);
     topBox.add(redo);
     topBox.add(new HelpBtn("model_edit_intro_help.htm"));
-    c.add(titleBox(" Edit Model ", topBox)).setVisible(false);
-    Box editBox = borderBox(false);
+    c.add(createTitleBox(" Edit Model ", topBox)).setVisible(false);
+    Box editBox = createBorderBox(false);
     Box actionBox = Box.createVerticalBox();
     final String[] actions = { "Alter", "Clip", "Fuse", "Link", "Mutate",
         "Switch", "Twist", "Value", "3chb" };
@@ -439,7 +439,7 @@ abstract class NBODialogModel extends NBODialogConfig {
 
   private Box saveBox() {
 
-    Box sBox = borderBox(true);
+    Box sBox = createBorderBox(true);
     final String[] SAVE_OPTIONS = { "<Select File Type>",
         "XYZ                        [.xyz]",
         "MOL                        [.mol]",
@@ -482,7 +482,7 @@ abstract class NBODialogModel extends NBODialogConfig {
 
           }
           saveModel(folder, name, ext);
-          saveWorkHistory();
+          saveWorkingPath(fileDir);
           return true;
         }
         JFileChooser myChooser = new JFileChooser();
@@ -526,7 +526,7 @@ abstract class NBODialogModel extends NBODialogConfig {
             fileDir = newFile.getParent();
             saveModel(newFile.getParent(), NBOFileHandler.getJobStem(newFile),
                 ext);
-            saveWorkHistory();
+            saveWorkingPath(fileDir);
           } else
             log("Invalid extension defined", 'b');
         }
@@ -791,10 +791,10 @@ abstract class NBODialogModel extends NBODialogConfig {
       alsoLoadJmol = false;
     }
     //clearModel();
-    String fName = nboService.serverDir + "/jmol_outfile.cfi";
+    String fName = nboService.getServerPath("jmol_outfile.cfi");
     SB sb = new SB();
     inputFileHandler.writeToFile(fName, s);
-    sb.append("GLOBAL C_PATH " + nboService.serverDir + sep);
+    sb.append("GLOBAL C_PATH " + nboService.getServerPath(null) + "/" + sep);
     sb.append("GLOBAL C_ESS c" + sep);
     sb.append("GLOBAL C_FNAME jmol_outfile" + sep);
     sb.append("GLOBAL C_IN_EXT cfi" + sep);

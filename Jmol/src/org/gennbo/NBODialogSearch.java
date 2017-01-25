@@ -195,7 +195,7 @@ abstract class NBODialogSearch extends NBODialogView {
     keywordNumber = 0;
     p.setLayout(new BorderLayout());
     /////INPUT FILE/////////////
-    Box box1 = titleBox(" Select Job ", new HelpBtn("search_job_help.htm"));
+    Box box1 = createTitleBox(" Select Job ", new HelpBtn("search_job_help.htm"));
     Box box = Box.createHorizontalBox();
     box.setAlignmentX(0.0f);
 
@@ -331,7 +331,7 @@ abstract class NBODialogSearch extends NBODialogView {
         }
       }
     });
-    Box box2 = titleBox(" Select Keyword ", topBox);
+    Box box2 = createTitleBox(" Select Keyword ", topBox);
     back.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
@@ -356,7 +356,7 @@ abstract class NBODialogSearch extends NBODialogView {
     basis = new JComboBox<String>(NBODialogView.basSet);
     basis.setUI(new StyledComboBoxUI(180, -1));
 
-    inputFileHandler.browse.setEnabled(true);
+    inputFileHandler.setBrowseEnabled(true);
 
     settingsBox.removeAll();
     String file = vwr.getProperty("String", "filename", null).toString();

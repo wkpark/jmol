@@ -25,6 +25,7 @@ package org.gennbo;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -168,21 +169,16 @@ public class NBOService {
 
   private boolean inData;
   protected boolean isWorking;
-  String serverPath;
-  String serverDir;
-
-
+  private String serverPath;
+  private String serverDir;
   private String nboModel;
   
   NBOJob currJob;
   Queue<NBOJob> jobQueue;
   protected Object lock;
   private boolean cantStartServer;
+  private String exeName = "NBOServe.exe";
   
-  boolean isOffLine() {
-    return cantStartServer;
-  }
-
   /**
    * Manage communication between Jmol and NBOServer
    * 
@@ -193,22 +189,50 @@ public class NBOService {
   public NBOService(Viewer vwr) {    
     this.vwr = vwr;
     sbRet = new SB();
-    java.util.Properties props = JmolPanel.historyFile.getProperties();
-    setServerPath(props.getProperty("nboServerPath",
+    setServerPath(getNBOProperty("serverPath",
         System.getProperty("user.home") + "/NBOServe"));
     jobQueue = new ArrayDeque<NBOJob>();
     lock = new Object();
   }
 
+  boolean isOffLine() {
+    return cantStartServer;
+  }
+  
   /**
-   * Set path to NBOServe.exe
+   * Return path to NBOServe directory.
+   * 
+   * @param fileName  or null for path itself, without slash
+   * 
+   * @return path
+   */
+  String getServerPath(String fileName) {
+    return (fileName == null ? serverPath : serverPath + "/" + fileName);
+  }
+
+  /**
+   * Set path to NBOServe diretory
    * 
    * @param path
    */
   protected void setServerPath(String path) {
-    serverPath = path;
-    serverDir = new File(serverPath).getParent() + "/";
+    serverPath = NBOFileHandler.fixPath(path);
   }
+
+  protected boolean isEnabled() {
+    return serverPath != null;
+  }
+
+
+  protected String getNBOProperty(String name, String defaultValue) {
+    return JmolPanel.getPluginOption("NBO", name, defaultValue);
+  }
+
+  protected void setNBOProperty(String name, String option) {
+    option = PT.rep(option, "\\", "/");
+    JmolPanel.setPluginOption("NBO", name, option);
+  }
+
 
   /**
    * @param job
@@ -273,8 +297,8 @@ public class NBOService {
   String startProcess(boolean sync, @SuppressWarnings("unused") final int mode) {
     try {
       System.out.println("starting NBO process sync=" + sync);
-      File pathToExecutable = new File(serverPath);
-      ProcessBuilder builder = new ProcessBuilder(serverPath);
+      File pathToExecutable = new File(serverPath + "/" + exeName );
+      ProcessBuilder builder = new ProcessBuilder(serverPath + "/" + exeName);
       builder.directory(new File(pathToExecutable.getParent())); // this is where you set the root folder for the executable to run with
       builder.redirectErrorStream(true);
       nboServer = builder.start();
@@ -485,7 +509,6 @@ public class NBOService {
     return startProcess(false, MODE_RAW);
   }
 
-
   public boolean restartIfNecessary() {
     if (nboServer == null)
       startProcess(false, MODE_RAW);
@@ -547,5 +570,38 @@ public class NBOService {
       this.statusInfo = statusInfo;
     }
   }
+
+  public boolean connect() {
+    //if (System.getProperty("sun.arch.data.model").equals("64"))
+    String arch = System.getenv("PROCESSOR_ARCHITECTURE");
+    File f = new File(getServerPath("gennbo.bat"));
+    if (!f.exists()) {
+      vwr.alert(f + " not found, make sure gennbo.bat is in same directory as nboserve.exe");
+      return false;
+    }
+    String wow64Arch = System.getenv("PROCESSOR_ARCHITEW6432");
+    String realArch = arch.endsWith("64") || wow64Arch != null
+        && wow64Arch.endsWith("64") ? "64" : "32";
+    BufferedReader b = null;
+    try {
+      b = new BufferedReader(new FileReader(f));
+      String line;
+      //String contents = "";
+      while ((line = b.readLine()) != null) {
+        if (line.startsWith("set INT=")) {
+          line = (realArch.equals("64") ? "set INT=i8" : "set INT=i4");
+        }
+        //contents += line + System.getProperty("line.seperator");
+      }
+      //nboService.writeToFile(contents, f);
+      b.close();
+    } catch (IOException e) {
+      nboDialog.log("Error opening gennbo.bat", 'b');
+      return false;
+    }
+    return true;
+  }
+
+
 
 }

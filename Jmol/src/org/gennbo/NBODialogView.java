@@ -135,8 +135,8 @@ abstract class NBODialogView extends NBODialogRun {
     runScriptNow("set bondpicking true");
 
     //JOBFILE////////
-    panel.add(titleBox(" Select Job ", new HelpBtn("view_job_help.htm")));
-    Box inputBox = borderBox(true);
+    panel.add(createTitleBox(" Select Job ", new HelpBtn("view_job_help.htm")));
+    Box inputBox = createBorderBox(true);
     inputBox.setPreferredSize(new Dimension(355, 40));
     inputBox.setMaximumSize(new Dimension(355, 40));
     panel.add(inputBox);
@@ -221,11 +221,11 @@ abstract class NBODialogView extends NBODialogRun {
       }
     });
     horizBox.add(alphaSpin);
-    alphaSpin.setVisible(false);
     horizBox.add(betaSpin);
-    betaSpin.setVisible(false);
+    alphaSpin.setVisible(isOpenShell);
+    betaSpin.setVisible(isOpenShell);
     horizBox.add(new HelpBtn("view_orbital_help.htm"));
-    panel.add(titleBox(" Select Orbital(s) ", horizBox)).setVisible(false);
+    panel.add(createTitleBox(" Select Orbital(s) ", horizBox)).setVisible(false);
 
     //ORBITAL//////////
     JPanel orbPanel = new JPanel(new BorderLayout());
@@ -236,6 +236,8 @@ abstract class NBODialogView extends NBODialogRun {
 
       @Override
       public void valueChanged(ListSelectionEvent e) {
+        System.out.println("CHANGE1");
+        if (!e.getValueIsAdjusting())
         doSelectOrbital();
       }
     });
@@ -305,7 +307,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     viewSettings();
 
-    inputFileHandler.browse.setEnabled(true);
+    inputFileHandler.setBrowseEnabled(true);
 
     //    String file = vwr.getProperty("String", "filename", null).toString();
     //    String ext = FileHndlr.getExt(new File(file));    
@@ -501,7 +503,7 @@ abstract class NBODialogView extends NBODialogRun {
     viewPlanePt = 0;
     runScriptNow("set bondpicking false");
     viewState = VIEW_STATE_PLANE;
-    Box box = titleBox(" Definiton of Plane ", null);
+    Box box = createTitleBox(" Definiton of Plane ", null);
     final JPanel plane = new JPanel(new BorderLayout());
     JPanel labs = new JPanel(new GridLayout(7, 1, 5, 0));
     labs.add(new JLabel("Enter or select three atoms:"));
@@ -593,7 +595,7 @@ abstract class NBODialogView extends NBODialogRun {
     runScriptNow("set bondpicking false");
     viewState = VIEW_STATE_VECTOR;
     viewVectorPt = 0;
-    Box box = titleBox(" Vector Definition ", null);
+    Box box = createTitleBox(" Vector Definition ", null);
     JPanel vect = new JPanel(new BorderLayout());
     JPanel labs = new JPanel(new GridLayout(5, 1, 5, 0));
     labs.add(new JLabel("Enter or select two atom numbers:"));
@@ -671,7 +673,7 @@ abstract class NBODialogView extends NBODialogRun {
    * Vector dialog
    */
   protected void lines() {
-    Box box = titleBox(" Contour lines ", null);
+    Box box = createTitleBox(" Contour lines ", null);
     JPanel lines = new JPanel(new BorderLayout());
     JPanel labs = new JPanel(new GridLayout(5, 1, 5, 0));
     labs.add(new JLabel("Enter first contour line:"));
@@ -700,7 +702,7 @@ abstract class NBODialogView extends NBODialogRun {
     d.setVisible(true);
     d.add(box);
 
-    box = titleBox(" Orbital diagram lines ", null);
+    box = createTitleBox(" Orbital diagram lines ", null);
 
     lines = new JPanel(new BorderLayout());
     labs = new JPanel(new GridLayout(2, 1, 5, 0));
@@ -757,7 +759,7 @@ abstract class NBODialogView extends NBODialogRun {
     cam1.setVisible(true);
     //centerDialog(cam1);
     cam1.setBorder(BorderFactory.createLineBorder(Color.black));
-    Box box = titleBox(" Camera and Light-Source ", null);
+    Box box = createTitleBox(" Camera and Light-Source ", null);
     JPanel labs = new JPanel(new GridLayout(5, 1, 5, 0));
     labs.add(new JLabel("Bounding sphere radius"));
     labs.add(new JLabel("Camera distance from screen center:"));
@@ -810,7 +812,7 @@ abstract class NBODialogView extends NBODialogRun {
   }
 
   private void cam2(JPanel panel) {
-    Box box = titleBox(" Surface Optical Parameters: ", null);
+    Box box = createTitleBox(" Surface Optical Parameters: ", null);
     JPanel cam2 = new JPanel(new BorderLayout());
     cam2.setBorder(BorderFactory.createLineBorder(Color.black));
     JPanel labs = new JPanel(new GridLayout(4, 1, 5, 0));
@@ -869,7 +871,7 @@ abstract class NBODialogView extends NBODialogRun {
 
   private void cam3(JPanel panel) {
     JPanel cam3 = new JPanel(new BorderLayout());
-    Box box = titleBox(" Color (Blue/Green/Red) Parameters: ", null);
+    Box box = createTitleBox(" Color (Blue/Green/Red) Parameters: ", null);
     cam3.setBorder(BorderFactory.createLineBorder(Color.black));
     JPanel labs = new JPanel(new GridLayout(6, 1, 5, 0));
     labs.add(new JLabel("light source color:"));
@@ -930,7 +932,7 @@ abstract class NBODialogView extends NBODialogRun {
 
   private void cam4(JPanel panel) {
     JPanel cam4 = new JPanel(new BorderLayout());
-    Box box = titleBox(" Atomic and Bond Radii: ", null);
+    Box box = createTitleBox(" Atomic and Bond Radii: ", null);
     cam4.setBorder(BorderFactory.createLineBorder(Color.black));
     JPanel labs = new JPanel(new GridLayout(4, 1, 5, 0));
     labs.add(new JLabel("Atomic radius for H:"));
@@ -951,7 +953,7 @@ abstract class NBODialogView extends NBODialogRun {
 
   private void cam5(JPanel panel) {
     JPanel cam5 = new JPanel(new BorderLayout());
-    Box box = titleBox(" Contour Parameters: ", null);
+    Box box = createTitleBox(" Contour Parameters: ", null);
     cam5.setBorder(BorderFactory.createLineBorder(Color.black));
     JPanel labs = new JPanel(new GridLayout(3, 1, 5, 0));
     labs.add(new JLabel("Contour value:"));
@@ -971,7 +973,7 @@ abstract class NBODialogView extends NBODialogRun {
   protected void showJmolMO(String type, int i) {
     if (!type.startsWith("P") && !type.equals("MO"))
       type = "P" + type;
-    String script = "MO TYPE " + type + "; MO " + i;
+    String script = "MO TYPE " + type + "; MO " + i + (betaSpin.isSelected() ? " BETA" : "");
     runScriptQueued(script);
     log(script, 'b');
   }
@@ -982,7 +984,7 @@ abstract class NBODialogView extends NBODialogRun {
     if (dialogMode == NBODialog.DIALOG_SEARCH)
       if (!type.startsWith("P") && !type.equals("MO") && !type.equals("AO"))
         type = "P" + type;
-    String script = "NBO TYPE " + type + "; NBO " + i;
+    String script = "NBO TYPE " + type + "; NBO " + i + (betaSpin.isSelected() ? " BETA" : "");
     runScriptQueued(script);
     log(script, 'b');
   }
@@ -1056,7 +1058,7 @@ abstract class NBODialogView extends NBODialogRun {
       sb.append("a U" + i + " " + tmp2 + sep);
       tmp2 = "";
     }
-    inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt",
+    inputFileHandler.writeToFile(nboService.getServerPath("jview.txt"),
         sb.toString());
 
     sb = new SB();
@@ -1103,7 +1105,7 @@ abstract class NBODialogView extends NBODialogRun {
         sb.append("a V_U" + i + " " + tmp2 + sep);
         tmp2 = "";
       }
-      inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt",
+      inputFileHandler.writeToFile(nboService.getServerPath("jview.txt"),
           sb.toString());
       sb = new SB();
       sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
@@ -1178,7 +1180,7 @@ abstract class NBODialogView extends NBODialogRun {
         sb.append("a V_U" + i + " " + tmp2 + sep);
         tmp2 = "";
       }
-      inputFileHandler.writeToFile(nboService.serverDir + "/jview.txt",
+      inputFileHandler.writeToFile(nboService.getServerPath("jview.txt"),
           sb.toString());
       sb = new SB();
       sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
@@ -1215,7 +1217,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     }
     log(tmp, 'i');
-    vwr.writeTextFile(nboService.serverDir + "/jview", sb.toString());
+    vwr.writeTextFile(nboService.getServerPath("jview"), sb.toString());
 
     tmp = "";
     for (int i = 0; i < selected.length; i++) {

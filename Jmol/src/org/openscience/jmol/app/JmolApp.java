@@ -61,7 +61,7 @@ public class JmolApp implements JmolAppAPI {
   public boolean haveBorder;
 
   public File userPropsFile;
-  public HistoryFile historyFile;
+  public HistoryFile historyFile, pluginFile;
 
   public boolean haveConsole = true;
   public boolean haveDisplay = true;
@@ -111,6 +111,8 @@ public class JmolApp implements JmolAppAPI {
     userPropsFile = new File(ujmoldir, "properties");
     historyFile = new HistoryFile(new File(ujmoldir, "history"),
         "Jmol's persistent values");
+    pluginFile = new HistoryFile(new File(ujmoldir, "plugins"),
+        "Jmol plugin persistent values");
 
     
     parseCommandLine(args);

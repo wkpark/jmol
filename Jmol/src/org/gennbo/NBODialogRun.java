@@ -93,12 +93,12 @@ abstract class NBODialogRun extends NBODialogModel {
 
   protected JRadioButton rbLocal;
   protected JRadioButton[] keywordButtons;
-  protected JButton run;
+  protected JButton btnRun;
+  protected JTextField tfJobName;
 
   private String[] fileData;
 
   protected String nboKeywords;
-  protected JTextField plotFileName;
   protected boolean isOpenShell;
 
   protected ChooseList chooseList;
@@ -108,28 +108,65 @@ abstract class NBODialogRun extends NBODialogModel {
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
     //ESS////////////////////////////////////////
-    panel.add(titleBox(" Select Job ", new HelpBtn("run_job_help.htm")));
-    Box inputBox = borderBox(true);
+    panel.add(createTitleBox(" Select Job ", new HelpBtn("run_job_help.htm")));
+    Box inputBox = createBorderBox(true);
     panel.add(inputBox);
 
     //INPUT/////////////////////////
     if (inputFileHandler == null) {
       inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_RUN,
           "47", (NBODialog) this);
-      inputFileHandler.browse.setEnabled(false);
-    } else
+    } else {
       inputFileHandler = new NBOFileHandler(inputFileHandler.jobStem,
           inputFileHandler.tfExt.getText(), NBOFileHandler.MODE_RUN, "47",
           (NBODialog) this);
-    inputFileHandler.browse.setEnabled(false);
+    }
+    inputFileHandler.setBrowseEnabled(false);
 
+    inputBox.add(createSourceBox());
+    inputBox.add(inputFileHandler);
+    inputBox.setMaximumSize(new Dimension(355, 80));
+    //EDIT////////////////
+    panel
+        .add(
+            createTitleBox(" Choose $NBO Keywords ", new HelpBtn(
+                "run_keywords_help.htm"))).setVisible(false);
+    editBox = createBorderBox(true);
+    editBox.setMinimumSize(new Dimension(350, 400));
+    tfJobName = new JTextField();
+    editBox.setVisible(false);
+    panel.add(editBox);
+    //BOTTOM OPTIONS///////////////
+    btnRun = new JButton("Run");
+    btnRun.setVisible(false);
+    btnRun.setEnabled(false);
+    panel.add(btnRun).setFont(new Font("Arial", Font.PLAIN, 20));
+    btnRun.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        runJob("", inputFileHandler.inputFile, "gennbo");
+      }
+    });
+    String ext = inputFileHandler.tfExt.getText();
+
+    if (ext.equals("47"))
+      notifyLoad_r();
+
+    return panel;
+  }
+
+  /**
+   * set up the local/archive/webmo box
+   * @return Box
+   */
+  private Box createSourceBox() {
     Box box = Box.createHorizontalBox();
     ButtonGroup bg = new ButtonGroup();
     rbLocal = new JRadioButton("Local");
     rbLocal.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        inputFileHandler.browse.setEnabled(true);
+        inputFileHandler.setBrowseEnabled(true);
       }
     });
     box.add(rbLocal);
@@ -159,36 +196,7 @@ abstract class NBODialogRun extends NBODialogModel {
     });
     box.add(btn);
     bg.add(btn);
-
-    inputBox.add(box);
-    inputBox.add(inputFileHandler);
-    inputBox.setMaximumSize(new Dimension(355, 80));
-    //EDIT////////////////
-    panel
-        .add(
-            titleBox(" Choose $NBO Keywords ", new HelpBtn(
-                "run_keywords_help.htm"))).setVisible(false);
-    editBox = borderBox(true);
-    editBox.setMinimumSize(new Dimension(350, 400));
-    plotFileName = new JTextField();
-    editBox.setVisible(false);
-    panel.add(editBox);
-    //BOTTOM OPTIONS///////////////
-    run = new JButton("Run");
-    run.setVisible(false);
-    panel.add(run).setFont(new Font("Arial", Font.PLAIN, 20));
-    run.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        runJob("", inputFileHandler.inputFile, "gennbo");
-      }
-    });
-    String ext = inputFileHandler.tfExt.getText();
-
-    if (ext.equals("47"))
-      notifyLoad_r();
-
-    return panel;
+    return box;
   }
 
   /**
@@ -232,16 +240,16 @@ abstract class NBODialogRun extends NBODialogModel {
     String tmp = "";
     for (String s : tokens)
       if (s.length() > 0)
-        if (s.toLowerCase().contains("file=") && plotFileName != null) {
-          plotFileName.setText(s.substring(s.indexOf("=") + 1));
+        if (s.toLowerCase().contains("file=") && tfJobName != null) {
+          tfJobName.setText(s.substring(s.indexOf("=") + 1));
         } else {
           if (tmp.length() + s.length() - tmp.lastIndexOf(sep) >= 80)
             tmp += sep + " ";
           //sList.addElement(s);
           tmp += s.toUpperCase() + " ";
         }
-    if (plotFileName != null && plotFileName.getText().equals(""))
-      plotFileName.setText(inputFileHandler.jobStem);
+    if (tfJobName != null && tfJobName.getText().equals(""))
+      tfJobName.setText(inputFileHandler.jobStem);
     return tmp;
   }
 
@@ -447,7 +455,7 @@ abstract class NBODialogRun extends NBODialogModel {
       //FILE=///////////
       Box box = Box.createHorizontalBox();
       box.add(new JLabel("Jobname ")).setFont(new Font("Arial", Font.BOLD, 16));
-      box.add(plotFileName).setMaximumSize(new Dimension(100, 30));
+      box.add(tfJobName).setMaximumSize(new Dimension(100, 30));
       box.setAlignmentX(0.5f);
       Box box2 = Box.createVerticalBox();
       box2.add(box);
@@ -531,7 +539,7 @@ abstract class NBODialogRun extends NBODialogModel {
     sp.setPreferredSize(new Dimension(200, 200));
     sp.getViewport().add(p);
     d.add(sp, BorderLayout.CENTER);
-    p.setText("$NBO\nFile=" + plotFileName.getText() + " " + nboKeywords
+    p.setText("$NBO\nFile=" + tfJobName.getText() + " " + nboKeywords
         + "\n$END");
     p.setCaretPosition(7);
     JButton btn = new JButton("Save Changes");
@@ -549,7 +557,7 @@ abstract class NBODialogRun extends NBODialogModel {
           if (x.indexOf("=") < 0) {
             nboKeywords += x + " ";
           } else {
-            plotFileName.setText(x.substring(x.indexOf("=") + 1));
+            tfJobName.setText(x.substring(x.indexOf("=") + 1));
           }
         }
         addNBOKeylist();
@@ -586,8 +594,8 @@ abstract class NBODialogRun extends NBODialogModel {
     }
     //Check the plot file names match job name, warn user otherwise
     inputFileHandler.jobStem = inputFileHandler.jobStem.trim();
-    String jobName = (plotFileName == null ? inputFileHandler.jobStem
-        : plotFileName.getText().trim());
+    String jobName = (tfJobName == null ? inputFileHandler.jobStem
+        : tfJobName.getText().trim());
 
     // BH Q: Would it be reasonable if the NO option is chosen to put that other job name in to the jobStem field, and also copy the .47 file to that? Or use that?
     // Or, would it be better to ask this question immediately upon file loading so that it doesn't come up, and make it so that
@@ -607,7 +615,7 @@ abstract class NBODialogRun extends NBODialogModel {
               "Warning", JOptionPane.YES_NO_OPTION);
       // BH adds setting of plotFileName
       if (i == JOptionPane.YES_OPTION)
-        plotFileName.setText(jobName = inputFileHandler.jobStem);
+        tfJobName.setText(jobName = inputFileHandler.jobStem);
     }
 
     for (String x : keywords.split(" ")) {

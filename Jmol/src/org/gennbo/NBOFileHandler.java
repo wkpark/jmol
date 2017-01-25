@@ -23,7 +23,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
-import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 /**
  * Builds the input file box found in all 4 modules JPanel containing file input
@@ -35,11 +34,14 @@ class NBOFileHandler extends JPanel {
 
   protected static final String EXTENSIONS = "31;32;33;34;35;36;37;38;39;40;41;42;46;nbo";
   protected static final String[] EXT_ARRAY = PT.split(EXTENSIONS, ";");
-  protected JTextField tfDir, tfName, tfExt;
+  
   protected File inputFile;
+
+  protected JTextField tfDir, tfName, tfExt;
+  private JButton btnBrowse;
+  
   protected String fileDir, jobStem;
   protected String useExt;
-  protected JButton browse;
   protected NBODialog dialog;
   protected boolean canReRun;
 
@@ -50,12 +52,10 @@ class NBOFileHandler extends JPanel {
   protected final static int MODE_MODEL_SAVE = 5;
 
   public NBOFileHandler(String name, String ext, final int mode, String useExt,
-      NBODialog d) {
-    dialog = d;
+      NBODialog dialog) {
+    this.dialog = dialog;
     canReRun = true;
-    java.util.Properties props = JmolPanel.historyFile.getProperties();
-    fileDir = (props
-        .getProperty("workingPath", System.getProperty("user.home")));
+    fileDir = dialog.getWorkingPath();
     this.useExt = useExt;
     setLayout(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
@@ -107,14 +107,14 @@ class NBOFileHandler extends JPanel {
     c.gridx = 3;
     c.gridy = 0;
     c.gridheight = 2;
-    browse = new JButton(mode == MODE_MODEL_SAVE ? "Save" : "Browse");
-    browse.addActionListener(new ActionListener() {
+    btnBrowse = new JButton(mode == MODE_MODEL_SAVE ? "Save" : "Browse");
+    btnBrowse.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
         browsePressed();
       }
     });
-    add(browse, c);
+    add(btnBrowse, c);
     jobStem = name;
     setInput(fileDir, name, ext);
   }
@@ -164,7 +164,7 @@ class NBOFileHandler extends JPanel {
     setInputFile(inputFile);
     dialog.log("Job: " + jobStem, 'b');
     fileDir = inputFile.getParent();
-    saveWorkHistory();
+    dialog.saveWorkingPath(fileDir.toString());
     return true;
 
   }
@@ -184,7 +184,7 @@ class NBOFileHandler extends JPanel {
       jobStem = getJobStem(inputFile);
     setInput(inputFile.getParent(), jobStem, useExt);
     if (getExt(inputFile).equals("47")) {
-      if ((inputFile.getParent() + "/").equals(dialog.nboService.serverDir)) {
+      if (fixPath(inputFile.getParent().toString()).equals(dialog.nboService.getServerPath(null))) {
         JOptionPane.showMessageDialog(this,
             "Select a directory that does not contain the NBOServe executable,"
                 + "\nor select a new location for your NBOServe executable");
@@ -216,6 +216,16 @@ class NBOFileHandler extends JPanel {
         tfExt.setText("47");
       }
     }
+  }
+
+  /**
+   * change \ to /
+   * 
+   * @param path
+   * @return fixed path
+   */
+  static String fixPath(String path) {
+    return path.replace('\\',  '/');
   }
 
   /**
@@ -346,8 +356,7 @@ class NBOFileHandler extends JPanel {
   //useful file manipulation methods /////////////////////////////
 
   protected static File newNBOFile(File f, String ext) {
-    return new File(pathWithoutExtension(f.toString().replace('\\', '/')) + "."
-        + ext);
+    return new File(pathWithoutExtension(fixPath(f.toString())) + "." + ext);
   }
 
   protected static String pathWithoutExtension(String fname) {
@@ -368,12 +377,6 @@ class NBOFileHandler extends JPanel {
   protected static String getJobStem(File inputFile) {
     String fname = inputFile.getName();
     return fname.substring(0, fname.lastIndexOf("."));
-  }
-
-  protected void saveWorkHistory() {
-    java.util.Properties props = new java.util.Properties();
-    props.setProperty("workingPath", fileDir);
-    JmolPanel.historyFile.addProperties(props);
   }
 
   protected void setInput(String dir, String name, String ext) {
@@ -403,6 +406,10 @@ class NBOFileHandler extends JPanel {
   boolean writeToFile(String fileName, String s) {
     String ret = dialog.vwr.writeTextFile(fileName, s);
     return (ret != null && ret.startsWith("OK"));
+  }
+
+  public void setBrowseEnabled(boolean b) {
+    btnBrowse.setEnabled(b);
   }
 
 }

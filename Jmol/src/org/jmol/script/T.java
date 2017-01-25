@@ -1123,8 +1123,9 @@ public class T {
   public final static int barb          = misc  | 36;
   public final static int backlit       = misc  | 37;
   public final static int backshell     = misc  | 38;
-  public final static int best          = misc  | 39;
-  public final static int basepair      = misc  | 40;
+  public final static int basepair      = misc  | 39;
+  public final static int best          = misc  | 40;
+  public final static int beta          = misc  | 41;
   public final static int binary        = misc  | 42;
   public final static int blockdata     = misc  | 44;
   public final static int bondset       = misc  | 46; // never used
@@ -1915,6 +1916,7 @@ public class T {
         "balls",
         "baseModel",
         "best",
+        "beta",
         "bin",
         "bondCount",
         "bonded",
@@ -2957,6 +2959,7 @@ public class T {
         balls,                              // "balls"
         basemodel,                          // "baseModel"
         best,                               // "best"
+        beta,
         bin,                                // "bin"
         bondcount,                          // "bondCount"
         bonded,                             // "bonded"

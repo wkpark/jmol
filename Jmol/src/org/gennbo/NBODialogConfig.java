@@ -83,7 +83,6 @@ abstract class NBODialogConfig extends JDialog {
   protected static final String OUTPUT_FILE_EXTENSIONS = "adf;cfi;gau;gms;jag;mm2;mnd;mp;nw;orc;pqs;qc;mol;xyz;vfi;g09;com";
   protected static final String JMOL_EXTENSIONS = "xyz;mol";
 
-
   protected static final String sep = System.getProperty("line.separator");
 
   protected Viewer vwr;
@@ -100,14 +99,19 @@ abstract class NBODialogConfig extends JDialog {
   protected NBOFileHandler inputFileHandler;
   protected NBOFileHandler saveFileHandler;
 
-
   final static protected Font nboFont = new Font("Arial", Font.BOLD, 16);
   final static protected Font monoFont = new Font("Monospaced", Font.BOLD, 16);
   final static protected Font titleFont = new Font("Arial", Font.BOLD
       | Font.ITALIC, 18);
+
+  private static final int MODE_PATH_SERVICE = 0;
+  private static final int MODE_PATH_WORKING = 1;
+
   final static protected Color titleColor = Color.blue;
 
   protected JTextPane jpNBOLog;
+  protected JSlider opacity = new JSlider();
+
   protected String bodyText = "";
 
   protected boolean showAtNum, nboView, useWireMesh;
@@ -127,6 +131,22 @@ abstract class NBODialogConfig extends JDialog {
     super(f);
   }
 
+  protected String getJmolWorkingPath() {
+    String path = JmolPanel.getJmolProperty("workingPath",
+        System.getProperty("user.home"));
+    saveWorkingPath(path);
+    return path;
+  }
+
+  protected String getWorkingPath() {
+    String path = nboService.getNBOProperty("workingPath", null);
+    return (path == null ? getJmolWorkingPath() : path);
+  }
+
+  protected void saveWorkingPath(String path) {
+    nboService.setNBOProperty("workingPath", path);
+  }
+
   /**
    * Creates a dialog for getting info related to output frames in nbo format.
    * 
@@ -134,48 +154,16 @@ abstract class NBODialogConfig extends JDialog {
    */
   @SuppressWarnings("unchecked")
   protected JPanel buildSettingsPanel() {
+    checkNBOStatus();
+    String viewOpts = getOrbitalDisplayOptions();
+
     JPanel filePanel = new JPanel();
     filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.Y_AXIS));
+    addPathSetting(filePanel, MODE_PATH_SERVICE);
+    addPathSetting(filePanel, MODE_PATH_WORKING);
 
-    //GUI for NBO path selection
-    JTextField serverPath = new JTextField(nboService.serverPath);
-    filePanel.add(titleBox(" Location of NBOServe.exe ", null));
-    Box serverBox = borderBox(true);
-    JButton browse = new JButton("...");
-    serverBox.add(addPathBox(serverPath, 0, browse));
-    filePanel.add(serverBox);
-    final JLabel lab = new JLabel();
-    lab.setAlignmentX(0.5f);
-    if (nboService.restartIfNecessary()) {
-      lab.setText("NBOServe connected successfully");
-      lab.setForeground(Color.black);
-    } else {
-      String s = "Could not connect to NBOServe. If it is already running from another instance of Jmol, you must first close that instance.";
-      lab.setText(s);
-      lab.setForeground(Color.red);
-      alertError(s);
-    }
-
-    serverBox.setMaximumSize(new Dimension(350, 50));
-    filePanel.add(serverBox);
-    //Job files
-    filePanel.add(titleBox(" Location of Working Directory ", null));
-    Box workBox = borderBox(true);
-    filePanel.add(workBox);
-    java.util.Properties props = JmolPanel.historyFile.getProperties();
-    String workingPath = (props.getProperty("workingPath",
-        System.getProperty("user.home")));
-    JTextField runPath = new JTextField(workingPath);
-    browse = new JButton("...");
-    workBox.add(addPathBox(runPath, 1, browse));
-    workBox.setMaximumSize(new Dimension(350, 80));
-    filePanel.add(workBox);
-    JLabel label = new JLabel(
-        "(This directory must be different than NBOServe's directory)");
-    label.setAlignmentX(0.5f);
-    workBox.add(label);
     //Settings
-    filePanel.add(titleBox(" Settings ", null));
+    filePanel.add(createTitleBox(" Settings ", null));
     JCheckBox jCheckAtomNum = new JCheckBox("Show Atom Numbers");//.setAlignmentX(0.5f);
     jCheckAtomNum.addActionListener(new ActionListener() {
       @Override
@@ -186,7 +174,7 @@ abstract class NBODialogConfig extends JDialog {
     });
     showAtNum = true;
     jCheckAtomNum.setSelected(true);
-    Box settingsBox = borderBox(true);
+    Box settingsBox = createBorderBox(true);
     settingsBox.add(jCheckAtomNum);
 
     JCheckBox jCheckSelHalo = new JCheckBox("Show selection halos on atoms");
@@ -199,28 +187,6 @@ abstract class NBODialogConfig extends JDialog {
     jCheckSelHalo.doClick();
     settingsBox.add(jCheckSelHalo);
 
-    //ORBITAL DISPLAY OPTIONS//////////////////////
-    String viewOps = props.getProperty("viewOptions");
-    if (viewOps != null) {
-      if (!viewOps.equals("nboView")) {
-        String[] toks = viewOps.split(",");
-        orbColor1 = new Color(Integer.parseInt(toks[0]));
-        orbColor2 = new Color(Integer.parseInt(toks[1]));
-        opacityOp = Float.parseFloat(toks[2]);
-        useWireMesh = toks[3].contains("true");
-        runScriptNow("nbo " + (useWireMesh ? "nofill mesh" : "fill nomesh"));
-      } else {
-        orbColor1 = Color.cyan;
-        orbColor2 = Color.yellow;
-        opacityOp = 0.3f;
-        useWireMesh = false;
-      }
-    } else {
-      orbColor1 = Color.blue;
-      orbColor2 = Color.red;
-      opacityOp = 0;
-      useWireMesh = true;
-    }
     color1 = "[" + orbColor1.getRed() + " " + orbColor1.getGreen() + " "
         + orbColor1.getBlue() + "]";
     color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
@@ -244,13 +210,7 @@ abstract class NBODialogConfig extends JDialog {
         orbColor1 = ((Color) colorBox1.getSelectedItem());
         color1 = "[" + orbColor1.getRed() + " " + orbColor1.getGreen() + " "
             + orbColor1.getBlue() + "]";
-        runScriptNow("nbo color " + color2 + " " + color1 + ";mo color "
-            + color2 + " " + color1);
-        java.util.Properties props = new java.util.Properties();
-        props.setProperty("viewOptions",
-            orbColor1.getRGB() + "," + orbColor2.getRGB() + "," + opacityOp
-                + "," + useWireMesh);
-        JmolPanel.historyFile.addProperties(props);
+        setOrbitalDisplayOptions();
       }
     });
 
@@ -262,13 +222,7 @@ abstract class NBODialogConfig extends JDialog {
         orbColor2 = ((Color) colorBox2.getSelectedItem());
         color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
             + orbColor2.getBlue() + "]";
-        runScriptNow("nbo color " + color2 + " " + color1 + ";mo color "
-            + color2 + " " + color1);
-        java.util.Properties props = new java.util.Properties();
-        props.setProperty("viewOptions",
-            orbColor1.getRGB() + "," + orbColor2.getRGB() + "," + opacityOp
-                + "," + useWireMesh);
-        JmolPanel.historyFile.addProperties(props);
+        setOrbitalDisplayOptions();
       }
     });
     colorBox2.setSelectedItem(orbColor2);
@@ -280,7 +234,6 @@ abstract class NBODialogConfig extends JDialog {
     settingsBox.add(Box.createRigidArea(new Dimension(10, 10)));
 
     //Opacity slider///////////////////
-    final JSlider opacity = new JSlider();
     opacity.setMinimum(0);
     opacity.setMaximum(10);
     opacity.setMajorTickSpacing(1);
@@ -295,13 +248,7 @@ abstract class NBODialogConfig extends JDialog {
       @Override
       public void stateChanged(ChangeEvent e) {
         opacityOp = (float) opacity.getValue() / 10;
-        runScriptNow("nbo translucent " + opacityOp + ";mo translucent "
-            + opacityOp);
-        java.util.Properties props = new java.util.Properties();
-        props.setProperty("viewOptions",
-            orbColor1.getRGB() + "," + orbColor2.getRGB() + "," + opacityOp
-                + "," + useWireMesh);
-        JmolPanel.historyFile.addProperties(props);
+        setOrbitalDisplayOptions();
       }
     });
     Box opacBox = Box.createHorizontalBox();
@@ -314,16 +261,7 @@ abstract class NBODialogConfig extends JDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         useWireMesh = !useWireMesh;
-        if (useWireMesh) {
-          opacity.setValue(0);
-          runScriptNow("nbo nofill mesh;mo nofill mesh");
-        } else
-          runScriptNow("nbo fill nomesh;mo fill nomesh");
-        java.util.Properties props = new java.util.Properties();
-        props.setProperty("viewOptions",
-            orbColor1.getRGB() + "," + orbColor2.getRGB() + "," + opacityOp
-                + "," + useWireMesh);
-        JmolPanel.historyFile.addProperties(props);
+        opacity.setValue(0);
       }
     });
     if (useWireMesh)
@@ -337,12 +275,9 @@ abstract class NBODialogConfig extends JDialog {
           setNBOColorScheme();
           colorBox1.setSelectedItem(Color.cyan);
           colorBox2.setSelectedItem(Color.yellow);
-          opacity.setValue(3);
           if (jCheckWireMesh.isSelected())
             jCheckWireMesh.doClick();
-          java.util.Properties props = new java.util.Properties();
-          props.setProperty("viewOptions", "nboView");
-          JmolPanel.historyFile.addProperties(props);
+          opacity.setValue(3);
         } else
           resetColorScheme();
 
@@ -353,28 +288,146 @@ abstract class NBODialogConfig extends JDialog {
     jb.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        debugVerbose =  ((JCheckBox) e.getSource()).isSelected();
+        debugVerbose = ((JCheckBox) e.getSource()).isSelected();
       }
     });
-    if (viewOps.equals("nboView"))
+    if ("nboView".equals(viewOpts)) {
       jCheckNboView.doClick();
-    else
+    } else {
       opacity.setValue((int) (opacityOp * 10));
+    }
     settingsBox.setBorder(BorderFactory.createLineBorder(Color.black));
     filePanel.add(settingsBox);
     return filePanel;
   }
 
-  private Box addPathBox(final JTextField tf, final int m, JButton b) {
+  protected void setOrbitalDisplayOptions() {
+    String script = "nbo color " + color2 + " " + color1 + ";mo color "
+        + color2 + " " + color1 + ";";
+    script += (useWireMesh ? "nbo nofill mesh;mo nofill mesh"
+        : "nbo fill nomesh;mo fill nomesh");
+    script += ";nbo translucent " + opacityOp + ";mo translucent " + opacityOp;
+    runScriptNow(script);
+    if (!nboView)
+      nboService.setNBOProperty("orbitalDisplayOptions", orbColor1.getRGB() + ","
+          + orbColor2.getRGB() + "," + opacityOp + "," + useWireMesh);
+  }
+
+  private String getOrbitalDisplayOptions() {
+    String options = nboService.getNBOProperty("orbitalDisplayOptions", null);
+    if (options == null) {
+      orbColor1 = Color.blue;
+      orbColor2 = Color.red;
+      opacityOp = 0;
+      useWireMesh = true;
+    } else if (options.equals("nboView")) {
+      orbColor1 = Color.cyan;
+      orbColor2 = Color.yellow;
+      opacityOp = 0.3f;
+      useWireMesh = false;
+    } else {
+      // color1, color2, useMesh
+      String[] toks = options.split(",");
+      orbColor1 = new Color(Integer.parseInt(toks[0]));
+      orbColor2 = new Color(Integer.parseInt(toks[1]));
+      opacityOp = Float.parseFloat(toks[2]);
+      useWireMesh = toks[3].contains("true");
+    }
+    return options;
+  }
+
+  private void addPathSetting(JPanel filePanel, final int mode) {
+    //GUI for NBO path selection
+    String title = "";
+    String path = "";
+    switch (mode) {
+    case MODE_PATH_SERVICE:
+      title = " NBO Directory ";
+      path = nboService.getServerPath(null);
+      break;
+    case MODE_PATH_WORKING:
+      title = " Working Directory ";
+      path = getWorkingPath();
+      break;
+    }
+    final JTextField tfPath = new JTextField(path);
+    tfPath.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        setNBOPath(tfPath, mode);
+      }
+      
+    });
+    filePanel.add(createTitleBox(title, null));
+    Box serverBox = createBorderBox(true);
+    serverBox.add(createPathBox(tfPath, mode));
+    serverBox.setMaximumSize(new Dimension(350, 50));
+    filePanel.add(serverBox);
+
+    //Job files
+    //    
+    //    JLabel label = new JLabel(
+    //        "(This directory must be different than NBOServe's directory)");
+    //    label.setAlignmentX(0.5f);
+    //    workBox.add(label);
+  }
+
+  protected void setNBOPath(JTextField tf, int mode) {
+    String path = PT.rep(tf.getText(), "\\", "/");
+    if (path.length() == 0)
+      return;
+    switch (mode) {
+    case MODE_PATH_SERVICE:
+      nboService.setServerPath(path);
+      log("NBOServe location changed changed:<br> " + path, 'b');
+      connect();
+      break;
+    case MODE_PATH_WORKING:
+      if ((path + "/").equals(nboService.getServerPath(null))) {
+        vwr.alert("The working directory may not be the same as the directory containing NBOServe");
+        return;
+      }
+      nboService.setNBOProperty("workingPath", path);
+      log("Working path directory changed:<br> " + path, 'b');
+      break;
+    }
+  }
+
+  private void checkNBOStatus() {
+    //    final JLabel lab = new JLabel();
+    //    lab.setAlignmentX(0.5f);
+    if (nboService.restartIfNecessary()) {
+      //      lab.setText("NBOServe connected successfully");
+      //      lab.setForeground(Color.black);
+    } else {
+      String s = "Could not connect to NBOServe. Check to make sure its path is correct. \nIf it is already running from another instance of Jmol, you must first close that instance.";
+      //      lab.setText(s);
+      //      lab.setForeground(Color.red);
+      alertError(s);
+    }
+
+  }
+
+  /**
+   * Create a horizontal box with a text field, a
+   * 
+   * @param tf
+   * @param mode
+   *        MODE_PATH_SERVICE or MODE_PATH_WORKING
+   * @return a box
+   */
+  private Box createPathBox(final JTextField tf, final int mode) {
     Box box = Box.createHorizontalBox();
     box.add(tf);
-    box.add(b);
+    JButton b = new JButton("Browse");
     b.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        showNBOPathDialog(tf, tf.getText(), m);
+        doPathBrowseClicked(tf, tf.getText(), mode);
       }
     });
+    box.add(b);
     return box;
   }
 
@@ -382,91 +435,71 @@ abstract class NBODialogConfig extends JDialog {
    * Show a file selector for choosing NBOServe.exe from config.
    * 
    * @param tf
-   * @param f
+   * @param fname
    * @param mode
    */
-  protected void showNBOPathDialog(final JTextField tf, String f, int mode) {
+  protected void doPathBrowseClicked(final JTextField tf, String fname, int mode) {
     JFileChooser myChooser = new JFileChooser();
-    String fname = f;
     String exe = "";
-    if (mode == 0) {
+    switch (mode) {
+    case MODE_PATH_SERVICE:
       exe = "exe";
       myChooser.setFileFilter(new FileNameExtensionFilter(exe, exe));
       myChooser.setFileHidingEnabled(true);
-      myChooser.setSelectedFile(new File(f));
-    } else {
+      myChooser.setSelectedFile(new File(fname));
+      break;
+    case MODE_PATH_WORKING:
       myChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
       myChooser.setSelectedFile(new File(fname + "/ "));
+      break;
     }
     int button = myChooser.showDialog(this, GT._("Select"));
     if (button == JFileChooser.APPROVE_OPTION) {
       File newFile = myChooser.getSelectedFile();
-      String path = newFile.toString();
-      switch (mode) {
-      case 0:
-        nboService.setServerPath(path);
-        //nboService.serverPath = path;
-        System.out.println(path);
-        tf.setText(path);
-        log("NBOServe location changed changed:<br> " + path, 'b');
-        saveNBOServePath();
-        connect();
-        break;
-      case 1:
-        String workingPath = path;
-        java.util.Properties props = new java.util.Properties();
-        props.setProperty("workingPath", workingPath);
-        JmolPanel.historyFile.addProperties(props);
-        tf.setText(path);
-        log("Run file directory changed:<br> " + path, 'b');
-        break;
-      }
-
+      tf.setText(PT.rep(newFile.toString(), "\\", "/"));
     }
   }
 
+  
   /**
-   * Just saves the path settings from this session.
-   */
-  private void saveNBOServePath() {
-    java.util.Properties props = new java.util.Properties();
-    props.setProperty("nboServerPath", nboService.serverPath);
-    //props.setProperty("nboWorkingPath", workingPath);
-    JmolPanel.historyFile.addProperties(props);
-  }
-
-  /**
-   * makes the title blocks with background color for headers
+   * Creates the title blocks with background color for headers.
    * 
-   * @param st
+   * @param title
    *        - title for the section
-   * @param c
+   * @param rightSideComponent
+   *        help button, for example
    * @return Box formatted title box
    */
-  protected static Box titleBox(String st, Component c) {
+  protected static Box createTitleBox(String title, Component rightSideComponent) {
     Box box = Box.createVerticalBox();
-    JLabel title = new JLabel(st);
-    title.setAlignmentX(0.0f);
-    title.setBackground(titleColor);
-    title.setForeground(Color.white);
-    title.setFont(titleFont);
-    title.setOpaque(true);
-    if (c != null) {
+    JLabel label = new JLabel(title);
+    label.setAlignmentX(0);
+    label.setBackground(titleColor);
+    label.setForeground(Color.white);
+    label.setFont(titleFont);
+    label.setOpaque(true);
+    if (rightSideComponent != null) {
       JPanel box2 = new JPanel(new BorderLayout());
-      box2.setAlignmentX(0.0f);
-      box2.add(title, BorderLayout.WEST);
-      box2.add(c, BorderLayout.EAST);
+      box2.setAlignmentX(0);
+      box2.add(label, BorderLayout.WEST);
+      box2.add(rightSideComponent, BorderLayout.EAST);
       box2.setMaximumSize(new Dimension(355, 25));
       box.add(box2);
     } else
-      box.add(title);
+      box.add(label);
     box.setAlignmentX(0.0f);
 
     return box;
   }
 
-  protected Box borderBox(boolean vert) {
-    Box box = vert ? Box.createVerticalBox() : Box.createHorizontalBox();
+  /**
+   * create a bordered box, either vertical or horizontal
+   * 
+   * @param isVertical
+   * @return a box
+   */
+  protected Box createBorderBox(boolean isVertical) {
+    Box box = isVertical ? Box.createVerticalBox() : Box.createHorizontalBox();
     box.setAlignmentX(0.0f);
     box.setBorder(BorderFactory.createLineBorder(Color.black));
     return box;
@@ -594,23 +627,25 @@ abstract class NBODialogConfig extends JDialog {
    *        p, b, r ("red"), i, etc.
    */
   protected synchronized void log(String line, char chFormat) {
-    if (line.trim().equals("") || jpNBOLog == null || !debugVerbose && "b|r".indexOf("" + chFormat) < 0)
+    if (line.trim().equals("") || jpNBOLog == null || !debugVerbose
+        && "b|r".indexOf("" + chFormat) < 0)
       return;
     if (line.trim().length() >= 1) {
       line = PT.rep(line.trim(), "<", "&lt;");
       line = PT.rep(line, ">", "&gt;");
-      line = PT.rep(line,"&lt;br&gt;", "<br>");
+      line = PT.rep(line, "&lt;br&gt;", "<br>");
       String format0 = "" + chFormat;
       String format1 = format0;
-//      String fontFamily = jpNBOLog.getFont().getFamily();
+      //      String fontFamily = jpNBOLog.getFont().getFamily();
       if (chFormat == 'r') {
         format0 = "b style=color:red";
         format1 = "b";
       }
 
       if (!format0.equals("p"))
-        line  = "<" + format0 + ">" + line + "</" + format1 + ">";
-      jpNBOLog.setText("<html>" + (bodyText = bodyText + line + "\n<br>") + "</html>");
+        line = "<" + format0 + ">" + line + "</" + format1 + ">";
+      jpNBOLog.setText("<html>" + (bodyText = bodyText + line + "\n<br>")
+          + "</html>");
     }
     jpNBOLog.setCaretPosition(jpNBOLog.getDocument().getLength());
   }
@@ -627,7 +662,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void sendDefaultScript() {
-    
+
     runScriptQueued(DEFAULT_SCRIPT);
   }
 
@@ -642,37 +677,8 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   private boolean connect() {
-    //if (System.getProperty("sun.arch.data.model").equals("64"))
-    String arch = System.getenv("PROCESSOR_ARCHITECTURE");
-    File f = new File(nboService.serverDir + "gennbo.bat");
-    if (!f.exists()) {
-      log("gennbo.bat not found, make sure gennbo.bat is in same directory as nboserve.exe",
-          'b');
+    if (!nboService.connect())
       return false;
-    }
-    String wow64Arch = System.getenv("PROCESSOR_ARCHITEW6432");
-    String realArch = arch.endsWith("64") || wow64Arch != null
-        && wow64Arch.endsWith("64") ? "64" : "32";
-    BufferedReader b = null;
-    try {
-      b = new BufferedReader(new FileReader(f));
-      String line;
-      //String contents = "";
-      while ((line = b.readLine()) != null) {
-        if (line.startsWith("set INT=")) {
-          line = (realArch.equals("64") ? "set INT=i8" : "set INT=i4");
-        }
-        //contents += line + System.getProperty("line.seperator");
-      }
-      //nboService.writeToFile(contents, f);
-      b.close();
-    } catch (FileNotFoundException e) {
-      log("Error opening gennbo.bat", 'b');
-      return false;
-    } catch (IOException e) {
-      log("Error opening gennbo.bat", 'b');
-      return false;
-    }
     boolean isOK = checkEnabled();
     if (isOK)
       this.icon.setText("Connected");
@@ -681,10 +687,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected boolean checkEnabled() {
-    boolean haveService = (nboService.serverPath.length() > 0);
-    boolean enabled = (haveService && nboService.restartIfNecessary());
-
-    return enabled;
+    return (nboService.isEnabled() && nboService.restartIfNecessary());
   }
 
   protected String evaluateJmolString(String expr) {
@@ -713,7 +716,8 @@ abstract class NBODialogConfig extends JDialog {
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value,
-                                                  int index, boolean isSelected,
+                                                  int index,
+                                                  boolean isSelected,
                                                   boolean cellHasFocus) {
       b = true;
       setText(" ");
@@ -725,7 +729,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   class HelpBtn extends JButton implements ActionListener {
-    
+
     private String url;
 
     protected HelpBtn(String url) {
@@ -750,7 +754,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   class StyledComboBoxUI extends MetalComboBoxUI {
-    
+
     protected int height;
     protected int width;
 
@@ -773,8 +777,10 @@ abstract class NBODialogConfig extends JDialog {
     }
   }
 
-  protected void loadModelFileQueued(File f, boolean saveOrientation, boolean isAppend) {
-    String s = "load " + (isAppend ? "append " : "") + "\"" + f.getAbsolutePath() + "\"";
+  protected void loadModelFileQueued(File f, boolean saveOrientation,
+                                     boolean isAppend) {
+    String s = "load " + (isAppend ? "append " : "") + "\""
+        + f.getAbsolutePath() + "\"";
     if (saveOrientation)
       s = "save orientation o1;" + s + ";restore orientation o1";
     runScriptQueued(s);
@@ -782,12 +788,17 @@ abstract class NBODialogConfig extends JDialog {
 
   protected void colorMeshes() {
     runScriptNow((useWireMesh ? "nbo mesh nofill translucent " + opacityOp
-        + ";mo mesh nofill translucent " + opacityOp : 
-          "nbo nomesh fill translucent " + opacityOp
-          + ";mo nomesh fill translucent " + opacityOp) 
-        + ";nbo color " + color2 + " " + color1 + ";mo color " + color2 + " " + color1);
+        + ";mo mesh nofill translucent " + opacityOp
+        : "nbo nomesh fill translucent " + opacityOp
+            + ";mo nomesh fill translucent " + opacityOp)
+        + ";nbo color "
+        + color2
+        + " "
+        + color1
+        + ";mo color "
+        + color2
+        + " "
+        + color1);
   }
 
-
 }
-

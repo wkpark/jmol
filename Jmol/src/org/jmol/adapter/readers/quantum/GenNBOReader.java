@@ -73,9 +73,11 @@ public class GenNBOReader extends MOReader {
   private String nboType = "";
   private int nOrbitals0;
   private boolean isArchive;
-  private boolean betaOnly;
+  private boolean isOpenShell;
+  private boolean alphaOnly, betaOnly;
 
-  
+  private int nAOs;
+
   @Override
   protected void initializeReader() throws Exception {
     /*
@@ -95,6 +97,7 @@ public class GenNBOReader extends MOReader {
      */
     String line1 = rd().trim();
     isArchive = (line1.indexOf("$GENNBO") >= 0 || line1.indexOf("$NBO") >= 0); // GENNBO 6
+    alphaOnly =  checkFilterKey("ALPHA");
     betaOnly =  checkFilterKey("BETA");
     if (isArchive) {
       readData47();
@@ -154,10 +157,9 @@ public class GenNBOReader extends MOReader {
     getFile46();
     if (betaOnly) {
       discardLinesUntilContains("BETA");
-      line = null;
+      filterMO();
     }
     boolean isMO = !nboType.equals("AO");
-    int nAOs = nOrbitals;
     nOrbitals = orbitals.size();
     line = null;
     for (int i = nOrbitals0; i < nOrbitals; i++) {
@@ -167,7 +169,7 @@ public class GenNBOReader extends MOReader {
       if (isMO) {
         if (line == null) {
           while (rd() != null && Float.isNaN(parseFloatStr(line))) {
-            // skip lines            
+            filterMO(); //switch a/b
           }
         } else {
           line = null;
@@ -489,10 +491,12 @@ public class GenNBOReader extends MOReader {
     Map<String, String[]> map = new Hashtable<String, String[]>();
     String[] tokens = new String[0];
     rd();
+    nAOs = nOrbitals;
     while (line != null && line.length() > 0) {
       tokens = PT.getTokens(line);
       String type = tokens[0];
-      String ab = (tokens.length == 2 ? "" : tokens[1]);
+      isOpenShell = (tokens.length == 3);
+      String ab = (isOpenShell ? tokens[1] : "");
       String count = tokens[tokens.length - 1];
       String key = (ab.equals("BETA") ? "beta_" : "") + type;
       if (parseIntStr(count) != nOrbitals) {
@@ -530,9 +534,16 @@ public class GenNBOReader extends MOReader {
     tokens = map.get((betaOnly ? "beta_" : "") + type);
     moData.put("nboLabelMap", map);
     moData.put("nboLabels", tokens);
+    if (isOpenShell && !betaOnly)
+      nOrbitals *= 2;
     for (int i = 0; i < nOrbitals; i++)
       setMO(new Hashtable<String, Object>());
-    (new QS()).setNboLabels(tokens, nOrbitals, orbitals, nOrbitals0, nboType);
+    QS qs = new QS();
+    qs.setNboLabels(tokens, nOrbitals, orbitals, nOrbitals0, nboType);
+    if (isOpenShell && !betaOnly) {
+      moData.put("firstBeta", Integer.valueOf(nAOs));
+      qs.setNboLabels( map.get("beta_" + type), nOrbitals, orbitals, nOrbitals0 + nOrbitals, nboType);
+    }
   }
 
 }

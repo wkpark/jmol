@@ -815,6 +815,7 @@ public class IsoExt extends ScriptExt {
     String nboType = null;
     BS bsModels = vwr.getVisibleFramesBitSet();
     Lst<Object[]> propertyList = new Lst<Object[]>();
+    boolean isBeta = false;
     int i0 = 1;
     if (tokAt(0) == T.nbo && e.slen == 1) {
       // NBO command by itself starts the NBO Server Interface panel
@@ -878,6 +879,10 @@ public class IsoExt extends ScriptExt {
         break;
       case T.integer:
         moNumber = intParameter(i);
+        if (tokAt(i + 1) == T.beta) {
+          isBeta = true;
+          i++;
+        }
         linearCombination = moCombo(propertyList);
         if (linearCombination == null && moNumber < 0)
           linearCombination = new float[] { -100, -moNumber };
@@ -903,11 +908,13 @@ public class IsoExt extends ScriptExt {
         break;
       case T.next:
         moNumber = T.next;
+        isBeta = false;
         linearCombination = moCombo(propertyList);
         ignoreSquared = true;
         break;
       case T.prev:
         moNumber = T.prev;
+        isBeta = false;
         linearCombination = moCombo(propertyList);
         ignoreSquared = true;
         break;
@@ -993,7 +1000,7 @@ public class IsoExt extends ScriptExt {
           title = paramAsStr(++eval.iToken);
         eval.setCursorWait(true);
         setMoData(propertyList, moNumber, linearCombination, offset,
-            isNegOffset, iModel, title, nboType);
+            isNegOffset, iModel, title, nboType, isBeta);
         if (haveMO)
           addShapeProperty(propertyList, "finalize", null);
       }
@@ -1091,7 +1098,7 @@ public class IsoExt extends ScriptExt {
   @SuppressWarnings("unchecked")
   private void setMoData(Lst<Object[]> propertyList, int moNumber, float[] lc,
                          int offset, boolean isNegOffset, int modelIndex,
-                         String title, String nboType) throws ScriptException {
+                         String title, String nboType, boolean isBeta) throws ScriptException {
     ScriptEval eval = e;
     if (modelIndex < 0) {
       modelIndex = vwr.am.cmi;
@@ -1116,6 +1123,8 @@ public class IsoExt extends ScriptExt {
     if (lc == null || lc.length < 2) {
       if (lc != null && lc.length == 1)
         offset = 0;
+      else if (isBeta && moData.containsKey("firstBeta"))
+        offset = ((Integer) moData.get("firstBeta")).intValue();        
       int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
           .get("lastMoNumber")).intValue() : 0);
       int lastMoCount = (moData.containsKey("lastMoCount") ? ((Integer) moData
@@ -1229,6 +1238,7 @@ public class IsoExt extends ScriptExt {
     boolean isPhased = false;
     boolean doCalcArea = false;
     boolean doCalcVolume = false;
+    boolean isBeta = false;
     boolean isCavity = false;
     boolean haveRadius = false;
     boolean toCache = false;
@@ -1896,6 +1906,10 @@ public class IsoExt extends ScriptExt {
           moNumber = intParameter(i);
           //if (surfaceObjectSeen)
           sbCommand.append(" mo ").appendI(moNumber);
+          if (tokAt(i + 1) == T.beta) {
+            isBeta = true;
+            i++;
+          }
           break;
         default:
           if (eval.isArrayParameter(i)) {
@@ -1921,7 +1935,7 @@ public class IsoExt extends ScriptExt {
               .appendI(seed);
         }
         setMoData(propertyList, moNumber, linearCombination, offset,
-            isNegOffset, modelIndex, null, null);
+            isNegOffset, modelIndex, null, null, isBeta);
         surfaceObjectSeen = true;
         continue;
       case T.nci:
@@ -2145,7 +2159,7 @@ public class IsoExt extends ScriptExt {
       case T.ed:
         sbCommand.append(" ed");
         // electron density - never documented
-        setMoData(propertyList, -1, null, 0, false, modelIndex, null, null);
+        setMoData(propertyList, -1, null, 0, false, modelIndex, null, null, false);
         surfaceObjectSeen = true;
         continue;
       case T.debug:

@@ -535,7 +535,7 @@ public class NBODialog extends NBODialogSearch {
   }
 
   private ImageIcon getIcon(String name) {
-    return new ImageIcon(this.getClass().getResource("image/" + name + ".gif"));
+    return new ImageIcon(this.getClass().getResource("assets/" + name + ".gif"));
   }
 
   protected void nboOutput() {

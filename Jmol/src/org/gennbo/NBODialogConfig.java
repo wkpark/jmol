@@ -531,7 +531,7 @@ abstract class NBODialogConfig extends JDialog {
   protected void setNBOColorScheme() {
     try {
       String atomColors = "";
-      atomColors = GuiMap.getResourceString(this, "org/gennbo/help/atomColors.txt");
+      atomColors = GuiMap.getResourceString(this, "org/gennbo/assets/atomColors.txt");
       runScriptNow(atomColors + ";refresh");
       nboView = true;
     } catch (IOException e) {

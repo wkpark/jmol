@@ -110,7 +110,7 @@ abstract class NBODialogConfig extends JDialog {
   protected char dialogMode;
 
   protected JTextPane jpNBOLog;
-  protected JSlider opacity = new JSlider();
+  protected JSlider opacity = new JSlider(0, 10);
   protected JPanel settingsPanel;  
   protected JComboBox<Color> colorBox1, colorBox2;
   protected JCheckBox jCheckAtomNum, jCheckSelHalo, jCheckDebugVerbose, jCheckNboView, jCheckWireMesh;
@@ -241,14 +241,11 @@ abstract class NBODialogConfig extends JDialog {
     settingsBox.add(Box.createRigidArea(new Dimension(10, 10)));
 
     //Opacity slider///////////////////
-    opacity.setMinimum(0);
-    opacity.setMaximum(10);
     opacity.setMajorTickSpacing(1);
     opacity.setPaintTicks(true);
     Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
-    for (int i = 0; i < 10; i++)
-      labelTable.put(new Integer(i), new JLabel("0." + i));
-    labelTable.put(new Integer(10), new JLabel("1"));
+    for (int i = 0; i <= 10; i++)
+      labelTable.put(new Integer(i), new JLabel(i == 10 ? "1" : "0." + i));
     opacity.setPaintLabels(true);
     opacity.setLabelTable(labelTable);
     opacity.addChangeListener(new ChangeListener() {

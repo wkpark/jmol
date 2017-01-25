@@ -50,10 +50,10 @@ import javajs.swing.SwingConstants;
 import javajs.util.PT;
 import javajs.util.SB;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -117,7 +117,7 @@ public class NBODialog extends NBODialogSearch {
   protected JLabel statusLab;
   protected JPanel nboOutput;
 
-  private NBOPlugin nboPlugin;
+  protected NBOPlugin nboPlugin;
   
   static final char DIALOG_CONFIG = 'c';
   static final char DIALOG_MODEL = 'm';
@@ -341,7 +341,7 @@ public class NBODialog extends NBODialogSearch {
     b.add(Box.createRigidArea(new Dimension(370,0)));
     icon.setOpaque(true);
     icon.setBackground(Color.LIGHT_GRAY);
-    icon.setText((haveService)?"  Connected  ":" Not Connected  ");
+    icon.setText((haveService)?"  Connected  ":"<html><center>Not<br>Connected</center></html>");
     icon.setForeground(haveService?Color.black:Color.red);
     icon.setBorder(BorderFactory.createLineBorder(Color.black));
     
@@ -805,7 +805,7 @@ public class NBODialog extends NBODialogSearch {
       statusLab.setText(statusInfo);
   }
 
-  public void processEnd(int dialogMode, DefaultComboBoxModel<String> list) {
+  public void processEnd(int dialogMode, AbstractListModel<String> list) {
     statusLab.setText("");
     switch (dialogMode) {
     case NBOService.MODE_IMAGE:

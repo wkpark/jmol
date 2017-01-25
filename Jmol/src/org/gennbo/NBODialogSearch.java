@@ -43,6 +43,7 @@ import java.util.Hashtable;
 import javajs.util.PT;
 import javajs.util.SB;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -962,7 +963,7 @@ abstract class NBODialogSearch extends NBODialogView {
    * 
    * @param list
    */
-  protected void setSearchList(DefaultComboBoxModel<String> list) {
+  protected void setSearchList(AbstractListModel<String> list) {
     switch (keywordNumber) {
     case KEYWD_CMO:
       if (list.equals(list1)) {

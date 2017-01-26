@@ -1725,7 +1725,8 @@ abstract class NBODialogView extends NBODialogRun {
       DefaultListModel<String> model = (DefaultListModel<String>) getModel();
       String script = "select all";
       String beta = (betaSpin.isSelected() ? " beta" : "");
-
+      String type = basis.getSelectedItem().toString();
+      
       // get only the ones needing changing
       BS bsSel = new BS();
       int[] selected = getSelectedIndices();
@@ -1749,7 +1750,7 @@ abstract class NBODialogView extends NBODialogRun {
         String id = "mo" + i;
         script += ";select *;if (" + bsKnown.get(i) + "){isosurface " + id + " on} else {isosurface " + id
             + " color " + (bsNeg.get(i) ? color1 + " " + color2 : color2 + " " + color1)
-            + " cutoff 0.0316 MO " + (i + 1) + beta + " frontonly "
+            + " cutoff 0.0316 NBO " + type + " " + (i + 1) + beta + " frontonly "
             + (useWireMesh ? " mesh nofill" : " nomesh fill translucent " + opacityOp) + "}";
       }
 

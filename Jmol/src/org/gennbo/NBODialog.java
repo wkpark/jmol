@@ -788,13 +788,13 @@ public class NBODialog extends NBODialogSearch {
         NBOFileHandler.getExt(inputFileHandler.inputFile).equals("47"));
   }
     
-  public void setStatus(String statusInfo) {
+  void setStatus(String statusInfo) {
     if (statusInfo.length() > 0)
       log(statusInfo, 'p');  
       statusLab.setText(statusInfo);
   }
 
-  public void processEnd(int dialogMode, AbstractListModel<String> list) {
+  void processEnd(int dialogMode, AbstractListModel<String> list) {
     statusLab.setText("");
     switch (dialogMode) {
     case NBOService.MODE_IMAGE:
@@ -822,11 +822,15 @@ public class NBODialog extends NBODialogSearch {
     setStatus("OK mode=" + dialogMode);
   }
 
-  public void loadFromHandler(File file) {
+  void loadFromHandler(File file) {
     isNewModel = true;
     if (dialogMode == DIALOG_VIEW) 
       setViewerBasis();
      else
       loadModelFileQueued(file, false, false);
+  }
+
+  void setLicense(String line) {
+    licenseInfo.setText("<html><div style='text-align: center'>" + line + "</html>");
   }
 }

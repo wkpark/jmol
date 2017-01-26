@@ -1016,8 +1016,8 @@ public class IsoExt extends ScriptExt {
 
 
   @SuppressWarnings("unchecked")
-  private void setNBOType(Map<String, Object> moData, String type)
-      throws ScriptException {
+  private void setNBOType(Map<String, Object> moData, String type,
+                          boolean isBeta) throws ScriptException {
     //         31    32    33    34    35    36    37    38    39    40    41
     int ext = ";AO;  ;PNAO;;NAO; ;PNHO;;NHO; ;PNBO;;NBO; ;PNLMO;NLMO;;MO;  ;NO;"
         .indexOf(";" + type + ";");
@@ -1030,7 +1030,8 @@ public class IsoExt extends ScriptExt {
     if (chk)
       return;
     try {
-      Lst<Map<String, Object>> orbitals = (Lst<Map<String, Object>>) moData.get(type + "_coefs");
+      Lst<Map<String, Object>> orbitals = (Lst<Map<String, Object>>) moData
+          .get(type + "_coefs");
       if (orbitals == null) {
         String fileName = moData.get("nboRoot") + "." + ext;
         String data = vwr.getFileAsString3(fileName, true, null);
@@ -1045,8 +1046,17 @@ public class IsoExt extends ScriptExt {
           orbitals.addLast(mo);
           mo.put("dfCoefMaps", dfCoefMaps);
         }
-        ((QS) Interface.getInterface("org.jmol.quantum.QS", vwr, "script")).setNboLabels(nboLabels, n, orbitals, 0, type);
+        ((QS) Interface.getInterface("org.jmol.quantum.QS", vwr, "script"))
+            .setNboLabels(nboLabels, n, orbitals, 0, type);
         data = data.substring(data.lastIndexOf("--") + 2);
+        if (data.indexOf("alpha") >= 0) {
+          if (isBeta) {
+            if (data.indexOf("beta") >= 0)
+              data = data.substring(data.indexOf("beta") + 4);
+            else
+              data = "";
+          }
+        }
         int len = data.length();
         int[] next = new int[1];
         for (int i = 0; i < n; i++) {
@@ -1112,7 +1122,7 @@ public class IsoExt extends ScriptExt {
       error(ScriptError.ERROR_moModelError);
     vwr.checkMenuUpdate();
     if (nboType != null) {
-      setNBOType(moData, nboType);
+      setNBOType(moData, nboType, isBeta);
       if (lc == null && moNumber == Integer.MAX_VALUE)
         return;
     }
@@ -1246,6 +1256,7 @@ public class IsoExt extends ScriptExt {
     boolean haveSlab = false;
     boolean haveIntersection = false;
     boolean isFrontOnly = false;
+    String nbotype = null;
     float[] data = null;
     String cmd = null;
     int thisSetNumber = Integer.MIN_VALUE;
@@ -1870,7 +1881,12 @@ public class IsoExt extends ScriptExt {
           error(ScriptError.ERROR_expressionExpected);
         }
         break;
+      case T.nbo:
+        nbotype = paramAsStr(++i).toUpperCase();
+        sbCommand.append(" nbo ").append(nbotype).append(" ");
       case T.mo:
+        if (nbotype == null)
+          sbCommand.append(" mo ");
         // mo 1-based-index
         int moNumber = Integer.MAX_VALUE;
         int offset = Integer.MAX_VALUE;
@@ -1883,7 +1899,7 @@ public class IsoExt extends ScriptExt {
           eval.bad();
           break;
         case T.density:
-          sbCommand.append("mo [1] squared ");
+          sbCommand.append("[1] squared ");
           addShapeProperty(propertyList, "squareLinear", Boolean.TRUE);
           linearCombination = new float[] { 1 };
           offset = moNumber = 0;
@@ -1895,7 +1911,7 @@ public class IsoExt extends ScriptExt {
           moNumber = 0;
           i = eval.iToken;
           //if (surfaceObjectSeen) {
-          sbCommand.append(" mo " + (isNegOffset ? "-" : "") + "HOMO ");
+          sbCommand.append((isNegOffset ? "-" : "") + "HOMO ");
           if (offset > 0)
             sbCommand.append("+");
           if (offset != 0)
@@ -1905,7 +1921,7 @@ public class IsoExt extends ScriptExt {
         case T.integer:
           moNumber = intParameter(i);
           //if (surfaceObjectSeen)
-          sbCommand.append(" mo ").appendI(moNumber);
+          sbCommand.appendI(moNumber);
           if (tokAt(i + 1) == T.beta) {
             isBeta = true;
             i++;
@@ -1935,7 +1951,7 @@ public class IsoExt extends ScriptExt {
               .appendI(seed);
         }
         setMoData(propertyList, moNumber, linearCombination, offset,
-            isNegOffset, modelIndex, null, null, isBeta);
+            isNegOffset, modelIndex, null, nbotype, isBeta);
         surfaceObjectSeen = true;
         continue;
       case T.nci:

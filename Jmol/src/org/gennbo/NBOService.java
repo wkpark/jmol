@@ -310,13 +310,18 @@ public class NBOService {
           //boolean haveStart = false;
           boolean inOpener = false;
           boolean inRequest = false;
+          boolean inError = false;
           System.out.println("nboListener " + this + " running");
           while (!Thread.currentThread().isInterrupted()) {
             String line = null;
             try {
               while ((line = nboReader.readLine()) != null) {
-
-                logServerLine(line);
+                if (line.indexOf("***errmess***") == 0) {
+                  logServerLine(line, false);
+                  inError = !inError;
+                  continue;
+                }
+                logServerLine(line, inError);
                 // ignore the opener business
                 if (line.indexOf("DATA \" \"") >= 0) {
                   //nboDialog.logInfo(" DATA...", Logger.LEVEL_INFO);
@@ -349,10 +354,8 @@ public class NBOService {
                   nboDialog.alertError("NBOServe has stopped working");
                   restart();
                 }
-                if (line.indexOf("NBOServe") >= 0) {
-                  nboDialog.licenseInfo
-                      .setText("<html><div style='text-align: center'>" + line
-                          + "</html>");
+                if (line.indexOf("NBOServe v") >= 0) {
+                  nboDialog.setLicense(line);
                   isWorking = false;
                   continue;
                 }
@@ -467,14 +470,16 @@ public class NBOService {
 
   private int lineNo = 0;
 
-  protected void logServerLine(String line) {
+  protected void logServerLine(String line, boolean inError) {
+    
     nboDialog.logInfo((++lineNo) + "< " + line,
-        isFortranError(line) ? Logger.LEVEL_ERROR : Logger.LEVEL_DEBUG);
+        isFortranError(line) || inError ? Logger.LEVEL_ERROR : Logger.LEVEL_DEBUG);
   }
 
   protected boolean isFortranError(String line) {
     return line.indexOf("Permission denied") >= 0
-        || line.indexOf("PGFIO-F") >= 0 || line.indexOf("Invalid command") >= 0;
+        || line.indexOf("PGFIO-F") >= 0 
+        || line.indexOf("Invalid command") >= 0;
   }
 
   public void closeProcess() {

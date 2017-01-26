@@ -74,6 +74,13 @@ import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 abstract class NBODialogConfig extends JDialog {
 
+  static final char DIALOG_HOME   = 'h';
+  static final char DIALOG_SEARCH = 's';
+  static final char DIALOG_VIEW   = 'v';
+  static final char DIALOG_RUN    = 'r';
+  static final char DIALOG_MODEL  = 'm';
+  static final char DIALOG_CONFIG = 'c';
+
   private static final String DEFAULT_SCRIPT = "set bondpicking true;set multipleBondSpacing -0.5;set zoomlarge false;select none;";
 
   protected static final String INPUT_FILE_EXTENSIONS = "adf;cfi;com;g09;gau;gms;jag;log;mm2;mnd;mol;mp;nw;orc;pqs;qc;vfi;xyz;47";
@@ -108,7 +115,11 @@ abstract class NBODialogConfig extends JDialog {
   protected NBOFileHandler inputFileHandler;
   protected NBOFileHandler saveFileHandler;
   protected char dialogMode;
+  protected boolean isOpenShell;
+  protected boolean isJmolNBO;
+  protected boolean haveService;
 
+  protected JLabel statusLab;
   protected JTextPane jpNBOLog;
   protected JSlider opacity = new JSlider(0, 10);
   protected JPanel settingsPanel;  
@@ -119,7 +130,6 @@ abstract class NBODialogConfig extends JDialog {
 
   protected String bodyText = "";
   protected boolean showAtNum, nboView, useWireMesh;
-
   protected Color orbColor1, orbColor2;
   protected String color1, color2;
   protected float opacityOp;

@@ -151,7 +151,7 @@ class NBOFileHandler extends JPanel {
     inputFile = selectedFile;
     //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 
     //return false;
-    if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
+    if (dialog.dialogMode == NBODialogConfig.DIALOG_MODEL)
       return true;
     // DP? if(!inputFile.getAbsolutePath().endsWith(".47"))
     // DP?  inputFile = newNBOFile(inputFile, "47");
@@ -197,8 +197,8 @@ class NBOFileHandler extends JPanel {
       boolean canLoad = true;
       for (String x : EXT_ARRAY) {
         File f3 = newNBOFile(inputFile, x);
-        if (!f3.exists() && (dialog.dialogMode != NBODialog.DIALOG_MODEL)) {
-          if (dialog.dialogMode != NBODialog.DIALOG_RUN) {
+        if (!f3.exists() && (dialog.dialogMode != NBODialogConfig.DIALOG_MODEL)) {
+          if (dialog.dialogMode != NBODialogConfig.DIALOG_RUN) {
             if (canReRun) {
               canReRun = false;
               dialog.runJob("PLOT", inputFile, "gennbo");
@@ -212,7 +212,7 @@ class NBOFileHandler extends JPanel {
       }
       if (canLoad) {
         dialog.loadFromHandler(new File(fileDir + "/" + jobStem + ".47"));
-      } else if (dialog.dialogMode == NBODialog.DIALOG_RUN) {
+      } else if (dialog.dialogMode == NBODialogConfig.DIALOG_RUN) {
         dialog.loadModelFromNBO(fileDir, jobStem, useExt);
         tfName.setText(jobStem);
         tfExt.setText("47");

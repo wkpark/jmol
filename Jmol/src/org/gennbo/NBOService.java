@@ -570,33 +570,33 @@ public class NBOService {
 
   public boolean connect() {
     //if (System.getProperty("sun.arch.data.model").equals("64"))
-    String arch = System.getenv("PROCESSOR_ARCHITECTURE");
+    //String arch = System.getenv("PROCESSOR_ARCHITECTURE");
     File f = new File(getServerPath("gennbo.bat"));
     if (!f.exists()) {
       vwr.alert(f + " not found, make sure gennbo.bat is in same directory as "
           + exeName);
       return false;
     }
-    String wow64Arch = System.getenv("PROCESSOR_ARCHITEW6432");
-    String realArch = arch.endsWith("64") || wow64Arch != null
-        && wow64Arch.endsWith("64") ? "64" : "32";
-    BufferedReader b = null;
-    try {
-      b = new BufferedReader(new FileReader(f));
-      String line;
-      //String contents = "";
-      while ((line = b.readLine()) != null) {
-        if (line.startsWith("set INT=")) {
-          line = (realArch.equals("64") ? "set INT=i8" : "set INT=i4");
-        }
-        //contents += line + System.getProperty("line.seperator");
-      }
-      //nboService.writeToFile(contents, f);
-      b.close();
-    } catch (IOException e) {
-      nboDialog.log("Error opening gennbo.bat", 'b');
-      return false;
-    }
+//    String wow64Arch = System.getenv("PROCESSOR_ARCHITEW6432");
+//    String realArch = arch.endsWith("64") || wow64Arch != null
+//        && wow64Arch.endsWith("64") ? "64" : "32";
+//    BufferedReader b = null;
+//    try {
+//      b = new BufferedReader(new FileReader(f));
+//      String line;
+//      //String contents = "";
+//      while ((line = b.readLine()) != null) {
+//        if (line.startsWith("set INT=")) {
+//          line = (realArch.equals("64") ? "set INT=i8" : "set INT=i4");
+//        }
+//        //contents += line + System.getProperty("line.seperator");
+//      }
+//      //nboService.writeToFile(contents, f);
+//      b.close();
+//    } catch (IOException e) {
+//      nboDialog.log("Error opening gennbo.bat", 'b');
+//      return false;
+//    }
     return true;
   }
 

@@ -99,7 +99,6 @@ abstract class NBODialogRun extends NBODialogModel {
   private String[] fileData;
 
   protected String nboKeywords;
-  protected boolean isOpenShell;
 
   protected JPanel buildRunPanel() {
     panel = new JPanel();
@@ -137,7 +136,7 @@ abstract class NBODialogRun extends NBODialogModel {
     //BOTTOM OPTIONS///////////////
     btnRun = new JButton("Run");
     btnRun.setVisible(false);
-    btnRun.setEnabled(false);
+    btnRun.setEnabled(true);
     panel.add(btnRun).setFont(new Font("Arial", Font.PLAIN, 20));
     btnRun.addActionListener(new ActionListener() {
       @Override

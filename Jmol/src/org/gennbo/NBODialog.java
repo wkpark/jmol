@@ -110,21 +110,10 @@ public class NBODialog extends NBODialogSearch {
   
   private JPanel homePanel;
 
-  boolean isJmolNBO;
-
-  private boolean haveService;
-
-  protected JLabel statusLab;
   protected JPanel nboOutput;
 
   protected NBOPlugin nboPlugin;
   
-  static final char DIALOG_CONFIG = 'c';
-  static final char DIALOG_MODEL = 'm';
-  static final char DIALOG_RUN = 'r';
-  static final char DIALOG_VIEW = 'v';
-  static final char DIALOG_SEARCH = 's';
-  static final char DIALOG_HOME = 'h';
   //static final int DIALOG_LIST = 64; // used only for addLine
   // local settings of the dialog type
 
@@ -341,8 +330,8 @@ public class NBODialog extends NBODialogSearch {
     b.add(Box.createRigidArea(new Dimension(370,0)));
     icon.setOpaque(true);
     icon.setBackground(Color.LIGHT_GRAY);
-    icon.setText((haveService)?"  Connected  ":"<html><center>Not<br>Connected</center></html>");
-    icon.setForeground(haveService?Color.black:Color.red);
+    icon.setText(haveService ? "  Connected  ":"<html><center>Not<br>Connected</center></html>");
+    icon.setForeground(haveService ? Color.black:Color.red);
     icon.setBorder(BorderFactory.createLineBorder(Color.black));
     
     p.add(b);
@@ -540,12 +529,12 @@ public class NBODialog extends NBODialogSearch {
 
   protected void nboOutput() {
     nboOutput = new JPanel(new BorderLayout());
-    settingsBox = new JPanel(new BorderLayout());
-    settingsBox.add(new JLabel("Settings"), BorderLayout.NORTH);
+    viewSettingsBox = new JPanel(new BorderLayout());
+    viewSettingsBox.add(new JLabel("Settings"), BorderLayout.NORTH);
     JPanel s = new JPanel(new BorderLayout());
-    s.add(settingsBox,BorderLayout.NORTH);
-    settingsBox.setVisible(true);
-    nboOutput.add(settingsBox,BorderLayout.NORTH);
+    s.add(viewSettingsBox,BorderLayout.NORTH);
+    viewSettingsBox.setVisible(true);
+    nboOutput.add(viewSettingsBox,BorderLayout.NORTH);
     nboOutput.add(s,BorderLayout.CENTER);
     JLabel lab = new JLabel("Session Log");
     lab.setFont(nboFont);
@@ -644,7 +633,7 @@ public class NBODialog extends NBODialogSearch {
     }
     nboService.clearQueue();
     nboService.isWorking = false;
-    this.settingsBox.setVisible(false);
+    this.viewSettingsBox.setVisible(false);
     if (!checkEnabled())
       type = 'c';
     if (topPanel != null) {
@@ -834,7 +823,7 @@ public class NBODialog extends NBODialogSearch {
   }
 
   public void loadFromHandler(File file) {
-    isNewJob = true;
+    isNewModel = true;
     if (dialogMode == DIALOG_VIEW) 
       setViewerBasis();
      else

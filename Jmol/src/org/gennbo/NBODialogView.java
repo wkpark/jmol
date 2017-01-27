@@ -33,7 +33,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -51,7 +50,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -63,13 +61,13 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.ListCellRenderer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.jmol.util.BSUtil;
+import org.jmol.awt.AwtColor;
 import org.jmol.java.BS;
+import org.jmol.util.C;
 
 abstract class NBODialogView extends NBODialogRun {
 
@@ -115,7 +113,6 @@ abstract class NBODialogView extends NBODialogRun {
   protected String currOrb = "";
   private char currSign = '+';
   private char lastSign = '+';
-  private int iLast = 0;
 
   //NBOServe view settings
   private String[] plVal, vecVal, lineVal;
@@ -263,8 +260,7 @@ abstract class NBODialogView extends NBODialogRun {
     inputBox.setPreferredSize(new Dimension(355, 40));
     inputBox.setMaximumSize(new Dimension(355, 40));
     topBox.add(inputBox);
-    inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_VIEW,
-        "47", (NBODialog) this);
+    inputFileHandler = newNBOFileHandler("", "47", NBOFileHandler.MODE_VIEW, "47");
     inputBox.add(inputFileHandler);
     inputBox.setMaximumSize(new Dimension(350, 75));
     return topBox;
@@ -287,7 +283,7 @@ abstract class NBODialogView extends NBODialogRun {
 
             if (alphaList != null)
               alphaList = betaList = null;
-            basisSel();
+            setNewBasis();
           }
         });
 
@@ -313,7 +309,7 @@ abstract class NBODialogView extends NBODialogRun {
             if (nboView) {
               runScriptNow("select *;color bonds lightgrey");
             }
-            basisSel();
+            setNewBasis();
           }
 
         });
@@ -333,7 +329,7 @@ abstract class NBODialogView extends NBODialogRun {
             if (nboView) {
               runScriptNow("select*;color bonds lightgrey");
             }
-            basisSel();
+            setNewBasis();
           }
 
         });
@@ -361,7 +357,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     orbPanel.setAlignmentX(0.0f);
     orbPanel.add(new JLabel(
-        "      (ctrl+click to select up to 9; alt+click to change phase)"),
+        "click to turn up to 9 orbitals on/off; dbl-click to reverse phase"),
         BorderLayout.SOUTH);
 
     //    orbitals.addListSelectionListener(new ListSelectionListener() {
@@ -607,7 +603,7 @@ abstract class NBODialogView extends NBODialogRun {
   //  }
   //
 
-  protected void basisSel() {
+  protected void setNewBasis() {
     if (orbitals == null)
       return;
     // old
@@ -626,10 +622,6 @@ abstract class NBODialogView extends NBODialogRun {
     //orbitals.removeListSelectionListener(orbitals);
     //orbitals.setLayoutOrientation(JList.VERTICAL);
 
-    runScriptNow("isosurface delete");
-    orbitals.clearOrbs();
-
-    iLast = orbitals.getSelectedIndex();
     if (basis.getSelectedIndex() == BASIS_MO) {
       nboKeywords = cleanNBOKeylist(inputFileHandler.read47File()[1]);
       if (!nboKeywords.contains("CMO")) {
@@ -666,7 +658,7 @@ abstract class NBODialogView extends NBODialogRun {
     boolean isBeta = isOpenShell && !alphaSpin.isSelected();
     DefaultListModel<String> list = (isBeta ? betaList : alphaList);
     if (list != null) {
-      orbitals.setModel(list);
+      orbitals.setModelList(list, false);
       return;
     }
     list = new DefaultListModel<String>();
@@ -678,12 +670,6 @@ abstract class NBODialogView extends NBODialogRun {
         f,
         NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(
             NBOFileHandler.pathWithoutExtension(getJmolFilename())), false);
-  }
-
-  protected void setLastOrbitalSelection() {
-    if (iLast < 0)
-      iLast = 0;
-    orbitals.setSelectedIndex(iLast);
   }
 
   private String getPlaneParams() {
@@ -1486,8 +1472,7 @@ abstract class NBODialogView extends NBODialogRun {
 
   protected void resetView() {
     isNewModel = true;
-    iLast = 0;
-    //    selectedOrbs = "";
+    orbitals.clearOrbitals(true);
   }
 
   private void resetValues() {
@@ -1516,8 +1501,6 @@ abstract class NBODialogView extends NBODialogRun {
 
   protected void notifyList_v(AbstractListModel<String> list) {
     if (list != null) {
-      if (iLast < 0)
-        iLast = 0;
       orbitals.setLayoutOrientation(JList.VERTICAL_WRAP);
 
       //orbitals.setSelectedIndex(orbitals.model.size()-1);
@@ -1564,15 +1547,6 @@ abstract class NBODialogView extends NBODialogRun {
       type = type.substring(1);
     boolean isBeta = isOpenShell && !alphaSpin.isSelected();
     try {
-      String[] a = ((Map<String, String[]>) moData.get("nboLabelMap"))
-          .get((isBeta ? "beta_" : "") + type);
-
-      DefaultListModel<String> list = (isBeta ? betaList : alphaList);
-      for (int i = 0; i < a.length; i++)
-        list.addElement((i + 1) + ". " + a[i] + "   ");
-      orbitals.setModel(list);
-      setLastOrbitalSelection();
-
       alphaSpin.setVisible(isOpenShell); // old
       betaSpin.setVisible(isOpenShell); // old
 
@@ -1587,7 +1561,19 @@ abstract class NBODialogView extends NBODialogRun {
       planeBox.add(planeFields[1]);
       planeBox.add(planeFields[2]);
       viewSettingsBox.setVisible(true);
-      orbitals.requestFocus();
+
+      // set list
+      
+      String[] a = ((Map<String, String[]>) moData.get("nboLabelMap"))
+          .get((isBeta ? "beta_" : "") + type);
+
+      DefaultListModel<String> list = (isBeta ? betaList : alphaList);
+      for (int i = 0; i < a.length; i++)
+        list.addElement((i + 1) + ". " + a[i] + "   ");
+      orbitals.setModelList(list, true);
+      //orbitals.requestFocus();
+      
+           
       //atomOrient.doClick();
 
       getChooseList();
@@ -1599,6 +1585,7 @@ abstract class NBODialogView extends NBODialogRun {
     } catch (NullPointerException e) {
       log(e.getMessage() + " reading file", 'r');
     }
+    
   }
 
   protected void setViewerBasis() {
@@ -1689,103 +1676,197 @@ abstract class NBODialogView extends NBODialogRun {
     //    
 
     //// end old
-
-    private String visibleOrbs;
-    //private boolean altPressed;
-    private InputEvent event;
-    int[] lastSelection;
     
     private BS bsOn = new BS();
     private BS bsNeg = new BS();
     private BS bsKnown = new BS();
+    private Color contrastColor;
     
-
     public OrbitalList() {
       super();
       setLayoutOrientation(JList.VERTICAL_WRAP);
       setVisibleRowCount(12);
-      setBackground(Color.WHITE);
-      setFont(new Font("MONOSPACED", Font.PLAIN, 14));
+      setFont(nboFont);
+      setColorScheme();
+      //setFont(new Font("MONOSPACED", Font.PLAIN, 14));
       setModel(new DefaultListModel<String>());
-      visibleOrbs = "";
+      setCellRenderer(new ListCellRenderer<String>(){
+
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends String> list,
+                                                      String value, int index,
+                                                      boolean isSelected,
+                                                      boolean cellHasFocus) {
+          return renderCell(index);
+        }     
+      });
       addListSelectionListener(this);
       addMouseListener(this);
     }
 
-    protected void clearOrbs() {
-      visibleOrbs = "";
+    public void setModelList(DefaultListModel<String> list, boolean isNew) {
+      setModel(list);
+      setColorScheme();
+      if (isNew) {
+        orbitals.clearOrbitals(false);
+        orbitals.setLastOrbitalSelection();
+      }
+      for (int i = list.getSize(); --i >= 0;)
+        setLabel(i);
     }
 
+    private void setColorScheme() {
+        int bgcolor = vwr.getBackgroundArgb();
+        int color = C.getArgb(C.getBgContrast(bgcolor));
+        setBackground(new AwtColor(bgcolor));
+        contrastColor = new AwtColor(color);// Black or White
+    }
+
+    private JLabel cellLabel;
+    
+    protected Component renderCell(int index) {      
+      if (cellLabel == null) {
+        cellLabel = new JLabel();
+      }
+      cellLabel.setText(getModel().getElementAt(index));
+      cellLabel.setForeground(!bsOn.get(index) ? contrastColor : bsNeg.get(index) ? orbColor2 : orbColor1);
+
+     return cellLabel;
+    }
+
+    /**
+     * Clear the orbital display bitsets.
+     * 
+     * @param isNewFile 
+     */
+    protected void clearOrbitals(boolean isNewFile) {
+      bsKnown.clearAll();
+      if (isNewFile) {
+        bsOn.clearAll();
+        bsNeg.clearAll();
+      }
+    }
+
+    public void setLastOrbitalSelection() {
+      updateIsosurfacesInJmol(-1, false);
+    }
+
+    private void updateIsosurfacesInJmol(int iClicked, boolean fromModel) {
+      DefaultListModel<String> model = (DefaultListModel<String>) getModel();
+      boolean  isBeta = betaSpin.isSelected();
+      String type = basis.getSelectedItem().toString();
+      String script = "select all;";
+      if (fromModel)
+        script += updateBitSetFromModel();
+      else
+        updateModelFromBitSet();
+        
+      for (int i = model.getSize(); --i >= 0;) {
+        boolean isOn = bsOn.get(i);
+        if (i == iClicked || isSelectedIndex(i) != isOn) {
+          String id = "mo" + i;
+          bsOn.setBitTo(i, !isOn);
+          boolean isKnown = bsKnown.get(i); 
+          if (isKnown && !bsOn.get(i)) {
+            // just turn it off
+            script += "isosurface mo" + i + " off;";            
+          } else if (isKnown){
+            // just turn it on
+            script += "isosurface mo" + i + " on;";            
+          } else {
+            bsKnown.set(i);
+            // create the isosurface
+            script += "isosurface " + id
+                + " color " + (bsNeg.get(i) ? color1 + " " + color2 : color2 + " " + color1)
+                + " cutoff 0.0316 NBO " + type + " " + (i + 1) + (isBeta ? " beta" : "") 
+                + " frontonly "
+                + (useWireMesh ? " mesh nofill" : " nomesh fill translucent " + opacityOp) + ";";
+          }
+        }
+      }
+      updateModelFromBitSet();
+      runScriptQueued(script);
+//      System.out.println("known" + bsKnown + " on" + bsOn + " neg" + bsNeg + " " + script);
+    }
+
+    private String updateBitSetFromModel() {
+      int[] a = getSelectedIndices();
+      BS bsModel = new BS();
+      for (int i = a.length; --i >= 0;)
+        bsModel.set(i);
+      String script = "";
+      for (int i = getModel().getSize(); --i >= 0;) {
+        if (bsModel.get(i) != bsOn.get(i)) {
+          if (bsOn.get(i)) {
+            script += "isosurface mo" + i + " off;";
+            bsOn.clear(i);
+          } else {
+            bsOn.set(i);
+          }
+        }
+      }
+      return script;
+    }
+    
+    private void updateModelFromBitSet() {
+      int[] a = new int[bsOn.cardinality()];
+      for (int i = bsOn.nextSetBit(0), pt = 0; i >= 0; i = bsOn.nextSetBit(i + 1))
+        a[pt++] = i; 
+      setSelectedIndices(a);      
+    }
     @Override
     public void valueChanged(ListSelectionEvent e) {
-      if (e.getValueIsAdjusting() || getModel().getSize() == 0) {
-        return;
-      }
-      boolean toggle = (event != null && event.isAltDown());
-      DefaultListModel<String> model = (DefaultListModel<String>) getModel();
-      String script = "select all";
-      String beta = (betaSpin.isSelected() ? " beta" : "");
-      String type = basis.getSelectedItem().toString();
-      
-      // get only the ones needing changing
-      BS bsSel = new BS();
-      int[] selected = getSelectedIndices();
-      for (int i = selected.length; --i >= 0;)
-        bsSel.set(selected[i]);
-      BS bsNew = BSUtil.copy(bsSel);
-      if (!toggle)
-        bsNew.andNot(bsOn);
-      
-      // generate the new isosurfaces
-      for (int i = bsNew.nextSetBit(0); i >= 0; i = bsNew.nextSetBit(i + 1)) {
-        if (toggle) {
-          String label = model.get(i).trim();
-          String label0 = (bsNeg.get(i) ? label.substring(0, label.length() - 3)
-              : label);
-          bsNeg.setBitTo(i, !bsNeg.get(i));
-          model.set(i, label0 + (bsNeg.get(i) ? "[-]" : "   "));
-          bsKnown.clear(i);
-        }
-        // we can 
-        String id = "mo" + i;
-        script += ";select *;if (" + bsKnown.get(i) + "){isosurface " + id + " on} else {isosurface " + id
-            + " color " + (bsNeg.get(i) ? color1 + " " + color2 : color2 + " " + color1)
-            + " cutoff 0.0316 NBO " + type + " " + (i + 1) + beta + " frontonly "
-            + (useWireMesh ? " mesh nofill" : " nomesh fill translucent " + opacityOp) + "}";
-      }
-
-      // remove unselected orbitals and update bsOn
-      BS bsOff = BSUtil.copy(bsOn);
-      bsOff.andNot(bsSel);
-      for (int i = bsOff.nextSetBit(0); i >= 0; i = bsOff.nextSetBit(i + 1)) {
-        script += ";isosurface mo" + i + " off";
-      }
-      script += ";select none";
-      script += ";print 'n" + bsOn + " s" + bsSel + " n" + bsNew + " o" + bsOff + " -" + bsNeg + "'";
-      // now run the script
-      runScriptQueued(script);
-      
-      bsOn.clearAll();
-      bsOn.or(bsSel);
-      bsKnown.or(bsOn);
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-      event = null;
-      System.out.println("CLICK" + e);
+    private void toggleOrbitalNegation(int i) {
+      bsNeg.setBitTo(i, !bsNeg.get(i));
+      bsKnown.clear(i); // to - just switch colors?
+      setLabel(i);
+    }
+
+    protected void setLabel(int i) {
+      String label0 = getModel().getElementAt(i);
+      int pt = label0.indexOf('[');
+      if (pt > 0)
+        label0 = label0.substring(0, pt);
+      ((DefaultListModel<String>) getModel()).set(i, label0.trim()
+          + (bsNeg.get(i) ? "[-]  " : "     "));
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-      event = e;
-      System.out.println("PRESS" + e);
+//      System.out.println("PRESS" + e);
+//      System.out.println("press " + PT.toJSON(null, getSelectedIndices()) + e.getClickCount());
     }
 
+    
     @Override
     public void mouseReleased(MouseEvent e) {
-      event = null;
-      System.out.println("RELEASE" + e);
+//      System.out.println("RELEASE" + e);      
+//      System.out.println("release " + PT.toJSON(null, getSelectedIndices()));
+    }
+
+    private long lastTime = 0;
+    private int lastPicked = 999;
+    private final static long DBLCLICK_THRESHOLD_MS = 300;
+    
+    @Override
+    public void mouseClicked(MouseEvent e) {
+//      System.out.println("click " + PT.toJSON(null, getSelectedIndices())
+//          + e.getClickCount());
+
+      int i = getSelectedIndex();
+      
+      System.out.println("NBODialogView: picked " + lastPicked + "/" + i + " ms=" + (System.currentTimeMillis() - lastTime));
+      if (e.getClickCount() > 1 || lastPicked == i && System.currentTimeMillis() - lastTime < DBLCLICK_THRESHOLD_MS) {
+        toggleOrbitalNegation(i);
+        bsOn.set(i);
+        updateIsosurfacesInJmol(i, false);
+      }
+      updateIsosurfacesInJmol(i, false);
+      lastTime = System.currentTimeMillis();
+      lastPicked = i;
     }
 
     @Override
@@ -1794,20 +1875,23 @@ abstract class NBODialogView extends NBODialogRun {
 
     @Override
     public void mouseExited(MouseEvent e) {
-      event = null;
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-      System.out.println("KEYDN" +  orbitals.getSelectedIndex() + " " + e);
+//      System.out.println("KEYDN" +  orbitals.getSelectedIndex() + " " + e);
     }
+    
     @Override
     public void keyReleased(KeyEvent e) {
-      System.out.println("KEYUP" + orbitals.getSelectedIndex() + " " + e);
+//      System.out.println("KEYUP" + orbitals.getSelectedIndex() + " " + e);
+      updateIsosurfacesInJmol(-1, true);
     }
+
     @Override
     public void keyTyped(KeyEvent e) {
     }
 
   }
+
 }

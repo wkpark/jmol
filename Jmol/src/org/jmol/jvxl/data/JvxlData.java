@@ -111,6 +111,7 @@ public class JvxlData {
   public int colorFractionBase = JvxlCoder.defaultColorFractionBase;
   public int colorFractionRange = JvxlCoder.defaultColorFractionRange;
 
+  public boolean isValid = true; // set false if calculation gave no surface
   public boolean insideOut;
   public boolean isXLowToHigh;
   public boolean isContoured;
@@ -176,6 +177,7 @@ public class JvxlData {
   public P3 mapLattice;
   public P3 fixedLattice;
   public String baseColor;
+  public float integration = Float.NaN;
 
   public void clear() {
     allowVolumeRender = true;
@@ -191,7 +193,9 @@ public class JvxlData {
     contourValuesUsed = null;
     contourColixes = null;
     contourColors = null;
+    integration = Float.NaN;
     isSlabbable = false;
+    isValid = true;
     mapLattice = null;
     meshColor = null;
     msg = "";

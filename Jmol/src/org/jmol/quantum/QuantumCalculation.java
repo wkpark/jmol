@@ -38,6 +38,13 @@ abstract public class QuantumCalculation {
   protected boolean doDebug = false;
   protected BS bsExcluded;
 
+  protected float integration = Float.NaN;
+  
+  public float getIntegration() {
+    return integration;
+  }
+  
+
   protected final static float bohr_per_angstrom = 1 / 0.52918f;
 
   protected float[][][] voxelData;
@@ -235,5 +242,5 @@ abstract public class QuantumCalculation {
   }
   
   public abstract void createCube();
-  
+
 }

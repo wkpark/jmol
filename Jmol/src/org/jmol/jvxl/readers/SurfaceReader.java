@@ -401,9 +401,14 @@ public abstract class SurfaceReader implements VertexDataServer {
     }
     if (params.contactPair == null)
       setBBoxAll();
-    if (!params.isSilent)
-      Logger.info("boundbox corners " + Escape.eP(xyzMin) + " "
+    jvxlData.isValid = (xyzMin.x != Float.MAX_VALUE);
+    if (!params.isSilent) {
+      if (!jvxlData.isValid)
+        Logger.error("no isosurface points were found!");
+      else
+        Logger.info("boundbox corners " + Escape.eP(xyzMin) + " "
           + Escape.eP(xyzMax));
+    }
     jvxlData.boundingBox = new P3[] { xyzMin, xyzMax };
     jvxlData.dataMin = dataMin;
     jvxlData.dataMax = dataMax;

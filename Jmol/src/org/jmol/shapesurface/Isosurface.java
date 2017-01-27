@@ -880,10 +880,17 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return ret;
     if (property == "message") {
       String s = "";
-      if (shapeID == JC.SHAPE_ISOSURFACE)
+      if (!jvxlData.isValid)
+        return "invalid! (no atoms selected?)";
+      if (!Float.isNaN(jvxlData.integration))
+        s += "integration " + jvxlData.integration;
+      if (shapeID == JC.SHAPE_ISOSURFACE || shapeID == JC.SHAPE_MO  || shapeID == JC.SHAPE_NBO)
         s += " with cutoff=" + jvxlData.cutoff;
+      if (shapeID == JC.SHAPE_MO || shapeID == JC.SHAPE_NBO)
+        return s;
       if (jvxlData.dataMin != Float.MAX_VALUE)
         s += " min=" + jvxlData.dataMin + " max=" + jvxlData.dataMax;
+      
       s += "; " + JC.shapeClassBases[shapeID].toLowerCase() + " count: "
           + getPropMC("count", index);
       return s + getPropI("dataRangeStr", index) + jvxlData.msg;

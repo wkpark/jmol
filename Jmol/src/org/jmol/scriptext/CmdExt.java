@@ -5189,7 +5189,7 @@ public class CmdExt extends ScriptExt {
     if (n == null || n.intValue() == 0)
       setShapeProperty(iShape, "init", Integer.valueOf(modelIndex));
     setShapeProperty(iShape, "moData", moData);
-    return (String) getShapePropertyIndex(iShape, "showMO", ptMO);
+    return (String) e.sm.getShapePropertyIndex(iShape, "showMO", ptMO);
   }
 
   private String getScriptID(ScriptContext context) {
@@ -5199,11 +5199,6 @@ public class CmdExt extends ScriptExt {
         : context.scriptFileName);
     return "\n# " + fuName + " (file " + fiName
         + (context == null ? "" : " context " + context.id) + ")\n";
-  }
-
-  private Object getShapePropertyIndex(int shapeType, String propertyName,
-                                       int index) {
-    return e.sm.getShapePropertyIndex(shapeType, propertyName, index);
   }
 
   private T tokenAt(int i, T[] args) {

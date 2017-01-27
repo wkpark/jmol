@@ -140,6 +140,8 @@ public class NBODialog extends NBODialogSearch {
     //get saved properties
     
     createDialog(jmolFrame.getBounds());
+    
+    setDefaults(false);
 
   }
   
@@ -812,7 +814,7 @@ public class NBODialog extends NBODialogSearch {
       break;
     case DIALOG_VIEW:
       if (list != null) 
-        setLastOrbitalSelection();
+        orbitals.setLastOrbitalSelection();
       break;
     case DIALOG_SEARCH:
       if (list != null)
@@ -821,6 +823,18 @@ public class NBODialog extends NBODialogSearch {
     }
     setStatus("OK mode=" + dialogMode);
   }
+  
+  /**
+   * user has made changes to the settings, so we need to update panels
+   */
+  @Override
+  protected void updatePanelSettings() {
+    switch (dialogMode) {
+    case DIALOG_VIEW:
+      setNewBasis();
+      break;
+    }
+  }  
 
   void loadFromHandler(File file) {
     isNewModel = true;
@@ -833,4 +847,9 @@ public class NBODialog extends NBODialogSearch {
   void setLicense(String line) {
     licenseInfo.setText("<html><div style='text-align: center'>" + line + "</html>");
   }
+  
+  protected NBOFileHandler newNBOFileHandler(String name, String ext, int mode, String useExt) {
+    return new NBOFileHandler(name, ext, mode, useExt, this);
+  }
+
 }

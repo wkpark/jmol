@@ -1001,15 +1001,21 @@ public class IsoExt extends ScriptExt {
         eval.setCursorWait(true);
         setMoData(propertyList, moNumber, linearCombination, offset,
             isNegOffset, iModel, title, nboType, isBeta);
-        if (haveMO)
+        if (haveMO) {
           addShapeProperty(propertyList, "finalize", null);
+        }
       }
       if (!ignoreSquared) {
-          setShapeProperty(iShape, "squareLinear", linearSquared);
-          setShapeProperty(iShape, "squareData", squared);
+        setShapeProperty(iShape, "squareLinear", linearSquared);
+        setShapeProperty(iShape, "squareData", squared);
       }
       if (propertyList.size() > 0)
         setShapeProperty(iShape, "setProperties", propertyList);
+      if (haveMO && !eval.tQuiet) {
+        showString(T.nameOf(tokAt(0)) + " " + moNumber + " " + (isBeta ? "beta " : "") 
+            + getShapeProperty(iShape, "message"));
+      }
+
       propertyList.clear();
     }
   }
@@ -1052,9 +1058,11 @@ public class IsoExt extends ScriptExt {
         if (data.indexOf("alpha") >= 0) {
           if (isBeta) {
             if (data.indexOf("beta") >= 0)
-              data = data.substring(data.indexOf("beta") + 4);
+              data = data.substring(data.indexOf("beta") + 10); // "beta  spin"
             else
               data = "";
+          } else {
+            data = data.substring(data.indexOf("alpha") + 10);  // "alpha spin"
           }
         }
         int len = data.length();
@@ -1108,7 +1116,8 @@ public class IsoExt extends ScriptExt {
   @SuppressWarnings("unchecked")
   private void setMoData(Lst<Object[]> propertyList, int moNumber, float[] lc,
                          int offset, boolean isNegOffset, int modelIndex,
-                         String title, String nboType, boolean isBeta) throws ScriptException {
+                         String title, String nboType, boolean isBeta)
+      throws ScriptException {
     ScriptEval eval = e;
     if (modelIndex < 0) {
       modelIndex = vwr.am.cmi;
@@ -1116,8 +1125,8 @@ public class IsoExt extends ScriptExt {
         eval.errorStr(ScriptError.ERROR_multipleModelsDisplayedNotOK,
             "MO isosurfaces");
     }
-    Map<String, Object> moData = (Map<String, Object>) vwr
-        .ms.getInfo(modelIndex, "moData");
+    Map<String, Object> moData = (Map<String, Object>) vwr.ms.getInfo(
+        modelIndex, "moData");
     if (moData == null)
       error(ScriptError.ERROR_moModelError);
     vwr.checkMenuUpdate();
@@ -1134,7 +1143,7 @@ public class IsoExt extends ScriptExt {
       if (lc != null && lc.length == 1)
         offset = 0;
       else if (isBeta && moData.containsKey("firstBeta"))
-        offset = ((Integer) moData.get("firstBeta")).intValue();        
+        offset = ((Integer) moData.get("firstBeta")).intValue();
       int lastMoNumber = (moData.containsKey("lastMoNumber") ? ((Integer) moData
           .get("lastMoNumber")).intValue() : 0);
       int lastMoCount = (moData.containsKey("lastMoCount") ? ((Integer) moData
@@ -1151,7 +1160,8 @@ public class IsoExt extends ScriptExt {
         error(ScriptError.ERROR_moOnlyOne);
       if (offset != Integer.MAX_VALUE) {
         // 0: HOMO;
-        if (moData.containsKey("HOMO")) {
+        if (isBeta) {
+        } else if (moData.containsKey("HOMO")) {
           moNumber = ((Integer) moData.get("HOMO")).intValue() + offset;
         } else {
           moNumber = nOrb;
@@ -1176,8 +1186,8 @@ public class IsoExt extends ScriptExt {
           }
           if (f == null)
             error(ScriptError.ERROR_moOccupancy);
-          moNumber += offset;
         }
+        moNumber += offset;
         if (!chk)
           Logger.info("MO " + moNumber);
       }

@@ -158,7 +158,7 @@ public class MOCalculation extends QuantumCalculation {
         volumeData.getVolumetricVectorLengths(), 
         bsSelected, xyz, atoms, points, false);
     doDebug = (Logger.debugging);
-    return (slaters != null || checkCalculationType());
+    return !bsSelected.isEmpty() && (slaters != null || checkCalculationType());
   }  
   
   @Override
@@ -1212,13 +1212,12 @@ public class MOCalculation extends QuantumCalculation {
   
 
 
-  float integration = 0;
-
   private boolean isSquaredLinear;
 
   public void calculateElectronDensity() {
     if (points != null)
       return;
+    integration = 0;
     for (int ix = nX; --ix >= 0;)
       for (int iy = nY; --iy >= 0;)
         for (int iz = nZ; --iz >= 0;) {

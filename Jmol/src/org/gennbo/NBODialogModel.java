@@ -189,8 +189,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     addFocusListeners(jComboUse, jrFileIn);
     inputBox.add(p2);
 
-    inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, INPUT_FILE_EXTENSIONS,
-        (NBODialog) this) {
+    inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, INPUT_FILE_EXTENSIONS, (NBODialog) this) {
 
       @Override
       protected boolean browsePressed() {

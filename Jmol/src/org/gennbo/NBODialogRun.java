@@ -111,12 +111,11 @@ abstract class NBODialogRun extends NBODialogModel {
 
     //INPUT/////////////////////////
     if (inputFileHandler == null) {
-      inputFileHandler = new NBOFileHandler("", "47", NBOFileHandler.MODE_RUN,
-          "47", (NBODialog) this);
+      inputFileHandler = newNBOFileHandler("", "47", NBOFileHandler.MODE_RUN,
+          "47");
     } else {
-      inputFileHandler = new NBOFileHandler(inputFileHandler.jobStem,
-          inputFileHandler.tfExt.getText(), NBOFileHandler.MODE_RUN, "47",
-          (NBODialog) this);
+      inputFileHandler = newNBOFileHandler(inputFileHandler.jobStem,
+          inputFileHandler.tfExt.getText(), NBOFileHandler.MODE_RUN, "47");
     }
     inputFileHandler.setBrowseEnabled(false);
 
@@ -169,11 +168,11 @@ abstract class NBODialogRun extends NBODialogModel {
     box.add(rbLocal);
     bg.add(rbLocal);
     JRadioButton btn = new JRadioButton("NBOrXiv");
-    final JDialog d = this;
+    final NBODialogRun d = this;
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        ArchiveViewer aView = new ArchiveViewer((NBODialog) d, ARCHIVE_DIR);
+        ArchiveViewer aView = new ArchiveViewer(d, ARCHIVE_DIR);
         aView.setVisible(true);
       }
     });
@@ -687,7 +686,7 @@ abstract class NBODialogRun extends NBODialogModel {
     private JTextField tfPath;
     private String baseDir;
 
-    public ArchiveViewer(NBODialog d, String url) {
+    public ArchiveViewer(NBODialogRun d, String url) {
       super(d, "NBO Archive Files");
       GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
           .getDefaultScreenDevice();

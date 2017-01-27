@@ -107,9 +107,6 @@ import org.openscience.jmol.app.jsonkiosk.KioskFrame;
 import org.openscience.jmol.app.surfacetool.SurfaceTool;
 import org.openscience.jmol.app.webexport.WebExport;
 
-import org.gennbo.NBODialog;
-import org.gennbo.NBOService;
-
 public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient {
 
   protected static HistoryFile historyFile, pluginFile;

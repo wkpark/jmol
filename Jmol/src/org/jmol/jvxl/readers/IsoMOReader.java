@@ -348,6 +348,7 @@ class IsoMOReader extends AtomDataReader {
       if (!setupCalculation())
         return;
       q.createCube();
+      jvxlData.integration = q.getIntegration();
     }
   }
 

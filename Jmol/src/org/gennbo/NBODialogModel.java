@@ -161,21 +161,16 @@ abstract class NBODialogModel extends NBODialogConfig {
       @Override
       public void actionPerformed(ActionEvent e) {
         Object item = jComboUse.getSelectedItem();
-        String tmp = inputFileHandler.tfExt.getText();
         String s = "";
         if (jComboUse.getSelectedIndex() > 0) {
           s = item.toString();
           s = s.substring(s.indexOf("[") + 2, s.indexOf("]"));
           inputFileHandler.tfExt.setText(s);
           inputFileHandler.useExt = s;
-          //if (!fileHandler.browsePressed())
-          //  fileHandler.tfExt.setText(tmp);
         } else {
           inputFileHandler.tfExt.setText("");
           s = INPUT_FILE_EXTENSIONS;
           inputFileHandler.useExt = s;
-          //if (!fileHandler.browsePressed())
-          //  fileHandler.tfExt.setText(tmp);
         }
       }
     });

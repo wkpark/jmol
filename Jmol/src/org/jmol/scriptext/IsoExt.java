@@ -817,15 +817,20 @@ public class IsoExt extends ScriptExt {
     Lst<Object[]> propertyList = new Lst<Object[]>();
     boolean isBeta = false;
     int i0 = 1;
-    if (tokAt(0) == T.nbo && e.slen == 1) {
+    if (tokAt(0) == T.nbo) {
       // NBO command by itself starts the NBO Server Interface panel
-      if (!chk) {
-        Map<String, Object> htParams = new Hashtable<String, Object>();
-        htParams.put("service", "nbo");
-        htParams.put("action", "showPanel");
-        vwr.sm.processService(htParams);
+      // NBO OPTIONS include "NOZAP;VIEW"
+      boolean isViewOnly = e.optParameterAsString(1).equals("view");
+      if (e.slen == 1 || isViewOnly ||  e.optParameterAsString(1).equals("options")) {
+        if (!chk) {
+          Map<String, Object> htParams = new Hashtable<String, Object>();
+          htParams.put("service", "nbo");
+          htParams.put("action", "showPanel");
+          htParams.put("options", (isViewOnly ? "VIEW" : e.optParameterAsString(2)));
+          vwr.sm.processService(htParams);
+        }
+        return;
       }
-      return;
     }
     if (tokAt(1) == T.model || tokAt(1) == T.frame) {
       i0 = eval.modelNumberParameter(2);
@@ -1012,8 +1017,8 @@ public class IsoExt extends ScriptExt {
       if (propertyList.size() > 0)
         setShapeProperty(iShape, "setProperties", propertyList);
       if (haveMO && !eval.tQuiet) {
-        showString(T.nameOf(tokAt(0)) + " " + moNumber + " " + (isBeta ? "beta " : "") 
-            + getShapeProperty(iShape, "message"));
+        showString(T.nameOf(tokAt(0)) + " " + moNumber + " "
+            + (isBeta ? "beta " : "") + getShapeProperty(iShape, "message"));
       }
 
       propertyList.clear();
@@ -1894,6 +1899,7 @@ public class IsoExt extends ScriptExt {
       case T.nbo:
         nbotype = paramAsStr(++i).toUpperCase();
         sbCommand.append(" nbo ").append(nbotype).append(" ");
+        //$FALL-THROUGH$
       case T.mo:
         if (nbotype == null)
           sbCommand.append(" mo ");

@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javajs.util.PT;
 import javajs.util.SB;
@@ -98,6 +99,7 @@ abstract class NBODialogConfig extends JDialog {
   final static protected Font monoFont = new Font("Monospaced", Font.BOLD, 16);
   final static protected Font titleFont = new Font("Arial", Font.BOLD
       | Font.ITALIC, 18);
+  final static protected Font nboFontLarge = new Font("Arial", Font.BOLD, 26);
 
   private static final String JMOL_LABEL_FONT = "16 bold";
 
@@ -113,6 +115,11 @@ abstract class NBODialogConfig extends JDialog {
 
   protected JSplitPane centerPanel;
   protected JPanel modulePanel;
+  
+  protected boolean jmolOptionNOZAP = false; // do no zap between modules
+  protected boolean jmolOptionNOSET = false; // do not use NBO settings by default
+  protected boolean jmolOptionVIEW = false;  // present only the VIEW option
+  protected boolean jmolOptionNONBO = false; // do not try to contact NBOServe
 
   //abstract protected void notifyLoad();
   //abstract protected void rawInput(String str);
@@ -175,6 +182,7 @@ abstract class NBODialogConfig extends JDialog {
    */
   @SuppressWarnings("unchecked")
   protected JPanel buildSettingsPanel(JPanel settingsPanel) {
+
     settingsPanel.removeAll();
     checkNBOStatus();
     String viewOpts = getOrbitalDisplayOptions();
@@ -314,8 +322,21 @@ abstract class NBODialogConfig extends JDialog {
     return settingsPanel;
   }
 
-  protected void setDefaults(boolean isJmol) {
+  /**
+   * Allowing passage of Jmol options. Currently: NOZAP;NOSET;JMOL;VIEW
+   * @param jmolOptions 
+   */
+  protected void setJmolOptions(Map<String, Object> jmolOptions) {
+    String options = ("" + (jmolOptions == null ? "" : jmolOptions.get("options"))).toUpperCase();
+    if (options.equals("VIEW"))
+      options = "VIEW;NOZAP;NOSET;NONBO";
+    jmolOptionVIEW = (options.indexOf("VIEW") >= 0);
+    jmolOptionNOZAP = (options.indexOf("NOZAP") >= 0);
+    jmolOptionNOSET = (options.indexOf("NOSET") >= 0);
+    jmolOptionNONBO = (options.indexOf("NONBO") >= 0);
+  }
 
+  protected void setDefaults(boolean isJmol) {
     nboService.setNBOProperty("orbitalDisplayOptions", "default");
     getOrbitalDisplayOptions();
     opacity.setValue((int) (opacityOp * 10));
@@ -334,7 +355,8 @@ abstract class NBODialogConfig extends JDialog {
     //jCheckNboView.doClick();
 
     if (isJmol) {
-      runScriptNow("background gray;set defaultcolors Jmol;refresh;");
+      if (!jmolOptionNONBO)
+        runScriptNow("background gray;set defaultcolors Jmol;refresh;");
     } else {
       if (jCheckWireMesh.isSelected())
         jCheckWireMesh.doClick();
@@ -359,25 +381,25 @@ abstract class NBODialogConfig extends JDialog {
         + orbColor1.getBlue() + "]";
     color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
         + orbColor2.getBlue() + "]";
-    String script = "nbo color " + color2 + " " + color1 + ";mo color "
-        + color2 + " " + color1 + ";";
-    script += (useWireMesh ? "nbo nofill mesh;mo nofill mesh"
-        : "nbo fill nomesh;mo fill nomesh");
-    script += ";nbo translucent " + opacityOp + ";mo translucent " + opacityOp;
-    runScriptNow(script);
+    colorMeshes();
     if (!nboView)
       nboService.setNBOProperty("orbitalDisplayOptions", orbColor1.getRGB()
           + "," + orbColor2.getRGB() + "," + opacityOp + "," + useWireMesh);
   }
 
   private String getOrbitalDisplayOptions() {
-    String options = nboService.getNBOProperty("orbitalDisplayOptions",
-        "default");
+    String options = (jmolOptionNONBO ? "jmol" : nboService.getNBOProperty("orbitalDisplayOptions",
+        "default"));
     if (options.equals("default") || options.equals("nboView")) {
       orbColor1 = Color.cyan;
       orbColor2 = Color.yellow;
       opacityOp = 0.3f;
       useWireMesh = false;
+    } else if (options.equals("jmol")){
+      orbColor1 = Color.blue;
+      orbColor2 = Color.red;
+      opacityOp = 0f;
+      useWireMesh = true;
     } else {
       // color1, color2, useMesh
       String[] toks = options.split(",");
@@ -418,12 +440,6 @@ abstract class NBODialogConfig extends JDialog {
     serverBox.setMaximumSize(new Dimension(350, 50));
     panel.add(serverBox);
 
-    //Job files
-    //    
-    //    JLabel label = new JLabel(
-    //        "(This directory must be different than NBOServe's directory)");
-    //    label.setAlignmentX(0.5f);
-    //    workBox.add(label);
   }
 
   protected void setNBOPath(JTextField tf, int mode) {
@@ -448,15 +464,11 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   private void checkNBOStatus() {
-    //    final JLabel lab = new JLabel();
-    //    lab.setAlignmentX(0.5f);
+    if (jmolOptionNONBO)
+      return;
     if (nboService.restartIfNecessary()) {
-      //      lab.setText("NBOServe connected successfully");
-      //      lab.setForeground(Color.black);
     } else {
       String s = "Could not connect to NBOServe. Check to make sure its path is correct. \nIf it is already running from another instance of Jmol, you must first close that instance.";
-      //      lab.setText(s);
-      //      lab.setForeground(Color.red);
       alertError(s);
     }
 
@@ -547,20 +559,6 @@ abstract class NBODialogConfig extends JDialog {
     return box;
   }
 
-  //  /**
-  //   * sets components visible recursively
-  //   * @param c
-  //   * @param b
-  //   */
-  //  protected void enableComponentsR(Component c,boolean b){
-  //    c.setEnabled(b);
-  //    if(c instanceof Container){
-  //      if(!(c instanceof JComboBox)) c.setVisible(true);
-  //      for(Component c2:((Container) c).getComponents())
-  //        enableComponentsR(c2,b);
-  //    }
-  //  }
-
   /**
    * label atoms: (number lone pairs)+atomnum
    * 
@@ -568,17 +566,17 @@ abstract class NBODialogConfig extends JDialog {
    */
   protected void showAtomNums(boolean alpha) {
     if (!showAtNum) {
-      runScriptNow("select {*};label off; select remove {*}");
+      runScriptNow("select visible;label off; select none");
       return;
     }
     SB sb = new SB();
-    sb.append("select {*};font label " + JMOL_LABEL_FONT + ";label %a;");
+    sb.append("select visible;font label " + JMOL_LABEL_FONT + ";label %a;");
     if (chooseList != null) {
       Hashtable<String, String> lonePairs = (alpha) ? chooseList.lonePairs
           : chooseList.lonePairs_b;
       Hashtable<String, String> loneV = chooseList.lv;
       for (int i = 1; i <= vwr.ms.ac; i++) {
-        sb.append("select (atomno=" + i + ");label ");
+        sb.append("select visible && atomno=" + i + ";label ");
         String atNum = new Integer(i).toString();
         String lp, lv;
         if ((lp = lonePairs.get(atNum)) != null)
@@ -591,21 +589,12 @@ abstract class NBODialogConfig extends JDialog {
       }
     }
     String color = (nboView) ? "black" : "gray";
-    sb.append("select {*};color labels white;");
-    sb.append("select {H*};color labels " + color + ";"
-        + "set labeloffset 0 0 {*}; select remove {*};");
+    sb.append("select visible;color labels white;");
+    sb.append("select visible && {H*};color labels " + color + ";"
+        + "set labeloffset 0 0 {visible}; select none;");
     runScriptNow(sb.toString());
 
   }
-
-  //  protected void rawCmd(String name, final String cmd, final int mode) {
-  //    nboService.queueJob(name, null, new Runnable() {
-  //      @Override
-  //      public void run() {
-  //        nboService.rawCmdNew(cmd, null, false, mode);
-  //      }
-  //    });
-  //  }
 
   /**
    * Centers the dialog on the screen.
@@ -617,39 +606,6 @@ abstract class NBODialogConfig extends JDialog {
     int y = getHeight() / 2 - d.getHeight() / 2;
     d.setLocation(x, y);
   }
-
-  //  /**
-  //   * Retrieve and cache a help string.
-  //   *  
-  //   * @param st
-  //   * 
-  //   */
-  //  synchronized protected void getHelp(String st) {
-  //    JDialog help = new JDialog(this, "NBO Help");
-  //    JTextPane p = new JTextPane();
-  //    p.setEditable(false);
-  //    p.setFont(new Font("Arial", Font.PLAIN, 16));
-  //    p.setText(getHelpContents(st));
-  //    JScrollPane sp = new JScrollPane();
-  //    sp.getViewport().add(p);
-  //    help.add(sp);
-  //    help.setSize(new Dimension(400, 400));
-  //    p.setCaretPosition(0);
-  //    centerDialog(help);
-  //    help.setVisible(true);
-  //    //return getHelpContents(htHelp.get(c));
-  //  }
-  //  
-  //  protected String getHelpContents(String s){
-  //    String help = "<error>";
-  //    try {
-  //      String fname = "org/openscience/jmol/app/nbo/help/" + s + ".txt";
-  //      help = GuiMap.getResourceString(this, fname);
-  //    } catch (IOException e) {
-  //      help = "<resource not found>";
-  //    }
-  //    return help;
-  //  }
 
   /**
    * appends output to session dialog panel
@@ -700,8 +656,8 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void sendDefaultScript() {
-
-    runScriptQueued(DEFAULT_SCRIPT);
+    if (!jmolOptionNOSET)
+      runScriptQueued(DEFAULT_SCRIPT);
   }
 
   protected void runScriptQueued(String script) {
@@ -725,7 +681,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected boolean checkEnabled() {
-    return (nboService.isEnabled() && nboService.restartIfNecessary());
+    return (jmolOptionNONBO || nboService.isEnabled() && nboService.restartIfNecessary());
   }
 
   protected String evaluateJmolString(String expr) {
@@ -823,20 +779,8 @@ abstract class NBODialogConfig extends JDialog {
       s = "save orientation o1;" + s + ";restore orientation o1";
     runScriptQueued(s);
   }
-
   protected void colorMeshes() {
-    runScriptNow((useWireMesh ? "nbo mesh nofill translucent " + opacityOp
-        + ";mo mesh nofill translucent " + opacityOp
-        : "nbo nomesh fill translucent " + opacityOp
-            + ";mo nomesh fill translucent " + opacityOp)
-        + ";nbo color "
-        + color2
-        + " "
-        + color1
-        + ";mo color "
-        + color2
-        + " "
-        + color1);
+    updatePanelSettings();
   }
 
 }

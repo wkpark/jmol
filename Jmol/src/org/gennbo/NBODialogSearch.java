@@ -474,7 +474,7 @@ abstract class NBODialogSearch extends NBODialogView {
     
     secondPick = true;
     back.setEnabled(true);
-    viewSettingsBox.setVisible(true);
+    viewSettingsBox.setVisible(!jmolOptionNONBO);
     keyWdBtn.setText("<html><font color=black>"+keyProp+"</font></html>");
     keyWdBtn.setVisible(true);
     runScriptNow("mo delete;nbo delete");
@@ -1151,32 +1151,34 @@ abstract class NBODialogSearch extends NBODialogView {
   
   /**
    * Changes bonds and labels on the Jmol model when new RS is selected
-   * @param rsNum - index of RS in Combo Box
-   * @param alpha 
+   * 
+   * @param rsNum
+   *        - index of RS in Combo Box
+   * @param alpha
    */
-  protected void setResStruct(int rsNum, boolean alpha){
+  protected void setResStruct(int rsNum, boolean alpha) {
     int sz = resStructDef.length;
-    chooseList.lonePairs = new Hashtable<String,String>();
+    chooseList.lonePairs = new Hashtable<String, String>();
     int[][] tmp = new int[sz][sz];
-    for(int i = 0; i < sz; i++)
-      for(int j = 0; j < sz; j++)
+    for (int i = 0; i < sz; i++)
+      for (int j = 0; j < sz; j++)
         tmp[i][j] = resStructDef[i][j];
     String rs = resStructList.get(new Integer(rsNum));
-    if(rs != null){
-      String [] rsList = rs.split(",");
+    if (rs != null) {
+      String[] rsList = rs.split(",");
       int inc;
-      for(int i = 0; i < rsList.length; i++){
-        if(rsList[i].contains("("))
+      for (int i = 0; i < rsList.length; i++) {
+        if (rsList[i].contains("("))
           inc = -1;
-        else 
+        else
           inc = 1;
         String bond = rsList[i].replaceAll("[\\D]", " ").trim();
         String[] toks = bond.split("\\s+");
-          int a1 = Integer.parseInt(toks[0])-1;
-        if(toks.length < 2){
+        int a1 = Integer.parseInt(toks[0]) - 1;
+        if (toks.length < 2) {
           tmp[a1][a1] += inc;
-        }else{
-          int a2 = Integer.parseInt(toks[1])-1;
+        } else {
+          int a2 = Integer.parseInt(toks[1]) - 1;
           tmp[a1][a2] += inc;
           tmp[a2][a1] += inc;
         }
@@ -1184,58 +1186,59 @@ abstract class NBODialogSearch extends NBODialogView {
     }
     vwr.ms.deleteAllBonds();
     int[] bondCounts = new int[vwr.ms.ac];
-    for(int i = 0; i < sz; i++){
-      for(int j = i; j < sz; j++){
-        if(tmp[i][j] > 0){
-          if(i == j){
-            chooseList.lonePairs.put(new Integer(i+1).toString(),
+    for (int i = 0; i < sz; i++) {
+      for (int j = i; j < sz; j++) {
+        if (tmp[i][j] > 0) {
+          if (i == j) {
+            chooseList.lonePairs.put(new Integer(i + 1).toString(),
                 new Integer(tmp[i][j]).toString());
             //vwr.ms.at[i].setValence(vwr.ms.at[i].getValence() + 2*tmp[i][j]);
             continue;
           }
-          if(tmp[i][j] > 0){
+          if (tmp[i][j] > 0) {
             int mad = (tmp[i][j] > 2) ? 150 : 250;
             vwr.ms.bondAtoms(vwr.ms.at[i], vwr.ms.at[j], tmp[i][j],
-              (short)mad, vwr.ms.bsVisible, 0, true, true);
+                (short) mad, vwr.ms.bsVisible, 0, true, true);
             bondCounts[i] += tmp[i][j];
             bondCounts[j] += tmp[i][j];
           }
         }
       }
     }
-    if(nboView){
-      runScriptQueued("select add {*}.bonds;color bonds lightgrey;" +
-          "wireframe 0.1;select remove {*}");
+    if (nboView) {
+      runScriptQueued("select add {*}.bonds;color bonds lightgrey;"
+          + "wireframe 0.1;select remove {*}");
     }
-    for(int i = 0; i < vwr.ms.ac; i++){
+    for (int i = 0; i < vwr.ms.ac; i++) {
       vwr.ms.at[i].setFormalCharge(0);
       vwr.ms.at[i].setValence(bondCounts[i]);
     }
     SB sb = new SB();
     vwr.ms.fixFormalCharges(vwr.getAllAtoms());
-    if(chooseList!=null){
-      Hashtable<String,String> lonePairs = (alpha) ?
-          chooseList.lonePairs:chooseList.lonePairs_b;
-      for(int i = 1; i <= vwr.ms.ac; i++){
+    if (chooseList != null) {
+      Hashtable<String, String> lonePairs = (alpha) ? chooseList.lonePairs
+          : chooseList.lonePairs_b;
+      for (int i = 1; i <= vwr.ms.ac; i++) {
         sb.append("select (atomno=" + i + ");label ");
         String atNum = new Integer(i).toString();
         String lp;
-        if((lp = lonePairs.get(atNum))!=null)
-          if(!lp.equals("0"))
+        if ((lp = lonePairs.get(atNum)) != null)
+          if (!lp.equals("0"))
             sb.append("<sup>(" + lp + ")</sup>");
         sb.append("%a");
-        int charge = vwr.ms.at[i-1].getFormalCharge();
+        int charge = vwr.ms.at[i - 1].getFormalCharge();
 
-        if(charge != 0)
-          sb.append("<sup>" + ((charge > 0)?"+":"") + charge + "</sup>;");
-        else sb.append(";");
+        if (charge != 0)
+          sb.append("<sup>" + ((charge > 0) ? "+" : "") + charge + "</sup>;");
+        else
+          sb.append(";");
       }
-    runScriptQueued(sb.toString());
+      runScriptQueued(sb.toString());
     }
-    runScriptQueued("select remove{*}; " +
-    		"select add (atomno="+(at1.getSelectedIndex()+1) + ");" +
-    		"select add (atomno="+(at2.getSelectedIndex()+1) + ");");
-    
+    runScriptQueued("select remove{*}; " + "select add (atomno="
+        + (at1.getSelectedIndex() + 1) + ");" + "select add (atomno="
+        + (at2.getSelectedIndex() + 1) + ");");
+
   }
   
   protected void showMOJmol(String type, int i){
@@ -1593,7 +1596,7 @@ abstract class NBODialogSearch extends NBODialogView {
 
   protected void notifyLoad_s() {
     if(vwr.ms.ac == 0)
-      return;
+      return;    
 //    if(keywordNumber == KEYWD_CMO){
 //      if(vwr.ms.mc == 1)
 //        return;
@@ -1608,7 +1611,6 @@ abstract class NBODialogSearch extends NBODialogView {
     runScriptQueued("mo color " + color2 + " " + color1);
     
     rbSelection = -1;
-    getChooseList();
     showAtomNums(true);
     setBonds(true);
     if(isOpenShell){

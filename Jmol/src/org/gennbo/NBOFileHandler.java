@@ -156,19 +156,17 @@ class NBOFileHandler extends JPanel {
     // DP? if(!inputFile.getAbsolutePath().endsWith(".47"))
     // DP?  inputFile = newNBOFile(inputFile, "47");
     if (!useExt.equals("47")) {
-      jobStem = NBOFileHandler.getJobStem(inputFile);
+      jobStem = getJobStem(inputFile);
       dialog.loadModelFromNBO(fileDir, jobStem, useExt);
       tfName.setText(jobStem);
       tfExt.setText(useExt);
       return true;
     }
     canReRun = true;
-    setInputFile(inputFile);
     dialog.log("Job: " + jobStem, 'b');
     fileDir = inputFile.getParent();
     dialog.saveWorkingPath(fileDir.toString());
     return true;
-
   }
 
   /**
@@ -179,14 +177,14 @@ class NBOFileHandler extends JPanel {
    */
   protected void setInputFile(File inputFile) {
     clearInputFile();
-    //dialog.nboService.restart();
     dialog.isOpenShell = false;
     this.inputFile = inputFile;
     if (inputFile.getName().indexOf(".") > 0)
       jobStem = getJobStem(inputFile);
     setInput(inputFile.getParent(), jobStem, useExt);
     if (getExt(inputFile).equals("47")) {
-      if (fixPath(inputFile.getParent().toString()).equals(dialog.nboService.getServerPath(null))) {
+      if (fixPath(inputFile.getParent().toString()).equals(
+          dialog.nboService.getServerPath(null))) {
         JOptionPane.showMessageDialog(this,
             "Select a directory that does not contain the NBOServe executable,"
                 + "\nor select a new location for your NBOServe executable");
@@ -195,20 +193,31 @@ class NBOFileHandler extends JPanel {
       dialog.isJmolNBO = true;
       fileDir = inputFile.getParent();
       boolean canLoad = true;
-      for (String x : EXT_ARRAY) {
-        File f3 = newNBOFile(inputFile, x);
-        if (!f3.exists() && (dialog.dialogMode != NBODialogConfig.DIALOG_MODEL)) {
-          if (dialog.dialogMode != NBODialogConfig.DIALOG_RUN) {
-            if (canReRun) {
-              canReRun = false;
-              dialog.runJob("PLOT", inputFile, "gennbo");
-            } else {
-              dialog.alertError("Error occurred during run");
+      boolean isOK = true;
+      if (dialog.dialogMode != NBODialogConfig.DIALOG_MODEL) {
+        if (!getChooseList(true)) {
+          isOK = false;
+        } else {
+          for (String x : EXT_ARRAY) {
+            File f3 = newNBOFile(inputFile, x);
+            if (!f3.exists()) {
+              isOK = false;
+              break;
             }
-            return;
           }
-          canLoad = false;
         }
+      }
+      if (!isOK) {
+        if (dialog.dialogMode != NBODialogConfig.DIALOG_RUN) {
+          if (canReRun) {
+            canReRun = false;
+            dialog.runJob("PLOT", inputFile, "gennbo");
+          } else {
+            dialog.alertError("Error occurred during run");
+          }
+          return;
+        }
+        canLoad = false;
       }
       if (canLoad) {
         dialog.loadFromHandler(new File(fileDir + "/" + jobStem + ".47"));
@@ -220,6 +229,45 @@ class NBOFileHandler extends JPanel {
     }
   }
 
+  /**
+   * gets a valid $CHOOSE list from nbo file if it exists and corrects the bonds
+   * in the Jmol model
+   * @param isCheckOnly 
+   * 
+   * 
+   * @return false if output contains error
+   */
+  protected boolean getChooseList(boolean isCheckOnly) {
+    File f = newNBOFile(inputFile, "nbo");
+    if (!f.exists() || f.length() == 0)
+      return false;    
+    String fdata = getFileData(f.toString());
+    String[] tokens = PT.split(fdata, "\n $CHOOSE");
+    int i = 1;
+    if (tokens.length < 2) {
+      dialog.logInfo("$CHOOSE record was not found in " + f,
+          Logger.LEVEL_INFO);
+      return false;
+    }
+    if (tokens[1].trim().startsWith("keylist")) {
+      if (!tokens[1].contains("Structure accepted:")) {
+        if (tokens[1].contains("missing END?")) {
+          dialog.logInfo("Plot files not found. Have you used RUN yet?",
+              Logger.LEVEL_ERROR);
+          return false;
+        } else if (tokens[2].contains("ignoring")) {
+          System.out.println("Ignoring $CHOOSE list");
+        } else {
+          return false;
+        }
+      }
+      i = 3;
+    }
+    if (!isCheckOnly)
+      dialog.setChooseList(tokens[i].substring(0, tokens[i].indexOf("$END")));
+    return true;
+  }
+  
   /**
    * change \ to /
    * 

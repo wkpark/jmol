@@ -259,76 +259,6 @@ abstract class NBODialogRun extends NBODialogModel {
     }
   }
 
-  //  /**
-  //   * gets a valid $CHOOSE list from nbo file if it exists and corrects the bonds in the jmol model
-  //   * @param f 
-  //   * @return false if output contains error
-  //   */
-  //  protected boolean getChooseList(File f){
-  //    if(!f.exists()||f.length()==0)
-  //      return false;
-  //    String[] tokens = PT.split(nboService.getFileData(f.toString()), "$CHOOSE");
-  //    int i = 1;
-  //    if(tokens.length<2){
-  //      showConfirmationDialog("An error occurred during run, view .nbo output?", f,"47");
-  //      return false;
-  //    }
-  //    if(tokens[1].trim().startsWith("keylist")){
-  //      if(!tokens[1].contains("Structure accepted:")){
-  //        if(tokens[1].contains("missing END?")){
-  //          showConfirmationDialog("Plot files not found. Run now with PLOT keyword?", f,"47");
-  //          return false;
-  //        }else if(tokens[2].contains("ignoring")){
-  //          alertError("Ignoring $CHOOSE list"); 
-  //        }else{
-  //          return false;
-  //        }
-  //      }
-  //      i = 3;
-  //    }
-  //    String data = tokens[i].substring(0,tokens[i].indexOf("$END"));
-  //    setChooseList(data,true);
-  //    return true;
-  //  }
-
-
-  /**
-   * gets a valid $CHOOSE list from nbo file if it exists and corrects the bonds
-   * in the Jmol model
-   * 
-   * 
-   * @return false if output contains error
-   */
-  protected boolean getChooseList() {
-    File f = NBOFileHandler.newNBOFile(inputFileHandler.inputFile, "nbo");
-    if (!f.exists() || f.length() == 0)
-      return false;    
-    String fdata = inputFileHandler.getFileData(f.toString());
-    String[] tokens = PT.split(fdata, "\n $CHOOSE");
-    int i = 1;
-    if (tokens.length < 2) {
-      logInfo("$CHOOSE record was not found in " + f,
-          Logger.LEVEL_INFO);
-      return false;
-    }
-    if (tokens[1].trim().startsWith("keylist")) {
-      if (!tokens[1].contains("Structure accepted:")) {
-        if (tokens[1].contains("missing END?")) {
-          logInfo("Plot files not found. Have you used RUN yet?",
-              Logger.LEVEL_ERROR);
-          return false;
-        } else if (tokens[2].contains("ignoring")) {
-          System.out.println("Ignoring $CHOOSE list");
-        } else {
-          return false;
-        }
-      }
-      i = 3;
-    }
-    setChooseList(tokens[i].substring(0, tokens[i].indexOf("$END")));
-    return true;
-  }
-  
   protected void setChooseList(String data) {
     chooseList = new ChooseList();
     String[] tokens = PT.split(data, "END");
@@ -368,66 +298,12 @@ abstract class NBODialogRun extends NBODialogModel {
     }
   }
 
-  //  /**
-  //   * opens contents of file with path f in new dialog window
-  //   * 
-  //   * @param f
-  //   *        - absolute file path
-  //   */
-  //  protected void showNboOutput(String f) {
-  //    String data = fileHndlr.getFileData(f);
-  //    JDialog d = new JDialog();
-  //    d.setLayout(new BorderLayout());
-  //    JTextPane p = new JTextPane();
-  //    JScrollPane sp = new JScrollPane();
-  //    sp.getViewport().add(p);
-  //    p.setEditable(false);
-  //    p.setText(data);
-  //    d.add(sp, BorderLayout.CENTER);
-  //    centerDialog(d);
-  //    d.setSize(new Dimension(500, 500));
-  //    d.setVisible(true);
-  //  }
 
   protected String getFileContents(String jobName) {
     String fileContents = fileData[0] + "$NBO\n " + "FILE=" + jobName + " "
         + nboKeywords + "  $END" + sep;
     return fileContents + fileData[2];
   }
-
-  //  protected void essChanged(String item, DefaultComboBoxModel<String> editModel) {
-  //    fileHndlr.clearInputFile();
-  //    editBox.removeAll();
-  //    editBox.add(Box.createRigidArea(new Dimension(430, 230)));
-  //    //appendOutputWithCaret("ESS changed:\n  " + action.getSelectedItem().toString());
-  //    if (item.equals("GenNBO")) {
-  //      fileHndlr.tfExt.setText("47");
-  //      fileHndlr.useExt = "47";
-  //      editModel.removeElement("Gaussian Input File");
-  //      return;
-  //    } else if (item.equals("GO9")) {
-  //      fileHndlr.tfExt.setText("gau");
-  //      fileHndlr.useExt = "gau";
-  //      //editModel.addElement("Gaussian Input File");
-  //      return;
-  //    }
-  //  }
-
-  //  protected void editOpChanged(String item) {
-  //    editBox.removeAll();
-  //    if (item.equals("-type-")) {
-  //      editBox.add(Box.createRigidArea(new Dimension(320, 295)));
-  //    } else if (item.startsWith("$NBO")) {
-  //      addNBOKeylist();
-  //    } else if (item.startsWith("Gaussian")) {
-  //      JScrollPane p = new JScrollPane();
-  //      //GaussianDialog gau = new GaussianDialog(runFrame, vwr);
-  //      //p.setViewportView(gau.getContentPane());
-  //      editBox.add(p);
-  //    }
-  //    this.repaint();
-  //    this.revalidate();
-  //  }
 
   protected void addNBOKeylist() {
 
@@ -647,11 +523,8 @@ abstract class NBODialogRun extends NBODialogModel {
   protected void notifyLoad_r() {
     if (vwr.ms.ac == 0)
       return;
-
     fileData = inputFileHandler.read47File();
     nboKeywords = cleanNBOKeylist(fileData[1]);
-    if (inputFileHandler.useExt.equals("47"))
-      getChooseList();
     showAtomNums(true);
     setBonds(true);
     addNBOKeylist();

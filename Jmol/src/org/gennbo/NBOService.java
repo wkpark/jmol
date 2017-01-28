@@ -25,7 +25,6 @@ package org.gennbo;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -173,6 +172,7 @@ public class NBOService {
   private String nboModel;
 
   private String exeName = "NBOServe.exe";
+  private boolean doConnect;
 
   /**
    * Manage communication between Jmol and NBOServer
@@ -181,10 +181,12 @@ public class NBOService {
    * @param vwr
    *        The interacting display we are reproducing (source of view angle
    *        info etc)
+   * @param doConnect 
    */
-  public NBOService(NBODialog nboDialog, Viewer vwr) {
+  public NBOService(NBODialog nboDialog, Viewer vwr, boolean doConnect) {
     this.nboDialog = nboDialog;
     this.vwr = vwr;
+    this.doConnect = doConnect;
     sbRet = new SB();
     setServerPath(getNBOProperty("serverPath", System.getProperty("user.home")
         + "/NBOServe"));
@@ -294,6 +296,10 @@ public class NBOService {
 
   String startProcess(boolean sync, @SuppressWarnings("unused") final int mode) {
     try {
+      nboListener = null;
+      cantStartServer = true;
+      if (!doConnect)
+        return null;
       System.out.println("starting NBO process sync=" + sync);
       String path = getServerPath(exeName);
       ProcessBuilder builder = new ProcessBuilder(path);
@@ -302,7 +308,6 @@ public class NBOService {
       nboServer = builder.start();
       stdout = nboServer.getInputStream();
       nboReader = new BufferedReader(new InputStreamReader(stdout));
-      nboListener = null;
       nboListener = new Thread(new Runnable() {
 
         @Override
@@ -367,7 +372,7 @@ public class NBOService {
                     jobQueue.remove();
                     nboDialog.processEnd(currJob.dialogMode, currJob.list);
                     if (!jobQueue.isEmpty()
-                        && nboDialog.dialogMode != NBODialog.DIALOG_RUN)
+                        && nboDialog.dialogMode != NBODialogConfig.DIALOG_RUN)
                       sendToNBO(currJob = jobQueue.peek());
                     else
                       currJob = null;
@@ -461,10 +466,10 @@ public class NBOService {
       nboListener.start();
       stdinWriter = new PrintWriter(nboServer.getOutputStream());
     } catch (IOException e) {
-      cantStartServer = true;
       nboDialog.logInfo(e.getMessage(), Logger.LEVEL_ERROR);
       return e.getMessage();
     }
+    cantStartServer = false;
     return null;
   }
 
@@ -574,34 +579,14 @@ public class NBOService {
   }
 
   public boolean connect() {
-    //if (System.getProperty("sun.arch.data.model").equals("64"))
-    //String arch = System.getenv("PROCESSOR_ARCHITECTURE");
+    if (!doConnect)
+      return true;
     File f = new File(getServerPath("gennbo.bat"));
     if (!f.exists()) {
       vwr.alert(f + " not found, make sure gennbo.bat is in same directory as "
           + exeName);
       return false;
     }
-//    String wow64Arch = System.getenv("PROCESSOR_ARCHITEW6432");
-//    String realArch = arch.endsWith("64") || wow64Arch != null
-//        && wow64Arch.endsWith("64") ? "64" : "32";
-//    BufferedReader b = null;
-//    try {
-//      b = new BufferedReader(new FileReader(f));
-//      String line;
-//      //String contents = "";
-//      while ((line = b.readLine()) != null) {
-//        if (line.startsWith("set INT=")) {
-//          line = (realArch.equals("64") ? "set INT=i8" : "set INT=i4");
-//        }
-//        //contents += line + System.getProperty("line.seperator");
-//      }
-//      //nboService.writeToFile(contents, f);
-//      b.close();
-//    } catch (IOException e) {
-//      nboDialog.log("Error opening gennbo.bat", 'b');
-//      return false;
-//    }
     return true;
   }
 

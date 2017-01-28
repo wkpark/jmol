@@ -584,9 +584,7 @@ abstract public class ScriptParam extends ScriptError {
   }
 
   public String optParameterAsString(int i) throws ScriptException {
-    if (i >= slen)
-      return "";
-    return paramAsStr(i);
+    return (i >= slen ? "" : paramAsStr(i));
   }
 
   public int intParameter(int index) throws ScriptException {

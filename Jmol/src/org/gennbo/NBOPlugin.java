@@ -23,6 +23,8 @@
  */
 package org.gennbo;
 
+import java.util.Map;
+
 import javax.swing.JFrame;
 
 import org.jmol.c.CBK;
@@ -37,9 +39,9 @@ public class NBOPlugin implements JmolPlugin {
   public final static String version = "0.1.1";
 
   @Override
-  public void start(JFrame frame, Viewer vwr) {
+  public void start(JFrame frame, Viewer vwr, Map<String, Object> jmolOptions) {
     this.vwr = vwr;
-    nboDialog = new NBODialog(this, frame, vwr);
+    nboDialog = new NBODialog(this, frame, vwr, jmolOptions);
     System.out.println("NBO Plugin started.");    
   }
 

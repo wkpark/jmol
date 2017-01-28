@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
@@ -120,6 +121,8 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     return false;
   }
 
+  private Map<String, Object> nboOptions;
+  
   @SuppressWarnings("unchecked")
   @Override
   public void notifyCallback(CBK type, Object[] data) {
@@ -192,7 +195,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         String service = (String) info.get("service");
         if ("nbo".equals(service)) {
           if ("showPanel".equals(info.get("action")))
-            jmol.startNBO(null);
+            jmol.startNBO(info);
           //else
           //jmol.getNBOService().processRequest(info, 0);
         }
@@ -231,7 +234,10 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         return;
       }
       if (strInfo != null && strInfo.toLowerCase().startsWith("nbo:")) {
-        jmol.startNBO(strInfo.substring(4).toLowerCase());
+        if (nboOptions == null)
+          nboOptions= new Hashtable<String, Object>();
+        nboOptions.put("options", strInfo);
+        jmol.startNBO(nboOptions);
         return;
       }
       jmol.sendNioMessage(((Integer) data[3]).intValue(), strInfo);

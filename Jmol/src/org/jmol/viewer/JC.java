@@ -670,9 +670,12 @@ public final class JC {
     "@alkalineEarth _Be,_Mg,_Ca,_Sr,_Ba,_Ra",
     "@nobleGas _He,_Ne,_Ar,_Kr,_Xe,_Rn",
     "@metalloid _B,_Si,_Ge,_As,_Sb,_Te",
-    "@transitionMetal elemno>=21&elemno<=30|elemno>=39&elemno<=48|elemno>=72&elemno<=80|elemno>=104&elemno<=112",
-    "@lanthanide elemno>=57&elemno<=71",
-    "@actinide elemno>=89&elemno<=103",
+    // added La, Ac as per Frank Weinhold - these two are not f-block
+    "@transitionMetal elemno>=21&elemno<=30|elemno=57|elemno=89|elemno>=39&elemno<=48|elemno>=72&elemno<=80|elemno>=104&elemno<=112",
+    // removed La
+    "@lanthanide elemno>57&elemno<=71",
+    // removed Ac 
+    "@actinide elemno>89&elemno<=103",
 
     //    "@hetero", handled specially
 

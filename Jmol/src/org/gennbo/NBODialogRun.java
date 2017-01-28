@@ -724,6 +724,7 @@ abstract class NBODialogRun extends NBODialogModel {
       logInfo("saved " + n + "file" + (n == 1 ? "" : "s"), Logger.LEVEL_INFO);
       if (f == null)
         return;
+      modelOrigin = ORIGIN_NBO_ARCHIVE;
       inputFileHandler.setInputFile(f);
       rbLocal.doClick();
       setVisible(false);

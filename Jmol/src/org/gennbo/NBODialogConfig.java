@@ -87,6 +87,15 @@ abstract class NBODialogConfig extends JDialog {
   static final char DIALOG_MODEL = 'm';
   static final char DIALOG_CONFIG = 'c';
 
+  protected static final int ORIGIN_UNKNOWN = 0;
+  protected static final int ORIGIN_NIH = 1;
+  protected static final int ORIGIN_LINE_FORMULA = 2;
+  protected static final int ORIGIN_FILE_INPUT = 3;
+  protected static final int ORIGIN_NBO_ARCHIVE = 4;
+  
+  protected int modelOrigin = ORIGIN_UNKNOWN;
+  
+
   private static final String DEFAULT_SCRIPT = "set bondpicking true;set multipleBondSpacing -0.5;set zoomlarge false;select none;";
 
   protected static final String INPUT_FILE_EXTENSIONS = "adf;cfi;com;g09;gau;gms;jag;log;mm2;mnd;mol;mp;nw;orc;pqs;qc;vfi;xyz;47";
@@ -99,6 +108,13 @@ abstract class NBODialogConfig extends JDialog {
    * MODEL VIEW ....
    */
   final static protected Font topFont = new Font("Arial", Font.BOLD, 20);
+  
+  /**
+   * user input box .... -- should  be monospace
+   */
+  final static protected Font userInputFont = new Font("Arial", Font.PLAIN, 12);
+  
+
   
   /**
    * 16 pt   M O N O S P A C E D

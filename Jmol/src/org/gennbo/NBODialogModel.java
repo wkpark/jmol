@@ -77,8 +77,8 @@ abstract class NBODialogModel extends NBODialogConfig {
       "Create 3-center linkage between two atoms and a ligand" };
 
   //encodes number of atoms that can be selected
-  protected int editMode;
-  private final static int ALTER = 4, CLIP = 2, MUTATE = 1;
+  protected int boxCount;
+  private final static int BOX_COUNT_4 = 4, BOX_COUNT_2 = 2, BOX_COUNT_1 = 1;
   private final static int MAX_HISTORY = 5;
 
   ///  private static final String LOAD_SCRIPT = ";set zoomlarge false;zoomTo 0.5 {*} 0;";
@@ -87,10 +87,10 @@ abstract class NBODialogModel extends NBODialogConfig {
   ///  private String moveTo;
 
   private Box editBox;
-  private JTextField jtJmolInput, jtLineInput;
+  private JTextField jtNIHInput, jtLineFormula;
   private JComboBox<String> jcSymOps;
   protected JTextField editValueTf;
-  protected JButton jbEdit, jbClear;
+  protected JButton jbApply, jbClear;
 
   protected JComboBox<String> jComboSave;
 
@@ -105,6 +105,10 @@ abstract class NBODialogModel extends NBODialogConfig {
   private boolean loadModel;
 
   protected String selected = "";
+
+  private JButton rebond;
+
+  private JLabel atomsLabel;
   
   protected JPanel buildModelPanel() {
     panel = new JPanel();
@@ -137,18 +141,20 @@ abstract class NBODialogModel extends NBODialogConfig {
 
     final JRadioButton jrJmolIn = new JRadioButton("NIH/PubChem");
     jrJmolIn.setFont(monoFont);
-    jrJmolIn.setSelected(true);
     final JRadioButton jrLineIn = new JRadioButton("Line Formula");
     jrLineIn.setFont(monoFont);
+    jrLineIn.setSelected(true);
     final JRadioButton jrFileIn = new JRadioButton("File Input");
     jrFileIn.setFont(monoFont);
     ButtonGroup rg = new ButtonGroup();
     rg.add(jrJmolIn);
     rg.add(jrLineIn);
     rg.add(jrFileIn);
-    createInput(jtJmolInput = new JTextField(), jrJmolIn);
-    createInput(jtLineInput = new JTextField(), jrLineIn);
-    jtLineInput.add(new JLabel("line formula"));
+    createInput(jtNIHInput = new JTextField(), jrJmolIn);
+    createInput(jtLineFormula = new JTextField(), jrLineIn);
+    jtNIHInput.setFont(userInputFont);
+    jtLineFormula.setFont(userInputFont);
+    jtLineFormula.add(new JLabel("line formula"));
     String[] useOps = { "<Select File  Type>", "[.xyz]  XYZ", "[.mol]  MOL",
         "[.cfi]  NBO Cartesian", "[.vfi]  NBO Valence", "[.47]   NBO Archive",
         "[.gau]  Gaussian Input", "[.log]  Gaussian Output",
@@ -175,10 +181,10 @@ abstract class NBODialogModel extends NBODialogConfig {
       }
     });
     JPanel p2 = new JPanel(new GridLayout(3, 2));
-    p2.add(jrJmolIn);
-    p2.add(jtJmolInput);
     p2.add(jrLineIn);
-    p2.add(jtLineInput);
+    p2.add(jtLineFormula);
+    p2.add(jrJmolIn);
+    p2.add(jtNIHInput);
     p2.add(jrFileIn);
     p2.add(jComboUse);
     addFocusListeners(jComboUse, jrFileIn);
@@ -249,15 +255,15 @@ abstract class NBODialogModel extends NBODialogConfig {
     Box actionBox = Box.createVerticalBox();
     final String[] actions = { "Alter", "Clip", "Fuse", "Link", "Mutate",
         "Switch", "Twist", "Value", "3chb" };
-    final JRadioButton[] btns = new JRadioButton[actions.length];
+    final JRadioButton[] jrModelActions = new JRadioButton[actions.length];
     ButtonGroup rg = new ButtonGroup();
     for (int i = 0; i < actions.length; i++) {
-      btns[i] = new JRadioButton(actions[i]);
-      btns[i].setToolTipText(editInfo[i]);
-      actionBox.add(btns[i]);
-      rg.add(btns[i]);
+      jrModelActions[i] = new JRadioButton(actions[i]);
+      jrModelActions[i].setToolTipText(editInfo[i]);
+      actionBox.add(jrModelActions[i]);
+      rg.add(jrModelActions[i]);
       final int op = i;
-      btns[i].addActionListener(new ActionListener() {
+      jrModelActions[i].addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
           editAction = actions[op].toLowerCase();
@@ -280,7 +286,8 @@ abstract class NBODialogModel extends NBODialogConfig {
       }
     });
     lowBox.add(sym);
-    JButton rebond = new JButton("Rebond");
+    rebond = new JButton("Rebond");
+    rebond.setEnabled(false);
     rebond.setToolTipText("Change bonding symmetry around transition metal");
 
     rebond.addActionListener(new ActionListener() {
@@ -294,7 +301,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     rightBox.add(lowBox);
     editBox.add(rightBox);
 
-    btns[0].doClick();
+    //btns[0].doClick();
     return editBox;
   }
 
@@ -306,19 +313,19 @@ abstract class NBODialogModel extends NBODialogConfig {
     editBox.setAlignmentX(0.5f);
     editBox.setVisible(false);
     Box atBox = Box.createHorizontalBox();
-    atBox.add(new JLabel("Atoms: "));
+    atBox.add(atomsLabel = new JLabel("")); // "Atoms:"
     atomNumBox = new JTextField[4];
     for (int i = 0; i < 4; i++) {
       atomNumBox[i] = new JTextField();
-      atomNumBox[i].setFont(titleFont);
+      atomNumBox[i].setFont(userInputFont);
       atomNumBox[i].setMaximumSize(new Dimension(50, 50));
       atBox.add(atomNumBox[i]).setVisible(false);
       final int num = i;
       atomNumBox[i].addFocusListener(new FocusListener() {
         @Override
         public void focusGained(FocusEvent arg0) {
-          if (num == editMode - 1) {
-            jbEdit.setEnabled(true);
+          if (num == boxCount - 1) {
+            jbApply.setEnabled(true);
           }
         }
 
@@ -333,9 +340,9 @@ abstract class NBODialogModel extends NBODialogConfig {
           if (atnum > vwr.ms.ac) {
             atomNumBox[num].setText("");
           }
-          String[] tmp = new String[editMode];
+          String[] tmp = new String[boxCount];
           selected = "";
-          for (int j = 0; j < editMode; j++) {
+          for (int j = 0; j < boxCount; j++) {
             tmp[j] = atomNumBox[j].getText();
             selected += (tmp[j].length() > 0 ? tmp[j] + " " : "");
           }
@@ -398,13 +405,13 @@ abstract class NBODialogModel extends NBODialogConfig {
       public void insertUpdate(DocumentEvent arg0) {
         if (!editValueTf.getText().equals("")
             && !editValueTf.getText().contains("Select"))
-          jbEdit.setEnabled(true);
+          jbApply.setEnabled(true);
       }
 
       @Override
       public void removeUpdate(DocumentEvent arg0) {
         if (editValueTf.getText().equals(""))
-          jbEdit.setEnabled(false);
+          jbApply.setEnabled(false);
       }
     });
 
@@ -417,8 +424,8 @@ abstract class NBODialogModel extends NBODialogConfig {
         clearSelected();
       }
     });
-    jbEdit = new JButton("Apply");
-    jbEdit.addActionListener(new ActionListener() {
+    jbApply = new JButton("Apply");
+    jbApply.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         applyEdit(editAction);
@@ -426,7 +433,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     });
     Box lowBox = Box.createHorizontalBox();
     lowBox.add(jbClear).setVisible(false);
-    lowBox.add(jbEdit).setVisible(false);
+    lowBox.add(jbApply).setVisible(false);
     editBox.add(lowBox);
 
   }
@@ -604,35 +611,37 @@ abstract class NBODialogModel extends NBODialogConfig {
     case 'f':
     case 'l':
     case 's':
-      editMode = CLIP;
-      setEditBox();
+      boxCount = BOX_COUNT_2;
+      setEditBox(null);
       break;
     case '3':
-      editMode = CLIP;
-      setEditBox();
+      boxCount = BOX_COUNT_2;
+      setEditBox(null);
       break;
     case 'm':
-      editMode = MUTATE;
-      setEditBox();
+      boxCount = BOX_COUNT_1;
+      setEditBox("Radical name or line formula...");
       break;
     case 'a':
     case 't':
     case 'v':
-      editMode = ALTER;
-      setEditBox();
+      boxCount = BOX_COUNT_4;
+      setEditBox(null);
       break;
     case 'r':
-      editMode = MUTATE;
-      setEditBox();
+      boxCount = BOX_COUNT_1;
+      setEditBox(null);
     }
   }
 
-  protected void setEditBox() {
-    jbEdit.setEnabled(false);
+  protected void setEditBox(String label) {
+    if (label == null)
+      label = "Select atom" + (boxCount > 1 ? "s" : "") + "...";
+    jbApply.setEnabled(false);
     for (int i = 0; i < 4; i++)
-      atomNumBox[i].setVisible(i < editMode);
-
-    editValueTf.setText("Select atoms...");
+      atomNumBox[i].setVisible(i < boxCount);
+    atomsLabel.setText(boxCount == 0 ? "" : "Atom" + (boxCount > 1 ? "s" : "") + ":");
+    editValueTf.setText(label);
     editValueTf.setEnabled(false);
     jcSymOps.getParent().setVisible(editAction.charAt(0) == 'r');
     switch (editAction.charAt(0)) {
@@ -646,10 +655,10 @@ abstract class NBODialogModel extends NBODialogConfig {
       editValueTf.setVisible(false);
     }
 
-    currVal.setVisible(editMode == ALTER);
+    currVal.setVisible(boxCount == BOX_COUNT_4);
     valLab.setVisible(editAction.equals("alter"));
 
-    jbEdit.setVisible(!editAction.equals("value"));
+    jbApply.setVisible(!editAction.equals("value"));
     jbClear.setVisible(!editAction.equals("value"));
     editBox.repaint();
     editBox.revalidate();
@@ -685,7 +694,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   };
 
   protected void clearSelected() {
-    for (int i = 0; i < editMode; i++)
+    for (int i = 0; i < boxCount; i++)
       atomNumBox[i].setText("");
     if (currVal != null)
       currVal.setText("");
@@ -696,7 +705,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (editValueTf != null) {
       editValueTf.setText("Select atoms...");
       editValueTf.setEnabled(false);
-      jbEdit.setEnabled(false);
+      jbApply.setEnabled(false);
     }
   }
 
@@ -711,7 +720,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     String cmd = item + " " + selected;
     String val = editValueTf.getText();
     if (editValueTf != null) {
-      if (editMode == ALTER || editMode == MUTATE)
+      if (boxCount == BOX_COUNT_4 || boxCount == BOX_COUNT_1)
         cmd += val;
       else if (item.equals("3chb")) {
         if (!val.startsWith(":"))
@@ -724,7 +733,7 @@ abstract class NBODialogModel extends NBODialogConfig {
 
     sb.append("CMD " + cmd);
     log(cmd, 'i');
-    jbEdit.setEnabled(false);
+    jbApply.setEnabled(false);
     nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
         "Editing model...");
 
@@ -746,9 +755,10 @@ abstract class NBODialogModel extends NBODialogConfig {
     inputFileHandler.setInput(null, "", "");
     saveFileHandler.setInput(null, "", "");
     //clearInputFile();
-    if (textBox == jtJmolInput) {
+    if (textBox == jtNIHInput) {
+      modelOrigin = ORIGIN_NIH;
       loadModel = true;
-      jtLineInput.setText("");
+      jtLineFormula.setText("");
       saveFileHandler.setInput(null, model, "mol");
       s = "set zoomlarge false;load $" + model;
       if (runScriptNow(s) == null && 
@@ -758,9 +768,10 @@ abstract class NBODialogModel extends NBODialogConfig {
         return;
       }
       return;
-    } else if (textBox == jtLineInput) {
+    } else if (textBox == jtLineFormula) {
+      modelOrigin = ORIGIN_LINE_FORMULA;
       SB sb = new SB();
-      jtJmolInput.setText("");
+      jtNIHInput.setText("");
       s = "show " + model;
       saveFileHandler.setInput(null, "line", "mol");
       sb.append("CMD " + s);
@@ -812,10 +823,11 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
     String ess = getEss(ext, true);
     SB sb = new SB();
-    if (jtJmolInput != null) {
-      jtJmolInput.setText("");
-      jtLineInput.setText("");
+    if (jtNIHInput != null) {
+      jtNIHInput.setText("");
+      jtLineFormula.setText("");
     }
+    modelOrigin = ORIGIN_FILE_INPUT;
     sb.append("GLOBAL C_PATH " + path + sep);
     sb.append("GLOBAL C_ESS " + ess + sep);
     sb.append("GLOBAL C_FNAME " + fname + sep);
@@ -878,12 +890,12 @@ abstract class NBODialogModel extends NBODialogConfig {
 
   protected void notifyPick_m(String atomno) {
 
-    if (editMode == 0)
+    if (boxCount == 0)
       return;
     String[] tok = atomno.split(",");
     if (tok.length > 1) {
       //Bond selection
-      if (editMode == CLIP)
+      if (boxCount == BOX_COUNT_2)
         clearSelected();
       String[] tok2 = tok[1].split(" ");
       String at1 = tok2[2].replaceAll("[\\D]", "");
@@ -896,7 +908,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
     editValueTf.requestFocus();
     editValueTf.setText("");
-    if (editMode < 3)
+    if (boxCount < 3)
       editValueTf.setEnabled(true);
     boolean isSelected = (vwr.evaluateExpressionAsVariable("{*}[" + atomno + "].selected")
         .asFloat() == 1); 
@@ -913,9 +925,12 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
     
   //  System.out.println(atomno + " / " + selected);
-    int cnt = (selected.equals("") ? 1 : selected.split(" ").length);
-    switch (editMode) {
-    case ALTER:
+    selected = PT.rep(selected, "  ", " ").trim();
+    int cnt = (selected.equals("") ? 1 : PT.getTokens(selected).length);
+    if (selected.length() > 0)
+      selected += " ";
+    switch (boxCount) {
+    case BOX_COUNT_4:
       String desc = "atomic number";
       String script = null;
       switch (cnt) {
@@ -945,30 +960,36 @@ abstract class NBODialogModel extends NBODialogConfig {
         runScriptNow("measure off;measure " + selected);
         break;
       }
-      String sval;
+      String sval = "";
       if (script == null) {
         script = "print measure(";
-        for (String x : selected.split(" "))
+        String[] tokens = PT.getTokens(selected);
+        for (String x : tokens)
           script += "{*}[" + x + "] ";
         String s = runScriptNow(script + ")");
-        String[] s2 = s.split("\\s+"); 
+        try {
+        String[] s2 = PT.getTokens("" + s); 
         if (s2.length < 2)
           System.out.println(script);
         s = s2[1];
         double val = Double.parseDouble(s);
         val = round(val, 2);
         sval = "" + val;
+        } catch (Exception e) {
+          System.out.println("TESTERROR1");
+        }
       } else {
         sval = "" + runScriptNow(script);
       }
       currVal.setText("current value: " + sval);
-      String s = editAction.equals("value") ? desc : "new " + desc;
-      valLab.setText(s + ":");
-      log(sval, 'b');
+      String s = "(" + desc + ")";//editAction.equals("value") ? desc : "new " + desc;
+      valLab.setText(s);// + ":");
+      valLab.setVisible(true);
+      //log(sval, 'b');
       break;
-    case CLIP:
+    case BOX_COUNT_2:
       if (cnt == 2) {
-        jbEdit.setEnabled(true);
+        jbApply.setEnabled(true);
         if (editValueTf.isVisible())
           editValueTf.requestFocus();
         else
@@ -979,7 +1000,7 @@ abstract class NBODialogModel extends NBODialogConfig {
         cnt = 1;
       }
       break;
-    case MUTATE:
+    case BOX_COUNT_1:
       if (cnt == 2) {
         clearSelected();
         selected += atomno + " ";
@@ -991,7 +1012,7 @@ abstract class NBODialogModel extends NBODialogConfig {
           jcSymOps.setEnabled(true);
           int atomInd = Integer.parseInt(atomno) - 1;
           int val = vwr.ms.at[atomInd].getValence();
-          jbEdit.setEnabled(true);
+          jbApply.setEnabled(true);
           switch (val) {
           case 4:
             for (String x : new String[] { "td", "c3vi", "c4v" })
@@ -1008,7 +1029,7 @@ abstract class NBODialogModel extends NBODialogConfig {
           default:
             jcSymOps.addItem("<Select Transition Metal>");
             jcSymOps.setEnabled(false);
-            jbEdit.setEnabled(false);
+            jbApply.setEnabled(false);
           }
         }
         editValueTf.setEnabled(true);
@@ -1018,6 +1039,8 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
     if (cnt == 0 || isSelected)
       return;
+    if (cnt > 4)
+      System.out.println("OUCH1");
     runScriptNow("select add {*}[" + atomno + "]");
       atomNumBox[cnt - 1].setText("  " + atomno);
 
@@ -1064,7 +1087,9 @@ abstract class NBODialogModel extends NBODialogConfig {
     for (Component c : panel.getComponents())
       c.setVisible(true);
     editBox.setVisible(true);
-
+    // 57 89
+    ///@transitionMetal elemno>=21&elemno<=30|elemno>=39&elemno<=48|elemno>=72&elemno<=80|elemno>=104&elemno<=112",
+    rebond.setEnabled(false);
     runScriptNow("select within(model,visible)");
     String fileContents = evaluateJmolString("data({selected},'cfi')");
     if (vwr.ms.ac > 0)
@@ -1085,9 +1110,15 @@ abstract class NBODialogModel extends NBODialogConfig {
       redo.setEnabled(true);
     else
       redo.setEnabled(false);
+    String x = (String) vwr.evaluateExpression("{transitionMetal}");
+    // "({1})"
+    rebond.setEnabled(x.length() > 4);
+    
     runScriptNow("select none; select on;refresh");
-  }
+    
 
+  }
+  
   protected void showConfirmationDialog(String st, File newFile, String ext) {
     int i = JOptionPane.showConfirmDialog(null, st, "Warning",
         JOptionPane.YES_NO_OPTION);

@@ -647,7 +647,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
 
     currVal.setVisible(editMode == ALTER);
-    valLab.setVisible(editMode == ALTER);
+    valLab.setVisible(editAction.equals("alter"));
 
     jbEdit.setVisible(!editAction.equals("value"));
     jbClear.setVisible(!editAction.equals("value"));
@@ -916,7 +916,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     int cnt = (selected.equals("") ? 1 : selected.split(" ").length);
     switch (editMode) {
     case ALTER:
-      String desc = "atomic number: ";
+      String desc = "atomic number";
       String script = null;
       switch (cnt) {
       case 0:
@@ -934,17 +934,18 @@ abstract class NBODialogModel extends NBODialogConfig {
         editValueTf.setEnabled(true);
         break;
       case 2:
-        desc = "distance: ";
+        desc = "distance";
         runScriptNow("measure off;measure " + selected 
             + "\"2:%0.4VALUE //A\"" + ";measure " + selected
             + "\"2:%0.4VALUE //A\"");
         break;
       case 3:
       case 4:
-        desc = (cnt == 3 ? "angle: " : "dihedral angle: ");
+        desc = (cnt == 3 ? "angle" : "dihedral angle");
         runScriptNow("measure off;measure " + selected);
         break;
       }
+      String sval;
       if (script == null) {
         script = "print measure(";
         for (String x : selected.split(" "))
@@ -956,11 +957,14 @@ abstract class NBODialogModel extends NBODialogConfig {
         s = s2[1];
         double val = Double.parseDouble(s);
         val = round(val, 2);
-        currVal.setText("current value: " + val);
+        sval = "" + val;
       } else {
-        currVal.setText("current value: " + runScriptNow(script));
+        sval = "" + runScriptNow(script);
       }
-      valLab.setText("new " + desc);
+      currVal.setText("current value: " + sval);
+      String s = editAction.equals("value") ? desc : "new " + desc;
+      valLab.setText(s + ":");
+      log(s + " = " + sval, 'b');
       break;
     case CLIP:
       if (cnt == 2) {

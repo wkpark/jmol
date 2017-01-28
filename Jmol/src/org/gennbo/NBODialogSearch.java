@@ -454,7 +454,7 @@ abstract class NBODialogSearch extends NBODialogView {
       String st = keyW[i/2].substring(keyW[i/2].indexOf(":"));
       JTextArea jt = new JTextArea(st);
       jt.setBackground(null);
-      jt.setFont(new Font("Arial",Font.PLAIN,16));
+      jt.setFont(searchTextAreaFont);
       jt.setEditable(false);
       opList.add(jt,c);
       c.gridy = i + 1;
@@ -497,7 +497,7 @@ abstract class NBODialogSearch extends NBODialogView {
     for(int i = 0; i < s.length; i++){
       if(!s[i].trim().startsWith("(")){
         JLabel lab = new JLabel(s[i]);
-        lab.setFont(new Font("Arial",Font.BOLD,14));
+        lab.setFont(searchOpListFont);
         lab.setForeground(Color.blue);
         opList.add(lab);
       }else{

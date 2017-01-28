@@ -266,7 +266,7 @@ public class NBODialog extends NBODialogSearch {
    */
   protected JPanel buildTopPanel() {
     JPanel p = new JPanel(new BorderLayout());
-    Font f = new Font("Arial", Font.BOLD, 20);
+    Font f = topFont;
     Box b = Box.createHorizontalBox();
     b.add(Box.createRigidArea(new Dimension(20, 0)));
 
@@ -289,14 +289,13 @@ public class NBODialog extends NBODialogSearch {
       b.add(Box.createRigidArea(new Dimension(30, 50)));
     }
 
-    b.add(getMainButton(new JButton("Settings"), 'c', new Font("Arial",
-        Font.PLAIN, 14)));
+    b.add(getMainButton(new JButton("Settings"), 'c', settingHelpFont));
     b.add(Box.createRigidArea(new Dimension(20, 0)));
-    b.add(getMainButton(helpBtn, 'h', new Font("Arial", Font.PLAIN, 14)));
+    b.add(getMainButton(helpBtn, 'h', settingHelpFont));
 
     p.add(b, BorderLayout.CENTER);
     icon = new JLabel();
-    icon.setFont(new Font("Arial", Font.BOLD, 16));
+    icon.setFont(nboFont);
     icon.setForeground(Color.white);
     p.add(icon, BorderLayout.EAST);
     p.setBackground(Color.BLACK);
@@ -353,7 +352,7 @@ public class NBODialog extends NBODialogSearch {
     
     p.add(b);
     lab = new JLabel("NBOPro6@Jmol");
-    lab.setFont(new Font("Arial",Font.BOLD,26));
+    lab.setFont(nboProTitleFont);
     lab.setForeground(Color.red);
     p.add(lab);
     lab.setAlignmentX(0.5f);
@@ -555,21 +554,21 @@ public class NBODialog extends NBODialogSearch {
     viewSettingsBox.setVisible(!jmolOptionNONBO);
     nboOutput.add(viewSettingsBox,BorderLayout.NORTH);
     nboOutput.add(s,BorderLayout.CENTER);
-    JLabel lab = new JLabel("Session Log");
-    lab.setFont(nboFont);
+    JLabel lab = new JLabel("Session Dialog");
+    lab.setFont(monoFont);
     s.add(lab, BorderLayout.PAGE_START);
     JScrollPane p1 = new JScrollPane();
-    if(jpNBOLog == null){
-      jpNBOLog = new JTextPane();
-      jpNBOLog.setEditable(false);
-      jpNBOLog.setBorder(null);
-      jpNBOLog.setFont(new Font("Arial", Font.PLAIN, 16));
+    if(jpNBODialog == null){
+      jpNBODialog = new JTextPane();
+      jpNBODialog.setEditable(false);
+      jpNBODialog.setBorder(null);
+      //jpNBODialog.setFont(new Font("Arial", Font.PLAIN, 16));
       bodyText = "";
     }
-    jpNBOLog.setContentType("text/html");
-    jpNBOLog.setFont(new Font("Arial",Font.PLAIN,10));
+    jpNBODialog.setContentType("text/html");
+    //jpNBODialog.setFont(new Font("Arial",Font.PLAIN,10));
     setComponents(s,Color.WHITE,Color.BLACK);
-    p1.getViewport().add(jpNBOLog);
+    p1.getViewport().add(jpNBODialog);
     p1.setBorder(null);
     s.add(p1, BorderLayout.CENTER);
     JPanel box = new JPanel(new GridLayout(2,1));
@@ -592,13 +591,13 @@ public class NBODialog extends NBODialogSearch {
     btn.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          if (jpNBOLog == null)
+          if (jpNBODialog == null)
             return;
           JFileChooser myChooser = new JFileChooser();
           myChooser.setFileFilter(new FileNameExtensionFilter(".txt",".txt"));
           myChooser.setFileHidingEnabled(true);
           
-          int button = myChooser.showSaveDialog(jpNBOLog);
+          int button = myChooser.showSaveDialog(jpNBODialog);
           if (button == JFileChooser.APPROVE_OPTION) {
             String output = bodyText.replaceAll("<br>",sep);
             output = output.replaceAll("<b>", "");
@@ -799,8 +798,8 @@ public class NBODialog extends NBODialogSearch {
   protected void clearOutput(){
     bodyText = "";
    // String fontFamily = jpNBOLog.getFont().getFamily();
-    if (jpNBOLog != null)
-      jpNBOLog.setText("");
+    if (jpNBODialog != null)
+      jpNBODialog.setText("");
   }
 
   protected boolean checkJmolNBO(){
@@ -839,7 +838,8 @@ public class NBODialog extends NBODialogSearch {
         setSearchList(list);
       break;
     }
-    setStatus("OK mode=" + dialogMode);
+    if (debugVerbose)
+      setStatus("OK mode=" + dialogMode);
   }
   
   /**

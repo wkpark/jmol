@@ -23,6 +23,7 @@
  */
 package org.gennbo;
 
+import java.awt.Dialog;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -321,12 +322,19 @@ public class NBOService {
             String line = null;
             try {
               while ((line = nboReader.readLine()) != null) {
-                if (line.indexOf("***errmess***") == 0) {
-                  logServerLine(line, false);
-                  inError = !inError;
+                if (line.indexOf("***errmess***") >= 0) {
+//                  logServerLine(line, Logger.LEVEL_ERROR);
+                  inError = true;
                   continue;
                 }
-                logServerLine(line, inError);
+                logServerLine(line, inError ? Logger.LEVEL_ERROR : Logger.LEVEL_DEBUG);
+                if (inError) {
+                  // second line of <space>***errmess*** is the message.
+                    logServerLine("NBOPro can't do that.", Logger.LEVEL_WARN);
+                    //isWorking = inRequest = false;
+                    inError = false;
+                  continue;
+                }
                 // ignore the opener business
                 if (line.indexOf("DATA \" \"") >= 0) {
                   //nboDialog.logInfo(" DATA...", Logger.LEVEL_INFO);
@@ -425,12 +433,7 @@ public class NBOService {
                     nboDialog.processLabelBonds(line);
                   break;
                 case MODE_MODEL:
-                  if (line.indexOf("can't do that") >= 0) {
-                    nboDialog.processModelLine(line);
-                    isWorking = inRequest = false;
-                  } else {
-                    nboAddModelLine(line);
-                  }
+                  nboAddModelLine(line);
                   break;
                 //                case MODE_VALUE_M:
                 //                  if (line.indexOf("DATA") >= 0)
@@ -475,10 +478,11 @@ public class NBOService {
 
   private int lineNo = 0;
 
-  protected void logServerLine(String line, boolean inError) {
-    
-    nboDialog.logInfo((++lineNo) + "< " + line,
-        isFortranError(line) || inError ? Logger.LEVEL_ERROR : Logger.LEVEL_DEBUG);
+  protected void logServerLine(String line, int level) {
+    if (isFortranError(line))
+      level = Logger.LEVEL_ERROR;
+    nboDialog.logInfo((nboDialog.debugVerbose ? (++lineNo) + "< " : "") + line,
+      level);
   }
 
   protected boolean isFortranError(String line) {

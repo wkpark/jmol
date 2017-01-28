@@ -95,12 +95,69 @@ abstract class NBODialogConfig extends JDialog {
 
   protected static final String sep = System.getProperty("line.separator");
 
-  final static protected Font nboFont = new Font("Arial", Font.BOLD, 16);
+  /**
+   * MODEL VIEW ....
+   */
+  final static protected Font topFont = new Font("Arial", Font.BOLD, 20);
+  
+  /**
+   * 16 pt   M O N O S P A C E D
+   */
   final static protected Font monoFont = new Font("Monospaced", Font.BOLD, 16);
-  final static protected Font titleFont = new Font("Arial", Font.BOLD
-      | Font.ITALIC, 18);
+  
+  /**
+   * 18 pt Arial bold italic
+   *   
+   */
+  final static protected Font titleFont = new Font("Arial", Font.BOLD | Font.ITALIC, 18);
+  
+  
+  /**
+   * 16 pt Arial plain for search area text
+   *   
+   */
+  final static protected Font searchTextAreaFont = new Font("Arial",Font.PLAIN,16);
+  
+  /**
+   * Settings and Help
+   */
+  final static protected Font settingHelpFont = new Font("Arial", Font.PLAIN, 14);
+
+  /**
+   * Settings and Help
+   */
+  final static protected Font searchOpListFont = new Font("Arial", Font.BOLD, 14);
+
+  /**
+   *  arial plain 16
+   */
+  final static protected Font iconFont = new Font("Arial", Font.PLAIN, 16);
+
+  
+  /**
+   * 16 pt arial bold
+   */
+  final static protected Font nboFont = new Font("Arial", Font.BOLD, 16);
+  
+
+  /**
+   * 26 pt arial bold
+   */
   final static protected Font nboFontLarge = new Font("Arial", Font.BOLD, 26);
 
+  /**
+   * run button 20-pt arial plain
+   */
+  final static protected Font runButtonFont = new Font("Arial",Font.PLAIN,20);
+
+  /**
+   * "NBOPro6@Jmol title 26-pt arial bold
+   */
+  final static protected Font nboProTitleFont = new Font("Arial",Font.BOLD,26);
+    
+  /**
+   * Jmol-style label font 16 bold
+   */
   private static final String JMOL_LABEL_FONT = "16 bold";
 
   private static final int MODE_PATH_SERVICE = 0;
@@ -132,7 +189,7 @@ abstract class NBODialogConfig extends JDialog {
   protected boolean haveService;
 
   protected JLabel statusLab;
-  protected JTextPane jpNBOLog;
+  protected JTextPane jpNBODialog;
   protected JSlider opacity = new JSlider(0, 10);
   protected JPanel settingsPanel;
   protected JComboBox<Color> colorBox1, colorBox2;
@@ -632,16 +689,18 @@ abstract class NBODialogConfig extends JDialog {
 
       if (!format0.equals("p"))
         line = "<" + format0 + ">" + line + "</" + format1 + ">";
-      jpNBOLog.setText("<html>" + (bodyText = bodyText + line + "\n<br>")
-          + "</html>");
+      jpNBODialog.setText("<html><font face=\"Arial\">" + (bodyText = bodyText + line + "\n<br>")
+          + "</font></html>");
     }
-    jpNBOLog.setCaretPosition(jpNBOLog.getDocument().getLength());
+    jpNBODialog.setCaretPosition(jpNBODialog.getDocument().getLength());
   }
 
   private boolean dontLog(String line, char chFormat) {
-    return (jpNBOLog == null || line.trim().equals("")
-        || line.indexOf("read/unit=5/attempt to read past end") >= 0 || !debugVerbose
-        && "b|r".indexOf("" + chFormat) < 0);
+    return (jpNBODialog == null || line.trim().equals("")
+        || line.indexOf("read/unit=5/attempt to read past end") >= 0
+        || line.indexOf("*end*") >= 0
+        || !debugVerbose
+        && "b|r|I".indexOf("" + chFormat) < 0);
   }
 
   protected void alertError(String line) {

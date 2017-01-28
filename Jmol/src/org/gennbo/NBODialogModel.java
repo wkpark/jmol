@@ -136,12 +136,12 @@ abstract class NBODialogModel extends NBODialogConfig {
     inputBox.setMaximumSize(new Dimension(355, 155));
 
     final JRadioButton jrJmolIn = new JRadioButton("NIH/PubChem");
-    jrJmolIn.setFont(nboFont);
+    jrJmolIn.setFont(monoFont);
     jrJmolIn.setSelected(true);
     final JRadioButton jrLineIn = new JRadioButton("Line Formula");
-    jrLineIn.setFont(nboFont);
+    jrLineIn.setFont(monoFont);
     final JRadioButton jrFileIn = new JRadioButton("File Input");
-    jrFileIn.setFont(nboFont);
+    jrFileIn.setFont(monoFont);
     ButtonGroup rg = new ButtonGroup();
     rg.add(jrJmolIn);
     rg.add(jrLineIn);
@@ -768,7 +768,7 @@ abstract class NBODialogModel extends NBODialogConfig {
           "model from line input...");
     }
     textBox.setText(model);
-    log(s, 'i');
+    log(s, 'I');
   }
 
   /**
@@ -964,7 +964,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       currVal.setText("current value: " + sval);
       String s = editAction.equals("value") ? desc : "new " + desc;
       valLab.setText(s + ":");
-      log(s + " = " + sval, 'b');
+      log(sval, 'b');
       break;
     case CLIP:
       if (cnt == 2) {
@@ -1115,7 +1115,8 @@ abstract class NBODialogModel extends NBODialogConfig {
   protected void processModelEnd(String s, String statusInfo) {
     if (statusInfo.indexOf("Sending ") >= 0)
       return;
-    log("<< " + statusInfo, 'r');
+    if (debugVerbose)
+      log("<< " + statusInfo, 'r');
     if (s.contains("\\"))
       s = s.replaceAll("\\\\", "");
     if (statusInfo.indexOf("Editing") >= 0)

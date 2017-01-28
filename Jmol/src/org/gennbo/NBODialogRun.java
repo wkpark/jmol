@@ -136,7 +136,7 @@ abstract class NBODialogRun extends NBODialogModel {
     btnRun = new JButton("Run");
     btnRun.setVisible(false);
     btnRun.setEnabled(true);
-    panel.add(btnRun).setFont(new Font("Arial", Font.PLAIN, 20));
+    panel.add(btnRun).setFont(runButtonFont);
     btnRun.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -328,7 +328,7 @@ abstract class NBODialogRun extends NBODialogModel {
       });
       //FILE=///////////
       Box box = Box.createHorizontalBox();
-      box.add(new JLabel("Jobname ")).setFont(new Font("Arial", Font.BOLD, 16));
+      box.add(new JLabel("Jobname ")).setFont(nboFont);
       box.add(tfJobName).setMaximumSize(new Dimension(100, 30));
       box.setAlignmentX(0.5f);
       Box box2 = Box.createVerticalBox();
@@ -339,8 +339,7 @@ abstract class NBODialogRun extends NBODialogModel {
       editBox.add(box2);
       //NBOKEYLIST/////////
       box2 = Box.createHorizontalBox();
-      box2.add(new JLabel("Keywords:  ")).setFont(
-          new Font("Arial", Font.BOLD, 16));
+      box2.add(new JLabel("Keywords:  ")).setFont(nboFont);
       final JPanel menu = menuNboKeywords();
       ButtonGroup bg = new ButtonGroup();
       JRadioButton btn = new JRadioButton("Menu Select");

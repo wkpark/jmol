@@ -1475,9 +1475,9 @@ abstract class NBODialogView extends NBODialogRun {
         int bgcolor = vwr.getBackgroundArgb();
         if (bgcolor == 0xFF000000)
           bgcolor = 0xFFE0E0E0;
-        int color = C.getArgb(C.getBgContrast(bgcolor));
-        setBackground(new AwtColor(bgcolor));
-        contrastColor = new AwtColor(color);// Black or White
+        //int color = C.getArgb(C.getBgContrast(bgcolor));
+        //setBackground(new AwtColor(bgcolor));
+        //contrastColor = new AwtColor(color);// Black or White
     }
 
     private JLabel cellLabel;

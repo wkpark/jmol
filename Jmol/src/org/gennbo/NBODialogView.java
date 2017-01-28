@@ -454,6 +454,7 @@ abstract class NBODialogView extends NBODialogRun {
     revalidate();
   }
 
+  
   protected void setNewBasis() {
     if (orbitals == null)
       return;
@@ -1496,11 +1497,11 @@ abstract class NBODialogView extends NBODialogRun {
     /**
      * Clear the orbital display bitsets.
      * 
-     * @param isNewFile 
+     * @param clearAll 
      */
-    protected void clearOrbitals(boolean isNewFile) {
+    protected void clearOrbitals(boolean clearAll) {
       bsKnown.clearAll();
-      if (isNewFile) {
+      if (clearAll) { 
         bsOn.clearAll();
         bsNeg.clearAll();
       }

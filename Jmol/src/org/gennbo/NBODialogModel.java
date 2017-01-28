@@ -1113,7 +1113,9 @@ abstract class NBODialogModel extends NBODialogConfig {
     String x = (String) vwr.evaluateExpression("{transitionMetal}");
     // "({1})"
     rebond.setEnabled(x.length() > 4);
-    
+    if (editAction.equals("mutate")) {
+      actionSelected('m');
+    }
     runScriptNow("select none; select on;refresh");
     
 

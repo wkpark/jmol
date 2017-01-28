@@ -299,12 +299,6 @@ abstract class NBODialogRun extends NBODialogModel {
   }
 
 
-  protected String getFileContents(String jobName) {
-    String fileContents = fileData[0] + "$NBO\n " + "FILE=" + jobName + " "
-        + nboKeywords + "  $END" + sep;
-    return fileContents + fileData[2];
-  }
-
   protected void addNBOKeylist() {
 
     if (inputFileHandler.inputFile != null) {
@@ -463,8 +457,8 @@ abstract class NBODialogRun extends NBODialogModel {
 
     if (fileData == null) {
       fileData = inputFileHandler.read47File();
-      nboKeywords = fileData[1];
     }
+    nboKeywords = fileData[1];
     //Check the plot file names match job name, warn user otherwise
     inputFileHandler.jobStem = inputFileHandler.jobStem.trim();
     String jobName = (tfJobName == null ? inputFileHandler.jobStem
@@ -493,16 +487,17 @@ abstract class NBODialogRun extends NBODialogModel {
 
     for (String x : keywords.split(" ")) {
       if (!nboKeywords.contains(x + " ")) {
-        nboKeywords += x + " ";
+        nboKeywords += " " + x + " ";
       }
     }
 
     if (!nboKeywords.contains("PLOT"))
-      nboKeywords += "PLOT";
+      nboKeywords += " PLOT";
 
     if (inputFileHandler.useExt.equals("47"))
       if (!inputFileHandler.writeToFile(inputFile.getAbsolutePath(),
-          getFileContents(jobName))) {
+          fileData[0] + "$NBO\n " + "FILE=" + jobName + " "
+              + nboKeywords + "  $END" + sep + fileData[2])) {
         logInfo("Could not create " + inputFile, Logger.LEVEL_ERROR);
         return;
       }
@@ -758,5 +753,11 @@ abstract class NBODialogRun extends NBODialogModel {
 
     }
   }
+
+  public void fix47(File inputFile) {
+    // TODO
+    
+  }
+
 
 }

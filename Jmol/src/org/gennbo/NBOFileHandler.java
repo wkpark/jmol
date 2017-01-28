@@ -131,13 +131,14 @@ class NBOFileHandler extends JPanel {
     JFileChooser myChooser = new JFileChooser();
     myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt));
     myChooser.setFileHidingEnabled(true);
-
     String folder = tfDir.getText();
     String name = tfName.getText();
     if (!folder.equals("")) {
       if (!folder.contains(":"))
         folder = "C:/" + folder;
       fileDir = folder + "/" + (name.equals("") ? " " : name);
+      if (name.length() > 0 && useExt.equals("47"))
+        fileDir += ".47";
     }
     myChooser.setSelectedFile(new File(fileDir));
     int button = myChooser.showDialog(this, GT._("Select"));
@@ -153,8 +154,6 @@ class NBOFileHandler extends JPanel {
     //return false;
     if (dialog.dialogMode == NBODialogConfig.DIALOG_MODEL)
       return true;
-    // DP? if(!inputFile.getAbsolutePath().endsWith(".47"))
-    // DP?  inputFile = newNBOFile(inputFile, "47");
     if (!useExt.equals("47")) {
       jobStem = getJobStem(inputFile);
       dialog.loadModelFromNBO(fileDir, jobStem, useExt);
@@ -163,6 +162,7 @@ class NBOFileHandler extends JPanel {
       return true;
     }
     canReRun = true;
+    setInputFile(inputFile);
     dialog.log("Job: " + jobStem, 'b');
     fileDir = inputFile.getParent();
     dialog.saveWorkingPath(fileDir.toString());
@@ -182,50 +182,52 @@ class NBOFileHandler extends JPanel {
     if (inputFile.getName().indexOf(".") > 0)
       jobStem = getJobStem(inputFile);
     setInput(inputFile.getParent(), jobStem, useExt);
-    if (getExt(inputFile).equals("47")) {
-      if (fixPath(inputFile.getParent().toString()).equals(
-          dialog.nboService.getServerPath(null))) {
-        JOptionPane.showMessageDialog(this,
-            "Select a directory that does not contain the NBOServe executable,"
-                + "\nor select a new location for your NBOServe executable");
+    if (!getExt(inputFile).equals("47"))
+      return;
+    dialog.fix47(inputFile);
+    if (fixPath(inputFile.getParent().toString()).equals(
+        dialog.nboService.getServerPath(null))) {
+      JOptionPane.showMessageDialog(this,
+          "Select a directory that does not contain the NBOServe executable,"
+              + "\nor select a new location for your NBOServe executable");
+      return;
+    }
+    dialog.isJmolNBO = true;
+    fileDir = inputFile.getParent();
+    boolean canLoad = true;
+    boolean isOK = true;
+    if (dialog.dialogMode != NBODialogConfig.DIALOG_MODEL) {
+      if (!getChooseList(true)) {
+        isOK = false;
+      } else {
+        for (String x : EXT_ARRAY) {
+          File f3 = newNBOFile(inputFile, x);
+          if (!f3.exists() || x.equals("36") && f3.length() == 0) { 
+            // BH: But this means all  || f3.length() == 0) {
+            isOK = false;
+            break;
+          }
+        }
+      }
+    }
+    if (!isOK) {
+      if (dialog.dialogMode != NBODialogConfig.DIALOG_RUN) {
+        if (canReRun) {
+          canReRun = false;
+          dialog.runJob("PLOT", inputFile, "gennbo");
+        } else {
+          dialog.alertError("Error occurred during run");
+        }
         return;
       }
-      dialog.isJmolNBO = true;
-      fileDir = inputFile.getParent();
-      boolean canLoad = true;
-      boolean isOK = true;
-      if (dialog.dialogMode != NBODialogConfig.DIALOG_MODEL) {
-        if (!getChooseList(true)) {
-          isOK = false;
-        } else {
-          for (String x : EXT_ARRAY) {
-            File f3 = newNBOFile(inputFile, x);
-            if (!f3.exists()) {
-              isOK = false;
-              break;
-            }
-          }
-        }
-      }
-      if (!isOK) {
-        if (dialog.dialogMode != NBODialogConfig.DIALOG_RUN) {
-          if (canReRun) {
-            canReRun = false;
-            dialog.runJob("PLOT", inputFile, "gennbo");
-          } else {
-            dialog.alertError("Error occurred during run");
-          }
-          return;
-        }
-        canLoad = false;
-      }
-      if (canLoad) {
-        dialog.loadFromHandler(new File(fileDir + "/" + jobStem + ".47"));
-      } else if (dialog.dialogMode == NBODialogConfig.DIALOG_RUN) {
-        dialog.loadModelFromNBO(fileDir, jobStem, useExt);
-        tfName.setText(jobStem);
-        tfExt.setText("47");
-      }
+      canLoad = false;
+    }
+    if (canLoad) {
+      dialog  .loadFromHandler(new File(fileDir + "/" + jobStem + ".47"));
+    } else if (dialog.dialogMode == NBODialogConfig.DIALOG_RUN) {
+      dialog.loadModelFromNBO(fileDir, jobStem, useExt);
+      tfName.setText(jobStem);
+      tfExt.setText("47");
     }
   }
 
@@ -310,10 +312,15 @@ class NBOFileHandler extends JPanel {
       params.append(s).append(sep).append("$END").append(sep);
     }
     dialog.logInfo("$NBO: " + nboKeywords, Logger.LEVEL_INFO);
-    fileData[0] = preParams.toString();
+    fileData[0] = fix47File(preParams.toString());
     fileData[1] = nboKeywords;
     fileData[2] = postParams.toString();
     return fileData;
+  }
+
+  private String fix47File(String data) {
+    return PT.rep(data, "FORMAT=PRECISE", ""); 
+    
   }
 
   /**

@@ -115,6 +115,12 @@ abstract class NBODialogConfig extends JDialog {
   final static protected Font userInputFont = new Font("Arial", Font.PLAIN, 12);
   
 
+ 
+  /**
+   * 14 pt   M O N O S P A C E D
+   */
+  final static protected Font listFont = new Font("Monospaced", Font.BOLD, 14);
+  
   
   /**
    * 16 pt   M O N O S P A C E D

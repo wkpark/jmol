@@ -41,6 +41,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Map;
 
+import javajs.util.PT;
 import javajs.util.SB;
 
 import javax.swing.AbstractListModel;
@@ -1441,7 +1442,7 @@ abstract class NBODialogView extends NBODialogRun {
       setVisibleRowCount(jmolOptionNONBO ? 15 : 10);
       setFont(nboFontLarge);
       setColorScheme();
-      //setFont(new Font("MONOSPACED", Font.PLAIN, 14));
+      setFont(listFont);
       setModel(new DefaultListModel<String>());
       setCellRenderer(new ListCellRenderer<String>(){
 
@@ -1473,25 +1474,43 @@ abstract class NBODialogView extends NBODialogRun {
     }
 
     private void setColorScheme() {
-        int bgcolor = vwr.getBackgroundArgb();
+        //int bgcolor = vwr.getBackgroundArgb();
+      int bgcolor = 0xFFFFFFFF;
         if (bgcolor == 0xFF000000)
           bgcolor = 0xFFE0E0E0;
-        //int color = C.getArgb(C.getBgContrast(bgcolor));
+        int color = C.getArgb(C.getBgContrast(bgcolor));
         //setBackground(new AwtColor(bgcolor));
-        //contrastColor = new AwtColor(color);// Black or White
+        contrastColor = new AwtColor(color);// Black or White
     }
 
     private JLabel cellLabel;
+    protected boolean myTurn;
     
     protected Component renderCell(int index) {      
       if (cellLabel == null) {
-        cellLabel = new JLabel();
-        cellLabel.setFont(nboFontLarge);
+        cellLabel = new JLabel() {
+          @Override
+          public void setBackground(Color bg) {
+            if (myTurn)
+              super.setBackground(bg);
+          }
+
+        };
+        cellLabel.setFont(listFont);
       }
       cellLabel.setText(getModel().getElementAt(index));
-      cellLabel.setForeground(!bsOn.get(index) ? contrastColor : bsNeg.get(index) ? orbColor2 : orbColor1);
+      cellLabel.setOpaque(true);
+      myTurn = true;
+      Color bgcolor = (!bsOn.get(index) ? Color.WHITE : bsNeg.get(index) ? orbColor2 : orbColor1);
+      cellLabel.setBackground(bgcolor);
+      cellLabel.setForeground(getContrastColor(bgcolor));
+      myTurn = false;
 
      return cellLabel;
+    }
+
+    private Color getContrastColor(Color bgcolor) {
+      return new AwtColor(C.getArgb(C.getBgContrast(bgcolor.getRGB())));
     }
 
     /**
@@ -1520,7 +1539,7 @@ abstract class NBODialogView extends NBODialogRun {
         script += updateBitSetFromModel();
       else
         updateModelFromBitSet();
-        
+        //System.out.println("update " + bsOn + " " + bsKnown + " " +  iClicked);
       for (int i = model.getSize(); --i >= 0;) {
         boolean isOn = bsOn.get(i);
         if (i == iClicked || isOn && !bsKnown.get(i) || isSelectedIndex(i) != isOn) {
@@ -1575,6 +1594,7 @@ abstract class NBODialogView extends NBODialogRun {
         a[pt++] = i; 
       try  {
       setSelectedIndices(a);
+      //System.out.println("on neg " + bsOn + " " + bsNeg + " " + PT.toJSON(null,  a));
       } catch (Exception e) {
         System.out.println("render error " + e);
         // this is due to underlying list changing. Ignore
@@ -1596,7 +1616,7 @@ abstract class NBODialogView extends NBODialogRun {
       if (pt > 0)
         label0 = label0.substring(0, pt);
       ((DefaultListModel<String>) getModel()).set(i, label0.trim()
-          + (bsNeg.get(i) ? "[-]  " : "     "));
+          + (bsNeg.get(i) ? "[-]" : "   "));
     }
 
     @Override
@@ -1618,16 +1638,9 @@ abstract class NBODialogView extends NBODialogRun {
     
     @Override
     public void mouseClicked(MouseEvent e) {
-//      System.out.println("click " + PT.toJSON(null, getSelectedIndices())
-//          + e.getClickCount());
-
-      int i = getSelectedIndex();
-      
-      System.out.println("NBODialogView: picked " + lastPicked + "/" + i + " ms=" + (System.currentTimeMillis() - lastTime));
+      int i = getSelectedIndex();      
       if (e.getClickCount() > 1 || lastPicked == i && System.currentTimeMillis() - lastTime < DBLCLICK_THRESHOLD_MS) {
         toggleOrbitalNegation(i);
-        bsOn.set(i);
-        updateIsosurfacesInJmol(i, false);
       }
       updateIsosurfacesInJmol(i, false);
       lastTime = System.currentTimeMillis();

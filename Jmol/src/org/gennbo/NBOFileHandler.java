@@ -265,8 +265,8 @@ class NBOFileHandler extends JPanel {
       }
       i = 3;
     }
-    if (!isCheckOnly)
-      dialog.setChooseList(tokens[i].substring(0, tokens[i].indexOf("$END")));
+    //if (!isCheckOnly)
+    dialog.setChooseList(tokens[i].substring(0, tokens[i].indexOf("$END")));
     return true;
   }
   

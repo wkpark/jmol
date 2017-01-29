@@ -27,7 +27,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -40,6 +39,7 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
+
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -64,44 +64,55 @@ import javax.swing.SwingConstants;
 
 abstract class NBODialogSearch extends NBODialogView {
 
-  protected NBODialogSearch(JFrame f) {
-    super(f);
-  }
+  private final static int KEYWD_WEBHELP = 0;
 
-  int operator = 1;
-  protected JComboBox<String> orb, orb2, unit, at1, at2, bas2, opBas;
-  
-  protected JLabel unitLabel;
-  protected DefaultComboBoxModel<String> list1, list2, list3;
-  private int[][] resStructDef;
-  private Hashtable<Integer,String> resStructList;
-  protected String keyProp;
-  protected boolean relabel;
-  
-  private Box optionBox;
-  private JButton keyWdBtn;
-  protected JPanel opList;
-  protected JRadioButton[] rBtns = new JRadioButton[12];
-  protected JRadioButton moRb, nboRb;
-  protected int rbSelection;
-  protected int keywordNumber;
-  
-  protected int nBonds;
-  private JButton back;
-  
-  private final static int KEYWD_NPA = 1;
-  private final static int KEYWD_NBO = 2;
-  private final static int KEYWD_BEND = 3;
+  private final static int KEYWD_NPA    = 1;
+  private final static int KEYWD_NBO    = 2;
+  private final static int KEYWD_BEND   = 3;
   private final static int KEYWD_E2PERT = 4;
-  private final static int KEYWD_NLMO = 5;
-  private final static int KEYWD_CMO = 8;
-  private final static int KEYWD_NRT = 6;
+  private final static int KEYWD_NLMO   = 5;
+  
+  // Note: The next three are not in the order the buttons are presented
+  private final static int KEYWD_NRT    = 6;
   private final static int KEYWD_STERIC = 7;
+  private final static int KEYWD_CMO    = 8;
+  
   private final static int KEYWD_DIPOLE = 9;
-  private final static int KEYWD_OPBAS = 10;
+  private final static int KEYWD_OPBAS  = 10;
   private final static int KEYWD_BAS1BAS2 = 11;
 
-  protected String[] keyW = {
+
+  /**
+   * keywords in order of PRESENTATION
+   * 
+   */
+  private final static String[] searchButtonLabels = {
+      "NPA","NBO","BEND","E2PERT","NLMO",
+      "CMO","NRT","STERIC",
+      "DIPOLE","OPBAS","B1B2"};
+
+  /**
+   * map button index to NBO keyword numbers. 
+   */
+  private final static int[] btnIndexToNBOKeyword = new int[] {
+      KEYWD_NPA, KEYWD_NBO, KEYWD_BEND, KEYWD_E2PERT, KEYWD_NLMO,
+      KEYWD_CMO, KEYWD_NRT, KEYWD_STERIC, // these three are shifted 
+      KEYWD_DIPOLE, KEYWD_OPBAS, KEYWD_BAS1BAS2
+      };
+
+  /**
+   * Return the NBOServe keyword for a given SEARCH option; 
+   * allows for a different presentation ordering in Jmol relative to 
+   * actual numbers in NBOServe
+   * 
+   * @param index the button index
+   * @return the NBO keyword number for this option
+   */
+  protected final static int getNboKeywordNumber(int index) {
+    return (btnIndexToNBOKeyword[index]);
+  }
+
+  protected final static String[] keyW = {
       "NPA    : Atomic and NAO properties",
       "NBO    : Natural Lewis Structure and\n NBO properties",
       "BEND   : NHO directionality and\n bond-bending",
@@ -114,7 +125,7 @@ abstract class NBODialogSearch extends NBODialogView {
       "OPBAS  : Matrix elements of chosen operator   \n in chosen basis set",
       "B1B2   : Transformation matrix between\n chosen basis sets" };
   
-  protected String[] npa = {"NPA Atomic Properties:",
+  protected final static String[] npa = {"NPA Atomic Properties:",
       "  (1) NPA atomic charge",
       "  (2) NPA atomic spin density",
       "  (3) NEC atomic electron configuration",
@@ -217,10 +228,36 @@ abstract class NBODialogSearch extends NBODialogView {
           " DIz  : dipole moment operator (z component)"};
 
 
+  int operator = 1;
+  protected JComboBox<String> orb, orb2, unit, at1, at2, bas2, opBas;
+  
+  protected JLabel unitLabel;
+  protected DefaultComboBoxModel<String> list1, list2, list3;
+  private int[][] resStructDef;
+  private Hashtable<Integer,String> resStructList;
+  protected String keyProp;
+  protected boolean relabel;
+  
+  private Box optionBox;
+  private JButton keyWdBtn;
+  protected JPanel opList;
+  protected JRadioButton[] rBtns = new JRadioButton[12];
+  protected JRadioButton moRb, nboRb;
+  protected int rbSelection;
+  
+  protected int nBonds;
+  private JButton back;
+
+  protected int nboKeywordNumber = KEYWD_WEBHELP;
+
+  protected NBODialogSearch(JFrame f) {
+    super(f);
+  }
+
   protected JPanel buildSearchPanel() {
     JPanel p = new JPanel();
     keyProp = "";
-    keywordNumber = 0;
+    nboKeywordNumber = 0;
     p.setLayout(new BorderLayout());
     /////INPUT FILE/////////////
     Box box1 = createTitleBox(" Select Job ",
@@ -251,7 +288,7 @@ abstract class NBODialogSearch extends NBODialogView {
           setBonds(false);
           showAtomNums(false);
         }
-        switch (keywordNumber) {
+        switch (nboKeywordNumber) {
         case KEYWD_NBO:
         case KEYWD_BEND:
         case KEYWD_DIPOLE:
@@ -349,7 +386,7 @@ abstract class NBODialogSearch extends NBODialogView {
       @Override
       public void actionPerformed(ActionEvent e) {
         String url = "http://nbo6.chem.wisc.edu/jmol_help/";
-        if (keywordNumber == 0) {
+        if (nboKeywordNumber == KEYWD_WEBHELP) {
           url += "search_help.htm";
         } else if (keyProp.equals("E2")) {
           url += "search_e2pert_help.htm";
@@ -369,7 +406,7 @@ abstract class NBODialogSearch extends NBODialogView {
     back.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        if (keywordNumber == KEYWD_NRT && list3.getSize() > 0)
+        if (nboKeywordNumber == KEYWD_NRT && list3.getSize() > 0)
           unit.setSelectedIndex(0);
         if (relabel) {
           runScriptQueued("select add {*}.bonds; color bonds lightgrey; select remove {*}");
@@ -394,8 +431,8 @@ abstract class NBODialogSearch extends NBODialogView {
     optionBox.add(box);
     p.add(optionBox);
 
-    basis = new JComboBox<String>(NBODialogView.basSet);
-    basis.setUI(new StyledComboBoxUI(180, -1));
+    comboBasis = new JComboBox<String>(NBODialogView.basSet);
+    comboBasis.setUI(new StyledComboBoxUI(180, -1));
 
     inputFileHandler.setBrowseEnabled(true);
 
@@ -416,18 +453,17 @@ abstract class NBODialogSearch extends NBODialogView {
     keyWdBtn.setVisible(false);
     opList.setLayout(new GridBagLayout());
     opList.setBackground(Color.white);
-    keywordNumber = 0;
+    nboKeywordNumber = KEYWD_WEBHELP;
     viewSettingsBox.setVisible(false);
     GridBagConstraints c = new GridBagConstraints();
     keyProp = "";
-    String[] keyWords = {"NPA","NBO","BEND","E2PERT","NLMO","CMO","NRT","STERIC","DIPOLE","OPBAS","B1B2"};
     c.fill = GridBagConstraints.HORIZONTAL;
-    for(int i = 0; i<keyWords.length*2; i+= 2){
+    for(int i = 0; i<searchButtonLabels.length*2; i+= 2){
       c.gridy = i;
       c.gridx = 0;
       c.gridwidth = 1;
       
-      JButton btn = new JButton(keyWords[i/2]);
+      JButton btn = new JButton(searchButtonLabels[i/2]);
       final int index = i/2;
       btn.addActionListener(new ActionListener(){
         @Override
@@ -436,17 +472,7 @@ abstract class NBODialogSearch extends NBODialogView {
             vwr.alert("Please wait for NBOServe to finish working");
             return;
           }
-          if(index < 5)
-            keywordNumber = index + 1;
-          else if(index == 5)
-            keywordNumber = KEYWD_CMO;
-          else if(index == 6)
-            keywordNumber = KEYWD_NRT;
-          else if(index == 7)
-            keywordNumber = KEYWD_STERIC;
-          else
-            keywordNumber = index + 1;
-          keywordClicked(keywordNumber);
+          keywordClicked(getNboKeywordNumber(index));
         }
       });
       opList.add(btn,c);
@@ -489,7 +515,7 @@ abstract class NBODialogSearch extends NBODialogView {
     ButtonGroup btnGroup = new ButtonGroup();
 
     opList.setLayout(new BoxLayout(opList,BoxLayout.Y_AXIS));
-    if(keywordNumber == KEYWD_OPBAS){
+    if(nboKeywordNumber == KEYWD_OPBAS){
       opBas.setVisible(true);
       opList.add(opBas);
     }
@@ -537,11 +563,11 @@ abstract class NBODialogSearch extends NBODialogView {
     else
       sb.append("GLOBAL I_SPIN 0" + sep);
     String key;
-    if(keywordNumber >= KEYWD_OPBAS){
-      int tmpKey = keywordNumber;
+    if(nboKeywordNumber >= KEYWD_OPBAS){
+      int tmpKey = nboKeywordNumber;
       String tmpCmd = "o";
       JComboBox<String> tmpBas = 
-          ((get.startsWith("c")&&keywordNumber == KEYWD_BAS1BAS2) ? bas2:basis);
+          ((get.startsWith("c")&&nboKeywordNumber == KEYWD_BAS1BAS2) ? bas2:comboBasis);
       switch(tmpBas.getSelectedIndex()){
       case 0:
       case 1:
@@ -569,12 +595,12 @@ abstract class NBODialogSearch extends NBODialogView {
       key = get.split(" ")[0];
       sb.append("CMD " + tmpCmd);
     }else{
-      sb.append("GLOBAL I_KEYWORD " + keywordNumber + sep);
-      sb.append("GLOBAL I_BAS_1 " + (basis.getSelectedIndex() + 1) + sep);
+      sb.append("GLOBAL I_KEYWORD " + nboKeywordNumber + sep);
+      sb.append("GLOBAL I_BAS_1 " + (comboBasis.getSelectedIndex() + 1) + sep);
       key = get.split(" ")[0];
       sb.append("CMD " + key);
     }
-    if(get.equals("c") && keywordNumber == KEYWD_CMO)
+    if(get.equals("c") && nboKeywordNumber == KEYWD_CMO)
       mode = NBOService.MODE_LIST_MO;
     nboService.rawCmdNew("s", sb, mode, list, "Getting list " + key);
   }
@@ -584,7 +610,7 @@ abstract class NBODialogSearch extends NBODialogView {
   }
   
   protected void basChange() {
-    String b1 = basis.getSelectedItem().toString();
+    String b1 = comboBasis.getSelectedItem().toString();
     String b2 = bas2.getSelectedItem().toString();
     String[] b1b2 = {"Current r(ow),c(olumn) matrix element:",
         "  (1) current <" + b1  + "(r)|"
@@ -626,33 +652,33 @@ abstract class NBODialogSearch extends NBODialogView {
     isNewModel = false;
     switch (index) {
     case KEYWD_NPA:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"31"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("31"));
       at2=null;
-      basis.setSelectedIndex(2);
+      comboBasis.setSelectedIndex(2);
       keyProp = "NPA";
       setKeyword(new String[] {"b","a","o PNAO","u"}, new String[] {"Basis: ", "Atom: ", "Orbital: ", "Unit: "});
       changeKey(npa);
       break;
     case KEYWD_NBO:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"36"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("36"));
       runScriptNow("set bondpicking true");
-      basis.setSelectedIndex(5);
+      comboBasis.setSelectedIndex(5);
       keyProp = "NBO";
       setKeyword(new String[] {"b","o PNBO"}, new String[] {"Basis: ", "Orbital: "});
       changeKey(nbo);
       break;
     case KEYWD_NLMO:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"38"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("38"));
       runScriptNow("set bondpicking true");
-      basis.setSelectedIndex(7);
+      comboBasis.setSelectedIndex(7);
       keyProp = "NLMO";
       setKeyword(new String[] {"b","o PNLMO"}, new String[] {"Basis: ", "Orbital: "});
       changeKey(nlmo);
       break;
     case KEYWD_BEND:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"34"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("34"));
       runScriptNow("set bondpicking true");
-      basis.setSelectedIndex(3);
+      comboBasis.setSelectedIndex(3);
       keyProp = "BEND";
       setKeyword(new String[] {"b","o PNHO"}, new String[] {"Basis: ", "Orbital: "});
       changeKey(bend);
@@ -667,49 +693,49 @@ abstract class NBODialogSearch extends NBODialogView {
       
       break;
     case KEYWD_E2PERT:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"36"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("36"));
       runScriptNow("set bondpicking true");
-      basis.setSelectedIndex(5);
+      comboBasis.setSelectedIndex(5);
       keyProp = "E2";
       setKeyword(new String[] {"b", "d nbo", "a nbo", "u"}, new String[] {"Basis: ","d-NBO: ", "a-NBO:", "Unit: "});
       changeKey(e2);
       break;
     case KEYWD_STERIC:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"38"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("38"));
       runScriptNow("set bondpicking true");
-      basis.setSelectedIndex(7);
+      comboBasis.setSelectedIndex(7);
       keyProp = "STERIC";
       setKeyword(new String[] {"b", "d nlmo", "d' nlmo", "u"}, new String[] {"Basis: ","d-NLMO: ", "d'-NLMO:", "Unit: "});
       changeKey(steric);
       break;
     case KEYWD_CMO:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"40"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("40"));
       runScriptNow("set bondpicking true");
-      basis.setSelectedIndex(9);
+      comboBasis.setSelectedIndex(9);
       keyProp = "CMO";
-      nboKeywords = cleanNBOKeylist(inputFileHandler.read47File()[1]);
-      if(!nboKeywords.contains("CMO")){
-        runJob("CMO", inputFileHandler.inputFile, "gennbo");
+      file47Keywords = cleanNBOKeylist(get47FileData(true)[1]);
+      if(!file47Keywords.contains("CMO")){
+        runGenNBOJob("CMO");
         return;
       }
       setKeyword(new String[] {"b", "c cmo","n"}, new String[] {"Basis: ","MO: ", "NBO:"});
       changeKey(mo);
       break;
     case KEYWD_DIPOLE:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"38"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("38"));
       runScriptNow("set bondpicking true");
-      basis.setSelectedIndex(7);
+      comboBasis.setSelectedIndex(7);
       keyProp = "DIPOLE";
-      setKeyword("b o u".split(" "), new String[] {"Basis: ","Orbital: ","Unit:"});
+      setKeyword(new String[] {"b", "o", "u"}, new String[] {"Basis: ","Orbital: ","Unit:"});
       changeKey(dip);
       break;
     case KEYWD_OPBAS:
-      runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"31"));
+      runScriptNow("load " + inputFileHandler.newNBOFileForExt("31"));
       runScriptNow("set bondpicking true");
       viewSettingsBox.removeAll();
-      basis = new JComboBox<String>(NBODialogView.basSet);
-      basis.setUI(new StyledComboBoxUI(180,-1));
-      basis.setEditable(false);
+      comboBasis = new JComboBox<String>(NBODialogView.basSet);
+      comboBasis.setUI(new StyledComboBoxUI(180,-1));
+      comboBasis.setEditable(false);
       opBas.requestFocus();
       keyProp = "OPBAS";
       setKeyword("b1 r c".split(" "), new String[] {"Basis:","Row:","Collumn:"});
@@ -740,11 +766,11 @@ abstract class NBODialogSearch extends NBODialogView {
         if (key.equals("b") || key.equals("s")){
           Box b = Box.createHorizontalBox();
           
-          if(keywordNumber == KEYWD_CMO){
+          if(nboKeywordNumber == KEYWD_CMO){
             b.add(moRb);
             b.add(nboRb);
           }else if(key.equals("b")){
-            String str = basis.getSelectedItem().toString();
+            String str = comboBasis.getSelectedItem().toString();
             if(!str.equals("MO")){
               if(str.charAt(0) != 'P')
                 str = 'P' + str;
@@ -774,7 +800,7 @@ abstract class NBODialogSearch extends NBODialogView {
                 showOrbJmol("NBO",orb.getSelectedIndex() + 1);
                 nboRb.doClick();
               }else 
-                showOrbJmol(basis.getSelectedItem().toString(),
+                showOrbJmol(comboBasis.getSelectedItem().toString(),
                   orb.getSelectedIndex() + 1);
             }
           });
@@ -794,10 +820,10 @@ abstract class NBODialogSearch extends NBODialogView {
                 showMOJmol("NBO",
                     list1.getSize() + 1 + orb2.getSelectedIndex());
               } else if(key.equals("c")){
-                showOrbJmol(basis.getSelectedItem().toString(),
+                showOrbJmol(comboBasis.getSelectedItem().toString(),
                     orb2.getSelectedIndex() + 1);
               }else
-                showMOJmol(basis.getSelectedItem().toString(),
+                showMOJmol(comboBasis.getSelectedItem().toString(),
                     orb2.getSelectedIndex() + 1);
               if (get[ind].equals("c cmo")){
                 moRb.doClick();
@@ -854,29 +880,29 @@ abstract class NBODialogSearch extends NBODialogView {
           l2.add(at2);
         } else if (key.equals("b1")) {
           Box b = Box.createHorizontalBox();
-          b.add(basis);
-          basis.setSelectedIndex(0);
-          basis.addActionListener(new ActionListener() {
+          b.add(comboBasis);
+          comboBasis.setSelectedIndex(0);
+          comboBasis.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
               if(keyProp.equals("B1B2")){
                 if(bas2==null)
                   return;
                 basChange();
-                runScriptQueued("NBO TYPE " + basis.getSelectedItem().toString());
+                runScriptQueued("NBO TYPE " + comboBasis.getSelectedItem().toString());
                 list1.removeAllElements();
                 getListSearch("r",list1);
               }else if(keyProp.equals("OPBAS")){
-                runScriptNow("load " + NBOFileHandler.newNBOFile(inputFileHandler.inputFile,"" + (31 + basis.getSelectedIndex())));
+                runScriptNow("load " + inputFileHandler.newNBOFileForExt("" + (31 + comboBasis.getSelectedIndex())));
                 list1.removeAllElements();
                 list2.removeAllElements();
-                runScriptQueued("NBO TYPE " + basis.getSelectedItem().toString());
+                runScriptQueued("NBO TYPE " + comboBasis.getSelectedItem().toString());
                 getListSearch("r",list1);
                 getListSearch("c",list2);
               }
               else {
-                runScriptQueued("NBO TYPE " + basis.getSelectedItem().toString());
-                runScriptQueued("MO TYPE " + basis.getSelectedItem().toString());
+                runScriptQueued("NBO TYPE " + comboBasis.getSelectedItem().toString());
+                runScriptQueued("MO TYPE " + comboBasis.getSelectedItem().toString());
                 opBas(opBas.getSelectedItem().toString().trim().split(" ")[0]);
               }
             }
@@ -896,7 +922,7 @@ abstract class NBODialogSearch extends NBODialogView {
             @Override
             public void actionPerformed(ActionEvent e) {
               basChange();
-              runScriptQueued("MO TYPE " + basis.getSelectedItem().toString());
+              runScriptQueued("MO TYPE " + comboBasis.getSelectedItem().toString());
               
               list2.removeAllElements();
               getListSearch("c",list2);
@@ -905,12 +931,12 @@ abstract class NBODialogSearch extends NBODialogView {
           //bas2.setSelectedIndex(1);
           l2.add(bas2);
         } else if (key.equals("b12")) {
-          basis = new JComboBox<String>(NBODialogView.basSet);
-          basis.setUI(new StyledComboBoxUI(180,-1));
-          l2.add(basis);
+          comboBasis = new JComboBox<String>(NBODialogView.basSet);
+          comboBasis.setUI(new StyledComboBoxUI(180,-1));
+          l2.add(comboBasis);
         }
       }
-      log(keyProp + " Search Results:",'i');
+      log(keyProp + " Search Results:",'I');
       JLabel lab = new JLabel("Settings");
       lab.setFont(nboFont);
       
@@ -940,7 +966,7 @@ abstract class NBODialogSearch extends NBODialogView {
     final SB sb = new SB();
     sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
     sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
-    sb.append("GLOBAL I_KEYWORD " + keywordNumber + sep);
+    sb.append("GLOBAL I_KEYWORD " + nboKeywordNumber + sep);
     
     boolean isLabel = false;
     boolean isLabelBonds = false;
@@ -948,7 +974,7 @@ abstract class NBODialogSearch extends NBODialogView {
       sb.append("GLOBAL I_SPIN " + (alphaSpin.isSelected()?"1":"-1") + sep);
     }else
       sb.append("GLOBAL I_SPIN 0" + sep);
-    switch (keywordNumber) {
+    switch (nboKeywordNumber) {
     case KEYWD_NPA:
       sb.append("GLOBAL I_ATOM_1 " + (at1.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_UNIT_1 " + (unit.getSelectedIndex() + 1) + sep);
@@ -989,13 +1015,13 @@ abstract class NBODialogSearch extends NBODialogView {
       sb.append("GLOBAL I_UNIT_1 " + (unit.getSelectedIndex() + 1) + sep);
       break;
     case KEYWD_OPBAS:
-      sb.append("GLOBAL I_BAS_1 " + (basis.getSelectedIndex() + 1) + sep);
+      sb.append("GLOBAL I_BAS_1 " + (comboBasis.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_OPERATOR " + (operator+1) + sep);
       sb.append("GLOBAL I_ROW " + (orb.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_COLUMN " + (orb2.getSelectedIndex() + 1) + sep);
       break;
     case KEYWD_BAS1BAS2:
-      sb.append("GLOBAL I_BAS_1 " + (basis.getSelectedIndex() + 1) + sep);
+      sb.append("GLOBAL I_BAS_1 " + (comboBasis.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_BAS_2 " + (bas2.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_ROW " + (orb.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_COLUMN " + (orb2.getSelectedIndex() + 1) + sep);
@@ -1032,7 +1058,7 @@ abstract class NBODialogSearch extends NBODialogView {
   protected void setSearchList(AbstractListModel<String> list){
     if(list==null) return;
 
-    switch(keywordNumber){
+    switch(nboKeywordNumber){
     case KEYWD_E2PERT:
       if(list.equals(list2)){
     //Relabel a-nbo to correct orbital number
@@ -1083,15 +1109,15 @@ abstract class NBODialogSearch extends NBODialogView {
         orb.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            showOrbJmol(basis.getSelectedItem().toString(),orb.getSelectedIndex()+1);
+            showOrbJmol(comboBasis.getSelectedItem().toString(),orb.getSelectedIndex()+1);
           }
           });
         orb2.removeActionListener(orb2.getActionListeners()[0]);
         orb2.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            if(keywordNumber == KEYWD_OPBAS)
-              showMOJmol(basis.getSelectedItem().toString(),orb2.getSelectedIndex()+1);
+            if(nboKeywordNumber == KEYWD_OPBAS)
+              showMOJmol(comboBasis.getSelectedItem().toString(),orb2.getSelectedIndex()+1);
             else
               showMOJmol(bas2.getSelectedItem().toString(),orb2.getSelectedIndex()+1);
           }
@@ -1254,12 +1280,13 @@ abstract class NBODialogSearch extends NBODialogView {
     if(dialogMode == NBODialogConfig.DIALOG_SEARCH)
       if(!type.startsWith("P")&& !type.equals("MO") && !type.equals("AO"))
         type = "P" + type;
-    runScriptQueued("NBO " + i);
+      
+    runScriptQueued("NBO " + i + (betaSpin.isSelected() ? " BETA" : ""));
   }
   
   protected void orbPick(){
     if(rbSelection < 0) return;
-    switch(keywordNumber){
+    switch(nboKeywordNumber){
     case KEYWD_NPA:
       if(rbSelection > 4 && rbSelection < 10)
         rBtns[rbSelection].doClick();
@@ -1433,125 +1460,127 @@ abstract class NBODialogSearch extends NBODialogView {
 
 
   protected void notifyPick_s(String atomno) {
-    int atomIndex = 0;
-    try{
-      atomIndex = Integer.parseInt(atomno) - 1;
-      if(keywordNumber == KEYWD_NBO || keywordNumber == KEYWD_BEND 
-          ||keywordNumber == KEYWD_NLMO || keywordNumber == KEYWD_E2PERT){
-        orb.setSelectedIndex(pickAtomic(atomno,list1));
-        return;
-      }
-      if(keywordNumber == KEYWD_CMO){
-        orb2.setSelectedIndex(pickAtomic(atomno,list2));
-        return;
-      }
-    }catch(NumberFormatException e){
-      String[] tok = atomno.split(",");
-      if(tok.length < 2){
-        orb.setSelectedIndex(pickAtomic(atomno,list1));
-        return;
-      }
-      String[] tok2 = tok[1].split(" ");
-      switch(keywordNumber){
-      case KEYWD_NBO:
-      case KEYWD_NLMO:
-      case KEYWD_DIPOLE:
-      case KEYWD_CMO:
-        orb.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list1));
-        break;
-      case KEYWD_BEND:
-        orb.setSelectedIndex(pickNHO_s(tok2[2],tok2[5],list1));
-        break;
-      case KEYWD_NRT:
-        tok = atomno.split(",");
-        int a1 = Integer.parseInt(tok2[2].replaceAll("[\\D]", ""));
-        int a2 = Integer.parseInt(tok2[5].replaceAll("[\\D]", ""));
-        at1.setSelectedIndex(a1 - 1);
-        at2.setSelectedIndex(a2 - 1);
-        if(rbSelection > 2 && rbSelection < 6)
-          rBtns[rbSelection].doClick();
-        return;
-      case KEYWD_E2PERT:
-      case KEYWD_STERIC:
-        tok = atomno.split(",");
-        tok2 = tok[1].split(" ");
-        String bond = tok2[2] + "-" + tok2[5];
-        String str = orb.getSelectedItem().toString().replace(" ", "");
-        if(str.contains(bond)){
-          orb.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list1));
+    String[] tok = atomno.split(",");
+    if (tok.length < 2) {
+      int n = PT.parseInt(atomno);
+      if (n == Integer.MIN_VALUE) {
+        orb.setSelectedIndex(pickAtomic(atomno, list1));
+      } else {
+        switch (nboKeywordNumber) {
+        case KEYWD_NBO:
+        case KEYWD_BEND:
+        case KEYWD_NLMO:
+        case KEYWD_E2PERT:
+          orb.setSelectedIndex(pickAtomic(atomno, list1));
+          return;
+        case KEYWD_CMO:
+          orb2.setSelectedIndex(pickAtomic(atomno, list2));
           return;
         }
-        str = orb2.getSelectedItem().toString().replace(" ", "");
-        if(str.contains(bond)){
-          orb2.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list2));
-          return;
-        }
-        if(!secondPick)
-          orb2.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list2));
-        else
-          orb.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list1));
-        secondPick = !secondPick;
-          
-        break;
-      case KEYWD_OPBAS:
-      case KEYWD_BAS1BAS2:
-        JComboBox<String> tmpBas = basis;
-        if(keywordNumber == KEYWD_BAS1BAS2){
-          if(!secondPick)
-            tmpBas = bas2;
-        }
-        switch(tmpBas.getSelectedIndex()){
-        case 0:
-        case 1:
-        case 2:
-        case 9:
-        default:
-          secondPick = !secondPick;
-          break;
-        case 3:
-        case 4:
-          if(!secondPick)
-            orb2.setSelectedIndex(pickNHO_s(tok2[2],tok2[5],list2));
+        int atomIndex = n - 1;
+        if (at1 != null && at2 == null) {
+          at1.setSelectedIndex(atomIndex);
+          if (rbSelection < 3 && rbSelection > -1)
+            rBtns[rbSelection].doClick();
+        } else if (at1 != null && at2 != null) {
+          if (secondPick)
+            at1.setSelectedIndex(atomIndex);
           else
-            orb.setSelectedIndex(pickNHO_s(tok2[2],tok2[5],list1));
+            at2.setSelectedIndex(atomIndex);
           secondPick = !secondPick;
-          break;
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-          tok = atomno.split(",");
-          tok2 = tok[1].split(" ");
-          bond = tok2[2] + "-" + tok2[5];
-          str = orb.getSelectedItem().toString().replace(" ", "");
-          if(str.contains(bond)){
-            orb.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list1));
-            return;
-          }
-          str = orb2.getSelectedItem().toString().replace(" ", "");
-          if(str.contains(bond)){
-            orb2.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list2));
-            return;
-          }
-          if(!secondPick)
-            orb2.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list2));
-          else
-            orb.setSelectedIndex(pickNBO_s(tok2[2],tok2[5],list1));
-          secondPick = !secondPick;
-          break;
         }
       }
       return;
     }
-    if (at1 != null && at2 == null){
-      at1.setSelectedIndex(atomIndex);
-      if(rbSelection < 3 && rbSelection > -1) rBtns[rbSelection].doClick();
-    }else if (at1 != null && at2 != null){
-      if (secondPick) 
-        at1.setSelectedIndex(atomIndex);
-      else 
-        at2.setSelectedIndex(atomIndex);
+    String[] tok2 = tok[1].split(" ");
+    switch (nboKeywordNumber) {
+    case KEYWD_NBO:
+    case KEYWD_NLMO:
+    case KEYWD_DIPOLE:
+    case KEYWD_CMO:
+      orb.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list1));
+      break;
+    case KEYWD_BEND:
+      orb.setSelectedIndex(pickNHO_s(tok2[2], tok2[5], list1));
+      break;
+    case KEYWD_NRT:
+      tok = atomno.split(",");
+      int a1 = Integer.parseInt(tok2[2].replaceAll("[\\D]", ""));
+      int a2 = Integer.parseInt(tok2[5].replaceAll("[\\D]", ""));
+      at1.setSelectedIndex(a1 - 1);
+      at2.setSelectedIndex(a2 - 1);
+      if (rbSelection > 2 && rbSelection < 6)
+        rBtns[rbSelection].doClick();
+      return;
+    case KEYWD_E2PERT:
+    case KEYWD_STERIC:
+      tok = atomno.split(",");
+      tok2 = tok[1].split(" ");
+      String bond = tok2[2] + "-" + tok2[5];
+      String str = orb.getSelectedItem().toString().replace(" ", "");
+      if (str.contains(bond)) {
+        orb.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list1));
+        return;
+      }
+      str = orb2.getSelectedItem().toString().replace(" ", "");
+      if (str.contains(bond)) {
+        orb2.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list2));
+        return;
+      }
+      if (!secondPick)
+        orb2.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list2));
+      else
+        orb.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list1));
       secondPick = !secondPick;
+
+      break;
+    case KEYWD_OPBAS:
+    case KEYWD_BAS1BAS2:
+      JComboBox<String> tmpBas = comboBasis;
+      if (nboKeywordNumber == KEYWD_BAS1BAS2) {
+        if (!secondPick)
+          tmpBas = bas2;
+      }
+      switch (tmpBas.getSelectedIndex()) {
+      case 0:
+      case 1:
+      case 2:
+      case 9:
+      default:
+        secondPick = !secondPick;
+        break;
+      case 3:
+      case 4:
+        if (!secondPick)
+          orb2.setSelectedIndex(pickNHO_s(tok2[2], tok2[5], list2));
+        else
+          orb.setSelectedIndex(pickNHO_s(tok2[2], tok2[5], list1));
+        secondPick = !secondPick;
+        break;
+      case 5:
+      case 6:
+      case 7:
+      case 8:
+        tok = atomno.split(",");
+        tok2 = tok[1].split(" ");
+        bond = tok2[2] + "-" + tok2[5];
+        str = orb.getSelectedItem().toString().replace(" ", "");
+        if (str.contains(bond)) {
+          orb.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list1));
+          return;
+        }
+        str = orb2.getSelectedItem().toString().replace(" ", "");
+        if (str.contains(bond)) {
+          orb2.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list2));
+          return;
+        }
+        if (!secondPick)
+          orb2.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list2));
+        else
+          orb.setSelectedIndex(pickNBO_s(tok2[2], tok2[5], list1));
+        secondPick = !secondPick;
+        break;
+      }
     }
   }
   
@@ -1595,6 +1624,7 @@ abstract class NBODialogSearch extends NBODialogView {
  }
 
   protected void notifyLoad_s() {
+    file47Data = null;
     if(vwr.ms.ac == 0)
       return;    
 //    if(keywordNumber == KEYWD_CMO){
@@ -1622,8 +1652,8 @@ abstract class NBODialogSearch extends NBODialogView {
     }
     
     optionBox.setVisible(true);
-    if(keywordNumber > 0 && isNewModel) {
-      keywordClicked(keywordNumber);
+    if(nboKeywordNumber > 0 && isNewModel) {
+      keywordClicked(nboKeywordNumber);
     }
   }
 

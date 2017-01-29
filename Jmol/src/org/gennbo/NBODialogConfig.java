@@ -199,7 +199,7 @@ abstract class NBODialogConfig extends JDialog {
   protected boolean jmolOptionNOSET = false; // do not use NBO settings by default
   protected boolean jmolOptionVIEW = false;  // present only the VIEW option
   protected boolean jmolOptionNONBO = false; // do not try to contact NBOServe
-
+  
   //abstract protected void notifyLoad();
   //abstract protected void rawInput(String str);
 
@@ -228,12 +228,14 @@ abstract class NBODialogConfig extends JDialog {
 
   //protected Hashtable<String, String[]> lists;
 
-  protected String reqInfo;
-
   protected boolean debugVerbose;
 
   protected NBODialogConfig(JFrame f) {
     super(f);
+  }
+
+  protected void alertRequiresNBOServe() {
+    vwr.alert("This functionality requires NBOServe.");
   }
 
   protected String getJmolWorkingPath() {
@@ -750,6 +752,16 @@ abstract class NBODialogConfig extends JDialog {
     logInfo("!$ " + script, Logger.LEVEL_DEBUG);
     return PT.trim(vwr.runScript(script), "\n");
   }
+  
+  protected void loadModelFileQueued(File f, boolean saveOrientation,
+                                     boolean isAppend) {
+    String s = "load " + (isAppend ? "append " : "") + "\""
+        + f.getAbsolutePath() + "\"";
+    if (saveOrientation)
+      s = "save orientation o1;" + s + ";restore orientation o1";
+    runScriptQueued(s);
+  }
+
 
   private boolean connect() {
     if (!nboService.connect())
@@ -852,14 +864,6 @@ abstract class NBODialogConfig extends JDialog {
     }
   }
 
-  protected void loadModelFileQueued(File f, boolean saveOrientation,
-                                     boolean isAppend) {
-    String s = "load " + (isAppend ? "append " : "") + "\""
-        + f.getAbsolutePath() + "\"";
-    if (saveOrientation)
-      s = "save orientation o1;" + s + ";restore orientation o1";
-    runScriptQueued(s);
-  }
   protected void colorMeshes() {
     updatePanelSettings();
   }

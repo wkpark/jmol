@@ -542,10 +542,10 @@ public class GenNBOReader extends MOReader {
     for (int i = 0; i < nOrbitals; i++)
       setMO(new Hashtable<String, Object>());
     QS qs = new QS();
-    qs.setNboLabels(tokens, nOrbitals, orbitals, nOrbitals0, nboType);
+    qs.setNboLabels(tokens, nAOs, orbitals, nOrbitals0, nboType);
     if (addBetaSet) {
       moData.put("firstBeta", Integer.valueOf(nAOs));
-      qs.setNboLabels( map.get("beta_" + type), nOrbitals, orbitals, nOrbitals0 + nOrbitals, nboType);
+      qs.setNboLabels( map.get("beta_" + type), nAOs, orbitals, nOrbitals0 + nAOs, nboType);
     }
   }
 

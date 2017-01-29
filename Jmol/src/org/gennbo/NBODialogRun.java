@@ -96,9 +96,9 @@ abstract class NBODialogRun extends NBODialogModel {
   protected JButton btnRun;
   protected JTextField tfJobName;
 
-  private String[] fileData;
+  protected String[] file47Data;
 
-  protected String nboKeywords;
+  protected String file47Keywords;
 
   protected JPanel buildRunPanel() {
     panel = new JPanel();
@@ -140,7 +140,7 @@ abstract class NBODialogRun extends NBODialogModel {
     btnRun.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        runJob("", inputFileHandler.inputFile, "gennbo");
+        runGenNBOJob("");
       }
     });
     String ext = inputFileHandler.tfExt.getText();
@@ -200,17 +200,17 @@ abstract class NBODialogRun extends NBODialogModel {
     String tmp = "";
     for (String s : tokens)
       if (s.length() > 0)
-        if (s.toLowerCase().contains("file=") && tfJobName != null) {
-          tfJobName.setText(s.substring(s.indexOf("=") + 1));
+        if (s.contains("fILE=")) {
+          if (tfJobName != null)
+            tfJobName.setText(s.substring(s.indexOf("=") + 1));
         } else {
           if (tmp.length() + s.length() - tmp.lastIndexOf(sep) >= 80)
             tmp += sep + " ";
-          //sList.addElement(s);
           tmp += s.toUpperCase() + " ";
         }
     if (tfJobName != null && tfJobName.getText().equals(""))
       tfJobName.setText(inputFileHandler.jobStem);
-    return tmp;
+    return tmp.trim();
   }
 
   protected void setBonds(boolean alpha) {
@@ -306,12 +306,12 @@ abstract class NBODialogRun extends NBODialogModel {
       editBox.add(Box.createRigidArea(new Dimension(350, 0)));
       final DefaultListModel<String> sList = new DefaultListModel<String>();
       String tmp = "";
-      for (String s : nboKeywords.split("\\s+"))
+      for (String s : file47Keywords.split("\\s+"))
         if (s.length() > 0 && !s.toUpperCase().contains("FILE=")) {
           sList.addElement(s);
           tmp += s + " ";
         }
-      nboKeywords = tmp;
+      file47Keywords = tmp;
       final JList<String> keywords = new JList<String>(sList);
       keywords.addMouseListener(new MouseAdapter() {
         @Override
@@ -372,7 +372,7 @@ abstract class NBODialogRun extends NBODialogModel {
     keywordButtons = new JRadioButton[keywordList.length];
     for (int i = 0; i < keywordButtons.length; i++) {
       keywordButtons[i] = new JRadioButton(keywordList[i]);
-      if (nboKeywords.contains(keywordList[i].split(":")[0]))
+      if (file47Keywords.contains(keywordList[i].split(":")[0]))
         keywordButtons[i].setSelected(true);
       final int op = i;
       keywordButtons[i].addActionListener(new ActionListener() {
@@ -380,10 +380,10 @@ abstract class NBODialogRun extends NBODialogModel {
         public void actionPerformed(ActionEvent e) {
           String key = keywordList[op].split(":")[0];
           if (keywordButtons[op].isSelected()) {
-            nboKeywords += key + " ";
+            file47Keywords += key + " ";
             log("Keyword added: " + key, 'i');
           } else {
-            nboKeywords = nboKeywords.replaceAll(key + " ", "");
+            file47Keywords = file47Keywords.replaceAll(key + " ", "");
             log("Keyword removed: " + key, 'i');
           }
         }
@@ -406,7 +406,7 @@ abstract class NBODialogRun extends NBODialogModel {
     sp.setPreferredSize(new Dimension(200, 200));
     sp.getViewport().add(p);
     d.add(sp, BorderLayout.CENTER);
-    p.setText("$NBO\nFile=" + tfJobName.getText() + " " + nboKeywords
+    p.setText("$NBO\nFile=" + tfJobName.getText() + " " + file47Keywords
         + "\n$END");
     p.setCaretPosition(7);
     JButton btn = new JButton("Save Changes");
@@ -415,14 +415,14 @@ abstract class NBODialogRun extends NBODialogModel {
       public void actionPerformed(ActionEvent e) {
         String s = p.getText();
         String tmp = s.replace("$NBO", "").replace("$END", "");
-        nboKeywords = "";
+        file47Keywords = "";
         for (String x : tmp.split("\\s+")) {
           x = x.trim();
           System.out.println(x);
           if (x.length() == 0)
             continue;
           if (x.indexOf("=") < 0) {
-            nboKeywords += x + " ";
+            file47Keywords += x + " ";
           } else {
             tfJobName.setText(x.substring(x.indexOf("=") + 1));
           }
@@ -443,22 +443,50 @@ abstract class NBODialogRun extends NBODialogModel {
     log("Keyword(s) removed:", 'p');
     for (String x : list) {
       listModel.removeElement(x);
-      if (nboKeywords.toUpperCase().contains(x.toUpperCase())) {
-        nboKeywords = nboKeywords.substring(0,
-            nboKeywords.indexOf(x.toUpperCase()))
-            + nboKeywords.substring(nboKeywords.indexOf(x.toUpperCase())
+      if (file47Keywords.toUpperCase().contains(x.toUpperCase())) {
+        file47Keywords = file47Keywords.substring(0,
+            file47Keywords.indexOf(x.toUpperCase()))
+            + file47Keywords.substring(file47Keywords.indexOf(x.toUpperCase())
                 + x.length());
         log("  " + x, 'i');
       }
     }
   }
 
-  protected void runJob(String keywords, final File inputFile, String ess) {
+  /**
+   * Open the current 47 file and parse its data into three sections: pre,
+   * keywords, post; 
+   * 
+   * @param forceNew set true to recreate global fields file47Data and nboKeywords 
+   * 
+   * @return  [pre, keywords, post]
+   */
+  protected String[] get47FileData(boolean forceNew) {
+   if (file47Data != null && !forceNew)
+      return file47Data;
+   file47Data = inputFileHandler.read47File();
+   file47Keywords = cleanNBOKeylist(file47Data[1]);
+   return file47Data;
+  }
 
-    if (fileData == null) {
-      fileData = inputFileHandler.read47File();
+  /**
+   * Initiates a gennbo job via NBOServe; called from RUN, VIEW, and SEARCH
+   * 
+   * Note that there are issues with this method. 
+   * 
+   * @param requiredKeyword
+   */
+  protected void runGenNBOJob(String requiredKeyword) {
+    
+    if (jmolOptionNONBO) {
+      alertRequiresNBOServe();
+      return;
     }
-    nboKeywords = fileData[1];
+    
+    // get the current file47Data and nboKeywords
+    
+    get47FileData(true);
+    
     //Check the plot file names match job name, warn user otherwise
     inputFileHandler.jobStem = inputFileHandler.jobStem.trim();
     String jobName = (tfJobName == null ? inputFileHandler.jobStem
@@ -485,40 +513,42 @@ abstract class NBODialogRun extends NBODialogModel {
         tfJobName.setText(jobName = inputFileHandler.jobStem);
     }
 
-    for (String x : keywords.split(" ")) {
-      if (!nboKeywords.contains(x + " ")) {
-        nboKeywords += " " + x + " ";
+    for (String x : requiredKeyword.split(" ")) {
+      if (!file47Keywords.contains(x + " ")) {
+        file47Keywords += " " + x + " ";
       }
     }
 
-    if (!nboKeywords.contains("PLOT"))
-      nboKeywords += " PLOT";
-
-    if (inputFileHandler.useExt.equals("47"))
-      if (!inputFileHandler.writeToFile(inputFile.getAbsolutePath(),
-          fileData[0] + "$NBO\n " + "FILE=" + jobName + " "
-              + nboKeywords + "  $END" + sep + fileData[2])) {
-        logInfo("Could not create " + inputFile, Logger.LEVEL_ERROR);
-        return;
-      }
+    if (!file47Keywords.contains("PLOT"))
+      file47Keywords += " PLOT";
+    
+    if (!update47File(inputFileHandler.inputFile, jobName, file47Keywords))
+      return;
+    
     SB sb = new SB();
-    sb.append("GLOBAL C_PATH " + inputFile.getParent() + sep);
+    sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
     sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
-    sb.append("GLOBAL C_ESS " + ess.toLowerCase() + sep);
-
+    sb.append("GLOBAL C_ESS gennbo" + sep);
     sb.append("GLOBAL C_LABEL_1 FILE="
         + (jobName.equals("") ? inputFileHandler.jobStem : jobName));
-
     nboService.rawCmdNew("r", sb, NBOService.MODE_RUN, null,
         "Running GenNBO...");
+  }
 
+  private boolean update47File(File inputFile, String jobName, String keywords) {
+    if (inputFileHandler.useExt.equals("47"))
+      if (inputFileHandler.writeToFile(inputFile.getAbsolutePath(),
+          file47Data[0] + "$NBO\n " + "FILE=" + jobName + " " + keywords
+              + "  $END" + sep + file47Data[2]))
+        return true;
+    logInfo("Could not create " + inputFile, Logger.LEVEL_ERROR);
+    return false;
   }
 
   protected void notifyLoad_r() {
     if (vwr.ms.ac == 0)
       return;
-    fileData = inputFileHandler.read47File();
-    nboKeywords = cleanNBOKeylist(fileData[1]);
+    get47FileData(true);
     showAtomNums(true);
     setBonds(true);
     addNBOKeylist();

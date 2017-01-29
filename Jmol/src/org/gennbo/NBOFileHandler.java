@@ -59,29 +59,33 @@ class NBOFileHandler extends JPanel {
     this.useExt = useExt;
     setLayout(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
+    boolean canEditTextFields = (mode == MODE_MODEL_SAVE || mode == MODE_MODEL_USE);
+
     c.gridx = 0;
     c.gridy = 0;
     c.fill = GridBagConstraints.BOTH;
     (tfDir = new JTextField()).setPreferredSize(new Dimension(110, 20));
-    tfDir.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-
-        browsePressed();
-      }
-    });
+    tfDir.setEditable(canEditTextFields);
+    //    tfDir.addActionListener(new ActionListener() {
+    //      @Override
+    //      public void actionPerformed(ActionEvent e) {
+    //
+    //        browsePressed();
+    //      }
+    //    });
     tfDir.setText(fileDir);
     add(tfDir, c);
     c.gridx = 1;
     (tfName = new JTextField()).setPreferredSize(new Dimension(100, 20));
-    tfName.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        //        if(mode == MODEL)
-        //          showWorkpathDialogM(null,null);
-        browsePressed();
-      }
-    });
+    tfName.setEditable(canEditTextFields);
+    //    tfName.addActionListener(new ActionListener() {
+    //      @Override
+    //      public void actionPerformed(ActionEvent e) {
+    //        //        if(mode == MODEL)
+    //        //          showWorkpathDialogM(null,null);
+    //        browsePressed();
+    //      }
+    //    });
     tfName.setText(name);
     add(tfName, c);
     c.gridx = 0;
@@ -92,14 +96,15 @@ class NBOFileHandler extends JPanel {
     c.gridx = 2;
     c.gridy = 0;
     (tfExt = new JTextField()).setPreferredSize(new Dimension(40, 20));
+    tfExt.setEditable(canEditTextFields);
     tfExt.setText(ext);
-    tfExt.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        browsePressed();
-      }
-    });
-    if (mode != MODE_VIEW && mode != MODE_SEARCH) {
+    //    tfExt.addActionListener(new ActionListener() {
+    //      @Override
+    //      public void actionPerformed(ActionEvent e) {
+    //        browsePressed();
+    //      }
+    //    });
+    if (canEditTextFields) {
       add(tfExt, c);
       c.gridy = 1;
       add(new JLabel("  ext"), c);
@@ -196,13 +201,16 @@ class NBOFileHandler extends JPanel {
     fileDir = inputFile.getParent();
     boolean canLoad = true;
     boolean isOK = true;
+    String msg = "";
     if (dialog.dialogMode != NBODialogConfig.DIALOG_MODEL) {
       if (!getChooseList(true)) {
+        msg = "problems getting a $CHOOSE list for " + inputFile;
         isOK = false;
       } else {
         for (String x : EXT_ARRAY) {
-          File f3 = newNBOFile(inputFile, x);
-          if (!f3.exists() || x.equals("36") && f3.length() == 0) { 
+          File f3 = newNBOFileForExt(x);
+          if (!f3.exists() || x.equals("36") && f3.length() == 0) {
+            msg = "file " + f3 + " is missing or zero length";
             // BH: But this means all  || f3.length() == 0) {
             isOK = false;
             break;
@@ -214,16 +222,16 @@ class NBOFileHandler extends JPanel {
       if (dialog.dialogMode != NBODialogConfig.DIALOG_RUN) {
         if (canReRun) {
           canReRun = false;
-          dialog.runJob("PLOT", inputFile, "gennbo");
+          dialog.runGenNBOJob("PLOT");
         } else {
-          dialog.alertError("Error occurred during run");
+          dialog.alertError("Error occurred during run: " + msg);
         }
         return;
       }
       canLoad = false;
     }
     if (canLoad) {
-      dialog  .loadFromHandler(new File(fileDir + "/" + jobStem + ".47"));
+      dialog.loadOrSetBasis(new File(fileDir + "/" + jobStem + ".47"));
     } else if (dialog.dialogMode == NBODialogConfig.DIALOG_RUN) {
       dialog.loadModelFromNBO(fileDir, jobStem, useExt);
       tfName.setText(jobStem);
@@ -240,7 +248,7 @@ class NBOFileHandler extends JPanel {
    * @return false if output contains error
    */
   protected boolean getChooseList(boolean isCheckOnly) {
-    File f = newNBOFile(inputFile, "nbo");
+    File f = newNBOFileForExt("nbo");
     if (!f.exists() || f.length() == 0)
       return false;    
     String fdata = getFileData(f.toString());
@@ -286,7 +294,7 @@ class NBOFileHandler extends JPanel {
    * @return [ pre-keyword params, keywords, post-keyword params ]
    */
   protected String[] read47File() {
-    String[] fileData = new String[] { "", "", "" };
+    String[] fileData = new String[] { "", "", "", "" };
     String nboKeywords = "";
     SB data = new SB();
     if (!readFileBuffered(inputFile, data))
@@ -313,9 +321,19 @@ class NBOFileHandler extends JPanel {
     }
     dialog.logInfo("$NBO: " + nboKeywords, Logger.LEVEL_INFO);
     fileData[0] = fix47File(preParams.toString());
-    fileData[1] = nboKeywords;
+    fileData[1] = removeFileKeyword(nboKeywords);
     fileData[2] = postParams.toString();
+    fileData[3] = nboKeywords;
     return fileData;
+  }
+
+  private String removeFileKeyword(String nboKeywords) {
+    String[] tokens = PT.getTokens(nboKeywords);
+    nboKeywords = "";
+    for (int i = tokens.length; --i >= 0;)
+      if (tokens[i].toUpperCase().indexOf("FILE=") < 0)
+        nboKeywords += " " + tokens[i];
+    return nboKeywords.trim();
   }
 
   private String fix47File(String data) {
@@ -409,7 +427,11 @@ class NBOFileHandler extends JPanel {
   }
 
   public String getInputFile(String name) {
-    return getFileData(newNBOFile(inputFile, name).toString());
+    return getFileData(newNBOFileForExt(name).toString());
+  }
+
+  public File newNBOFileForExt(String filenum) {
+    return newNBOFile(inputFile, filenum);
   }
 
 }

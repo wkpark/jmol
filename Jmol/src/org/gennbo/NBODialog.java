@@ -626,11 +626,11 @@ public class NBODialog extends NBODialogSearch {
       vwr.alert("This option requires NBOServe");
       return;
     }    
-
     if (type == 'c') {
       settingsDialog.setVisible(true);
       return;
     }
+
     if (nboService.isWorking) {
       int i = JOptionPane.showConfirmDialog(this,
           "NBOServe is working. Cancel current job?\n"
@@ -640,6 +640,25 @@ public class NBODialog extends NBODialogSearch {
         return;
       }
     }
+    
+    String msg = "";
+    switch (type) {
+    case 'm':
+      msg = "MODEL";
+      break;
+    case 'r':
+      msg = "RUN";
+      break;
+    case 'v':
+      msg = "VIEW";
+      break;
+    case 's':
+      msg = "SEARCH";
+      break;
+    }
+    log("Entering " + msg, 'I');
+
+    
     if (!jmolOptionNOZAP) // use Jmol command NBO OPTIONS NOZAP to allow this
       runScriptNow("zap");
     nboService.restart();
@@ -854,12 +873,19 @@ public class NBODialog extends NBODialogSearch {
     }
   }  
 
-  void loadFromHandler(File file) {
+  /**
+   * Carry out all functions to load a new file or 
+   * @param file
+   */
+  void loadOrSetBasis(File file) {
     isNewModel = true;
-    if (dialogMode == DIALOG_VIEW) 
+    switch (dialogMode) {
+    case DIALOG_VIEW: 
       setViewerBasis();
-     else
+      break;
+    default:
       loadModelFileQueued(file, false, false);
+    }
   }
 
   void setLicense(String line) {

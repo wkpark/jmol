@@ -1153,8 +1153,8 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (s.contains("\\"))
       s = s.replaceAll("\\\\", "");
     if (statusInfo.indexOf("Editing") >= 0)
-      s = "save orientation o1;load " + s + ";restore orientation o1;refresh";
-    runScriptNow(s);// + ";rotate best;none; select on;");
+      s = "save orientation o1;load " + s + ";restore orientation o1;";
+    runScriptNow(s + "refresh;");// + ";rotate best;none; select on;");
   }
 
 }

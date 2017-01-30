@@ -41,6 +41,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Map;
 
+import javajs.util.PT;
 import javajs.util.SB;
 
 import javax.swing.AbstractListModel;
@@ -112,8 +113,6 @@ abstract class NBODialogView extends NBODialogRun {
 
   //  private String selectedOrbs = "";
   protected String currOrb = "";
-  private char currSign = '+';
-  private char lastSign = '+';
 
   //NBOServe view settings
   private String[] plVal, vecVal, lineVal;
@@ -962,7 +961,7 @@ abstract class NBODialogView extends NBODialogRun {
       alphaList = list;
 
     if (!jmolOptionNONBO) {
-      nboService.postToNBO("v", getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_LIST, list, "Getting list");
+      postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_LIST, list, "Getting list", null, null);
     }
     loadModelFileQueued(
         f,
@@ -971,20 +970,11 @@ abstract class NBODialogView extends NBODialogRun {
 
   }
 
-  private void loadOrbitalListFromNBO() {
-  //version  that does not use Jmol for reading the .46 labels file
-  }
-
-  private void loadOrbitalListFromJmol(boolean isBeta) {
-
-    
-  }
-
   
   /////////////////////// RAW NBOSERVE API ////////////////////
 
   /** get the standard header for a set of META commands, specifically
-   * C_PATH and C_JOBSTEM; possibly I_BAS_1 
+   * C_PATH and C_JOBSTEM and I_SPIN; possibly I_BAS_1 
    * 
    * @param addBasis if desired, from comboBasis
    * 
@@ -1004,6 +994,11 @@ abstract class NBODialogView extends NBODialogRun {
     return sb;
   }
 
+  /**
+   * add in camera parameters
+   * 
+   * @param sb
+   */
   private void appendCameraParams(SB sb) {
     for (int i = 0; i < camFields.length; i++)
       if (!camFields[i].getText().equals(camVal[i])) {
@@ -1012,8 +1007,13 @@ abstract class NBODialogView extends NBODialogRun {
       }
   }
 
+  /**
+   * add in the SIGN parameter 
+   * @param sb
+   * @param i
+   */
   private void appendOrbitalSign(SB sb, int i) {
-    //sb.append("GLOBAL SIGN " + (orbitals.bsNeg.get(i) ? "-1" : "+1") + sep);
+    sb.append("GLOBAL SIGN " + (orbitals.bsNeg.get(i) ? "-1" : "-1") + sep);
   }
 
 
@@ -1021,7 +1021,7 @@ abstract class NBODialogView extends NBODialogRun {
   protected void createImage1or2D(boolean oneD) {
 
     if (orbitals.bsOn.cardinality() > 1) {
-      createImaeg1or2DMultiple(oneD);
+      createImage1or2DMultiple(oneD);
       return;
     }
 
@@ -1043,8 +1043,8 @@ abstract class NBODialogView extends NBODialogRun {
     log(msg, 'I');
 
     sb.append("CMD ").append(msg);
-    nboService.postToNBO("v", sb, NBOService.MODE_IMAGE, null,
-        (oneD ? "Profiling.." : "Contouring.."));
+    postNBO_v(sb, NBOService.MODE_IMAGE, null,
+        (oneD ? "Profiling.." : "Contouring.."), null, null);
   }
 
   private void appendLineParams(SB sb) {
@@ -1095,9 +1095,7 @@ abstract class NBODialogView extends NBODialogRun {
       }
       sb.append("a V_U" + i + " " + tmp2 + sep);
     }
-    inputFileHandler.writeToFile(nboService.getServerPath("jview.txt"),
-        sb.toString());
-    nboService.postToNBO("v", new SB().append("CMD JVIEW"), NBOService.MODE_RAW, null, "");
+    postNBO_v(new SB().append("CMD JVIEW"), NBOService.MODE_RAW, null, "Sending Jmol orientation", "jview.txt", sb.toString());
           
 //    sb = getMetaHeader(true);
 //    sb.append("CMD LABEL");
@@ -1105,7 +1103,7 @@ abstract class NBODialogView extends NBODialogRun {
 
   }
 
-  protected void createImaeg1or2DMultiple(boolean oneD) {
+  protected void createImage1or2DMultiple(boolean oneD) {
 
 //    sb = getMetaHeader(true);
 //    sb.append("CMD LABEL");
@@ -1123,13 +1121,13 @@ abstract class NBODialogView extends NBODialogRun {
         sb.append("CMD CONTOUR " + (i + 1));
       msg += " " + (i + 1);
       profileList +=  " " + (++pt);
-      nboService.postToNBO("v", sb, NBOService.MODE_RAW, null, "");
+      postNBO_v(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
     }
     log(msg, 'I');    
     sb = getMetaHeader(false);
     appendLineParams(sb);
     sb.append("CMD DRAW" + profileList);
-    nboService.postToNBO("v", sb, NBOService.MODE_IMAGE, null, "Raytracing...");
+    postNBO_v(sb, NBOService.MODE_IMAGE, null, "Drawing...", null, null);
   }
 
   protected void createImage3D() {
@@ -1142,19 +1140,18 @@ abstract class NBODialogView extends NBODialogRun {
       sb = getMetaHeader(true);
       appendOrbitalSign(sb, i);
       sb.append("CMD PROFILE " + (i + 1));
-      nboService.postToNBO("v", sb, NBOService.MODE_RAW, null, "");
+      postNBO_v(sb, NBOService.MODE_RAW, null, "Sending profile " + (i + 1), null, null);
       tmp += " " + (i + 1);
       list += " " + (++pt);
     }
     log(tmp, 'I');
-    vwr.writeTextFile(nboService.getServerPath("jview"), sb.toString());
-
+    String jviewData = sb.toString();
     sb = getMetaHeader(false);
     appendCameraParams(sb);
     if (jmolView)
       sendJmolOrientation();
     sb.append("CMD VIEW" + list);
-    nboService.postToNBO("v", sb, NBOService.MODE_IMAGE, null, "Raytracing...");
+    postNBO_v(sb, NBOService.MODE_IMAGE, null, "Raytracing...", null, jviewData);
   }
 
   private void initializeImage() {
@@ -1634,5 +1631,60 @@ abstract class NBODialogView extends NBODialogRun {
 
   }
 
+  /**
+   * Post a request to NBOServe with a callback to processNBO_s.
+   * 
+   * @param sb
+   *        command data
+   * @param mode
+   *        type of request
+   * @param list
+   *        optional list to fill
+   * @param statusMessage
+   * @param dataFileName optional 
+   * @param fileData optional 
+   */
+  private void postNBO_v(SB sb, final int mode,
+                         final DefaultListModel<String> list, String statusMessage, String dataFileName, String fileData) {
+    final NBORequest req = new NBORequest();
+    req.set(new Runnable() {
+      @Override
+      public void run() {
+        processNBO_v(req, mode, list);
+      }
+    }, statusMessage, "v_cmd.txt", sb.toString(), dataFileName, fileData);
+    nboService.postToNBO(req);
+  }
+
+  /**
+   * Process the reply from NBOServe.
+   * 
+   * @param req
+   * @param mode
+   * @param list
+   */
+  protected void processNBO_v(NBORequest req, int mode,
+                              DefaultListModel<String> list) {
+    String[] lines = req.getReplyLines();
+    switch (mode) {
+    case NBOService.MODE_LIST:
+      for (int i = 0; i < lines.length; i++) {
+        list.addElement(lines[i]);
+      }
+      break;
+    case NBOService.MODE_IMAGE:
+      String fname = inputFileHandler.inputFile.getParent() + "\\"
+          + inputFileHandler.jobStem + ".bmp";
+      File f = new File(fname);
+      final SB title = new SB();
+      String id = "id " + PT.esc(title.toString().trim());
+      String script = "image " + id + " close;image id \"\" "
+          + PT.esc(f.toString().replace('\\', '/'));
+      runScriptNow(script);
+      break;
+    case NBOService.MODE_RAW:
+      break;
+    }
+  }
   
 }

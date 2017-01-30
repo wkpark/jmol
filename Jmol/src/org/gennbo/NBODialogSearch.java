@@ -62,6 +62,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
+
 abstract class NBODialogSearch extends NBODialogView {
 
   private final static int KEYWD_WEBHELP = 0;
@@ -468,7 +469,7 @@ abstract class NBODialogSearch extends NBODialogView {
       btn.addActionListener(new ActionListener(){
         @Override
         public void actionPerformed(ActionEvent arg0) {
-          if(nboService.isWorking){
+          if(nboService.isWorking()){
             vwr.alert("Please wait for NBOServe to finish working");
             return;
           }
@@ -551,10 +552,10 @@ abstract class NBODialogSearch extends NBODialogView {
 
   }
 
-  protected void getListSearch(final String get, DefaultComboBoxModel<String> list) {
+  protected void getListSearch(String get, DefaultComboBoxModel<String> list) {
 
     int mode = NBOService.MODE_LIST;
-    final SB sb = new SB();
+    SB sb = new SB();
     sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
     sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
     
@@ -602,8 +603,9 @@ abstract class NBODialogSearch extends NBODialogView {
     }
     if(get.equals("c") && nboKeywordNumber == KEYWD_CMO)
       mode = NBOService.MODE_LIST_MO;
-    nboService.postToNBO("s", sb, mode, list, "Getting list " + key);
+    postNBO_s(sb, mode, list, "Getting list " + key);
   }
+  
   
   protected void showMessage(){
     JOptionPane.showMessageDialog(this, "Error getting lists, an error may have occured during run");
@@ -949,14 +951,14 @@ abstract class NBODialogSearch extends NBODialogView {
   }
 
   protected void getSearchValue(int op) {
-    if(relabel){
+    if (relabel) {
       runScriptQueued("select add {*}.bonds; color bonds lightgrey; select remove {*}");
       showAtomNums(alphaSpin.isSelected());
-      for(int i = 0; i < nBonds; i++){
+      for (int i = 0; i < nBonds; i++) {
         runScriptQueued("MEASUREMENT ID '" + i + "' off ");
       }
       relabel = false;
-      if(!useWireMesh){
+      if (!useWireMesh) {
         runScriptQueued("nbo nomesh fill translucent " + opacityOp);
         runScriptQueued("mo nomesh fill translucent " + opacityOp);
       }
@@ -967,19 +969,19 @@ abstract class NBODialogSearch extends NBODialogView {
     sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
     sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
     sb.append("GLOBAL I_KEYWORD " + nboKeywordNumber + sep);
-    
+
     boolean isLabel = false;
     boolean isLabelBonds = false;
-    if(isOpenShell){
-      sb.append("GLOBAL I_SPIN " + (alphaSpin.isSelected()?"1":"-1") + sep);
-    }else
+    if (isOpenShell) {
+      sb.append("GLOBAL I_SPIN " + (alphaSpin.isSelected() ? "1" : "-1") + sep);
+    } else
       sb.append("GLOBAL I_SPIN 0" + sep);
     switch (nboKeywordNumber) {
     case KEYWD_NPA:
       sb.append("GLOBAL I_ATOM_1 " + (at1.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_UNIT_1 " + (unit.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_ORB_1 " + (orb2.getSelectedIndex() + 1) + sep);
-      if(op > 10){
+      if (op > 10) {
         isLabel = true;
         op = 12;
       }
@@ -991,7 +993,8 @@ abstract class NBODialogSearch extends NBODialogView {
       break;
     case KEYWD_E2PERT:
       sb.append("GLOBAL I_d_NBO_1 " + (orb.getSelectedIndex() + 1) + sep);
-      sb.append("GLOBAL I_a_NBO " + (orb2.getSelectedIndex() + 1 + orb.getModel().getSize()) + sep);
+      sb.append("GLOBAL I_a_NBO "
+          + (orb2.getSelectedIndex() + 1 + orb.getModel().getSize()) + sep);
       sb.append("GLOBAL I_UNIT_1 " + (unit.getSelectedIndex() + 1) + sep);
       break;
     case KEYWD_NRT:
@@ -1016,7 +1019,7 @@ abstract class NBODialogSearch extends NBODialogView {
       break;
     case KEYWD_OPBAS:
       sb.append("GLOBAL I_BAS_1 " + (comboBasis.getSelectedIndex() + 1) + sep);
-      sb.append("GLOBAL I_OPERATOR " + (operator+1) + sep);
+      sb.append("GLOBAL I_OPERATOR " + (operator + 1) + sep);
       sb.append("GLOBAL I_ROW " + (orb.getSelectedIndex() + 1) + sep);
       sb.append("GLOBAL I_COLUMN " + (orb2.getSelectedIndex() + 1) + sep);
       break;
@@ -1027,19 +1030,19 @@ abstract class NBODialogSearch extends NBODialogView {
       sb.append("GLOBAL I_COLUMN " + (orb2.getSelectedIndex() + 1) + sep);
       break;
     }
-    
+
     sb.append("GLOBAL I_OPT_" + keyProp + " " + op);
     if (isLabel) {
       relabel = true;
-      nboService.postToNBO("s", sb, NBOService.MODE_LABEL,null,"Getting list");
-    } else if (isLabelBonds){
+      postNBO_s(sb, NBOService.MODE_LABEL, null, "Getting labels");
+    } else if (isLabelBonds) {
       relabel = true;
       nBonds = 0;
       //runScriptQueued("select {*};label off;select remove {*}");
       runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select remove {*}");
-      nboService.postToNBO("s", sb, NBOService.MODE_LABEL_BONDS,null,"Getting list");
+      postNBO_s(sb, NBOService.MODE_LABEL_BONDS, null, "Getting bonds list");
     } else {
-      nboService.postToNBO("s", sb, NBOService.MODE_VALUE,null, "Getting value");
+      postNBO_s(sb, NBOService.MODE_VALUE, null, "Getting value");
     }
 
   }
@@ -1277,7 +1280,7 @@ abstract class NBODialogSearch extends NBODialogView {
 
     if(type.trim().equals("NAO"))
       type = "PNAO";
-    if(dialogMode == NBODialogConfig.DIALOG_SEARCH)
+    if(dialogMode == DIALOG_SEARCH)
       if(!type.startsWith("P")&& !type.equals("MO") && !type.equals("AO"))
         type = "P" + type;
       
@@ -1671,17 +1674,79 @@ abstract class NBODialogSearch extends NBODialogView {
     }
   }
   
-  public void processValue(String line) {
-    if (isOpenShell) {
-      String spin = (alphaSpin.isSelected() ? "&uarr;" : "&darr;");
-      int ind = line.indexOf(')') + 1;
-      line = line.substring(0, ind) + spin + line.substring(ind);
-    }
-    log(" " + line, 'b');
-    if (line.contains("*"))
-      showMax(line);
+  /**
+   * Post a request to NBOServe with a callback to processNBO_s.
+   * 
+   * @param sb
+   *        command data
+   * @param mode
+   *        type of request
+   * @param list
+   *        optional list to fill
+   * @param statusMessage
+   */
+  private void postNBO_s(SB sb, final int mode,
+                         final DefaultComboBoxModel<String> list, String statusMessage) {
+    final NBORequest req = new NBORequest();
+    req.set(new Runnable() {
+      @Override
+      public void run() {
+        processNBO_s(req, mode, list);
+      }
+    }, statusMessage, "s_cmd.txt", sb.toString());
+    nboService.postToNBO(req);
   }
 
+  /**
+   * Process the reply from NBOServe.
+   * 
+   * @param req
+   * @param mode
+   * @param list
+   */
+  protected void processNBO_s(NBORequest req, int mode,
+                              DefaultComboBoxModel<String> list) {
+    String[] lines = req.getReplyLines();
+    String line;
+    switch (mode) {
+    case NBOService.MODE_VALUE:
+      line = lines[0];
+      if (isOpenShell) {
+        String spin = (alphaSpin.isSelected() ? "&uarr;" : "&darr;");
+        int ind = line.indexOf(')') + 1;
+        line = line.substring(0, ind) + spin + line.substring(ind);
+      }
+      log(" " + line, 'b');
+      if (line.contains("*"))
+        showMax(line);
+      break;
+    case NBOService.MODE_LIST:
+      for (int i = 0; i < lines.length; i++) {
+        list.addElement(lines[i]);
+      }
+      break;
+    case NBOService.MODE_LIST_MO:
+      for (int i = 0; i < lines.length; i++)
+        list.addElement("  " + PT.rep(PT.rep(lines[i], "MO ", ""), " ", ".  "));
+      break;
+    case NBOService.MODE_LABEL:
+      for (int i = 0; i < lines.length; i++) {
+        processLabel(lines[i], i + 1);
+      }
+      break;
+    case NBOService.MODE_LABEL_BONDS:
+      for (int i = 1, n = lines.length - 1; i < n; i++) {
+//      if (line.indexOf("DATA") >= 0)
+//      if (line.indexOf("END") >= 0) {
+//      }
+//      if (isWorking)
+        processLabelBonds(lines[i]);
+      }
+      break;
+    }
+  }
+
+  
   protected void showMax(String line) {
     //BH not implemented?  
   }
@@ -1705,5 +1770,7 @@ abstract class NBODialogSearch extends NBODialogView {
           + "\";set labeloffset {" + x + "," + y + "," + (z) + "}");
     }
   }
+
+
 
 }

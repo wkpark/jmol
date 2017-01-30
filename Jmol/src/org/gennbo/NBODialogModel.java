@@ -58,6 +58,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jmol.i18n.GT;
+import org.jmol.util.Logger;
 
 abstract class NBODialogModel extends NBODialogConfig {
 
@@ -734,8 +735,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("CMD " + cmd);
     log(cmd, 'i');
     jbApply.setEnabled(false);
-    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
-        "Editing model...");
+    postNBO_m(sb, NBOService.MODE_MODEL_EDIT, "Editing model...", null, null);
 
   }
 
@@ -743,8 +743,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     SB sb = new SB();
     sb.append("CMD symmetry");
     log("Symmetry: ", 'p');
-    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
-        "symmetry...");
+    postNBO_m(sb, NBOService.MODE_MODEL_SYMMETRY,  "symmetry...", null, null);
   }
 
   protected void getModelFromTextBox(JTextField textBox) {
@@ -775,8 +774,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       s = "show " + model;
       saveFileHandler.setInput(null, "line", "mol");
       sb.append("CMD " + s);
-      nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
-          "model from line input...");
+      postNBO_m(sb, NBOService.MODE_MODEL, "model from line input...", null, null);
     }
     textBox.setText(model);
     log(s, 'I');
@@ -795,17 +793,13 @@ abstract class NBODialogModel extends NBODialogConfig {
       s = runScriptNow("select within(model,visible);print data({selected},'cfi');select none");
       alsoLoadJmol = false;
     }
-    //clearModel();
-    String fName = nboService.getServerPath("jmol_outfile.cfi");
     SB sb = new SB();
-    inputFileHandler.writeToFile(fName, s);
     sb.append("GLOBAL C_PATH " + nboService.getServerPath(null) + "/" + sep);
     sb.append("GLOBAL C_ESS c" + sep);
     sb.append("GLOBAL C_FNAME jmol_outfile" + sep);
     sb.append("GLOBAL C_IN_EXT cfi" + sep);
     sb.append("CMD use");
-    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
-        (alsoLoadJmol ? "Loading" : "Sending") + " model to NBO...");
+    postNBO_m(sb, NBOService.MODE_MODEL_TO_NBO, (alsoLoadJmol ? "Loading" : "Sending") + " model to NBO...", "jmol_outfile.cfi", s);
 
   }
 
@@ -834,8 +828,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("GLOBAL C_IN_EXT " + ext.toLowerCase() + sep);
     sb.append("CMD use");
     log("use." + ess + " " + fname + "." + ext, 'i');
-    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
-        "Loading model from NBO...");
+    postNBO_m(sb, NBOService.MODE_MODEL, "Loading model from NBO...", null, null);
 
   }
 
@@ -853,8 +846,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("GLOBAL C_FNAME " + fname + sep);
     sb.append("GLOBAL C_OUT_EXT " + ext + sep);
     sb.append("CMD save");
-    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
-        "Saving model...");
+    postNBO_m(sb, NBOService.MODE_MODEL_SAVE, "Saving model...", null, null);
     log("save." + ess + " " + fname, 'i');
     log("--Model Saved--<br>" + path + "\\" + fname + "." + ext, 'b');
   }
@@ -1137,13 +1129,87 @@ abstract class NBODialogModel extends NBODialogConfig {
     return bd.doubleValue();
   }
 
-  protected void processModelLine(String line) {
-    if (line == null)
-      return;
-    if (line.contains("NBOModel can't"))
-      line = "   " + line.charAt(1) + "<sub>" + line.substring(2) + "</sub>";
-    log(line, 'b');
+  /**
+   * Post a request to NBOServe with a callback to processNBO_s.
+   * 
+   * @param sb
+   *        command data
+   * @param mode 
+   * @param statusMessage
+   * @param fileName  optional
+   * @param fileData  optional
+   */
+  private void postNBO_m(SB sb, final int mode, String statusMessage, String fileName, String fileData) {
+    final NBORequest req = new NBORequest();
+    req.set(new Runnable() {
+      @Override
+      public void run() {
+        processNBO_m(mode, req);
+      }
+    }, statusMessage, "m_cmd.txt", sb.toString(), fileName, fileData);
+    nboService.postToNBO(req);
   }
+
+  /**
+   * Process the reply from NBOServe.
+   * 
+   * @param req
+   */
+  protected void processNBO_m(int mode, NBORequest req) {
+    String[] lines = req.getReplyLines();
+    String line;
+    switch (mode) {
+    case NBOService.MODE_MODEL_SYMMETRY:
+      break;
+    case NBOService.MODE_MODEL_EDIT:
+      break;
+    case NBOService.MODE_MODEL_TO_NBO:
+      break;
+    }
+//    if (line.startsWith("DATA \" \"")) {
+//    } else if (line.startsWith("DATA ")) {
+//      if (line.startsWith("DATA \"model")) {
+//        sbRet.setLength(0);
+//        line = fixNBOModel(line);
+//      }
+//      inData = (line.indexOf("exit") < 0);
+//      if (inData)
+//        sbRet.append(line + "\n");
+//    } else if (!inData) {
+//      processModelLine(line);
+//    } else if (sbRet != null) {
+//      sbRet.append(line + "\n");
+//      if (line.indexOf("END") >= 0) {
+//        inData = false;
+//        if (line.indexOf("\"" + nboModel + "\"") >= 0)
+//          nboDialog.processModelEnd(sbRet.toString(), currJob.statusInfo);
+//        sbRet.setLength(0);
+//        nboModel = "\0";
+//      }
+//    }
+
+  }
+
+  /**
+   * fixes DATA line to include a title
+   * 
+   * @param line
+   * @return line or full data block
+   */
+//  private String fixNBOModel(String line) {
+////    nboModel = PT.getQuotedStringAt(line, 0);
+////    String s = " NBO " + nboModel;
+////    int pt = line.indexOf("\n");
+////    return (pt < 0 ? line + s : line.substring(0, pt) + s + line.substring(pt));
+//  }
+
+//  protected void processModelLine(String line) {
+//    if (line == null)
+//      return;
+//    if (line.contains("NBOModel can't"))
+//      line = "   " + line.charAt(1) + "<sub>" + line.substring(2) + "</sub>";
+//    log(line, 'b');
+//  }
 
   protected void processModelEnd(String s, String statusInfo) {
     if (statusInfo.indexOf("Sending ") >= 0)
@@ -1156,5 +1222,6 @@ abstract class NBODialogModel extends NBODialogConfig {
       s = "save orientation o1;load " + s + ";restore orientation o1;";
     runScriptNow(s + "refresh;");// + ";rotate best;none; select on;");
   }
+
 
 }

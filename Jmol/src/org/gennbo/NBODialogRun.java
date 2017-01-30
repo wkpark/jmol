@@ -29,7 +29,6 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
@@ -123,10 +122,9 @@ abstract class NBODialogRun extends NBODialogModel {
     inputBox.add(inputFileHandler);
     inputBox.setMaximumSize(new Dimension(355, 80));
     //EDIT////////////////
-    panel
-        .add(
-            createTitleBox(" Choose $NBO Keywords ", new HelpBtn(
-                "run_keywords_help.htm"))).setVisible(false);
+    panel.add(
+        createTitleBox(" Choose $NBO Keywords ", new HelpBtn(
+            "run_keywords_help.htm"))).setVisible(false);
     editBox = createBorderBox(true);
     editBox.setMinimumSize(new Dimension(350, 400));
     tfJobName = new JTextField();
@@ -153,6 +151,7 @@ abstract class NBODialogRun extends NBODialogModel {
 
   /**
    * set up the local/archive/webmo box
+   * 
    * @return Box
    */
   private Box createSourceBox() {
@@ -297,7 +296,6 @@ abstract class NBODialogRun extends NBODialogModel {
 
     }
   }
-
 
   protected void addNBOKeylist() {
 
@@ -455,42 +453,43 @@ abstract class NBODialogRun extends NBODialogModel {
 
   /**
    * Open the current 47 file and parse its data into three sections: pre,
-   * keywords, post; 
+   * keywords, post;
    * 
-   * @param forceNew set true to recreate global fields file47Data and nboKeywords 
+   * @param forceNew
+   *        set true to recreate global fields file47Data and nboKeywords
    * 
-   * @return  [pre, keywords, post]
+   * @return [pre, keywords, post]
    */
   protected String[] get47FileData(boolean forceNew) {
-   if (file47Data != null && !forceNew)
+    if (file47Data != null && !forceNew)
       return file47Data;
-   file47Data = inputFileHandler.read47File();
-   file47Keywords = cleanNBOKeylist(file47Data[1]);
-   return file47Data;
+    file47Data = inputFileHandler.read47File();
+    file47Keywords = cleanNBOKeylist(file47Data[1]);
+    return file47Data;
   }
 
   /**
    * Initiates a gennbo job via NBOServe; called from RUN, VIEW, and SEARCH
    * 
-   * Note that there are issues with this method. 
+   * Note that there are issues with this method.
    * 
    * @param requiredKeyword
    */
   protected void runGenNBOJob(String requiredKeyword) {
-    
+
     if (jmolOptionNONBO) {
       alertRequiresNBOServe();
       return;
     }
-    
+
     // get the current file47Data and nboKeywords
-    
+
     get47FileData(true);
-    
+
     //Check the plot file names match job name, warn user otherwise
     inputFileHandler.jobStem = inputFileHandler.jobStem.trim();
-    String jobName = (tfJobName == null ? inputFileHandler.jobStem
-        : tfJobName.getText().trim());
+    String jobName = (tfJobName == null ? inputFileHandler.jobStem : tfJobName
+        .getText().trim());
 
     // BH Q: Would it be reasonable if the NO option is chosen to put that other job name in to the jobStem field, and also copy the .47 file to that? Or use that?
     // Or, would it be better to ask this question immediately upon file loading so that it doesn't come up, and make it so that
@@ -521,18 +520,17 @@ abstract class NBODialogRun extends NBODialogModel {
 
     if (!file47Keywords.contains("PLOT"))
       file47Keywords += " PLOT";
-    
+
     if (!update47File(inputFileHandler.inputFile, jobName, file47Keywords))
       return;
-    
+
     SB sb = new SB();
     sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
     sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
     sb.append("GLOBAL C_ESS gennbo" + sep);
     sb.append("GLOBAL C_LABEL_1 FILE="
         + (jobName.equals("") ? inputFileHandler.jobStem : jobName));
-    nboService.postToNBO("r", sb, NBOService.MODE_RUN, null,
-        "Running GenNBO...");
+    postNBO_r(sb, NBOService.MODE_RUN, "Running GenNBO...");
   }
 
   private boolean update47File(File inputFile, String jobName, String keywords) {
@@ -786,8 +784,38 @@ abstract class NBODialogRun extends NBODialogModel {
 
   public void fix47(File inputFile) {
     // TODO
-    
+
   }
 
+  /**
+   * Post a request to NBOServe with a callback to processNBO_r.
+   * 
+   * @param sb
+   *        command data
+   * @param mode
+   *        type of request
+   * @param statusMessage
+   */
+  private void postNBO_r(SB sb, final int mode, String statusMessage) {
+    final NBORequest req = new NBORequest();
+    req.set(new Runnable() {
+      @Override
+      public void run() {
+        processNBO_r(req, mode);
+      }
+    }, statusMessage, "r_cmd.txt", sb.toString());
+    nboService.postToNBO(req);
+  }
+
+  
+  /**
+   * Process the reply from NBOServe.
+   * 
+   * @param req
+   * @param mode
+   */
+  protected void processNBO_r(NBORequest req, int mode) {
+    inputFileHandler.setInputFile(inputFileHandler.inputFile);
+  }
 
 }

@@ -30,6 +30,7 @@ import javax.swing.JFrame;
 import org.jmol.c.CBK;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.JmolPlugin;
+import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 public class NBOPlugin implements JmolPlugin {
 
@@ -76,5 +77,30 @@ public class NBOPlugin implements JmolPlugin {
       return;
     nboDialog.notifyCallback(type, data);
   }
+
+  /**
+   * Get an NBO property from Jmol's plugin resources.
+   * 
+   * @param name
+   * @param defaultValue
+   * @return the property string or the default value if the key was not found
+   * 
+   */
+  protected String getNBOProperty(String name, String defaultValue) {
+    return JmolPanel.getPluginOption("NBO", name, defaultValue);
+  }
+
+  /**
+   * Set an NBO property in Jmol's plugin property file.
+   * 
+   * @param name
+   * @param option
+   */
+  protected void setNBOProperty(String name, String option) {
+    if (option == null)
+      return;
+    JmolPanel.setPluginOption("NBO", name, option.replace('\\', '/'));
+  }
+
 
 }

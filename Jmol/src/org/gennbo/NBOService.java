@@ -24,27 +24,18 @@
 package org.gennbo;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
 import javajs.util.AU;
 import javajs.util.PT;
-import javajs.util.Rdr;
 import javajs.util.SB;
-
-import javax.swing.AbstractListModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
-import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 /**
  * A service for interacting with NBOServe (experimental)
@@ -141,31 +132,31 @@ public class NBOService {
   static final int MODE_RAW = 0;// leave this 0; it is referred to that in StatusListener
 
   // these are for panel state
-  static final int MODE_MODEL = 1; // don't change this number -- it is used for LOAD NBO 
-  static final int MODE_RUN = 20;
+  static final int MODE_MODEL          = 1; // don't change this number -- it is used for LOAD NBO 
+  static final int MODE_RUN            = 20;
 
   // these are for rawCmdNew only
-  static final int MODE_VALUE = 45;
-  static final int MODE_LIST = 46;
-  static final int MODE_LIST_MO = 47;
-  static final int MODE_IMAGE = 88;
-  static final int MODE_SEARCH_SELECT = 90;
-  static final int MODE_LABEL = 50;
+  static final int MODE_VALUE          = 45;
+  static final int MODE_LIST           = 46;
+  static final int MODE_LIST_MO        = 47;
+  static final int MODE_IMAGE          = 88;
+  static final int MODE_SEARCH_SELECT  = 90;
+  static final int MODE_LABEL          = 50;
   //static final int MODE_VALUE_M = 60;
-  static final int MODE_GETRS = 61;
-  static final int MODE_LABEL_BONDS = 62;
-
-  protected int count;
-  protected boolean isWorking;
+  //static final int MODE_GETRS = 61;
+  static final int MODE_LABEL_BONDS    = 62;
+  static final int MODE_MODEL_EDIT     = 63;
+  static final int MODE_MODEL_SYMMETRY = 64;
+  static final int MODE_MODEL_SAVE     = 65;
+  static final int MODE_MODEL_TO_NBO   = 66;
 
   protected Viewer vwr;
   protected Process nboServer;
   protected Thread nboListener;
-  protected BufferedReader nboReader;
   protected NBODialog nboDialog;
-  protected NBOJob currJob;
+  protected NBORequest currentJob;
   protected Object lock;
-  protected Queue<NBOJob> jobQueue;  
+  protected Queue<NBORequest> jobQueue;  
   
   private PrintWriter stdinWriter;
   protected BufferedInputStream stdout;
@@ -182,7 +173,8 @@ public class NBOService {
   protected boolean isReady;
 
   /**
-   * Manage communication between Jmol and NBOServer
+   * A class to manage communication between Jmol and NBOServe.
+   * 
    * @param nboDialog 
    * 
    * @param vwr
@@ -195,12 +187,18 @@ public class NBOService {
     this.vwr = vwr;
     this.doConnect = doConnect;
     sbRet = new SB();
-    setServerPath(getNBOProperty("serverPath", System.getProperty("user.home")
+    setServerPath(nboDialog.nboPlugin.getNBOProperty("serverPath", System.getProperty("user.home")
         + "/NBOServe"));
-    jobQueue = new ArrayDeque<NBOJob>();
+    jobQueue = new ArrayDeque<NBORequest>();
     lock = new Object();
   }
 
+  /**
+   * Check to see if we have tried and are not able to make contact with NBOServe at the designated location.
+   * 
+   * @return true if we hvae found that we cannot start the server.
+   * 
+   */
   boolean isOffLine() {
     return cantStartServer;
   }
@@ -218,123 +216,113 @@ public class NBOService {
   }
 
   /**
-   * Set path to NBOServe diretory
+   * Set path to NBOServe directory
    * 
    * @param path
    */
   protected void setServerPath(String path) {
-    serverPath = NBOFileHandler.fixPath(path);
-    setNBOProperty("serverPath", path);
+    serverPath = path.replace('\\',  '/');
+    nboDialog.nboPlugin.setNBOProperty("serverPath", path);
   }
 
+  /**
+   * Check to see that the service has been initialized.
+   * 
+   * @return true if the path to the server has been set.
+   */
   protected boolean isEnabled() {
     return serverPath != null;
   }
 
-  protected String getNBOProperty(String name, String defaultValue) {
-    return JmolPanel.getPluginOption("NBO", name, defaultValue);
-  }
-
-  protected void setNBOProperty(String name, String option) {
-    option = PT.rep(option, "\\", "/");
-    JmolPanel.setPluginOption("NBO", name, option);
-  }
-
   /**
+   * Set the current job by writing its metacommands to disk and sending a
+   * command to NBOServe directing it to that file.
+   * 
    * @param job
    */
-  protected void startJob(NBOJob job) {
+  protected void startJob(NBORequest job) {
     if (job == null)
       return;
-    System.out.println("NBOServer ready?" + isReady);
-    String s = "<" + job.cmd + ">";
-    currJob = job;
-    nboDialog.inputFileHandler.writeToFile(getServerPath(job.cmd),
-        job.sb.toString());
+    currentJob = job;
+    String cmdFileName = null, data = null;
+    for (int j = 0, n = job.fileData.length; j < n; j += 2) {
+      // we must do file 0 last, as it is the command
+      int i = (j + 2) % n;
+      cmdFileName = job.fileData[i];
+      data = job.fileData[i + 1];
+      if (cmdFileName != null) {
+        System.out.println("saving file " + cmdFileName + "\n" + data);
+        nboDialog.inputFileHandler.writeToFile(getServerPath(cmdFileName),
+            data);
+      }
+    }
     nboDialog.setStatus(job.statusInfo);// + " (sending job.cmd)");
-    sendCmd(s, job.sb.toString());
-  }
- 
-  private void sendCmd(String s, String script) {
-    count = 1;
-    System.out.println("sending " + s + "\n" + script);
+    String cmd = "<" + cmdFileName + ">";
+
+    System.out.println("sending " + cmd + "\n" + data);
+
     if (stdinWriter == null)
       restart();
-    stdinWriter.println(s);
+    stdinWriter.println(cmd);
     stdinWriter.flush();
   }
 
-  protected void nboAddModelLine(String line) {
-    if (Logger.debugging)
-      Logger.debug(inData + " " + sbRet.length() + " " + "receiving: " + line);
-    if (line.startsWith("DATA \" \"")) {
-      isWorking = false;
-    } else if (line.startsWith("DATA ")) {
-      if (line.startsWith("DATA \"model")) {
-        sbRet.setLength(0);
-        line = fixNBOModel(line);
-      }
-      inData = (line.indexOf("exit") < 0);
-      if (inData)
-        sbRet.append(line + "\n");
-    } else if (!inData) {
-      nboDialog.processModelLine(line);
-    } else if (sbRet != null) {
-      sbRet.append(line + "\n");
-      if (line.indexOf("END") >= 0) {
-        inData = false;
-        if (line.indexOf("\"" + nboModel + "\"") >= 0)
-          nboDialog.processModelEnd(sbRet.toString(), currJob.statusInfo);
-        sbRet.setLength(0);
-        nboModel = "\0";
-      }
-    }
-  }
-
   /**
-   * fixes DATA line to include a title
+   * Start the ProcessBuilder for NBOServe and listen to its stdout (Fortran LFN
+   * 6, a Java BufferedInputStream). We simply look for available bytes and listen
+   * for a 10-ms gap, which should be sufficient, since all these are done via a 
+   * single flush;
    * 
-   * @param line
-   * @return line or full data block
+   * 
+   * Expected packets are of one of the following three forms:
+   * 
+   * *start*
+   * 
+   * [one or more lines]
+   * 
+   * *end*
+   * 
+   * or
+   * 
+   * ***errmess***
+   * 
+   * [one error message line]
+   * 
+   * or
+   * 
+   * [some sort of identifiable Fortran or system error message most likely
+   * indicating NBO has died]
+   * 
+   * 
+   * @return a caught exception message, or null if we are not connected or we
+   *         are successful
    */
-  private String fixNBOModel(String line) {
-    nboModel = PT.getQuotedStringAt(line, 0);
-    String s = " NBO " + nboModel;
-    int pt = line.indexOf("\n");
-    return (pt < 0 ? line + s : line.substring(0, pt) + s + line.substring(pt));
-  }
-
-  String startProcess(boolean sync, @SuppressWarnings("unused") final int mode) {
+  String startProcess() {
     System.out.println("startProcess");
     try {
       cantStartServer = true;
       if (!doConnect)
         return null;
       nboListener = null;
-      System.out.println("starting NBO process sync=" + sync);
+      System.out.println("starting NBO process");
       String path = getServerPath(exeName);
       ProcessBuilder builder = new ProcessBuilder(path);
       builder.directory(new File(new File(path).getParent())); // root folder for executable 
       builder.redirectErrorStream(true);
       nboServer = builder.start();
       stdout = (BufferedInputStream) nboServer.getInputStream();
-      nboReader = new BufferedReader(new InputStreamReader(stdout));
       nboListener = new Thread(new Runnable() {
 
         @Override
         public void run() {
           //boolean haveStart = false;
-          boolean inData = false;
-          boolean inError = false;
           byte[] buffer = new byte[1024];
-
-          System.out.println("nboListener " + this + " running");
           while (!Thread.currentThread().isInterrupted()) {
-            String line = null;
             try {
               int n = stdout.available();
               if (n <= 0)
                 continue;
+              isReady = true;
               int m = 0;
               do {
                 n = m;
@@ -345,151 +333,15 @@ public class NBOService {
               }
               n = stdout.read(buffer, 0, n);
               String s = new String(buffer, 0, n);
-              System.out.println(s);
-              isReady = true;
-              BufferedReader rdr = Rdr.getBR(s);
-              while ((line = rdr.readLine()) != null) {
-                // ignore the opener business
-                if (line.indexOf("DATA \" \"") >= 0) {
-                  //nboDialog.logInfo(" DATA...", Logger.LEVEL_INFO);
-                  inData = true;
-                  continue;
-                }
-                if (line.indexOf("END \"\"") >= 0) {
-                  inData = false;
-                  continue;
-                }
-                if (inData)
-                  continue;
-
-                
-                if (line.indexOf("***errmess***") >= 0) {
-                  //                  logServerLine(line, Logger.LEVEL_ERROR);
-                  inError = true;
-                  continue;
-                }
-                logServerLine(line, inError ? Logger.LEVEL_ERROR : Logger.LEVEL_DEBUG);
-                if (inError) {
-                  // second line of <space>***errmess*** is the message.
-                  logServerLine("NBOPro can't do that.", Logger.LEVEL_WARN);
-                  //isWorking = inRequest = false;
-                  inError = false;
-                  continue;
-                }
-                if (line.indexOf("*start*") >= 0) {
-                  if (currJob.dialogMode != MODE_LABEL)
-                    isWorking = true;
-                  continue;
-                }
-                if (line.indexOf("*end*") >= 0) {
-                  synchronized (lock) {
-                    isWorking = false;
-                    processJobAndGetNext();
-                    break;
-                  }
-                }
-                if (isFortranError(line)) {
-                  if (!line.contains("end of file")) {
-                    nboDialog.alertError(line);
-                  }
-                  isWorking = false;
-                  clearQueue();
-                  break;
-                }
-                if (line.indexOf("missing or invalid") >= 0) {
-                  nboDialog.alertError(line);
-                  isWorking = false;
-                  clearQueue();
-                  break;
-                }
-                if (line.indexOf("FORTRAN STOP") >= 0) {
-                  nboDialog.alertError("NBOServe has stopped working - restarting");
-                  clearQueue();
-                  restart();
-                  continue;
-                }
-                //
-                if (line.indexOf("NBOServe v") >= 0) {
-                  nboDialog.setLicense(line);
-                  continue;
-                }
-                switch (currJob.dialogMode) {
-                case MODE_VALUE:
-                  if (isWorking) {
-                    nboDialog.processValue(line);
-                    isWorking = false;
-                  }
-                  break;
-                case MODE_LIST:
-                  if (isWorking) {
-                    currJob.addListElement(line.trim());
-                  }
-                  break;
-                case MODE_LIST_MO:
-                  if (isWorking) {
-                    String tmp = line.replace("MO ", "");
-                    tmp = tmp.replace(" ", ".  ");
-                    currJob.addListElement("  " + tmp);
-                  }
-                  break;
-                case MODE_SEARCH_SELECT:
-                  if (line.startsWith(" Select")) {
-                    isWorking = false;
-                  }
-                  break;
-                case MODE_IMAGE:
-                  if (line.contains("Missing valid")) {
-                    isWorking = false;
-                    nboDialog.alertError(line);
-                  }
-                  break;
-                case MODE_LABEL:
-                  if (isWorking)
-                    nboDialog.processLabel(line, count++);
-                  if (line.indexOf("END \"model") >= 0)
-                    isWorking = true;
-                  break;
-                case MODE_LABEL_BONDS:
-                  if (line.indexOf("DATA") >= 0)
-                    isWorking = false;
-                  if (line.indexOf("END") >= 0) {
-                    isWorking = true; // ???
-                    continue;
-                  }
-                  if (isWorking)
-                    nboDialog.processLabelBonds(line);
-                  break;
-                case MODE_MODEL:
-                  nboAddModelLine(line);
-                  break;
-                //                case MODE_VALUE_M:
-                //                  if (line.indexOf("DATA") >= 0)
-                //                    isWorking = inRequest = false;
-                //                  if (inRequest && isWorking)
-                //                    nboDialog.processModelLine(line);
-                //                  break;
-                //
-                case MODE_GETRS:
-                  if (isWorking) {
-                    int cnt = Integer.parseInt(line.trim());
-                    for (int i = 1; i <= cnt; i++)
-                      currJob.addListElement("R.S. " + i);
-                  }
-                  break;
-                case MODE_RAW:
-                case MODE_RUN:
-                  break;
-                default:
-                  nboAddModelLine(line);
-                  break;
-                }
-              }
-
+              processServerReturn(s);
+              nboDialog.setStatus("");
             } catch (Throwable e1) {
+              clearQueue();
+              nboDialog.setStatus(e1.getMessage());
               continue;
               // includes thread death
             }
-            startJob(currJob = jobQueue.peek());
+            startJob(currentJob = jobQueue.peek());
           }
         }
       });
@@ -504,23 +356,31 @@ public class NBOService {
     return null;
   }
 
-  private int lineNo = 0;
-
+  /**
+   * Log a message to NBODialog; probably an error.
+   * 
+   * @param line
+   * @param level
+   */
   protected void logServerLine(String line, int level) {
-    if (isFortranError(line))
-      level = Logger.LEVEL_ERROR;
-    nboDialog.logInfo((nboDialog.debugVerbose ? (++lineNo) + "< " : "") + line,
-      level);
+    nboDialog.logInfo(line, level);
   }
 
+  /**
+   * Check for known errors; PG is the Portland Group Compiler 
+   * @param line
+   * @return true if a recognized error has been found.
+   */
   protected boolean isFortranError(String line) {
     return line.indexOf("Permission denied") >= 0
         || line.indexOf("PGFIO-F") >= 0 
         || line.indexOf("Invalid command") >= 0;
   }
 
+  /**
+   * Close the process and all channels associated with it. 
+   */
   public void closeProcess() {
-    isWorking = false;
     isReady = false;
     stdout = null;
     try {
@@ -528,11 +388,6 @@ public class NBOService {
     } catch (Exception e) {
     }
     stdinWriter = null;
-    try {
-      nboReader.close();
-    } catch (Exception e) {
-    }
-    nboReader = null;
     try {
       nboListener.interrupt();
     } catch (Exception e) {
@@ -546,91 +401,60 @@ public class NBOService {
     nboServer = null;
   }
 
+  /**
+   * Restart the process from scratch.
+   * 
+   * @return null or an error message
+   * 
+   */
   String restart() {
     closeProcess();
-    return startProcess(false, MODE_RAW);
+    return startProcess();
   }
 
+  /**
+   * Restart the processor only if necessary
+   * 
+   * @return true if successful
+   */
   public boolean restartIfNecessary() {
     if (nboServer == null)
-      startProcess(false, MODE_RAW);
+      startProcess();
     return (nboServer != null);
   }
 
   /**
    * The interface for ALL communication with NBOServe from NBODialog.
    * 
-   * @param cmdFileRoot
-   * @param script
-   * @param dialogMode
-   * @param list
-   * @param statusMessage
+   * @param request
+   * 
    */
-  protected void postToNBO(String cmdFileRoot, SB script, int dialogMode,
-                           AbstractListModel<String> list, String statusMessage) {
-    String fname = null;
-    
+  protected void postToNBO(NBORequest request) {
     synchronized (lock) {
-      if (script == null) {
-        nboDialog.logInfo("> " + cmdFileRoot, Logger.LEVEL_DEBUG);
-      } else {
-        fname = cmdFileRoot + "_cmd.txt";
-        nboDialog.logInfo("> " + fname + "\n" + script, Logger.LEVEL_DEBUG);
-        cmdFileRoot = "<" + fname + ">";
-        isWorking = true;
-      }
-      postToQueue(new NBOJob(fname, script, statusMessage, dialogMode, list));
+      postToQueue(request);
     }
   }
-
-  private void postToQueue(NBOJob j) {
-    if (isReady && jobQueue.isEmpty() && currJob == null) {
-      currJob = j;
-      jobQueue.add(currJob);
-      startJob(currJob);
+  
+  /**
+   * Post a request to 
+   * @param j
+   */
+  private void postToQueue(NBORequest j) {
+    if (isReady && jobQueue.isEmpty() && currentJob == null) {
+      currentJob = j;
+      jobQueue.add(currentJob);
+      startJob(currentJob);
     } else {
       jobQueue.add(j);
     }
   }
 
-  protected void processJobAndGetNext() {
-    jobQueue.remove();
-    nboDialog.processEnd(currJob.dialogMode, currJob.list);
-    if (jobQueue.isEmpty()) {// || nboDialog.dialogMode == NBODialogConfig.DIALOG_RUN) {
-      currJob = null;
-    } else {
-      System.out.println(">>jobQueue.size() = " + jobQueue.size());
-    }
-  }
-
-  class NBOJob {
-    String cmd;
-    String statusInfo;
-    AbstractListModel<String> list;
-    SB sb;
-    NBODialog dialog;
-    protected int dialogMode;
-    private boolean isComboBoxList;
-
-    NBOJob(String cmd, SB sb, String statusInfo,
-        int dialogMode, AbstractListModel<String> list) {
-      this.cmd = cmd;
-      this.sb = sb;
-      this.list = list;
-      this.isComboBoxList = (list instanceof DefaultComboBoxModel);
-      this.statusInfo = statusInfo;
-      this.dialogMode = dialogMode;
-    }
-
-    public void addListElement(String s) {
-      if (isComboBoxList) {
-        ((DefaultComboBoxModel<String>) list).addElement(s);
-      } else {
-        ((DefaultListModel<String>) list).addElement(s);
-      }
-    }
-  }
-
+  /**
+   * Take a quick look to see that gennbo.bat is present and notify the user if it is not.
+   * 
+   * @return true if gennbo.bat exists.
+   * 
+   */
   public boolean connect() {
     if (!doConnect)
       return true;
@@ -643,8 +467,97 @@ public class NBOService {
     return true;
   }
 
+  /**
+   * Clear the job queue
+   * 
+   */
   public void clearQueue() {
     jobQueue.clear();
   }
 
+  /**
+   * Check to see if there is a current job running
+   * 
+   * @return true if there is a current job
+   * 
+   */
+  public boolean isWorking() {
+    return (currentJob != null);
+  }  
+  
+
+  //// new ///////
+
+  /**
+   * Process the return from NBOServe.
+   * 
+   * @param s
+   */
+  protected void processServerReturn(String s) {
+    if (s.indexOf("FORTRAN STOP") >= 0) {
+      nboDialog.alertError("NBOServe has stopped working - restarting");
+      clearQueue();
+      restart();
+      return;
+    }
+
+    if (isFortranError(s) || s.indexOf("missing or invalid") >= 0) {
+      if (!s.contains("end of file")) {
+        nboDialog.alertError(s);
+      }
+      clearQueue();
+      restart();
+      return;
+    }
+
+    s = PT.rep(s, "\r", ""); // to standard Java format without carriage return.
+    
+    System.out.println("NBO reply:\n" + s);
+
+    int pt;
+
+    try { // with finally clause to remove job from queue
+
+      if (currentJob == null) {
+        //    *start*
+        //    NBOServe v. 27-Jan-2017
+        //    *end*
+        //   NBOServe v6: development version (A_000000)
+        // this was unsolicited.
+        if (s.indexOf("NBOServe v") >= 0) {
+          nboDialog.setLicense(s.substring(s.lastIndexOf("NBOServe v")));
+        }
+        return;
+      }
+
+      if ((pt = s.indexOf("***errmess***")) >= 0) {
+        logServerLine(s.substring(s.indexOf("\n") + 1), Logger.LEVEL_ERROR);
+        logServerLine("NBOPro can't do that.", Logger.LEVEL_WARN);
+        return;
+      }
+
+      if ((pt = s.indexOf("*start*")) < 0) {
+        logServerLine(s, Logger.LEVEL_ERROR);
+        return;
+      }
+      s = s.substring(pt + 8); // includes \n
+      pt = s.indexOf("*end*");
+      if (pt < 0) {
+        System.out.println("bad start/end packet from NBOServe: " + s);
+        return;
+      }
+
+      // standard expectation
+
+      currentJob.sendReply(s.substring(0, pt));
+      return;
+    } finally {
+      if (currentJob != null)
+        jobQueue.remove();
+    }
+  }
+
 }
+
+
+

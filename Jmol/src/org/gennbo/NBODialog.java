@@ -48,10 +48,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 import javajs.swing.SwingConstants;
-import javajs.util.PT;
-import javajs.util.SB;
 
-import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -113,8 +110,6 @@ public class NBODialog extends NBODialogSearch {
 
   protected JPanel nboOutput;
 
-  protected NBOPlugin nboPlugin;
-  
   //static final int DIALOG_LIST = 64; // used only for addLine
   // local settings of the dialog type
 
@@ -631,7 +626,7 @@ public class NBODialog extends NBODialogSearch {
       return;
     }
 
-    if (nboService.isWorking) {
+    if (nboService.isWorking()) {
       int i = JOptionPane.showConfirmDialog(this,
           "NBOServe is working. Cancel current job?\n"
               + "This could affect input/output files\n"
@@ -675,7 +670,6 @@ public class NBODialog extends NBODialogSearch {
       break;
     }
     nboService.clearQueue();
-    nboService.isWorking = false;
     viewSettingsBox.setVisible(false);
     if (!checkEnabled())
       type = 'c';
@@ -806,10 +800,7 @@ public class NBODialog extends NBODialogSearch {
     } catch (Exception e) {
       alertError(msg);
     }
-  }  
-  
-
-    
+  }      
 
   /**
    * clear output panel
@@ -831,35 +822,6 @@ public class NBODialog extends NBODialogSearch {
       log(statusInfo, 'p');  
       statusLab.setText(statusInfo);
   }
-
-  void processEnd(int dialogMode, AbstractListModel<String> list) {
-    statusLab.setText("");
-    switch (dialogMode) {
-    case NBOService.MODE_IMAGE:
-      String fname = inputFileHandler.inputFile.getParent() + "\\" + inputFileHandler.jobStem
-          + ".bmp";
-      File f = new File(fname);
-      final SB title = new SB();
-      String id = "id " + PT.esc(title.toString().trim());
-      String script = "image " + id + " close;image id \"\" "
-          + PT.esc(f.toString().replace('\\', '/'));
-      runScriptNow(script);
-      break;
-    case NBOService.MODE_RUN:
-      inputFileHandler.setInputFile(inputFileHandler.inputFile);
-      break;
-    case DIALOG_VIEW:
-      if (list != null)
-        orbitals.setLastOrbitalSelection();
-      break;
-    case DIALOG_SEARCH:
-      if (list != null)
-        setSearchList(list);
-      break;
-    }
-    if (debugVerbose)
-      setStatus("OK mode=" + dialogMode);
-  }
   
   /**
    * user has made changes to the settings, so we need to update panels
@@ -874,7 +836,7 @@ public class NBODialog extends NBODialogSearch {
   }  
 
   /**
-   * Carry out all functions to load a new file or 
+   * Carry out all functions to load a new file or basis 
    * @param file
    */
   void loadOrSetBasis(File file) {

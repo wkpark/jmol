@@ -125,7 +125,7 @@ class NBOFileHandler extends JPanel {
   }
 
   protected boolean browsePressed() {
-    if (dialog.nboService.isWorking
+    if (dialog.nboService.isWorking()
         && dialog.statusLab.getText().startsWith("Running")) {
       int i = JOptionPane.showConfirmDialog(dialog,
           "Warning, changing jobs while running GenNBO can effect output files."

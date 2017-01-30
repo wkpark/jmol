@@ -104,6 +104,15 @@ abstract class NBODialogConfig extends JDialog {
 
   protected static final String sep = System.getProperty("line.separator");
 
+  
+
+  /**
+   * Jmol plugin object for NBO
+   * 
+   */
+  protected NBOPlugin nboPlugin;
+  
+
   /**
    * MODEL VIEW ....
    */
@@ -246,12 +255,12 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected String getWorkingPath() {
-    String path = nboService.getNBOProperty("workingPath", null);
+    String path = nboPlugin.getNBOProperty("workingPath", null);
     return (path == null ? getJmolWorkingPath() : path);
   }
 
   protected void saveWorkingPath(String path) {
-    nboService.setNBOProperty("workingPath", path);
+    nboPlugin.setNBOProperty("workingPath", path);
   }
 
   /**
@@ -418,7 +427,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void setDefaults(boolean isJmol) {
-    nboService.setNBOProperty("orbitalDisplayOptions", "default");
+    nboPlugin.setNBOProperty("orbitalDisplayOptions", "default");
     getOrbitalDisplayOptions();
     opacity.setValue((int) (opacityOp * 10));
     colorBox1.setSelectedItem(orbColor1);
@@ -464,12 +473,12 @@ abstract class NBODialogConfig extends JDialog {
         + orbColor2.getBlue() + "]";
     colorMeshes();
     if (!nboView)
-      nboService.setNBOProperty("orbitalDisplayOptions", orbColor1.getRGB()
+      nboPlugin.setNBOProperty("orbitalDisplayOptions", orbColor1.getRGB()
           + "," + orbColor2.getRGB() + "," + opacityOp + "," + useWireMesh);
   }
 
   private String getOrbitalDisplayOptions() {
-    String options = (jmolOptionNONBO ? "jmol" : nboService.getNBOProperty("orbitalDisplayOptions",
+    String options = (jmolOptionNONBO ? "jmol" : nboPlugin.getNBOProperty("orbitalDisplayOptions",
         "default"));
     if (options.equals("default") || options.equals("nboView")) {
       orbColor1 = Color.cyan;
@@ -538,7 +547,7 @@ abstract class NBODialogConfig extends JDialog {
         vwr.alert("The working directory may not be the same as the directory containing NBOServe");
         return;
       }
-      nboService.setNBOProperty("workingPath", path);
+      nboPlugin.setNBOProperty("workingPath", path);
       log("Working path directory changed:<br> " + path, 'b');
       break;
     }

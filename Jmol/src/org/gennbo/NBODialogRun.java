@@ -531,7 +531,7 @@ abstract class NBODialogRun extends NBODialogModel {
     sb.append("GLOBAL C_ESS gennbo" + sep);
     sb.append("GLOBAL C_LABEL_1 FILE="
         + (jobName.equals("") ? inputFileHandler.jobStem : jobName));
-    nboService.rawCmdNew("r", sb, NBOService.MODE_RUN, null,
+    nboService.postToNBO("r", sb, NBOService.MODE_RUN, null,
         "Running GenNBO...");
   }
 

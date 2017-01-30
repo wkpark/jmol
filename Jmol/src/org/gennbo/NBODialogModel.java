@@ -734,7 +734,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("CMD " + cmd);
     log(cmd, 'i');
     jbApply.setEnabled(false);
-    nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
+    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
         "Editing model...");
 
   }
@@ -743,7 +743,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     SB sb = new SB();
     sb.append("CMD symmetry");
     log("Symmetry: ", 'p');
-    nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
+    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
         "symmetry...");
   }
 
@@ -775,7 +775,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       s = "show " + model;
       saveFileHandler.setInput(null, "line", "mol");
       sb.append("CMD " + s);
-      nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
+      nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
           "model from line input...");
     }
     textBox.setText(model);
@@ -804,7 +804,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("GLOBAL C_FNAME jmol_outfile" + sep);
     sb.append("GLOBAL C_IN_EXT cfi" + sep);
     sb.append("CMD use");
-    nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
+    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
         (alsoLoadJmol ? "Loading" : "Sending") + " model to NBO...");
 
   }
@@ -834,7 +834,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("GLOBAL C_IN_EXT " + ext.toLowerCase() + sep);
     sb.append("CMD use");
     log("use." + ess + " " + fname + "." + ext, 'i');
-    nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
+    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
         "Loading model from NBO...");
 
   }
@@ -853,7 +853,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("GLOBAL C_FNAME " + fname + sep);
     sb.append("GLOBAL C_OUT_EXT " + ext + sep);
     sb.append("CMD save");
-    nboService.rawCmdNew("m", sb, NBOService.MODE_MODEL, null,
+    nboService.postToNBO("m", sb, NBOService.MODE_MODEL, null,
         "Saving model...");
     log("save." + ess + " " + fname, 'i');
     log("--Model Saved--<br>" + path + "\\" + fname + "." + ext, 'b');

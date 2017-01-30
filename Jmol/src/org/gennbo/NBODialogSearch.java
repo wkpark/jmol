@@ -477,7 +477,7 @@ abstract class NBODialogSearch extends NBODialogView {
       });
       opList.add(btn,c);
       c.gridx = 1;
-      String st = keyW[i/2].substring(keyW[i/2].indexOf(":"));
+      String st = keyW[i/2].substring(keyW[i/2].indexOf(":") + 1);
       JTextArea jt = new JTextArea(st);
       jt.setBackground(null);
       jt.setFont(searchTextAreaFont);
@@ -602,7 +602,7 @@ abstract class NBODialogSearch extends NBODialogView {
     }
     if(get.equals("c") && nboKeywordNumber == KEYWD_CMO)
       mode = NBOService.MODE_LIST_MO;
-    nboService.rawCmdNew("s", sb, mode, list, "Getting list " + key);
+    nboService.postToNBO("s", sb, mode, list, "Getting list " + key);
   }
   
   protected void showMessage(){
@@ -690,7 +690,7 @@ abstract class NBODialogSearch extends NBODialogView {
         setKeyword("s a a' rs".split(" "), new String[] {"Spin: ", "Atom A: ","Atom A': ", "Res Struct: "});
       else
         setKeyword("a a' rs".split(" "), new String[] {"Atom A: ","Atom A': ", "Res Struct: "});
-      
+      changeKey(nrt);      
       break;
     case KEYWD_E2PERT:
       runScriptNow("load " + inputFileHandler.newNBOFileForExt("36"));
@@ -1031,15 +1031,15 @@ abstract class NBODialogSearch extends NBODialogView {
     sb.append("GLOBAL I_OPT_" + keyProp + " " + op);
     if (isLabel) {
       relabel = true;
-      nboService.rawCmdNew("s", sb, NBOService.MODE_LABEL,null,"Getting list");
+      nboService.postToNBO("s", sb, NBOService.MODE_LABEL,null,"Getting list");
     } else if (isLabelBonds){
       relabel = true;
       nBonds = 0;
       //runScriptQueued("select {*};label off;select remove {*}");
       runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select remove {*}");
-      nboService.rawCmdNew("s", sb, NBOService.MODE_LABEL_BONDS,null,"Getting list");
+      nboService.postToNBO("s", sb, NBOService.MODE_LABEL_BONDS,null,"Getting list");
     } else {
-      nboService.rawCmdNew("s", sb, NBOService.MODE_VALUE,null, "Getting value");
+      nboService.postToNBO("s", sb, NBOService.MODE_VALUE,null, "Getting value");
     }
 
   }

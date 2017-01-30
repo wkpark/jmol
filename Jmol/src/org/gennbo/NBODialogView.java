@@ -251,6 +251,7 @@ abstract class NBODialogView extends NBODialogRun {
       vwr.alert("Pick an orbital to plot.");
       return;
     }
+    initializeImage();
     if (profileBtn.isSelected()) {
       createImage1or2D(true);
     } else if (contourBtn.isSelected()) {
@@ -366,174 +367,6 @@ abstract class NBODialogView extends NBODialogRun {
     return orbPanel;
   }
 
-  private void newOrbitals() {
-    if (orbitals != null) {
-      orbitals.removeListSelectionListener(orbitals);
-      orbitals.removeMouseListener(orbitals);
-      orbScroll.getViewport().remove(orbitals);
-    }
-    orbScroll.getViewport().add(orbitals = new OrbitalList());
-  }
-
-  private void updateViewSettings() {
-    viewSettingsBox.removeAll();
-    viewSettingsBox.setLayout(new BorderLayout());
-    //Box top = Box.createVerticalBox();
-    JLabel lab = new JLabel("Settings:");
-    lab.setBackground(Color.black);
-    lab.setForeground(Color.white);
-    lab.setOpaque(true);
-    lab.setFont(nboFont);
-    //top.add(lab);
-
-    Box middle = Box.createVerticalBox();
-    Box tmp = Box.createHorizontalBox();
-    tmp.add(new JLabel("Orientation: "));
-    atomOrient = new JRadioButton("Atoms");
-    atomOrient.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent arg0) {
-        planeBox.setVisible(true);
-        nboService.restart();
-        setDefaultParameterArrays();
-        jmolView = false;
-      }
-    });
-    tmp.add(atomOrient);
-
-    final JRadioButton jmolOrient = new JRadioButton("Jmol");
-    jmolOrient.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent arg0) {
-        planeBox.setVisible(false);
-        jmolView = true;
-      }
-    });
-    tmp.add(jmolOrient);
-
-    ButtonGroup bg = new ButtonGroup();
-    bg.add(jmolOrient);
-    bg.add(atomOrient);
-
-    viewSettingsBox.add(lab, BorderLayout.NORTH);
-
-    middle.add(tmp);
-
-    tmp = Box.createHorizontalBox();
-    final JButton btnVec = new JButton("Axis");
-    final JButton btnPla = new JButton("Plane");
-    final JButton btnLines = new JButton("Lines");
-
-    btnVec.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        vector();
-      }
-    });
-    btnPla.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        plane();
-      }
-    });
-    btnLines.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        lines();
-      }
-    });
-
-    btnPla.setMargin(null);
-    tmp.add(btnVec);
-    tmp.add(btnPla);
-    tmp.add(btnLines);
-    middle.add(tmp);
-    viewSettingsBox.add(middle, BorderLayout.CENTER);
-
-    final JButton btnCam = new JButton("Camera");
-    btnCam.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        cam1();
-      }
-    });
-
-    atomOrient.setSelected(true);
-    viewSettingsBox.add(btnCam, BorderLayout.SOUTH);
-    repaint();
-    revalidate();
-  }
-
-  
-  protected void setNewBasis() {
-    
-    runScriptNow("isosurface delete");
-    
-    if (comboBasis.getSelectedIndex() == BASIS_MO) {
-      file47Keywords = cleanNBOKeylist(inputFileHandler.read47File()[1]);
-      if (!file47Keywords.contains("CMO")) {
-        runGenNBOJob("CMO");
-        return;
-      }
-    }
-    
-    if (orbitals == null)
-      return;
-    isNewModel = true;
-
-    File f = ensurePlotFile(0);
-    if (f == null) {
-      // NBOServe is probably sending a job.
-      return;
-    }
-
-    orbitals.removeAll();
-
-
-    // version  that does not user Jmol for reading the .46 labels file
-    //    final SB sb = new SB();
-    //    sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
-    //    sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
-    //    sb.append("GLOBAL I_BAS_1 " + keywordNumber + sep);
-    //    if(isOpenShell){
-    //      if(alphaSpin.isSelected())
-    //        sb.append("GLOBAL I_SPIN 1" + sep);
-    //      else
-    //        sb.append("GLOBAL I_SPIN -1" + sep);
-    //    }else
-    //      sb.append("GLOBAL I_SPIN 0" + sep);
-    //
-    //    sb.append("CMD LABEL");
-    //    nboService.rawCmdNew("v", sb, NBOService.MODE_LIST,orbitals.model, "Getting list");
-    //    String script = "load \"" + 
-    //        FileHndlr.newNBOFile(fileHndlr.inputFile,"" + (31 + basis.getSelectedIndex()) + "\""); 
-    //    final SB sb = new SB();
-    //    sb.append("GLOBAL C_PATH " + fileHndlr.inputFile.getParent() + sep);
-    //    sb.append("GLOBAL C_JOBSTEM " + fileHndlr.jobStem + sep);
-    //    sb.append("GLOBAL I_BAS_1 " + keywordNumber + sep);
-    
-    
-    boolean isBeta = isOpenShell && !alphaSpin.isSelected();
-
-    DefaultListModel<String> list = (isBeta ? betaList : alphaList);
-    if (list != null) {
-      orbitals.setModelList(list, false);
-      return;
-    }
-    list = new DefaultListModel<String>();
-    if (isBeta)
-      betaList = list;
-    else
-      alphaList = list;
-    
-    
-    
-    loadModelFileQueued(
-        f,
-        NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(
-            NBOFileHandler.pathWithoutExtension(getJmolFilename())), false);
-  }
-
   /**
    * Check to see if we have a given plot file and that it is not zero length.
    * If we don't, run gennbo (if available) using the PLOT keyword and return null.
@@ -550,20 +383,6 @@ abstract class NBODialogView extends NBODialogRun {
       return null;
     }
     return f;
-  }
-
-  private void appendPlaneParams(SB sb) {
-    //Plane definitions included every time
-    sb.append("GLOBAL PLANE_a " + (planeFields[0].getText()) + sep);
-    sb.append("GLOBAL PLANE_b " + (planeFields[1].getText()) + sep);
-    sb.append("GLOBAL PLANE_c " + (planeFields[2].getText()) + sep);
-    //other variables only included if changed
-    for (int i = 3; i < planeFields.length; i++)
-      if (!plVal[i].equals(planeFields[i].getText())) {
-        plVal[i] = planeFields[i].getText();
-        sb.append("GLOBAL PLANE_" + (char) ('a' + i) + " "
-            + (planeFields[i].getText()) + sep);
-      }
   }
 
   /**
@@ -639,19 +458,6 @@ abstract class NBODialogView extends NBODialogRun {
     });
 
     plane.setVisible(true);
-  }
-
-  private void appendVectorParams(SB sb) {
-    //vector definitions included every time
-    sb.append("GLOBAL VECTOR_a " + (vectorFields[0].getText()) + sep);
-    sb.append("GLOBAL VECTOR_b " + (vectorFields[1].getText()) + sep);
-    //other variables only included as needed
-    for (int i = 2; i < vectorFields.length; i++)
-      if (!vecVal[i].equals(vectorFields[i].getText())) {
-        vecVal[i] = vectorFields[i].getText();
-        sb.append("GLOBAL VECTOR_" + (char) ('a' + i) + " "
-            + (vectorFields[i].getText()) + sep);
-      }
   }
 
   /**
@@ -793,17 +599,6 @@ abstract class NBODialogView extends NBODialogRun {
       }
     });
     lines.setVisible(true);
-  }
-
-  private String getCameraParams() {
-    SB s = new SB();
-    for (int i = 0; i < camFields.length; i++)
-      if (!camFields[i].getText().equals(camVal[i])) {
-        camVal[i] = camFields[i].getText();
-        s.append("GLOBAL CAMERA_" + camFieldIDs[i] + " " + camVal[i] + sep);
-      }
-    return s.toString();
-
   }
 
   /**
@@ -1029,6 +824,162 @@ abstract class NBODialogView extends NBODialogRun {
     panel.add(box);
   }
 
+  //////////////////////// general methods ////////////////////
+  
+  private void newOrbitals() {
+    if (orbitals != null) {
+      orbitals.removeListSelectionListener(orbitals);
+      orbitals.removeMouseListener(orbitals);
+      orbScroll.getViewport().remove(orbitals);
+    }
+    orbScroll.getViewport().add(orbitals = new OrbitalList());
+  }
+
+  private void updateViewSettings() {
+    viewSettingsBox.removeAll();
+    viewSettingsBox.setLayout(new BorderLayout());
+    //Box top = Box.createVerticalBox();
+    JLabel lab = new JLabel("Settings:");
+    lab.setBackground(Color.black);
+    lab.setForeground(Color.white);
+    lab.setOpaque(true);
+    lab.setFont(nboFont);
+    //top.add(lab);
+
+    Box middle = Box.createVerticalBox();
+    Box tmp = Box.createHorizontalBox();
+    tmp.add(new JLabel("Orientation: "));
+    atomOrient = new JRadioButton("Atoms");
+    atomOrient.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        planeBox.setVisible(true);
+        nboService.restartIfNecessary();
+        setDefaultParameterArrays();
+        jmolView = false;
+      }
+    });
+    tmp.add(atomOrient);
+
+    final JRadioButton jmolOrient = new JRadioButton("Jmol");
+    jmolOrient.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        planeBox.setVisible(false);
+        jmolView = true;
+      }
+    });
+    tmp.add(jmolOrient);
+
+    ButtonGroup bg = new ButtonGroup();
+    bg.add(jmolOrient);
+    bg.add(atomOrient);
+
+    viewSettingsBox.add(lab, BorderLayout.NORTH);
+
+    middle.add(tmp);
+
+    tmp = Box.createHorizontalBox();
+    final JButton btnVec = new JButton("Axis");
+    final JButton btnPla = new JButton("Plane");
+    final JButton btnLines = new JButton("Lines");
+
+    btnVec.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        vector();
+      }
+    });
+    btnPla.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        plane();
+      }
+    });
+    btnLines.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        lines();
+      }
+    });
+
+    btnPla.setMargin(null);
+    tmp.add(btnVec);
+    tmp.add(btnPla);
+    tmp.add(btnLines);
+    middle.add(tmp);
+    viewSettingsBox.add(middle, BorderLayout.CENTER);
+
+    final JButton btnCam = new JButton("Camera");
+    btnCam.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        cam1();
+      }
+    });
+
+    atomOrient.setSelected(true);
+    viewSettingsBox.add(btnCam, BorderLayout.SOUTH);
+    repaint();
+    revalidate();
+  }
+
+  
+  protected void setNewBasis() {
+
+    runScriptNow("isosurface delete");
+
+    if (comboBasis.getSelectedIndex() == BASIS_MO) {
+      file47Keywords = cleanNBOKeylist(inputFileHandler.read47File()[1]);
+      if (!file47Keywords.contains("CMO")) {
+        runGenNBOJob("CMO");
+        return;
+      }
+    }
+
+    if (orbitals == null)
+      return;
+    isNewModel = true;
+    orbitals.removeAll();
+
+    File f = ensurePlotFile(0);
+    if (f == null) {
+      // NBOServe is probably sending a job.
+      return;
+    }
+
+    boolean isBeta = isOpenShell && !alphaSpin.isSelected();
+
+    DefaultListModel<String> list = (isBeta ? betaList : alphaList);
+    if (list != null) {
+      orbitals.setModelList(list, false);
+      return;
+    }
+    list = new DefaultListModel<String>();
+    if (isBeta)
+      betaList = list;
+    else
+      alphaList = list;
+
+    if (!jmolOptionNONBO) {
+      nboService.postToNBO("v", getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_LIST, list, "Getting list");
+    }
+    loadModelFileQueued(
+        f,
+        NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(
+            NBOFileHandler.pathWithoutExtension(getJmolFilename())), false);
+
+  }
+
+  private void loadOrbitalListFromNBO() {
+  //version  that does not use Jmol for reading the .46 labels file
+  }
+
+  private void loadOrbitalListFromJmol(boolean isBeta) {
+
+    
+  }
+
   
   /////////////////////// RAW NBOSERVE API ////////////////////
 
@@ -1053,14 +1004,21 @@ abstract class NBODialogView extends NBODialogRun {
     return sb;
   }
 
+  private void appendCameraParams(SB sb) {
+    for (int i = 0; i < camFields.length; i++)
+      if (!camFields[i].getText().equals(camVal[i])) {
+        camVal[i] = camFields[i].getText();
+        sb.append("GLOBAL CAMERA_" + camFieldIDs[i] + " " + camVal[i] + sep);
+      }
+  }
+
   private void appendOrbitalSign(SB sb, int i) {
-    sb.append("GLOBAL SIGN " + (orbitals.bsNeg.get(i) ? "-1" : "+1") + sep);
+    //sb.append("GLOBAL SIGN " + (orbitals.bsNeg.get(i) ? "-1" : "+1") + sep);
   }
 
 
   //contour/profile selected orbital in orbital list
   protected void createImage1or2D(boolean oneD) {
-    runScriptNow("image close");
 
     if (orbitals.bsOn.cardinality() > 1) {
       createImaeg1or2DMultiple(oneD);
@@ -1085,16 +1043,70 @@ abstract class NBODialogView extends NBODialogRun {
     log(msg, 'I');
 
     sb.append("CMD ").append(msg);
-    nboService.rawCmdNew("v", sb, NBOService.MODE_IMAGE, null,
+    nboService.postToNBO("v", sb, NBOService.MODE_IMAGE, null,
         (oneD ? "Profiling.." : "Contouring.."));
+  }
+
+  private void appendLineParams(SB sb) {
+    for (int i = 0; i < lineFields.length; i++)
+      if (!lineVal[i].equals(lineFields[i].getText())) {
+        lineVal[i] = lineFields[i].getText();
+        sb.append("GLOBAL LINES_" + (char) ('a' + i) + " " + lineVal[i] + sep);
+      }
+  }
+
+
+  
+  private void appendVectorParams(SB sb) {
+    //vector definitions included every time
+    sb.append("GLOBAL VECTOR_a " + (vectorFields[0].getText()) + sep);
+    sb.append("GLOBAL VECTOR_b " + (vectorFields[1].getText()) + sep);
+    //other variables only included as needed
+    for (int i = 2; i < vectorFields.length; i++)
+      if (!vecVal[i].equals(vectorFields[i].getText())) {
+        vecVal[i] = vectorFields[i].getText();
+        sb.append("GLOBAL VECTOR_" + (char) ('a' + i) + " "
+            + (vectorFields[i].getText()) + sep);
+      }
+  }
+
+  private void appendPlaneParams(SB sb) {
+    //Plane definitions included every time
+    sb.append("GLOBAL PLANE_a " + (planeFields[0].getText()) + sep);
+    sb.append("GLOBAL PLANE_b " + (planeFields[1].getText()) + sep);
+    sb.append("GLOBAL PLANE_c " + (planeFields[2].getText()) + sep);
+    //other variables only included if changed
+    for (int i = 3; i < planeFields.length; i++)
+      if (!plVal[i].equals(planeFields[i].getText())) {
+        plVal[i] = planeFields[i].getText();
+        sb.append("GLOBAL PLANE_" + (char) ('a' + i) + " "
+            + (planeFields[i].getText()) + sep);
+      }
+  }
+
+  private void sendJmolOrientation() {
+    SB sb = new SB();
+    for (int i = 1; i <= 3; i++) {
+      String tmp2 = "";
+      for (int j = 1; j <= 3; j++) {
+        Object oi = vwr.getProperty("string",
+            "orientationInfo.rotationMatrix[" + j + "][" + i + "]", null);
+        tmp2 += oi.toString() + " ";
+      }
+      sb.append("a V_U" + i + " " + tmp2 + sep);
+    }
+    inputFileHandler.writeToFile(nboService.getServerPath("jview.txt"),
+        sb.toString());
+    nboService.postToNBO("v", new SB().append("CMD JVIEW"), NBOService.MODE_RAW, null, "");
+          
+//    sb = getMetaHeader(true);
+//    sb.append("CMD LABEL");
+//    nboService.rawCmdNew("v", sb, NBOService.MODE_RAW, null, "");
+
   }
 
   protected void createImaeg1or2DMultiple(boolean oneD) {
 
-    nboService.restart();
-    if (jmolView)
-      sendJmolOrientation();
-      
 //    sb = getMetaHeader(true);
 //    sb.append("CMD LABEL");
 //    nboService.rawCmdNew("v", sb, NBOService.MODE_RAW, null, "");
@@ -1111,29 +1123,16 @@ abstract class NBODialogView extends NBODialogRun {
         sb.append("CMD CONTOUR " + (i + 1));
       msg += " " + (i + 1);
       profileList +=  " " + (++pt);
-      nboService.rawCmdNew("v", sb, NBOService.MODE_RAW, null, "");
+      nboService.postToNBO("v", sb, NBOService.MODE_RAW, null, "");
     }
     log(msg, 'I');    
     sb = getMetaHeader(false);
     appendLineParams(sb);
     sb.append("CMD DRAW" + profileList);
-    nboService.rawCmdNew("v", sb, NBOService.MODE_IMAGE, null, "Raytracing...");
-  }
-
-  private void appendLineParams(SB sb) {
-    for (int i = 0; i < lineFields.length; i++)
-      if (!lineVal[i].equals(lineFields[i].getText())) {
-        lineVal[i] = lineFields[i].getText();
-        sb.append("GLOBAL LINES_" + (char) ('a' + i) + " " + lineVal[i] + sep);
-      }
+    nboService.postToNBO("v", sb, NBOService.MODE_IMAGE, null, "Raytracing...");
   }
 
   protected void createImage3D() {
-    runScriptNow("image close");
-    String tmp2 = "";
-    nboService.restart();
-    if (jmolView)
-      sendJmolOrientation();
     
     SB sb = new SB();
     String tmp = "View";
@@ -1143,7 +1142,7 @@ abstract class NBODialogView extends NBODialogRun {
       sb = getMetaHeader(true);
       appendOrbitalSign(sb, i);
       sb.append("CMD PROFILE " + (i + 1));
-      nboService.rawCmdNew("v", sb, NBOService.MODE_RAW, null, "");
+      nboService.postToNBO("v", sb, NBOService.MODE_RAW, null, "");
       tmp += " " + (i + 1);
       list += " " + (++pt);
     }
@@ -1151,30 +1150,17 @@ abstract class NBODialogView extends NBODialogRun {
     vwr.writeTextFile(nboService.getServerPath("jview"), sb.toString());
 
     sb = getMetaHeader(false);
-    sb.append(getCameraParams());
+    appendCameraParams(sb);
+    if (jmolView)
+      sendJmolOrientation();
     sb.append("CMD VIEW" + list);
-    nboService.rawCmdNew("v", sb, NBOService.MODE_IMAGE, null, "Raytracing...");
+    nboService.postToNBO("v", sb, NBOService.MODE_IMAGE, null, "Raytracing...");
   }
 
-  private void sendJmolOrientation() {
-    SB sb = new SB();
-    for (int i = 1; i <= 3; i++) {
-      String tmp2 = "";
-      for (int j = 1; j <= 3; j++) {
-        Object oi = vwr.getProperty("string",
-            "orientationInfo.rotationMatrix[" + j + "][" + i + "]", null);
-        tmp2 += oi.toString() + " ";
-      }
-      sb.append("a V_U" + i + " " + tmp2 + sep);
-    }
-    inputFileHandler.writeToFile(nboService.getServerPath("jview.txt"),
-        sb.toString());
-    nboService.rawCmdNew("v", new SB().append("CMD JVIEW"), NBOService.MODE_RAW, null, "");
-          
-//    sb = getMetaHeader(true);
-//    sb.append("CMD LABEL");
-//    nboService.rawCmdNew("v", sb, NBOService.MODE_RAW, null, "");
-
+  private void initializeImage() {
+    runScriptNow("image close");
+    nboService.restartIfNecessary();
+    setDefaultParameterArrays();
   }
 
   private int viewVectorPt = 0;
@@ -1355,9 +1341,9 @@ abstract class NBODialogView extends NBODialogRun {
       //not a problem? log(e.getMessage() + " reading file", 'r');
       e.printStackTrace();
     }
-    showAtomNums(true);
     colorMeshes();
-    setBonds(true);
+//    showAtomNums(true);
+//    setBonds(true);
     
   }
 
@@ -1409,7 +1395,13 @@ abstract class NBODialogView extends NBODialogRun {
       setFont(nboFontLarge);
       //setColorScheme();
       setFont(listFont);
-      setModel(new DefaultListModel<String>());
+      setModel(new DefaultListModel<String>() {
+        @Override
+        public void addElement(String s) {
+          s += "   ";
+          super.addElement(s);
+        }
+      });
       setCellRenderer(new ListCellRenderer<String>(){
 
 
@@ -1429,25 +1421,15 @@ abstract class NBODialogView extends NBODialogRun {
       setSelectedIndices(new int[0]);
       setModel(list);
       //setColorScheme();
-      if (isNew) {
-        clearOrbitals(false);
-        setLastOrbitalSelection();
-      }
+//      if (isNew) {
+//        clearOrbitals(false);
+//        setLastOrbitalSelection();
+//      }
       for (int i = list.getSize(); --i >= 0;)
         setLabel(i);
-      clearOrbitals(false);
+      clearOrbitals(true);
       updateIsosurfacesInJmol(Integer.MIN_VALUE);
     }
-
-//    private void setColorScheme() {
-//        //int bgcolor = vwr.getBackgroundArgb();
-//      int bgcolor = 0xFFFFFFFF;
-//        if (bgcolor == 0xFF000000)
-//          bgcolor = 0xFFE0E0E0;
-//        int color = C.getArgb(C.getBgContrast(bgcolor));
-//        //setBackground(new AwtColor(bgcolor));
-//        //contrastColor = new AwtColor(color);// Black or White
-//    }
 
     private JLabel cellLabel;
     protected boolean myTurn;
@@ -1462,8 +1444,8 @@ abstract class NBODialogView extends NBODialogRun {
           }
 
         };
-        cellLabel.setFont(listFont);
       }
+      cellLabel.setFont(listFont);
       cellLabel.setText(getModel().getElementAt(index));
       cellLabel.setOpaque(true);
       myTurn = true;

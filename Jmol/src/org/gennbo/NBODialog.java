@@ -661,7 +661,7 @@ public class NBODialog extends NBODialogSearch {
     
     if (!jmolOptionNOZAP) // use Jmol command NBO OPTIONS NOZAP to allow this
       runScriptNow("zap");
-    nboService.restart();
+    nboService.restartIfNecessary();
     if (dialogMode == DIALOG_HOME) {
       remove(homePanel);
       add(centerPanel, BorderLayout.CENTER);
@@ -849,7 +849,7 @@ public class NBODialog extends NBODialogSearch {
       inputFileHandler.setInputFile(inputFileHandler.inputFile);
       break;
     case DIALOG_VIEW:
-      if (list != null) 
+      if (list != null)
         orbitals.setLastOrbitalSelection();
       break;
     case DIALOG_SEARCH:

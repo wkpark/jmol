@@ -513,14 +513,7 @@ abstract class NBODialogSearch extends NBODialogView {
   protected void getListSearch(String get, DefaultComboBoxModel<String> list) {
 
     int mode = NBOService.MODE_LIST;
-    SB sb = new SB();
-    sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
-    sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
-
-    if (isOpenShell)// && !get.startsWith("a"))
-      sb.append("GLOBAL I_SPIN " + (alphaSpin.isSelected() ? "1" : "-1") + sep);
-    else
-      sb.append("GLOBAL I_SPIN 0" + sep);
+    SB sb = getMetaHeader(false);
     String key;
     if (nboKeywordNumber >= KEYWD_OPBAS) {
       int tmpKey = nboKeywordNumber;
@@ -936,17 +929,10 @@ abstract class NBODialogSearch extends NBODialogView {
       runScriptQueued("nbo color " + color2 + " " + color1);
       runScriptQueued("mo color " + color2 + " " + color1);
     }
-    final SB sb = new SB();
-    sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
-    sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
+    final SB sb = getMetaHeader(false);
     sb.append("GLOBAL I_KEYWORD " + nboKeywordNumber + sep);
-
     boolean isLabel = false;
     boolean isLabelBonds = false;
-    if (isOpenShell) {
-      sb.append("GLOBAL I_SPIN " + (alphaSpin.isSelected() ? "1" : "-1") + sep);
-    } else
-      sb.append("GLOBAL I_SPIN 0" + sep);
     switch (nboKeywordNumber) {
     case KEYWD_NPA:
       sb.append("GLOBAL I_ATOM_1 " + (at1.getSelectedIndex() + 1) + sep);
@@ -1043,8 +1029,7 @@ abstract class NBODialogSearch extends NBODialogView {
         for (int i = 0; i < sz; i++) {
           String s = list2.getElementAt(i);
           list2.removeElementAt(i);
-          s = "   " + (offset + i + 1) + s.substring(s.indexOf("."));
-
+          s = "   " + (offset + i) + s.substring(s.indexOf("."));
           list2.insertElementAt(s, i);
         }
         orb2.addActionListener(l);
@@ -1408,43 +1393,23 @@ abstract class NBODialogSearch extends NBODialogView {
     return rsList;
   }
 
-  private int pickAtomic(String atomno, DefaultComboBoxModel<String> list) {
-    int ind = Integer.parseInt(atomno) - 1;
-    String at = vwr.ms.at[ind].getElementSymbol() + atomno + "(";
-    int curr = 0, size = list.getSize();
-    if (currOrb.contains(at))
-      curr = orbitals.getSelectedIndex();
-    for (int i = curr + 1; i < size + curr; i++) {
-      String str = list.getElementAt(i % size).replaceAll(" ", "");
-      if (str.contains(at + "lp)")) {
-        orbitals.setSelectedIndex(i % size);
-        currOrb = str;
-        return i % size;
-      } else if (str.contains(at + "ry)")) {
-        orbitals.setSelectedIndex(i % size);
-        currOrb = str;
-        return i % size;
-      }
-    }
-    return curr;
-  }
-
   protected void notifyPick_s(String atomno) {
+    runScriptNow("isosurface delete");
     String[] tok = atomno.split(",");
     if (tok.length < 2) {
       int n = PT.parseInt(atomno);
       if (n == Integer.MIN_VALUE) {
-        orb.setSelectedIndex(pickAtomic(atomno, list1));
+        showOrbital(findNextAtomicOrbital(atomno, list1));
       } else {
         switch (nboKeywordNumber) {
         case KEYWD_NBO:
         case KEYWD_BEND:
         case KEYWD_NLMO:
         case KEYWD_E2PERT:
-          orb.setSelectedIndex(pickAtomic(atomno, list1));
+          showOrbital(findNextAtomicOrbital(atomno, list1));
           return;
         case KEYWD_CMO:
-          orb2.setSelectedIndex(pickAtomic(atomno, list2));
+          showOrbital(findNextAtomicOrbital(atomno, list2));
           return;
         }
         int atomIndex = n - 1;
@@ -1597,18 +1562,6 @@ abstract class NBODialogSearch extends NBODialogView {
     file47Data = null;
     if (vwr.ms.ac == 0)
       return;
-    //    if(keywordNumber == KEYWD_CMO){
-    //      if(vwr.ms.mc == 1)
-    //        return;
-    //      runScriptQueued("frame 0");
-    //      isNewJob = false;
-    //      }
-    //    if(!useWireMesh){
-    //      runScriptQueued("nbo nomesh fill translucent " + opacityOp);
-    //      runScriptQueued("mo nomesh fill translucent " + opacityOp);
-    //    }
-    //    runScriptQueued("nbo color " + color2 + " " + color1);
-    //    runScriptQueued("mo color " + color2 + " " + color1);
     runScriptNow("isosurface delete");
 
     rbSelection = -1;
@@ -1719,6 +1672,7 @@ abstract class NBODialogSearch extends NBODialogView {
       for (int i = 0; i < lines.length; i++) {
         list.addElement(lines[i]);
       }
+      setSearchList(list);
       break;
     case NBOService.MODE_LIST_MO:
       for (int i = 0; i < lines.length; i++)

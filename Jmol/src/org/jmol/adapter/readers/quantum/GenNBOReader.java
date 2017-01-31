@@ -533,6 +533,8 @@ public class GenNBOReader extends MOReader {
     String type = nboType;
     if (type.charAt(0) == 'P')
       type = type.substring(1);
+    if (type.equals("NLMO"))
+      type = "NBO";
     tokens = map.get((betaOnly ? "beta_" : "") + type);
     moData.put("nboLabelMap", map);
     moData.put("nboLabels", tokens);

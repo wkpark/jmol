@@ -1171,10 +1171,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    */
   void startNBO(Map<String, Object> jmolOptions) {
 
-    String nboServerPath = getPluginOption("NBO", "serverPath", null);
-    if (nboServerPath == null) {
-      vwr.alert("NBOServe.exe has not been installed. See http://nbo6.chem.wisc.edu/new6_css.htm for additional information");
-    }
     showPlugin("NBO", "org.gennbo.NBOPlugin", jmolOptions);
   }
 

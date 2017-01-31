@@ -37,6 +37,7 @@ import javajs.util.PT;
 
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 import org.jmol.api.JmolAppAPI;
 import org.jmol.api.JmolViewer;
 
@@ -212,6 +213,8 @@ public class JmolApp implements JmolAppAPI {
     options.addOption("t", "threaded", false,
         GT._("independent command thread"));
 
+    options.addOption("U", "plugin", true, GT._("plugin to start initially"));
+
     options.addOption("w","write", true,GT.o(GT._("{0} or {1}:filename"),
         new Object[] { "CLIP", "GIF|JPG|JPG64|PNG|PPM" }));
 
@@ -368,6 +371,10 @@ public class JmolApp implements JmolAppAPI {
     if (line.hasOption("s")) {
       scriptFilename = line.getOptionValue("s");
     }
+
+    // plugin 
+    if (line.hasOption("U"))
+      info.put("plugin", line.getOptionValue("U"));
 
     // run post Jmol script
     if (line.hasOption("j")) {
@@ -553,6 +560,13 @@ public class JmolApp implements JmolAppAPI {
       runScript(script2, isJmolData, vwr);
     }
     
+    // finally plugin
+    
+    // -U flag
+    String plugin = (String) info.get("plugin");
+    if (plugin != null)
+      ((Viewer) vwr).startPlugin(plugin);
+
     // scanner input
     if (scanInput) {
       new InputScannerThread(vwr, isSilent);

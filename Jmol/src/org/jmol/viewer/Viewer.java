@@ -634,7 +634,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     stm.setJmolDefaults();
     // this code will be shared between Jmol 14.0 and 14.1
     Elements.covalentVersion = Elements.RAD_COV_BODR_2014_02_22;
-    allowArrayDotNotation = true;
+    allowArrayDotNotation = true;    
   }
 
   public void setDisplay(Object canvas) {
@@ -5255,6 +5255,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       // passed to MOCalcuation, but not used
       // nciCalculation special params.testFlag = 2 "absolute" calc.
       // GIF reducedColors
+      // plugin-in use variable
       return g.testFlag2;
     case T.testflag3:
       // isosurface numbers
@@ -9490,8 +9491,27 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return (am.cmi >= 0 ? ms.getModelAuxiliaryInfo(am.cmi) : null);
   }
 
+  public void startNBO(String options) {
+    Map<String, Object> htParams = new Hashtable<String, Object>();
+    htParams.put("service", "nbo");
+    htParams.put("action", "showPanel");
+    htParams.put("options", options);
+    sm.processService(htParams);
+  }
 
-  
+  /**
+   * startup -U nbo option
+   * 
+   * @param plugin
+   */
+  public void startPlugin(String plugin) {
+
+    
+    // for now, just NBO; need a way to bootstrap this
+    
+    if ("nbo".equalsIgnoreCase(plugin))
+      startNBO("all");
+  }
 
 }
 

@@ -96,7 +96,7 @@ abstract class NBODialogConfig extends JDialog {
   protected int modelOrigin = ORIGIN_UNKNOWN;
   
 
-  private static final String DEFAULT_SCRIPT = "set bondpicking true;set multipleBondSpacing -0.5;set zoomlarge false;select none;";
+  private static final String DEFAULT_SCRIPT = "zap;set bondpicking true;set multipleBondSpacing -0.5;set zoomlarge false;select none;";
 
   protected static final String INPUT_FILE_EXTENSIONS = "adf;cfi;com;g09;gau;gms;jag;log;mm2;mnd;mol;mp;nw;orc;pqs;qc;vfi;xyz;47";
   protected static final String OUTPUT_FILE_EXTENSIONS = "adf;cfi;gau;gms;jag;mm2;mnd;mp;nw;orc;pqs;qc;mol;xyz;vfi;g09;com";
@@ -773,7 +773,7 @@ abstract class NBODialogConfig extends JDialog {
 
 
   private boolean connect() {
-    if (!nboService.connect())
+    if (!nboService.haveGenNBO())
       return false;
     boolean isOK = checkEnabled();
     if (isOK)

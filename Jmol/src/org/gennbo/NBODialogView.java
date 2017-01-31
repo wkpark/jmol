@@ -1451,8 +1451,8 @@ abstract class NBODialogView extends NBODialogRun {
       //        clearOrbitals(false);
       //        setLastOrbitalSelection();
       //      }
-      for (int i = list.getSize(); --i >= 0;)
-        setLabel(i);
+      //for (int i = list.getSize(); --i >= 0;)
+        //setLabel(i);
       clearOrbitals(true);
       updateIsosurfacesInJmol(Integer.MIN_VALUE);
     }
@@ -1597,16 +1597,16 @@ abstract class NBODialogView extends NBODialogRun {
     private void toggleOrbitalNegation(int i) {
       bsNeg.setBitTo(i, !bsNeg.get(i));
       bsKnown.clear(i); // to - just switch colors?
-      setLabel(i);
+      //setLabel(i);
     }
 
-    protected void setLabel(int i) {
-      String label0 = getModel().getElementAt(i);
-      int pt = label0.indexOf('[');
-      if (pt > 0)
-        label0 = label0.substring(0, pt);
-      ((DefaultListModel<String>) getModel()).set(i, label0.trim() + "   ");
-    }
+//    protected void setLabel(int i) {
+//      String label0 = getModel().getElementAt(i);
+//      int pt = label0.indexOf('[');
+//      if (pt > 0)
+//        label0 = label0.substring(0, pt);
+//      ((DefaultListModel<String>) getModel()).set(i, label0.trim() + "   ");
+//    }
 
     @Override
     public void mousePressed(MouseEvent e) {

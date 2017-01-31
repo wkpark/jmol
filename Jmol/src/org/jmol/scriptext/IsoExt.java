@@ -823,11 +823,8 @@ public class IsoExt extends ScriptExt {
       boolean isViewOnly = e.optParameterAsString(1).equals("view");
       if (e.slen == 1 || isViewOnly ||  e.optParameterAsString(1).equals("options")) {
         if (!chk) {
-          Map<String, Object> htParams = new Hashtable<String, Object>();
-          htParams.put("service", "nbo");
-          htParams.put("action", "showPanel");
-          htParams.put("options", (isViewOnly ? "VIEW" : e.optParameterAsString(2)));
-          vwr.sm.processService(htParams);
+          String options = (isViewOnly ? "VIEW" : e.optParameterAsString(2));
+          vwr.startNBO(options);
         }
         return;
       }

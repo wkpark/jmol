@@ -267,7 +267,7 @@ abstract class NBODialogSearch extends NBODialogView {
           break;
         case KEYWD_E2PERT:
           list1.removeAllElements();
-          getListSearch("d", list1);
+          getListSearch("d nbo", list1);
           list2.removeAllElements();
           getListSearch("a nbo", list2);
           break;
@@ -300,7 +300,7 @@ abstract class NBODialogSearch extends NBODialogView {
     moRb.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        showOrbJmol("MO", orb2.getSelectedIndex() + 1, "MO");
+        showOrbJmol("MO", orb2.getSelectedIndex() , "MO");
       }
     });
     moRb.setBackground(null);
@@ -308,7 +308,7 @@ abstract class NBODialogSearch extends NBODialogView {
     nboRb.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        showOrbJmol("PNBO", orb.getSelectedIndex() + 1, "NBO");
+        showOrbJmol("PNBO", orb.getSelectedIndex(), "NBO");
       }
     });
     nboRb.setBackground(null);
@@ -653,6 +653,7 @@ abstract class NBODialogSearch extends NBODialogView {
       break;
     case KEYWD_E2PERT:
       load(36, true);
+      comboBasis.setSelectedIndex(BASIS_PNBO);
       keyProp = "E2";
       setKeyword(new String[] { "b", "d nbo", "a nbo", "u" }, new String[] {
           "Basis: ", "d-NBO: ", "a-NBO:", "Unit: " });
@@ -735,7 +736,7 @@ abstract class NBODialogSearch extends NBODialogView {
         } else if (key.equals("b")) {
           String str = peeify(comboBasis.getSelectedItem().toString());
           b.add(new JLabel(str));
-          runScriptQueued("NBO TYPE " + str + ";MO TYPE " + str);
+          //runScriptQueued("NBO TYPE " + str + ";MO TYPE " + str);
           b.add(Box.createRigidArea(new Dimension(20, 0)));
         }
         b.add(alphaSpin);
@@ -755,11 +756,11 @@ abstract class NBODialogSearch extends NBODialogView {
               return;
             orbPick();
             if (key.equals("n")) {
-              showOrbJmol("NBO", orb.getSelectedIndex() + 1, key);
+              showOrbJmol("NBO", orb.getSelectedIndex(), key);
               nboRb.doClick();
             } else
               showOrbJmol(comboBasis.getSelectedItem().toString(),
-                  orb.getSelectedIndex() + 1, key);
+                  orb.getSelectedIndex(), key);
           }
         });
       } else if (PT.isOneOf(get[i], "c;d' nlmo;a nbo;c cmo;o PNAO")) {
@@ -777,10 +778,10 @@ abstract class NBODialogSearch extends NBODialogView {
               showMOJmol("NBO", list1.getSize() + orb2.getSelectedIndex(), key);
             } else if (key.equals("c")) {
               showOrbJmol(comboBasis.getSelectedItem().toString(),
-                  orb2.getSelectedIndex() + 1, key);
+                  orb2.getSelectedIndex(), key);
             } else
               showMOJmol(comboBasis.getSelectedItem().toString(),
-                  orb2.getSelectedIndex() + 1, key);
+                  orb2.getSelectedIndex(), key);
             if (get[ind].equals("c cmo")) {
               moRb.doClick();
             }
@@ -1083,7 +1084,7 @@ abstract class NBODialogSearch extends NBODialogView {
           @Override
           public void actionPerformed(ActionEvent e) {
             showOrbJmol(comboBasis.getSelectedItem().toString(),
-                orb.getSelectedIndex() + 1, "b1");
+                orb.getSelectedIndex(), "b1");
           }
         });
         orb2.removeActionListener(orb2.getActionListeners()[0]);
@@ -1092,10 +1093,10 @@ abstract class NBODialogSearch extends NBODialogView {
           public void actionPerformed(ActionEvent e) {
             if (nboKeywordNumber == KEYWD_OPBAS)
               showMOJmol(comboBasis.getSelectedItem().toString(),
-                  orb2.getSelectedIndex() + 1, "b2");
+                  orb2.getSelectedIndex(), "b2");
             else
               showMOJmol(bas2.getSelectedItem().toString(),
-                  orb2.getSelectedIndex() + 1, "b2");
+                  orb2.getSelectedIndex(), "b2");
           }
         });
         orb.setSelectedIndex(0);

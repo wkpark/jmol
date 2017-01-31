@@ -2,6 +2,7 @@ package org.openscience.jmol.app;
 
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import org.jmol.c.CBK;
@@ -14,4 +15,8 @@ public interface JmolPlugin {
   String getName();
   void setVisible(boolean b);
   void notifyCallback(CBK type, Object[] data);
+  ImageIcon getMenuIcon();
+  String getMenuText();
+  boolean isStarted();
+
 }

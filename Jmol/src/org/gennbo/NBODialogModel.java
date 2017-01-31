@@ -1100,9 +1100,6 @@ abstract class NBODialogModel extends NBODialogConfig {
     for (Component c : panel.getComponents())
       c.setVisible(true);
     editBox.setVisible(true);
-    // 57 89
-    ///@transitionMetal elemno>=21&elemno<=30|elemno>=39&elemno<=48|elemno>=72&elemno<=80|elemno>=104&elemno<=112",
-    rebond.setEnabled(false);
     runScriptNow("select within(model,visible)");
     String fileContents = evaluateJmolString("data({selected},'cfi')");
     if (vwr.ms.ac > 0)
@@ -1123,9 +1120,8 @@ abstract class NBODialogModel extends NBODialogConfig {
       redo.setEnabled(true);
     else
       redo.setEnabled(false);
-    String x = (String) vwr.evaluateExpression("{transitionMetal}");
     // "({1})"
-    rebond.setEnabled(x.length() > 4);
+    rebond.setEnabled(((String) vwr.evaluateExpression("{transitionMetal}")).length() > 4);
     if (editAction == MODEL_ACTION_MUTATE) {
       actionSelected(MODEL_ACTION_MUTATE);
     }

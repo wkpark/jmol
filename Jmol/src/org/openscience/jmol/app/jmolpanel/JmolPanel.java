@@ -49,9 +49,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.PropertyResourceBundle;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -202,7 +204,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   private static final String surfaceToolActionProperty = "surfaceTool";
   private static final String pasteClipboardActionProperty = "pasteClipboard";
   private static final String gaussianAction = "gauss";
-  private static final String nboAction = "nbo";
+//  private static final String nboAction = "nbo";
   private static final String resizeAction = "resize";
 
   //private static final String saveasAction = "saveas";
@@ -844,8 +846,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   private JMenuBar createMenubar() {
     JMenuBar mb = new JMenuBar();
     addNormalMenuBar(mb);
-    // The Macros Menu
-    addMacrosMenuBar(mb);
+    addPluginMenu(mb);
+    addMacrosMenu(mb);
     // The Plugin Menu
     // if (pluginManager != null) {
     //     mb.add(pluginManager.getMenu());
@@ -855,8 +857,59 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     addHelpMenuBar(mb);
     return mb;
   }
+  JMenu pluginMenu;
 
-  private void addMacrosMenuBar(JMenuBar menuBar) {
+  private void addPluginMenu(JMenuBar mb) {
+    pluginMenu = new JMenu("Plugins");
+    try {
+      PropertyResourceBundle bundle = new PropertyResourceBundle(getClass()
+          .getResourceAsStream(
+              "/org/openscience/jmol/app/plugins/plugin.properties"));
+      Enumeration<String> keys = bundle.getKeys();
+      while (keys.hasMoreElements()) {
+        final String key = keys.nextElement();
+        JmolPlugin p = plugins.get(key);
+        if (p != null)
+          continue;
+        String path = bundle.getString(key);
+        if (path == null | path.length() == 0)
+          continue;
+        try {
+          p = getAndRegisterPlugin(key, path);
+          if (p != null) {
+            String text = p.getMenuText();
+            ImageIcon icon = p.getMenuIcon();
+            if (text == null)
+              text = key;
+            JMenuItem item = new JMenuItem(text);
+            if (icon!= null) {
+              item.setHorizontalTextPosition(SwingConstants.RIGHT);
+              item.setIcon(icon);
+            }
+            pluginMenu.add(item);
+            item.addActionListener(new ActionListener() {
+
+              @Override
+              public void actionPerformed(ActionEvent e) {
+                showPlugin(key, null, null);
+              }
+              
+            });
+          }
+        } catch (Exception e) {
+          System.out.println("Cannot create plugin " + key + " " + path);
+        }
+      }
+    } catch (IOException ex) {
+      throw new RuntimeException(ex.toString());
+    }
+    mb.add(pluginMenu);
+  }
+  
+  
+
+
+  private void addMacrosMenu(JMenuBar menuBar) {
     // ok, here needs to be added the funny stuff
     JMenu macroMenu = guimap.newJMenu("macros");
     File macroDir = new File(System.getProperty("user.home")
@@ -960,8 +1013,6 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         String menuKey = ((JmolAbstractButton) e.getSource()).getKey();
         if (menuKey.equals("display") || menuKey.equals("tools"))
           setMenuState();
-        //          if (menuKey.equals("nboMenu"))
-        //            setMenuNBO((JMenu) e.getSource());
       }
 
       @Override
@@ -1023,7 +1074,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       new RecentFilesAction(), povrayAction, writeAction, toWebAction,
       new ScriptWindowAction(), new ScriptEditorAction(),
       new AtomSetChooserAction(), viewMeasurementTableAction,
-      new GaussianAction(), new NBOAction(), new ResizeAction(),
+      new GaussianAction(), /*new NBOAction(),*/ new ResizeAction(),
       surfaceToolAction };
 
   class CloseAction extends AbstractAction {
@@ -1109,16 +1160,16 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     }
   }
 
-  class NBOAction extends AbstractAction {
-    public NBOAction() {
-      super(nboAction);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent arg0) {
-      startNBO(null);
-    }
-  }
+//  class NBOAction extends AbstractAction {
+//    public NBOAction() {
+//      super(nboAction);
+//    }
+//
+//    @Override
+//    public void actionPerformed(ActionEvent arg0) {
+//      startNBO(null);
+//    }
+//  }
 
   class NewwinAction extends AbstractAction {
 
@@ -1164,7 +1215,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     //    nodes[3].setEnabled(true); // view    
     //    nodes[4].setEnabled(true); // search
   }
-
+  
   /**
    * @param jmolOptions
    *        e.g. NOZAP;VIEWER unused
@@ -1174,19 +1225,25 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     showPlugin("NBO", "org.gennbo.NBOPlugin", jmolOptions);
   }
 
-  private void showPlugin(String name, String path, Map<String, Object> jmolOptions) {
+  void showPlugin(String name, String path, Map<String, Object> jmolOptions) {
     try {
-      JmolPlugin p = plugins.get(name);
-      if (p == null) {
-        plugins.put(name,
-            p = (JmolPlugin) Interface.getInterface(path, vwr, "plugin"));
+      JmolPlugin p = getAndRegisterPlugin(name, path);
+      if (!p.isStarted())
         p.start(frame, vwr, jmolOptions);
-      }
       p.setVisible(true);
     } catch (Throwable e) {
       System.out.println("Error creating plugin " + name);
       e.printStackTrace();
     }
+  }
+
+  private JmolPlugin getAndRegisterPlugin(String name, String path) {
+    JmolPlugin p = plugins.get(name);
+    if (p == null) {
+      plugins.put(name,
+          p = (JmolPlugin) Interface.getInterface(path, vwr, "plugin"));
+    }
+    return p;
   }
 
   public static Object getInstanceWithParams(String name, Class<?>[] classes,

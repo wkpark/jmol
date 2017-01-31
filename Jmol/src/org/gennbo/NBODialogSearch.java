@@ -1234,11 +1234,15 @@ abstract class NBODialogSearch extends NBODialogView {
   }
   
   protected void showOrbJmol(String type, int i, String id) {
-    
+    id = fixID(id);
     runScriptQueued(
-        "select visible;isosurface ID '" + id + "' delete;" +  
+        "select visible;isosurface ID \"" + id + "\" delete;" +  
         getJmolIsosurfaceScript(id, peeify(type), i,
         betaSpin.isSelected(), false));
+  }
+
+  private String fixID(String id) {
+    return PT.replaceAllCharacters(id, "'\"", "_");
   }
 
   protected void orbPick() {
@@ -1279,98 +1283,6 @@ abstract class NBODialogSearch extends NBODialogView {
     }
   }
 
-  //  // OLD
-  //  
-  //  /**
-  //   * Runs when list is finished being sent by nboServe -E2PERT: orbital
-  //   * numbering of second list offset by length of first -NPA, STERIC, DIPOLE:
-  //   * checks for more than 1 unit -NRT: gets res structure info
-  //   * 
-  //   * @param list
-  //   */
-  //  protected void setSearchList(AbstractListModel<String> list) {
-  //    switch (keywordNumber) {
-  //    case KEYWD_CMO:
-  //      if (list.equals(list1)) {
-  //        //moRb.doClick();
-  //      }
-  //      break;
-  //    case KEYWD_E2PERT:
-  //      if (list.equals(list2)) {
-  //        //Relabel a-nbo to correct orbital number
-  //        int offset = list1.getSize();
-  //        int sz = list2.getSize();
-  //        ActionListener l = orb2.getActionListeners()[0];
-  //        orb2.removeActionListener(l);
-  //        for (int i = 0; i < sz; i++) {
-  //          String s = list2.getElementAt(i);
-  //          list2.removeElementAt(i);
-  //          s = "   " + (offset + i + 1) + s.substring(s.indexOf("."));
-  //
-  //          list2.insertElementAt(s, i);
-  //        }
-  //        orb2.addActionListener(l);
-  //      }
-  //      //$FALL-THROUGH$
-  //    case KEYWD_NPA:
-  //    case KEYWD_STERIC:
-  //    case KEYWD_DIPOLE:
-  //      if (list.equals(list3))
-  //        if (list3.getSize() == 1) {
-  //          unit.setVisible(false);
-  //          unitLabel.setVisible(true);
-  //          unitLabel.setText(list3.getElementAt(0).substring(6));
-  //        }
-  //      break;
-  //    case KEYWD_NRT:
-  //      if (list.equals(list3)) {
-  //        changeKey(nrt);
-  //        //Parsing RS list here ensures RS list will be in .nbo file
-  //        parseRsList(getRSList());
-  //        unit.addActionListener(new ActionListener() {
-  //          @Override
-  //          public void actionPerformed(ActionEvent e) {
-  //            if (isOpenShell)
-  //              setResStruct(unit.getSelectedIndex() + 1, alphaSpin.isSelected());
-  //            else
-  //              setResStruct(unit.getSelectedIndex() + 1, true);
-  //            //            try{
-  //            //              Thread.sleep(100);
-  //            //            }catch(Exception e2){}
-  //
-  //          }
-  //        });
-  //        setResStruct(1, alphaSpin.isSelected());
-  //      }
-  //      break;
-  //    case KEYWD_OPBAS:
-  //    case KEYWD_BAS1BAS2:
-  //      if (list.equals(list2)) {
-  //        orb.removeActionListener(orb.getActionListeners()[0]);
-  //        orb.addActionListener(new ActionListener() {
-  //          @Override
-  //          public void actionPerformed(ActionEvent e) {
-  //            showJmolNBO(basis.getSelectedItem().toString(),
-  //                orb.getSelectedIndex() + 1);
-  //          }
-  //        });
-  //        orb2.removeActionListener(orb2.getActionListeners()[0]);
-  //        orb2.addActionListener(new ActionListener() {
-  //          @Override
-  //          public void actionPerformed(ActionEvent e) {
-  //            if (keywordNumber == KEYWD_OPBAS)
-  //              showJmolMO(basis.getSelectedItem().toString(),
-  //                  orb2.getSelectedIndex() + 1);
-  //            else
-  //              showJmolMO(bas2.getSelectedItem().toString(),
-  //                  orb2.getSelectedIndex() + 1);
-  //          }
-  //        });
-  //        orb.setSelectedIndex(0);
-  //        orb2.setSelectedIndex(0);
-  //      }
-  //    }
-  //  }
 
   protected String[] getRSList() {
     String data = inputFileHandler.getInputFile("nbo");

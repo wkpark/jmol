@@ -25,6 +25,7 @@ package org.gennbo;
 
 import java.util.Map;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import org.jmol.c.CBK;
@@ -38,6 +39,13 @@ public class NBOPlugin implements JmolPlugin {
   protected Viewer vwr;
   
   public final static String version = "0.1.3";
+
+
+  @Override
+  public boolean isStarted() {
+    return vwr != null;
+  }
+
 
   @Override
   public void start(JFrame frame, Viewer vwr, Map<String, Object> jmolOptions) {
@@ -105,5 +113,17 @@ public class NBOPlugin implements JmolPlugin {
     JmolPanel.setPluginOption("NBO", name, option.replace('\\', '/'));
   }
 
+  @Override
+  public ImageIcon getMenuIcon() {
+    return getIcon("nbo6logo20x20");
+  }
 
+  @Override
+  public String getMenuText() {
+    return "NBO";
+  }
+
+  ImageIcon getIcon(String name) {
+    return new ImageIcon(this.getClass().getResource("assets/" + name + ".gif"));
+  }
 }

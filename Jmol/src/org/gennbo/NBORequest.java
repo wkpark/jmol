@@ -31,7 +31,8 @@ class NBORequest {
     this.statusInfo = statusInfo;
     this.returnMethod = returnMethod;
     // need to flag this so that not all of sysout is returned
-    isRun  = (statusInfo != null && statusInfo.indexOf("Running") >= 0);
+    isRun  = (statusInfo != null 
+        && (statusInfo.indexOf("Running") >= 0 || statusInfo.indexOf("Getting value") >= 0));
   }
 
   /**

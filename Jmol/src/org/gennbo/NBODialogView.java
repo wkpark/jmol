@@ -1017,14 +1017,26 @@ abstract class NBODialogView extends NBODialogRun {
    * @param sb
    * @param i
    */
-  private void appendOrbitalSign(SB sb, int i) {
-    if (!orbitals.bsNeg.get(i))
+  private void appendOrbitalPhaseSign(SB sb, int i) {
+    if (orbitals.bsNeg.get(i))
+      sb.append("GLOBAL SIGN -1" + sep);
+    else
       sb.append("GLOBAL SIGN +1" + sep);
-    sb.append("GLOBAL SIGN +1" + sep);
+    
+//    SB sb1 = getMetaHeader(true);
+//    if (orbitals.bsNeg.get(i))
+//      sb1.append("CMD SIGN -1" + sep);
+//    else
+//      sb1.append("CMD SIGN +1" + sep);
+//    postNBO_v(sb1, NBOService.MODE_RAW, null, "", null, null);
+
   }
 
   //contour/profile selected orbital in orbital list
   protected void createImage1or2D(boolean oneD) {
+
+    if (jmolView)
+      setJmolView(true);
 
     if (orbitals.bsOn.cardinality() > 1) {
       createImage1or2DMultiple(oneD);
@@ -1037,7 +1049,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     int ind = orbitals.bsOn.nextSetBit(0);
 
-    appendOrbitalSign(sb, ind);
+    appendOrbitalPhaseSign(sb, ind);
     appendLineParams(sb);
 
     if (oneD) {
@@ -1045,11 +1057,11 @@ abstract class NBODialogView extends NBODialogRun {
     } else {
       appendPlaneParams(sb);
     }
-    appendOrbitalSign(sb, ind);
+    appendOrbitalPhaseSign(sb, ind);
     String msg = (oneD ? "Profile " : "Contour ") + (ind + 1);
     log(msg, 'I');
     sb.append("CMD ").append(msg).append(sep);
-    appendOrbitalSign(sb, ind);
+    appendOrbitalPhaseSign(sb, ind);
 
     postNBO_v(sb, NBOService.MODE_IMAGE, null, (oneD ? "Profiling.."
         : "Contouring.."), null, null);
@@ -1090,7 +1102,10 @@ abstract class NBODialogView extends NBODialogRun {
       }
   }
 
-  private void sendJmolOrientation() {
+  private void setJmolView(boolean is2D) {
+    
+    String key = (is2D ? "a U" : "a V_U");
+
     SB sb = new SB();
     for (int i = 1; i <= 3; i++) {
       String tmp2 = "";
@@ -1099,10 +1114,12 @@ abstract class NBODialogView extends NBODialogRun {
             + j + "][" + i + "]", null);
         tmp2 += oi.toString() + " ";
       }
-      sb.append("a V_U" + i + " " + tmp2 + sep);
+      sb.append(key + i + " " + tmp2 + sep);
     }
+    postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_RAW, null, "", "jview.txt", sb.toString());
+
     postNBO_v(new SB().append("CMD JVIEW"), NBOService.MODE_RAW, null,
-        "Sending Jmol orientation", "jview.txt", sb.toString());
+        "Sending Jmol orientation", null, null);
 
     //    sb = getMetaHeader(true);
     //    sb.append("CMD LABEL");
@@ -1123,12 +1140,12 @@ abstract class NBODialogView extends NBODialogRun {
     for (int pt = 0, i = orbitals.bsOn.nextSetBit(0); i >= 0; i = orbitals.bsOn
         .nextSetBit(i + 1)) {
       sb = getMetaHeader(true);
-      appendOrbitalSign(sb, i);
+      appendOrbitalPhaseSign(sb, i);
       if (oneD)
         sb.append("CMD PROFILE " + (i + 1) + sep);
       else
         sb.append("CMD CONTOUR " + (i + 1) + sep);
-      appendOrbitalSign(sb, i);
+      
       msg += " " + (i + 1);
       profileList += " " + (++pt);
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
@@ -1147,9 +1164,8 @@ abstract class NBODialogView extends NBODialogRun {
     BS bs = orbitals.bsOn;
     for (int pt = 0, i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       sb = getMetaHeader(true);
-      appendOrbitalSign(sb, i);
+      appendOrbitalPhaseSign(sb, i);
       sb.append("CMD PROFILE " + (i + 1) + sep);
-      appendOrbitalSign(sb, i);
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending profile " + (i + 1),
           null, null);
       tmp += " " + (i + 1);
@@ -1159,16 +1175,16 @@ abstract class NBODialogView extends NBODialogRun {
     String jviewData = sb.toString();
     sb = getMetaHeader(false);
     appendCameraParams(sb);
-    if (jmolView)
-      sendJmolOrientation();
     sb.append("CMD VIEW" + list);
     postNBO_v(sb, NBOService.MODE_IMAGE, null, "Raytracing...", null, jviewData);
   }
 
   private void initializeImage() {
     runScriptNow("image close");
-    nboService.restartIfNecessary();
+    nboService.restart();
     setDefaultParameterArrays();
+    if (jmolView)
+      setJmolView(false);
   }
 
   private int viewVectorPt = 0;

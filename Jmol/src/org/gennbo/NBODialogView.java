@@ -929,7 +929,7 @@ abstract class NBODialogView extends NBODialogRun {
     runScriptNow("isosurface delete");
 
     if (comboBasis.getSelectedIndex() == BASIS_MO) {
-      file47Keywords = cleanNBOKeylist(inputFileHandler.read47File()[1]);
+      file47Keywords = cleanNBOKeylist(inputFileHandler.read47File()[1], true);
       if (!file47Keywords.contains("CMO")) {
         runGenNBOJob("CMO");
         return;
@@ -1013,7 +1013,9 @@ abstract class NBODialogView extends NBODialogRun {
    * @param i
    */
   private void appendOrbitalSign(SB sb, int i) {
-    sb.append("GLOBAL SIGN " + (orbitals.bsNeg.get(i) ? "-1" : "-1") + sep);
+    if (!orbitals.bsNeg.get(i))
+      sb.append("GLOBAL SIGN +1" + sep);
+    sb.append("GLOBAL SIGN +1" + sep);
   }
 
 
@@ -1039,10 +1041,12 @@ abstract class NBODialogView extends NBODialogRun {
     } else {
       appendPlaneParams(sb);
     }
+    appendOrbitalSign(sb, ind);
     String msg = (oneD ? "Profile " : "Contour ") + (ind + 1);
     log(msg, 'I');
-
-    sb.append("CMD ").append(msg);
+    sb.append("CMD ").append(msg).append(sep);
+    appendOrbitalSign(sb, ind);
+    
     postNBO_v(sb, NBOService.MODE_IMAGE, null,
         (oneD ? "Profiling.." : "Contouring.."), null, null);
   }
@@ -1115,10 +1119,12 @@ abstract class NBODialogView extends NBODialogRun {
     String profileList = "";
     for (int pt =0, i = orbitals.bsOn.nextSetBit(0); i >= 0; i = orbitals.bsOn.nextSetBit(i + 1)) {
       sb = getMetaHeader(true);
+      appendOrbitalSign(sb, i);
       if (oneD)
-        sb.append("CMD PROFILE " + (i + 1));
+        sb.append("CMD PROFILE " + (i + 1)  + sep);
       else
-        sb.append("CMD CONTOUR " + (i + 1));
+        sb.append("CMD CONTOUR " + (i + 1)  + sep);
+      appendOrbitalSign(sb, i);
       msg += " " + (i + 1);
       profileList +=  " " + (++pt);
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
@@ -1131,7 +1137,6 @@ abstract class NBODialogView extends NBODialogRun {
   }
 
   protected void createImage3D() {
-    
     SB sb = new SB();
     String tmp = "View";
     String list = "";
@@ -1139,7 +1144,8 @@ abstract class NBODialogView extends NBODialogRun {
     for (int pt = 0, i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       sb = getMetaHeader(true);
       appendOrbitalSign(sb, i);
-      sb.append("CMD PROFILE " + (i + 1));
+      sb.append("CMD PROFILE " + (i + 1) + sep);
+      appendOrbitalSign(sb, i);
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending profile " + (i + 1), null, null);
       tmp += " " + (i + 1);
       list += " " + (++pt);
@@ -1516,11 +1522,7 @@ abstract class NBODialogView extends NBODialogRun {
           } else {
             bsKnown.set(i);
             // create the isosurface
-            script += "isosurface " + id
-                + " color " + (bsNeg.get(i) ? color1 + " " + color2 : color2 + " " + color1)
-                + " cutoff 0.0316 NBO " + type + " " + (i + 1) + (isBeta ? " beta" : "") 
-                + " frontonly "
-                + (useWireMesh ? " mesh nofill" : " nomesh fill translucent " + opacityOp) + ";";
+            script += getJmolIsosurfaceScript(id, type, i, isBeta, bsNeg.get(i));
           }
         }
       }
@@ -1656,8 +1658,25 @@ abstract class NBODialogView extends NBODialogRun {
     nboService.postToNBO(req);
   }
 
+  protected String getJmolIsosurfaceScript(String id, String type, int i, boolean isBeta,
+                                 boolean isNegative) {
+    return ";select visible;isosurface "
+        + id
+        + " color "
+        + (isNegative ? color1 + " " + color2 : color2 + " " + color1)
+        + " cutoff 0.0316 NBO "
+        + type
+        + " "
+        + (i + 1)
+        + (isBeta ? " beta" : "")
+        + " frontonly "
+        + (useWireMesh ? " mesh nofill" : " nomesh fill translucent "
+            + opacityOp) + ";select none;";
+  }
+
   /**
    * Process the reply from NBOServe.
+   * 
    * 
    * @param req
    * @param mode
@@ -1668,6 +1687,7 @@ abstract class NBODialogView extends NBODialogRun {
     String[] lines = req.getReplyLines();
     switch (mode) {
     case NBOService.MODE_LIST:
+      list.clear();
       for (int i = 0; i < lines.length; i++) {
         list.addElement(lines[i]);
       }

@@ -143,7 +143,7 @@ public class NBODialog extends NBODialogSearch {
       setDefaults(false);
     
     if (jmolOptionVIEW || jmolOptionNONBO)
-      this.openPanel('v');
+      this.openPanel(DIALOG_VIEW);
   }
   
   protected Component getComponentatPoint(Point p, Component top){
@@ -159,7 +159,7 @@ public class NBODialog extends NBODialogSearch {
   private void createDialog(Rectangle bounds) {
     dialogMode = DIALOG_HOME;
     // createDialog(Math.max(570, 615);
-    setBounds(bounds.x + bounds.width - 75, bounds.y, 615, Math.max(bounds.height, 660));
+    setBounds(bounds.x + bounds.width, bounds.y, 615, Math.max(bounds.height, 630));
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -238,19 +238,19 @@ public class NBODialog extends NBODialogSearch {
     d.setLocation(x, y);
   } 
 
-  private JButton getMainButton(final JButton b, final char mode, Font font){
+  private JButton getMainButton(final JButton b, final char mode, Font font) {
     b.setBorder(null);
     b.setMargin(new Insets(5, 5, 5, 5));
     b.setContentAreaFilled(false);
     b.setForeground(Color.white);
     b.setFont(font);
-    if(mode != 'h')
-    b.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        openPanel(mode);
-      }
-    });
+    if (mode != 'h')
+      b.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          openPanel(mode);
+        }
+      });
     return b;
   }
   
@@ -287,7 +287,23 @@ public class NBODialog extends NBODialogSearch {
     b.add(getMainButton(new JButton("Settings"), 'c', settingHelpFont));
     b.add(Box.createRigidArea(new Dimension(20, 0)));
     b.add(getMainButton(helpBtn, 'h', settingHelpFont));
-
+    b.add(Box.createRigidArea(new Dimension(20, 0)));    
+    JButton btn = new JButton("Manual");
+    b.add(getMainButton(btn, 'h', settingHelpFont));
+    btn.addActionListener(new ActionListener(){
+      @Override
+      public void actionPerformed(ActionEvent arg0) {
+        if (Desktop.isDesktopSupported()) {
+          try {
+            String url = 
+                "http://nbo6.chem.wisc.edu/jmol_help/NBOPro6_man.pdf";
+            Desktop.getDesktop().browse(new URI(url));
+          } catch (Exception ex) {
+            alertError("Could open NBOPro6 manual");
+          }
+      }
+      }
+    });
     p.add(b, BorderLayout.CENTER);
     icon = new JLabel();
     icon.setFont(nboFont);
@@ -496,29 +512,28 @@ public class NBODialog extends NBODialogSearch {
     c.gridx = 1;
     c.gridy = 7;
     c.gridwidth = 3;
-    p2.add(tp,c);
-  
+    p2.add(tp,c);  
     p.add(p2);
-    b = Box.createHorizontalBox();
-    b.add(btn = new JButton("NBOPro6 Manual"));
-    btn.addActionListener(new ActionListener(){
-      @Override
-      public void actionPerformed(ActionEvent arg0) {
-        if (Desktop.isDesktopSupported()) {
-          try {
-            String url = 
-                "http://nbo6.chem.wisc.edu/jmol_help/NBOPro6_man.pdf";
-            Desktop.getDesktop().browse(new URI(url));
-          } catch (IOException ex) {
-            alertError("Could open NBOPro6 manual");
-          } catch (URISyntaxException e) {
-            alertError("Could open NBOPro6 manual");
-          }
-      }
-      }
-    });
-    btn.setFont(f);
-    p.add(b);
+//    b = Box.createHorizontalBox();
+//    b.add(btn = new JButton("Manual"));
+//    btn.addActionListener(new ActionListener(){
+//      @Override
+//      public void actionPerformed(ActionEvent arg0) {
+//        if (Desktop.isDesktopSupported()) {
+//          try {
+//            String url = 
+//                "http://nbo6.chem.wisc.edu/jmol_help/NBOPro6_man.pdf";
+//            Desktop.getDesktop().browse(new URI(url));
+//          } catch (IOException ex) {
+//            alertError("Could open NBOPro6 manual");
+//          } catch (URISyntaxException e) {
+//            alertError("Could open NBOPro6 manual");
+//          }
+//      }
+//      }
+//    });
+//    btn.setFont(f);
+//    p.add(b);
     JTextPane t = new JTextPane();
     t.setContentType("text/html");
     t.setText("<HTML><Font color=\"RED\"><center>\u00a9Copyright 2016 Board of Regents of the University of Wisconsin System " +
@@ -610,7 +625,7 @@ public class NBODialog extends NBODialogSearch {
 
   public void close() {
     if(modulePanel != null)
-      inputFileHandler.clearInputFile();
+      inputFileHandler.clearInputFile(false);
     runScriptNow("select off");
     dispose();
   }
@@ -638,16 +653,16 @@ public class NBODialog extends NBODialogSearch {
     
     String msg = "";
     switch (type) {
-    case 'm':
+    case DIALOG_MODEL:
       msg = "MODEL";
       break;
-    case 'r':
+    case DIALOG_RUN:
       msg = "RUN";
       break;
-    case 'v':
+    case DIALOG_VIEW:
       msg = "VIEW";
       break;
-    case 's':
+    case DIALOG_SEARCH:
       msg = "SEARCH";
       break;
     }

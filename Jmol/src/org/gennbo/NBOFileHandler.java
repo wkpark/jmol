@@ -181,15 +181,16 @@ class NBOFileHandler extends JPanel {
    * @param inputFile
    */
   protected void setInputFile(File inputFile) {
-    clearInputFile();
+    clearInputFile(false); // clear CURRENT input file's server directory
     dialog.isOpenShell = false;
     this.inputFile = inputFile;
     if (inputFile.getName().indexOf(".") > 0)
       jobStem = getJobStem(inputFile);
+    if (dialog.modelOrigin == NBODialogConfig.ORIGIN_NBO_ARCHIVE)
+      clearInputFile(true);
     setInput(inputFile.getParent(), jobStem, useExt);
     if (!getExt(inputFile).equals("47"))
       return;
-    dialog.fix47(inputFile);
     if (fixPath(inputFile.getParent().toString()).equals(
         dialog.nboService.getServerPath(null))) {
       JOptionPane.showMessageDialog(this,
@@ -313,7 +314,7 @@ class NBOFileHandler extends JPanel {
         String[] prePost = PT.split(s, "$NBO");
         if (prePost[0].length() > 0)
           params.append(s).append(sep);
-        nboKeywords = prePost[1];
+        nboKeywords = PT.trim(prePost[1], "\t\r\n ");
         params = postParams;
         continue;
       }
@@ -378,13 +379,24 @@ class NBOFileHandler extends JPanel {
     return (pt < 0 ? fname : fname.substring(0, pt));
   }
 
-  protected void clearInputFile() {
-    //    if (jobStem.length() == 0)
-    //      return;
-    //    for (String ext : EXT_ARRAY)
-    //      new File(dialog.nboService.serverDir + "/" + jobStem + "." + ext).delete();
+  protected void clearInputFile(boolean andUserDir) {
+    if (jobStem.length() == 0)
+      return;
+    for (String ext : EXT_ARRAY)
+      try {
+        new File(dialog.nboService.getServerPath(jobStem + "." + ext)).delete();
+      } catch (Exception e) {
+        // ignore
+      }
+    if (andUserDir)
+      for (String ext : EXT_ARRAY)
+        try {
+          newNBOFile(inputFile, ext).delete();
+        } catch (Exception e) {
+          // ignore
+        }
     inputFile = null;
-    if (dialog.dialogMode == 'v')
+    if (dialog.dialogMode == NBODialogConfig.DIALOG_VIEW)
       dialog.resetView();
   }
 
@@ -404,8 +416,9 @@ class NBOFileHandler extends JPanel {
       dialog.saveFileHandler.setInput(dir, name,
           PT.isOneOf(ext, NBODialogConfig.OUTPUT_FILE_EXTENSIONS) ? ext : "");
     //System.out.println("-------" + f + n + "/" + e);
-    if (dir != null && name != null && ext != null)
+    if (dir != null && name != null && ext != null) {
       inputFile = new File(dir + "\\" + name + "." + ext);
+    }
   }
 
   protected static String getExt(File newFile) {
@@ -432,6 +445,30 @@ class NBOFileHandler extends JPanel {
 
   public File newNBOFileForExt(String filenum) {
     return newNBOFile(inputFile, filenum);
+  }
+
+  public void copyAndSwitch47FileTo(String jobName) {
+    String data = dialog.vwr.getAsciiFileOrNull(inputFile.getAbsolutePath());
+    tfName.setText(jobName);
+    setInput(tfDir.getText(), jobName, ".47");
+    if (data != null)
+      this.writeToFile(inputFile.getAbsolutePath(), data);    
+  }
+
+  public String[] update47File(String jobName, String keywords) {
+    if (!useExt.equals("47"))
+      return null;
+    String[] fileData = read47File();
+    if (writeToFile(inputFile.getAbsolutePath(), fileData[0] + "$NBO\n "
+        + "FILE=" + jobName + " " + keywords + "  $END" + sep + fileData[2])) {
+      fileData[1] = keywords;
+      fileData[3] = "FILE=" + jobName + " " + keywords; 
+      dialog.log("Job: " + jobName, 'b');
+      dialog.log("Keywords: " + keywords, 'b');
+      return fileData;
+    }
+    dialog.logInfo("Could not create " + inputFile, Logger.LEVEL_ERROR);
+    return null;
   }
 
 }

@@ -22,6 +22,7 @@ class NBORequest {
   String statusInfo;
   Runnable returnMethod;
   private String reply;
+  boolean isRun;
 
   NBORequest(){}
   
@@ -29,6 +30,8 @@ class NBORequest {
     this.fileData = fileData;
     this.statusInfo = statusInfo;
     this.returnMethod = returnMethod;
+    // need to flag this so that not all of sysout is returned
+    isRun  = (statusInfo != null && statusInfo.indexOf("Running") >= 0);
   }
 
   /**

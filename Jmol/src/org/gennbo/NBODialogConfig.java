@@ -80,11 +80,11 @@ abstract class NBODialogConfig extends JDialog {
   abstract protected NBOFileHandler newNBOFileHandler(String name, String ext,
                                                       int mode, String useExt);
 
-  static final char DIALOG_HOME = 'h';
+  static final char DIALOG_HOME =   'h';
   static final char DIALOG_SEARCH = 's';
-  static final char DIALOG_VIEW = 'v';
-  static final char DIALOG_RUN = 'r';
-  static final char DIALOG_MODEL = 'm';
+  static final char DIALOG_VIEW =   'v';
+  static final char DIALOG_RUN =    'r';
+  static final char DIALOG_MODEL =  'm';
   static final char DIALOG_CONFIG = 'c';
 
   protected static final int ORIGIN_UNKNOWN = 0;
@@ -656,7 +656,7 @@ abstract class NBODialogConfig extends JDialog {
    */
   protected void showAtomNums(boolean alpha) {
     if (!showAtNum) {
-      runScriptNow("select visible;label off; select none");
+      runScriptNow("select visible;label off; select none;refresh");
       return;
     }
     SB sb = new SB();
@@ -679,9 +679,9 @@ abstract class NBODialogConfig extends JDialog {
       }
     }
     String color = (nboView) ? "black" : "gray";
-    sb.append("select visible;color labels white;");
-    sb.append("select visible && {H*};color labels " + color + ";"
-        + "set labeloffset 0 0 {visible}; select none;");
+    sb.append("select visible;color labels white;" +
+    		"select visible && {H*};color labels " + color + ";"
+        + "set labeloffset 0 0 {visible}; select none;refresh");
     runScriptNow(sb.toString());
 
   }

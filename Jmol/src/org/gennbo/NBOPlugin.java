@@ -37,7 +37,7 @@ public class NBOPlugin implements JmolPlugin {
   protected NBODialog nboDialog;
   protected Viewer vwr;
   
-  public final static String version = "0.1.2";
+  public final static String version = "0.1.3";
 
   @Override
   public void start(JFrame frame, Viewer vwr, Map<String, Object> jmolOptions) {

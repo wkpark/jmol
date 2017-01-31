@@ -32,7 +32,6 @@ import java.util.Queue;
 
 import javajs.util.AU;
 import javajs.util.PT;
-import javajs.util.SB;
 
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -154,18 +153,15 @@ public class NBOService {
   protected Process nboServer;
   protected Thread nboListener;
   protected NBODialog nboDialog;
-  protected NBORequest currentJob;
+  protected NBORequest currentRequest;
   protected Object lock;
-  protected Queue<NBORequest> jobQueue;  
+  protected Queue<NBORequest> requestQueue;  
   
   private PrintWriter stdinWriter;
   protected BufferedInputStream stdout;
 
-  private SB sbRet;
-  private boolean inData;
   private boolean cantStartServer;  
   private String serverPath;
-  private String nboModel;
 
   private String exeName = "NBOServe.exe";
   private boolean doConnect;
@@ -186,10 +182,9 @@ public class NBOService {
     this.nboDialog = nboDialog;
     this.vwr = vwr;
     this.doConnect = doConnect;
-    sbRet = new SB();
     setServerPath(nboDialog.nboPlugin.getNBOProperty("serverPath", System.getProperty("user.home")
         + "/NBOServe"));
-    jobQueue = new ArrayDeque<NBORequest>();
+    requestQueue = new ArrayDeque<NBORequest>();
     lock = new Object();
   }
 
@@ -235,31 +230,31 @@ public class NBOService {
   }
 
   /**
-   * Set the current job by writing its metacommands to disk and sending a
+   * Set the current request by writing its metacommands to disk and sending a
    * command to NBOServe directing it to that file.
    * 
-   * @param job
+   * @param request
    */
-  protected void startJob(NBORequest job) {
-    if (job == null)
+  protected void startRequest(NBORequest request) {
+    if (request == null)
       return;
-    currentJob = job;
+    currentRequest = request;
     String cmdFileName = null, data = null;
-    for (int j = 0, n = job.fileData.length; j < n; j += 2) {
+    for (int j = 0, n = request.fileData.length; j < n; j += 2) {
       // we must do file 0 last, as it is the command
       int i = (j + 2) % n;
-      cmdFileName = job.fileData[i];
-      data = job.fileData[i + 1];
+      cmdFileName = request.fileData[i];
+      data = request.fileData[i + 1];
       if (cmdFileName != null) {
         System.out.println("saving file " + cmdFileName + "\n" + data);
         nboDialog.inputFileHandler.writeToFile(getServerPath(cmdFileName),
             data);
       }
     }
-    nboDialog.setStatus(job.statusInfo);// + " (sending job.cmd)");
+    nboDialog.setStatus(request.statusInfo);
     String cmd = "<" + cmdFileName + ">";
 
-    System.out.println("sending " + cmd + "\n" + data);
+    System.out.println("sending " + cmd);
 
     if (stdinWriter == null)
       restart();
@@ -333,7 +328,8 @@ public class NBOService {
               }
               n = stdout.read(buffer, 0, n);
               String s = new String(buffer, 0, n);
-              processServerReturn(s);
+              if (!processServerReturn(s))
+                continue;
               nboDialog.setStatus("");
             } catch (Throwable e1) {
               clearQueue();
@@ -341,7 +337,7 @@ public class NBOService {
               continue;
               // includes thread death
             }
-            startJob(currentJob = jobQueue.peek());
+            startRequest(currentRequest = requestQueue.peek());
           }
         }
       });
@@ -440,12 +436,12 @@ public class NBOService {
    * @param j
    */
   private void postToQueue(NBORequest j) {
-    if (isReady && jobQueue.isEmpty() && currentJob == null) {
-      currentJob = j;
-      jobQueue.add(currentJob);
-      startJob(currentJob);
+    if (isReady && requestQueue.isEmpty() && currentRequest == null) {
+      currentRequest = j;
+      requestQueue.add(currentRequest);
+      startRequest(currentRequest);
     } else {
-      jobQueue.add(j);
+      requestQueue.add(j);
     }
   }
 
@@ -468,21 +464,21 @@ public class NBOService {
   }
 
   /**
-   * Clear the job queue
+   * Clear the request queue
    * 
    */
   public void clearQueue() {
-    jobQueue.clear();
+    requestQueue.clear();
   }
 
   /**
-   * Check to see if there is a current job running
+   * Check to see if there is a current request running
    * 
-   * @return true if there is a current job
+   * @return true if there is a current request
    * 
    */
   public boolean isWorking() {
-    return (currentJob != null);
+    return (currentRequest != null);
   }  
   
 
@@ -492,13 +488,14 @@ public class NBOService {
    * Process the return from NBOServe.
    * 
    * @param s
+   * @return  true if we are done
    */
-  protected void processServerReturn(String s) {
+  protected boolean processServerReturn(String s) {
     if (s.indexOf("FORTRAN STOP") >= 0) {
       nboDialog.alertError("NBOServe has stopped working - restarting");
       clearQueue();
       restart();
-      return;
+      return true;
     }
 
     if (isFortranError(s) || s.indexOf("missing or invalid") >= 0) {
@@ -507,7 +504,7 @@ public class NBOService {
       }
       clearQueue();
       restart();
-      return;
+      return true;
     }
 
     s = PT.rep(s, "\r", ""); // to standard Java format without carriage return.
@@ -515,10 +512,12 @@ public class NBOService {
     System.out.println("NBO reply:\n" + s);
 
     int pt;
+    
+    boolean removeRequest = true;
 
-    try { // with finally clause to remove job from queue
+    try { // with finally clause to remove request from queue
 
-      if (currentJob == null) {
+      if (currentRequest == null) {
         //    *start*
         //    NBOServe v. 27-Jan-2017
         //    *end*
@@ -527,33 +526,43 @@ public class NBOService {
         if (s.indexOf("NBOServe v") >= 0) {
           nboDialog.setLicense(s.substring(s.lastIndexOf("NBOServe v")));
         }
-        return;
+        return true;
       }
 
       if ((pt = s.indexOf("***errmess***")) >= 0) {
-        logServerLine(s.substring(s.indexOf("\n") + 1), Logger.LEVEL_ERROR);
+        try {
+          s = PT.split(s, "\n")[2]; 
+          logServerLine(s.substring(s.indexOf("\n") + 1), Logger.LEVEL_ERROR);
+        } catch (Exception e) {
+          // ignore
+        }
         logServerLine("NBOPro can't do that.", Logger.LEVEL_WARN);
-        return;
+        return true;
       }
 
       if ((pt = s.indexOf("*start*")) < 0) {
-        logServerLine(s, Logger.LEVEL_ERROR);
-        return;
+        
+        // Note that RUN can dump all kinds of things to SYSOUT prior to completion.
+        
+        logServerLine(s, (currentRequest.isRun ? Logger.LEVEL_DEBUG : Logger.LEVEL_ERROR));
+        return (removeRequest = !currentRequest.isRun);
       }
       s = s.substring(pt + 8); // includes \n
       pt = s.indexOf("*end*");
       if (pt < 0) {
         System.out.println("bad start/end packet from NBOServe: " + s);
-        return;
+        return true;
       }
 
       // standard expectation
 
-      currentJob.sendReply(s.substring(0, pt));
-      return;
+      currentRequest.sendReply(s.substring(0, pt));
+      return true;
     } finally {
-      if (currentJob != null)
-        jobQueue.remove();
+      if (currentRequest != null && removeRequest) {
+        requestQueue.remove();
+        currentRequest = null;
+      }
     }
   }
 

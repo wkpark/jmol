@@ -1022,14 +1022,6 @@ abstract class NBODialogView extends NBODialogRun {
       sb.append("GLOBAL SIGN -1" + sep);
     else
       sb.append("GLOBAL SIGN +1" + sep);
-    
-//    SB sb1 = getMetaHeader(true);
-//    if (orbitals.bsNeg.get(i))
-//      sb1.append("CMD SIGN -1" + sep);
-//    else
-//      sb1.append("CMD SIGN +1" + sep);
-//    postNBO_v(sb1, NBOService.MODE_RAW, null, "", null, null);
-
   }
 
   //contour/profile selected orbital in orbital list
@@ -1116,10 +1108,10 @@ abstract class NBODialogView extends NBODialogRun {
       }
       sb.append(key + i + " " + tmp2 + sep);
     }
-    postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_RAW, null, "", "jview.txt", sb.toString());
+//    postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_RAW, null, "", "jview.txt", sb.toString());
 
     postNBO_v(new SB().append("CMD JVIEW"), NBOService.MODE_RAW, null,
-        "Sending Jmol orientation", null, null);
+        "Sending Jmol orientation",  "jview.txt", sb.toString());
 
     //    sb = getMetaHeader(true);
     //    sb.append("CMD LABEL");

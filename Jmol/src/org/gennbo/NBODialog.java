@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -845,6 +846,14 @@ public class NBODialog extends NBODialogSearch {
   @Override
   protected NBOFileHandler newNBOFileHandler(String name, String ext, int mode, String useExt) {
     return new NBOFileHandler(name, ext, mode, useExt, this);
+  }
+
+  /** set the cursor to Cursor.WAIT or the default cursor
+   * 
+   * @param c
+   */
+  public void setCurorTo(int c) {
+    setCursor(Cursor.getPredefinedCursor(c));
   }
 
 //  protected Component getComponentatPoint(Point p, Component top){

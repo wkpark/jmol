@@ -23,6 +23,7 @@
  */
 package org.gennbo;
 
+import java.awt.Cursor;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -56,77 +57,8 @@ public class NBOService {
   //    
   // 3) When View starts up, a new jmol_outfile is created, and it can be deleted.
   // 
-  // 4) The process of View...Browse... leads to the following:
-  // 
-  //    07/02/2015  09:04 AM                20 jmol_infile.txt
-  //    07/02/2015  09:04 AM               429 jmol_outfile.txt 
-  //    07/02/2015  09:05 AM                95 v_test1435845900375.txt
-  //    07/02/2015  09:05 AM                11 fort.106
-  //    07/02/2015  09:05 AM                 0 v_test1435845900375.txtDONE
-  // 
-  // v_test... is 
-  //
-  //  GLOBAL C_PATH C:\temp
-  //  GLOBAL I_KEYWORD 6
-  //  GLOBAL C_JOBSTEM ch3nh2
-  //  GLOBAL I_BAS_1 6
-  //  CMD LABEL
-  //
-  // jmol_infile.txt is:
-  //
-  //          1    1    2
-  //  
-  // jmol_outfile.txt is:
-
-  //    DATA " "
-  //    1    1    2
-  //  NBOServe: NATURAL BOND ORBITAL PROGRAM SUITE
-  //  _______________________________________________
-  //  (1) NBOModel:
-  //    Create & edit molecular model and input files
-  //  (2) NBORun:
-  //    Launch NBO analysis for chosen archive (.47) file
-  //  (3) NBOView:
-  //    Display NBO orbitals in 1D/2D/3D imagery
-  //  (4) NBOSearch:
-  //    Search NBO output interactively
-  //  Your choice (1-4), (H)elp, e(X)it, or (D)ir reset?
-  //  END ""
-  //
-  // fort.106 is 
-  //
-  //    END ""
-  //
-  // note that the actual label information came back only over sysout.
-  //
-  // requesting a 3D view (raytrace) produces the following files:
-  //
-  //  07/02/2015  09:13 AM                97 v_test1435846433040.txt
-  //  07/02/2015  09:13 AM                 0 v_test1435846433040.txtDONE
-  //  07/02/2015  09:14 AM                59 v_test1435846446147.txt
-  //  07/02/2015  09:14 AM           480,029 ch3nh2.bmp (in c:\temp)
-  //  07/02/2015  09:14 AM                 0 v_test1435846446147.txtDONE
-  //  07/02/2015  09:14 AM                 2 jmol_outfile.txt
-  //  07/02/2015  09:14 AM               121 jmol_molfile.txt
-  //  07/02/2015  09:14 AM             5,552 raytrace.rt
-
-  // the first v_test is: 
-  //
-  //  GLOBAL C_PATH C:\temp
-  //  GLOBAL C_JOBSTEM ch3nh2
-  //  GLOBAL I_BAS_1 6
-  //  GLOBAL SIGN +1 
-  //  CMD PROFILE 10  
-  // 
-  // and the second is:
-  //
-  //  GLOBAL C_PATH C:\temp
-  //  GLOBAL C_JOBSTEM ch3nh2
-  //  CMD VIEW 1 
 
   // modes of operation
-
-  // NOTE: There was a problem in that View and Raw were both 4 here
 
   static final int MODE_ERROR = -1;
   static final int MODE_RAW = 0;// leave this 0; it is referred to that in StatusListener
@@ -518,6 +450,8 @@ public class NBOService {
   protected void startRequest(NBORequest request) {
     if (request == null)
       return;
+    
+    nboDialog.setCurorTo(Cursor.WAIT_CURSOR);
     currentRequest = request;
     String cmdFileName = null, data = null, list = "";
     for (int i = 2, n = request.fileData.length; i < n + 2; i += 2) {
@@ -555,7 +489,9 @@ public class NBOService {
    * @return  true if we are done
    */
   protected boolean processServerReturn(String s) {
-    
+
+    nboDialog.setCurorTo(Cursor.DEFAULT_CURSOR);
+
     // Check for the worst
     
     if (s.indexOf("FORTRAN STOP") >= 0) {
@@ -611,8 +547,8 @@ public class NBOService {
         
         // Note that RUN can dump all kinds of things to SYSOUT prior to completion.
         
-        logServerLine(s, (currentRequest.isRun ? Logger.LEVEL_DEBUG : Logger.LEVEL_ERROR));
-        return (removeRequest = !currentRequest.isRun);
+        logServerLine(s, (currentRequest.isRUN ? Logger.LEVEL_DEBUG : Logger.LEVEL_ERROR));
+        return (removeRequest = !currentRequest.isRUN);
       }
       s = s.substring(pt + 8); // includes \n
       pt = s.indexOf("*end*");

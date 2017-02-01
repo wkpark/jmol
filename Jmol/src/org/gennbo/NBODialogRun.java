@@ -637,6 +637,10 @@ abstract class NBODialogRun extends NBODialogModel {
       }
     }
 
+    /**
+     * Get an NBO archive .47 file.
+     * 
+     */
     public void downloadNBOArchiveFile() {
       File f = null;
       logInfo("saving to " + tfPath.getText().trim(), Logger.LEVEL_INFO);
@@ -831,7 +835,7 @@ abstract class NBODialogRun extends NBODialogModel {
 
   
   /**
-   * Process the reply from NBOServe.
+   * Process the reply from NBOServe for a RUN request
    * 
    * @param req
    * @param mode

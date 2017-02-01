@@ -716,6 +716,10 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
   };
 
+  /**
+   * Clear out the text fields
+   * 
+   */
   protected void clearSelected() {
     for (int i = 0; i < boxCount; i++)
       atomNumBox[i].setText("");
@@ -760,6 +764,9 @@ abstract class NBODialogModel extends NBODialogConfig {
 
   }
 
+  /**
+   * Post a request for a point group symmetry check.
+   */
   protected void getSymmetry() {
     SB sb = new SB();
     sb.append("CMD symmetry");
@@ -767,6 +774,11 @@ abstract class NBODialogModel extends NBODialogConfig {
     postNBO_m(sb, NBOService.MODE_MODEL_SYMMETRY,  "symmetry...", null, null);
   }
 
+  /**
+   * clipped in?  
+   * 
+   * @param textBox
+   */
   protected void getModelFromTextBox(JTextField textBox) {
     String model = textBox.getText();
     if (textBox.getText().equals(""))
@@ -853,6 +865,13 @@ abstract class NBODialogModel extends NBODialogConfig {
 
   }
 
+  /**
+   * Save the model either by having Jmol convert it or NBOServe.
+   * 
+   * @param path
+   * @param fname
+   * @param ext
+   */
   protected void saveModel(String path, String fname, String ext) {
     if (PT.isOneOf(ext, JMOL_EXTENSIONS)) {
       String s = vwr.getModelExtract("1.1", false, false, ext.toUpperCase());
@@ -874,14 +893,14 @@ abstract class NBODialogModel extends NBODialogConfig {
 
   /**
    * @param ext
-   *        - extenstion to convert
-   * @param use
-   *        - true if use, false if saving
+   *        - extension to convert
+   * @param isLoading
+   *        - true if "use" (loading), false if saving
    * @return ess code used internally by NBOServie
    */
-  private String getEss(String ext, boolean use) {
+  private String getEss(String ext, boolean isLoading) {
     ext = ext.toLowerCase();
-    if ((ext.equals("gau") || ext.equals("g09") || ext.equals("com")) && !use) {
+    if ((ext.equals("gau") || ext.equals("g09") || ext.equals("com")) && !isLoading) {
       if (jComboSave.getSelectedItem().toString().contains("(C")) {
         return ext.charAt(0) + "c";
       } else if (jComboSave.getSelectedItem().toString().contains("(z")) {
@@ -901,6 +920,11 @@ abstract class NBODialogModel extends NBODialogConfig {
       return ext;
   }
 
+  /**
+   * callback notification from Jmol
+   * @param atomno Jmol's atom number - 1-based
+   * 
+   */
   protected void notifyPick_m(String atomno) {
 
     if (boxCount == 0)
@@ -1086,6 +1110,10 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
   }
 
+  /**
+   * callback notification from Jmol
+   * 
+   */
   protected void notifyLoad_m() {
     if (loadModel) {
       loadModel = false;
@@ -1093,10 +1121,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       loadModelToNBO(runScriptNow("print data({selected},'cfi')"));
       return;
     }
-    // BH? clearSelected();
-
     showAtomNums(false);
-
     for (Component c : panel.getComponents())
       c.setVisible(true);
     editBox.setVisible(true);
@@ -1108,10 +1133,6 @@ abstract class NBODialogModel extends NBODialogConfig {
         if (undoStack.size() > MAX_HISTORY)
           undoStack.removeElementAt(0);
       }
-    //TODO
-    //    if(moveTo != null)
-    //      runScriptQueued(moveTo);
-    //    moveTo = null;
     if (undoStack.size() > 1)
       undo.setEnabled(true);
     else
@@ -1165,7 +1186,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   }
 
   /**
-   * Process the reply from NBOServe.
+   * Process the reply from NBOServe for a MODEL request
    * 
    * @param mode 
    * @param req
@@ -1195,35 +1216,6 @@ abstract class NBODialogModel extends NBODialogConfig {
       runScriptQueued(s);
       break;
     }
-//    if (line.startsWith("DATA \" \"")) {
-//    } else if (line.startsWith("DATA ")) {
-//      if (line.startsWith("DATA \"model")) {
-//        sbRet.setLength(0);
-//        line = fixNBOModel(line);
-//      }
-//      inData = (line.indexOf("exit") < 0);
-//      if (inData)
-//        sbRet.append(line + "\n");
-//    } else if (!inData) {
-//      processModelLine(line);
-//    } else if (sbRet != null) {
-//      sbRet.append(line + "\n");
-//      if (line.indexOf("END") >= 0) {
-//        inData = false;
-//        if (line.indexOf("\"" + nboModel + "\"") >= 0)
-//          nboDialog.processModelEnd(sbRet.toString(), currJob.statusInfo);
-//        sbRet.setLength(0);
-//        nboModel = "\0";
-//      }
-//    }
-
   }
-
-//  private String fixNBOModel(String line) {
-//    String s = " NBO " + PT.getQuotedStringAt(line, 0);
-//    int pt = line.indexOf("\n");
-//    return (pt < 0 ? line + s : line.substring(0, pt) + s + line.substring(pt));
-//  }
-
 
 }

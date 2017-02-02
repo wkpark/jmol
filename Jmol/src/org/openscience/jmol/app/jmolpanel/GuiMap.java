@@ -246,6 +246,7 @@ public class GuiMap {
     labels.put("homeTip", GT._("Return molecule to home position."));
     labels.put("modelkitScriptTip", GT._("Open the model kit."));
     labels.put("JavaConsole.clear", GT._("Clear"));
+    labels.put("plugins", GT._("&Plugins"));
   }
 
   String getLabel(String key) {

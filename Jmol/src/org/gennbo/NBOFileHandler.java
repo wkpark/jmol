@@ -168,7 +168,7 @@ class NBOFileHandler extends JPanel {
     }
     canReRun = true;
     setInputFile(inputFile);
-    dialog.log("Job: " + jobStem, 'b');
+    dialog.logJobName(jobStem);
     fileDir = inputFile.getParent();
     dialog.saveWorkingPath(fileDir.toString());
     return true;
@@ -249,6 +249,7 @@ class NBOFileHandler extends JPanel {
    * @return false if output contains error
    */
   protected boolean getChooseList(boolean isCheckOnly) {
+    dialog.chooseList = null;
     File f = newNBOFileForExt("nbo");
     if (!f.exists() || f.length() == 0)
       return false;    
@@ -450,7 +451,7 @@ class NBOFileHandler extends JPanel {
   public void copyAndSwitch47FileTo(String jobName) {
     String data = dialog.vwr.getAsciiFileOrNull(inputFile.getAbsolutePath());
     tfName.setText(jobName);
-    setInput(tfDir.getText(), jobName, ".47");
+    setInput(tfDir.getText(), jobName, "47");
     if (data != null)
       this.writeToFile(inputFile.getAbsolutePath(), data);    
   }
@@ -463,8 +464,8 @@ class NBOFileHandler extends JPanel {
         + "FILE=" + jobName + " " + keywords + "  $END" + sep + fileData[2])) {
       fileData[1] = keywords;
       fileData[3] = "FILE=" + jobName + " " + keywords; 
-      dialog.log("Job: " + jobName, 'b');
-      dialog.log("Keywords: " + keywords, 'b');
+      dialog.logJobName(jobName);
+      dialog.logKeywords(keywords);
       return fileData;
     }
     dialog.logInfo("Could not create " + inputFile, Logger.LEVEL_ERROR);

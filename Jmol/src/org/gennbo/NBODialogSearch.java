@@ -916,18 +916,12 @@ abstract class NBODialogSearch extends NBODialogView {
 
   protected void getSearchValue(int op) {
     if (relabel) {
-      runScriptQueued("select add {*}.bonds; color bonds lightgrey; select remove {*}");
+      runScriptQueued("select add {*}.bonds; color bonds lightgrey; select none");
       showAtomNums(alphaSpin.isSelected());
       for (int i = 0; i < nBonds; i++) {
         runScriptQueued("MEASUREMENT ID '" + i + "' off ");
       }
       relabel = false;
-      if (!useWireMesh) {
-        runScriptQueued("nbo nomesh fill translucent " + opacityOp);
-        runScriptQueued("mo nomesh fill translucent " + opacityOp);
-      }
-      runScriptQueued("nbo color " + color2 + " " + color1);
-      runScriptQueued("mo color " + color2 + " " + color1);
     }
     final SB sb = getMetaHeader(false);
     sb.append("GLOBAL I_KEYWORD " + nboKeywordNumber + sep);
@@ -999,7 +993,7 @@ abstract class NBODialogSearch extends NBODialogView {
       runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select remove {*}");
       postNBO_s(sb, NBOService.MODE_LABEL_BONDS, null, "Getting bonds list");
     } else {
-      postNBO_s(sb, NBOService.MODE_VALUE, null, "Getting value");
+      postNBO_s(sb, NBOService.MODE_VALUE, null, "Getting value...");
     }
 
   }
@@ -1022,7 +1016,7 @@ abstract class NBODialogSearch extends NBODialogView {
     case KEYWD_E2PERT:
       if (list.equals(list2)) {
         //Relabel a-nbo to correct orbital number
-        int offset = list1.getSize();
+        int offset = list1.getSize() + 1;
         int sz = list2.getSize();
         ActionListener l = orb2.getActionListeners()[0];
         orb2.removeActionListener(l);
@@ -1537,26 +1531,6 @@ abstract class NBODialogSearch extends NBODialogView {
     //BH not implemented?  
   }
 
-  protected void processLabel(String line, int count) {
-    double val = Double.parseDouble(line);
-    val = round(val, 4);
-    runScriptNow("select{*}[" + (count) + "];label " + val);
-  }
-
-  protected void processLabelBonds(String line) {
-    String[] toks = line.split(" ");
-    float order = Float.parseFloat(toks[2]);
-    if (order > 0.01) {
-      int at1 = Integer.parseInt(toks[0]) - 1;
-      int at2 = Integer.parseInt(toks[1]) - 1;
-      float x = (vwr.ms.at[at1].x - vwr.ms.at[at2].x) / 2;
-      float y = (vwr.ms.at[at1].y - vwr.ms.at[at2].y) / 2;
-      float z = (vwr.ms.at[at1].z - vwr.ms.at[at2].z) / 2;
-      runScriptNow("select (atomno = " + at1 + ");" + "label \"" + toks[2]
-          + "\";set labeloffset {" + x + "," + y + "," + (z) + "}");
-    }
-  }
-
   /**
    * Process the reply from NBOServe.
    * 
@@ -1590,21 +1564,52 @@ abstract class NBODialogSearch extends NBODialogView {
       for (int i = 0; i < lines.length; i++)
         list.addElement("  " + PT.rep(PT.rep(lines[i], "MO ", ""), " ", ".  "));
       break;
-    case NBOService.MODE_LABEL:
-      for (int i = 0; i < lines.length; i++) {
-        processLabel(lines[i], i + 1);
-      }
-      break;
     case NBOService.MODE_LABEL_BONDS:
-      for (int i = 1, n = lines.length - 1; i < n; i++) {
-        //      if (line.indexOf("DATA") >= 0)
-        //      if (line.indexOf("END") >= 0) {
-        //      }
-        //      if (isWorking)
-        processLabelBonds(lines[i]);
+    case NBOService.MODE_LABEL:
+      int i0 = -1;
+      for (int i = lines.length; --i >= 0 && lines[i].indexOf("END") < 0;) {
+        i0 = i;
       }
+      boolean isLabel = (mode == NBOService.MODE_LABEL);
+      SB sb = new SB();
+      for (int i = i0, pt = 1; i < lines.length; i++, pt++)
+        if (isLabel ? !processLabel(sb, lines[i], pt) : !processLabelBonds(sb, lines[i]))
+          break;
+      runScriptQueued(sb.toString());
       break;
     }
   }
+
+  protected boolean processLabel(SB sb, String line, int count) {
+    try {
+    double val = Double.parseDouble(line);
+    val = round(val, 4);
+    sb.append(";select{*}[" + (count) + "];label " + val);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
+  protected boolean processLabelBonds(SB sb, String line) {
+    try {
+      String[] toks = PT.getTokens(line);
+      if (toks.length < 3)
+        return false; // must be done
+      float order = Float.parseFloat(toks[2]);
+      if (order > 0.01) {        
+        
+       // measure id "m1" {C1} {C3} radius 0 "testing"
+        
+        sb.append("font measures 20; measure id 'm" + toks[0] + "_" + toks[1] + "' @" + toks[0] + " @" + toks[1] + " radius 0.02 \"" + toks[2] + "\";");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
 
 }

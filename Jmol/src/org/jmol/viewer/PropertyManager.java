@@ -1120,8 +1120,11 @@ public class PropertyManager implements JmolPropertyManager {
     if (exp == null)
       return getModelExtract(vwr.getAtomBitSet(atomExpression), false, false,
           type.toUpperCase(), allTrajectories);
-    if (exp.startsWith("print"))
+    if (exp.startsWith("print")) {
+      if (!atomExpression.equals("selected"))
+        exp = PT.rep(exp, "selected", atomExpression.substring(1, atomExpression.length() - 1));
       return vwr.runScript(exp);
+    }
     if (exp.indexOf("label") < 0)
       exp = atomExpression + ".label(\"" + exp + "\").lines";
     else if (!atomExpression.equals("selected"))

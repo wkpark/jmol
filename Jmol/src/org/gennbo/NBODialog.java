@@ -63,6 +63,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -108,6 +109,8 @@ public class NBODialog extends NBODialogSearch {
 
   protected JPanel nboOutput;
 
+  protected String lastOutputSaveName;
+
   //static final int DIALOG_LIST = 64; // used only for addLine
   // local settings of the dialog type
 
@@ -124,7 +127,8 @@ public class NBODialog extends NBODialogSearch {
    */
   public NBODialog(NBOPlugin plugin, JFrame jmolFrame, Viewer vwr, Map<String, Object> jmolOptions) {
     super(jmolFrame);
-    setTitle("NBOPro6@Jmol " + plugin.getVersion());
+    setName(plugin.getName());
+    setTitle(getName() + " " + plugin.getVersion());
     nboPlugin = plugin;
     this.vwr = vwr;
     setJmolOptions(jmolOptions);
@@ -184,7 +188,7 @@ public class NBODialog extends NBODialogSearch {
 
     
     if (!jmolOptionNOZAP) // use Jmol command NBO OPTIONS NOZAP to allow this
-      runScriptNow("zap");
+      runScriptQueued("zap");
     nboService.restartIfNecessary();
     if (dialogMode == DIALOG_HOME) {
       remove(homePanel);
@@ -235,7 +239,7 @@ public class NBODialog extends NBODialogSearch {
     centerPanel.setDividerLocation(350);
     if (topPanel != null)
       topPanel.add(icon, BorderLayout.EAST);
-    this.statusLab.setText("");
+    setStatus("");
     invalidate();
     setVisible(true);
   }
@@ -320,7 +324,7 @@ public class NBODialog extends NBODialogSearch {
     Dimension screenSize = d.getToolkit().getScreenSize();
     Dimension size = d.getSize();
     int x = Math.min(screenSize.width - size.width,
-        d.getParent().getX()+d.getParent().getWidth()) - 20;
+        d.getParent().getX()+d.getParent().getWidth()) - 10;
     int y = d.getParent().getY();
     System.out.println("------" + x + "   " + y);
     d.setLocation(x, y);
@@ -450,7 +454,7 @@ public class NBODialog extends NBODialogSearch {
     icon.setBorder(BorderFactory.createLineBorder(Color.black));
     
     p.add(b);
-    lab = new JLabel("NBOPro6@Jmol");
+    lab = new JLabel(getName());
     lab.setFont(nboProTitleFont);
     lab.setForeground(Color.red);
     p.add(lab);
@@ -462,14 +466,12 @@ public class NBODialog extends NBODialogSearch {
     JPanel p2 = new JPanel(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
     p2.setBorder(BorderFactory.createLineBorder(Color.black));
-    Font f = new Font("Arial",Font.BOLD | Font.ITALIC,16);
-    Font f2 = new Font("Arial",Font.BOLD | Font.ITALIC,22);
     JButton btn = new JButton("Model");
   
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
     btn.setMinimumSize(new Dimension(150,30));
-    btn.setFont(f2);
+    btn.setFont(homeButtonFont);
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -489,7 +491,7 @@ public class NBODialog extends NBODialogSearch {
     c.gridx = 5;
     c.gridwidth = 1;
     p2.add(Box.createRigidArea(new Dimension(60,10)),c);
-    lab.setFont(f);
+    lab.setFont(homeTextFont);
     JTextPane tp = new JTextPane();
     tp.setContentType("text/html");
     tp.setText("<HTML><center>Frank Weinhold<br><I>(Acknowledgments: Eric Glendening, John Carpenter, " +
@@ -520,13 +522,13 @@ public class NBODialog extends NBODialogSearch {
     c.gridx = 0;
     c.gridy = 2;
     c.gridwidth = 1;
-    btn.setFont(f2);
+    btn.setFont(homeButtonFont);
     p2.add(btn,c);
     c.gridx = 1;
     c.gridy = 2;
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Launch NBO analysis for chosen archive file"),c);
-    lab.setFont(f);
+    lab.setFont(homeTextFont);
     tp = new JTextPane();
     tp.setContentType("text/html");
     tp.setBackground(null);
@@ -546,7 +548,7 @@ public class NBODialog extends NBODialogSearch {
         openPanel('v');
       }
     });
-    btn.setFont(f2);
+    btn.setFont(homeButtonFont);
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
     btn.setMinimumSize(new Dimension(150,30));
@@ -558,7 +560,7 @@ public class NBODialog extends NBODialogSearch {
     c.gridy = 4;
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Display NBO orbitals in 1D/2D/3D imagery"),c);
-    lab.setFont(f);
+    lab.setFont(homeTextFont);
     tp = new JTextPane();
     tp.setMaximumSize(new Dimension(430,60));
     tp.setContentType("text/html");
@@ -575,7 +577,7 @@ public class NBODialog extends NBODialogSearch {
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
     btn.setMinimumSize(new Dimension(150,30));
-    btn.setFont(f2);
+    btn.setFont(homeButtonFont);
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -591,7 +593,7 @@ public class NBODialog extends NBODialogSearch {
     c.gridy = 6;
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Search NBO output interactively"),c);
-    lab.setFont(f);
+    lab.setFont(homeTextFont);
     tp = new JTextPane();
     tp.setMaximumSize(new Dimension(430,60));
     tp.setContentType("text/html");
@@ -669,7 +671,7 @@ public class NBODialog extends NBODialogSearch {
     statusLab = new JLabel();
     statusLab.setForeground(Color.red);
     statusLab.setBackground(Color.white);
-    statusLab.setFont(new Font("Arial",Font.BOLD,14));
+    statusLab.setFont(statusFont);
     statusLab.setOpaque(true);
     box.add(statusLab);
     Box box2 = Box.createHorizontalBox();
@@ -678,33 +680,43 @@ public class NBODialog extends NBODialogSearch {
       @Override
       public void actionPerformed(ActionEvent e) {
         clearOutput();
-      }
+      } 
     });
     box2.add(clear);
     JButton btn = new JButton("Save Output");
+    
     btn.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
           if (jpNBODialog == null)
             return;
           JFileChooser myChooser = new JFileChooser();
+          if (lastOutputSaveName == null)
+            lastOutputSaveName = inputFileHandler.tfDir.getText() + "/nboDialog.txt";
+          String savePath = lastOutputSaveName;
+          myChooser.setSelectedFile(new File(savePath));
+
           myChooser.setFileFilter(new FileNameExtensionFilter(".txt",".txt"));
           myChooser.setFileHidingEnabled(true);
           
           int button = myChooser.showSaveDialog(jpNBODialog);
           if (button == JFileChooser.APPROVE_OPTION) {
-            String output = bodyText.replaceAll("<br>",sep);
-            output = output.replaceAll("<b>", "");
-            output = output.replaceAll("</b>", "");
-            output = output.replaceAll("<i>","");
-            output = output.replaceAll("</i>","");
-            inputFileHandler.writeToFile(myChooser.getSelectedFile().toString(), output);
+            saveDialogOutput(myChooser.getSelectedFile().toString());
           }
         }
       });
     box2.add(btn);
     box.add(box2);
     s.add(box, BorderLayout.SOUTH);
+  }
+
+  protected void saveDialogOutput(String saveFileName) {
+    String output = bodyText.replaceAll("<br>",sep);
+    output = output.replaceAll("<b>", "");
+    output = output.replaceAll("</b>", "");
+    output = output.replaceAll("<i>","");
+    output = output.replaceAll("</i>","");
+    inputFileHandler.writeToFile(saveFileName, output);
   }
 
   public void close() {
@@ -801,17 +813,11 @@ public class NBODialog extends NBODialogSearch {
       jpNBODialog.setText("");
   }
 
-//  protected boolean checkJmolNBO(){
-//    return(vwr.ms.getInfo(vwr.am.cmi, "nboType") != null ||
-//        NBOFileHandler.getExt(inputFileHandler.inputFile).equals("47"));
-//  }
-    
-  void setStatus(String statusInfo) {
-    if (statusInfo != null && statusInfo.length() > 0)
-      log(statusInfo, 'p');  
-      statusLab.setText(statusInfo);
-  }
-  
+  //  protected boolean checkJmolNBO(){
+  //    return(vwr.ms.getInfo(vwr.am.cmi, "nboType") != null ||
+  //        NBOFileHandler.getExt(inputFileHandler.inputFile).equals("47"));
+  //  }
+
   /**
    * user has made changes to the settings, so we need to update panels
    */
@@ -835,7 +841,7 @@ public class NBODialog extends NBODialogSearch {
       setViewerBasis();
       break;
     default:
-      loadModelFileQueued(file, false, false);
+      loadModelFileQueued(file, false);
     }
   }
 
@@ -848,23 +854,71 @@ public class NBODialog extends NBODialogSearch {
     return new NBOFileHandler(name, ext, mode, useExt, this);
   }
 
-  /** set the cursor to Cursor.WAIT or the default cursor
-   * 
-   * @param c
-   */
-  public void setCurorTo(int c) {
-    setCursor(Cursor.getPredefinedCursor(c));
+
+  //  protected Component getComponentatPoint(Point p, Component top){
+  //    Component c = null;
+  //    if(top.isShowing()) {
+  //      do{
+  //        c = ((Container) top).findComponentAt(p);
+  //      }while(!(c instanceof Container));
+  //    }
+  //    return c;
+  //  }
+
+  void setStatus(String statusInfo) {
+    boolean isBusy = (statusInfo != null && statusInfo.length() > 0);
+    statusLab.setText(statusInfo);
+    centerPanel.setCursor(Cursor
+        .getPredefinedCursor(isBusy ? Cursor.WAIT_CURSOR
+            : Cursor.DEFAULT_CURSOR));
+    if (isBusy) {
+      log(statusInfo, 'p');
+      if (statusInfo.indexOf("...") >= 0) {
+        if (runTimer != null) {
+          runTimer.stop();
+        }
+        runTimer = new Timer(1000, new ActionListener() {
+
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            showRunTime();
+          }
+
+        });
+        runStartTime = System.currentTimeMillis();
+        runTimer.setRepeats(true);
+        runTimer.start();
+      }
+    } else if (runTimer != null) {
+      runTimer.stop();
+      runTimer = null;
+    }
   }
 
-//  protected Component getComponentatPoint(Point p, Component top){
-//    Component c = null;
-//    if(top.isShowing()) {
-//      do{
-//        c = ((Container) top).findComponentAt(p);
-//      }while(!(c instanceof Container));
-//    }
-//    return c;
-//  }
+  Timer runTimer;
+  private long runStartTime;
   
+
+  protected synchronized void showRunTime() {
+    String t = statusLab.getText();
+    int pt = t.indexOf("...");
+    if (pt < 0)
+      return;
+    try {
+      int time = (int) (System.currentTimeMillis() - runStartTime);
+      int minutes = time / 60000;
+      int seconds = (time % 60000) / 1000;
+      String s = "00" + seconds;
+      s = minutes + ":" + s.substring(s.length() - 2);
+      statusLab.setText(t.substring(0, pt + 3) + " " + s);
+    } catch (Exception e) {
+      if (runTimer != null) {
+        runTimer.stop();
+        runTimer = null;
+      }
+
+    }
+  }
+
 
 }

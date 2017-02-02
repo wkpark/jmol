@@ -38,7 +38,7 @@ public class NBOPlugin implements JmolPlugin {
   protected NBODialog nboDialog;
   protected Viewer vwr;
   
-  public final static String version = "0.1.3";
+  public final static String version = "0.1.4";
 
 
   @Override
@@ -59,9 +59,23 @@ public class NBOPlugin implements JmolPlugin {
 
   @Override
   public String getName() {
-    return "NBO";
+    return "NBOPro6@Jmol";
   }
   
+  @Override
+  public ImageIcon getMenuIcon() {
+    return getIcon("nbo6logo20x20");
+  }
+
+  @Override
+  public String getMenuText() {
+    return getName();
+  }
+
+  ImageIcon getIcon(String name) {
+    return new ImageIcon(this.getClass().getResource("assets/" + name + ".gif"));
+  }
+
   @Override
   public String getVersion() {
     return version;
@@ -113,17 +127,4 @@ public class NBOPlugin implements JmolPlugin {
     JmolPanel.setPluginOption("NBO", name, option.replace('\\', '/'));
   }
 
-  @Override
-  public ImageIcon getMenuIcon() {
-    return getIcon("nbo6logo20x20");
-  }
-
-  @Override
-  public String getMenuText() {
-    return "NBO";
-  }
-
-  ImageIcon getIcon(String name) {
-    return new ImageIcon(this.getClass().getResource("assets/" + name + ".gif"));
-  }
 }

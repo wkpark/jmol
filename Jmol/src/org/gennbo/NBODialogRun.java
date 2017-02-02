@@ -33,13 +33,14 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 import javajs.util.JSJSONParser;
@@ -50,19 +51,18 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.Timer;
 
 import org.jmol.util.Logger;
 
@@ -126,24 +126,47 @@ abstract class NBODialogRun extends NBODialogModel {
         createTitleBox(" Choose $NBO Keywords ", new HelpBtn(
             "run_keywords_help.htm"))).setVisible(false);
     editBox = createBorderBox(true);
-    editBox.setMinimumSize(new Dimension(350, 400));
+    editBox.setSize(new Dimension(350, 400));
     tfJobName = new JTextField();
+    tfJobName.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        logJobName(null);
+      }
+    });
+    tfJobName.addFocusListener(new FocusListener() {
+
+      @Override
+      public void focusGained(FocusEvent e) {
+      }
+
+      @Override
+      public void focusLost(FocusEvent e) {
+        logJobName(null);
+      }});
+    
     editBox.setVisible(false);
     panel.add(editBox);
     //BOTTOM OPTIONS///////////////
+    
+//    Box box = Box.createHorizontalBox();
+//    box.setSize(new Dimension(250, 50));
+//    box.setAlignmentX(0.5f);
     btnRun = new JButton("Run");
+    btnRun.setFont(runButtonFont);
     btnRun.setVisible(false);
     btnRun.setEnabled(true);
-    panel.add(btnRun).setFont(runButtonFont);
     btnRun.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         runGenNBOJob("");
       }
     });
-    String ext = inputFileHandler.tfExt.getText();
 
-    if (ext.equals("47"))
+    //box.add(btnRun);
+    panel.add(btnRun);
+    
+    if (inputFileHandler.tfExt.getText().equals("47"))
       notifyLoad_r();
 
     return panel;
@@ -162,6 +185,8 @@ abstract class NBODialogRun extends NBODialogModel {
       @Override
       public void actionPerformed(ActionEvent e) {
         inputFileHandler.setBrowseEnabled(true);
+        if (modelOrigin != ORIGIN_NBO_ARCHIVE)
+          inputFileHandler.browsePressed();
       }
     });
     box.add(rbLocal);
@@ -194,6 +219,139 @@ abstract class NBODialogRun extends NBODialogModel {
     return box;
   }
 
+  protected void addNBOKeylist() {
+    if (inputFileHandler.inputFile == null)
+      return;
+    Box jobNameOuterBox = Box.createVerticalBox();
+    jobNameOuterBox.setSize(new Dimension(250,75));
+
+    Box selectBox = Box.createHorizontalBox(); 
+    selectBox.setSize(new Dimension(250, 50));
+
+    Box mainBox = Box.createVerticalBox(); 
+    mainBox.setSize(new Dimension(250, 275));
+
+    final JPanel mainMenuOptions = addMenuOption();
+    mainBox.add(mainMenuOptions);
+
+    final JPanel mainTextEditor = addTextOption();
+    mainBox.add(mainTextEditor);
+    
+
+
+    editBox.removeAll();
+    editBox.add(Box.createRigidArea(new Dimension(350, 0)));
+    editBox.add(jobNameOuterBox);    
+    editBox.add(selectBox);    
+    editBox.add(mainBox);
+
+    Box jobNameInnerBox = Box.createHorizontalBox();
+    jobNameInnerBox.add(new JLabel("Jobname ")).setFont(nboFont);
+    jobNameInnerBox.add(tfJobName).setMaximumSize(new Dimension(150, 30));
+    jobNameInnerBox.setAlignmentX(0.5f);
+    jobNameOuterBox.add(jobNameInnerBox);    
+    JLabel lab = new JLabel("(Plot files will be created with this name)");
+    lab.setAlignmentX(0.5f);
+    jobNameOuterBox.add(lab);
+    
+    ButtonGroup bg = new ButtonGroup();
+    JRadioButton btnMenuSelect = new JRadioButton("Menu Select");
+    bg.add(btnMenuSelect);
+    btnMenuSelect.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        mainTextEditor.setVisible(false);
+        mainMenuOptions.setVisible(true);
+      }
+    });    
+    
+    JRadioButton btnTextEditor = new JRadioButton("Text Editor");
+    btnTextEditor.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        mainMenuOptions.setVisible(false);
+        setKeywordTextPane(getKeywordsFromButtons());
+        mainTextEditor.setVisible(true);
+      }
+    });
+    bg.add(btnTextEditor);
+    
+    selectBox.add(new JLabel("Keywords:  ")).setFont(nboFont);
+    selectBox.add(btnMenuSelect);
+    selectBox.add(btnTextEditor);
+
+    mainTextEditor.setVisible(false);
+    mainMenuOptions.setVisible(true);
+    btnMenuSelect.doClick();
+  }
+
+  private JPanel addTextOption() {
+    JPanel textPanel = new JPanel(new BorderLayout());
+    textPanel.setPreferredSize(new Dimension(270, 240));
+    textPanel.setMaximumSize(new Dimension(270, 240));
+    textPanel.setAlignmentX(0.5f);
+    
+    keywordTextPane = new JTextPane();
+    setKeywordTextPane(file47Keywords);
+    
+    JScrollPane sp = new JScrollPane();
+    sp.getViewport().add(keywordTextPane);
+    textPanel.add(sp, BorderLayout.CENTER);
+    
+//    keywordTextPane.setCaretPosition(7);
+    JButton saveBtn = new JButton("Save Changes");
+    saveBtn.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String s = keywordTextPane.getText();
+        file47Keywords = "";
+        String[] tokens = PT.getTokens(PT.rep(PT.rep(s, "$NBO", ""), "$END", "").trim());
+        for (String x : tokens) {
+          if (x.indexOf("=") < 0) {
+            file47Keywords += x + " ";
+          } else {
+            tfJobName.setText(x.substring(x.indexOf("=") + 1));
+          }
+        }
+        addNBOKeylist();
+        editBox.repaint();
+        editBox.revalidate();
+      }
+    });
+    textPanel.add(saveBtn, BorderLayout.SOUTH);
+    textPanel.setVisible(false);
+    return textPanel;
+  }
+
+  private JPanel addMenuOption() {
+    JPanel menuPanel = new JPanel();
+    menuPanel.setPreferredSize(new Dimension(270, 240));
+    menuPanel.setMaximumSize(new Dimension(270, 240));
+    menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+    menuPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+    keywordButtons = new JRadioButton[RUN_KEYWORD_LIST.length];
+    for (int i = 0; i < keywordButtons.length; i++) {
+      keywordButtons[i] = new JRadioButton(RUN_KEYWORD_LIST[i]);
+      if (file47Keywords.contains(RUN_KEYWORD_LIST[i].split(":")[0]))
+        keywordButtons[i].setSelected(true);
+      keywordButtons[i].setAlignmentX(0.0f);
+      menuPanel.add(keywordButtons[i]);
+      keywordButtons[i].addActionListener(new ActionListener() {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          logKeywords(null);
+        }
+        
+      });
+    }
+    JLabel lab2 = new JLabel("(Select one or more)");
+    menuPanel.add(lab2);
+    menuPanel.setAlignmentX(0.5f);
+    menuPanel.setVisible(true);
+    return menuPanel;
+  }
+
   /**
    * Clean parameters and remove all FILE=xxxx
    * @param params 
@@ -224,6 +382,7 @@ abstract class NBODialogRun extends NBODialogModel {
   }
 
   protected void setBonds(boolean alpha) {
+    try {
     if (chooseList == null)
       return;
     SB tmp = (alpha ? chooseList.bonds : chooseList.bonds_b);
@@ -267,6 +426,9 @@ abstract class NBODialogRun extends NBODialogModel {
       String s2 = runScriptNow("print {*}.bonds");
       runScriptNow("select " + s2 + ";color bonds lightgrey");
     }
+    } catch (Exception e) {
+      System.out.println("Cannot create bonds: " + e.getMessage());
+    }
   }
 
   protected void setChooseList(String data) {
@@ -308,172 +470,53 @@ abstract class NBODialogRun extends NBODialogModel {
     }
   }
 
-  protected void addNBOKeylist() {
-
-    if (inputFileHandler.inputFile != null) {
-      editBox.removeAll();
-      editBox.add(Box.createRigidArea(new Dimension(350, 0)));
-      final DefaultListModel<String> sList = new DefaultListModel<String>();
-      String tmp = "";
-      for (String s : file47Keywords.split("\\s+"))
-        if (s.length() > 0 && !s.toUpperCase().contains("FILE=")) {
-          sList.addElement(s);
-          tmp += s + " ";
-        }
-      file47Keywords = tmp;
-      final JList<String> keywords = new JList<String>(sList);
-      keywords.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-          if (e.getClickCount() == 2)
-            removeListParams(keywords.getSelectedValuesList(), sList);
-        }
-      });
-      //FILE=///////////
-      Box box = Box.createHorizontalBox();
-      box.add(new JLabel("Jobname ")).setFont(nboFont);
-      box.add(tfJobName).setMaximumSize(new Dimension(150, 30));
-      box.setAlignmentX(0.5f);
-      Box box2 = Box.createVerticalBox();
-      box2.add(box);
-      JLabel lab = new JLabel("(Plot files will be created with this name)");
-      lab.setAlignmentX(0.5f);
-      box2.add(lab);
-      editBox.add(box2);
-      //NBOKEYLIST/////////
-      box2 = Box.createHorizontalBox();
-      box2.add(new JLabel("Keywords:  ")).setFont(nboFont);
-      final JPanel menu = menuNboKeywords();
-      ButtonGroup bg = new ButtonGroup();
-      JRadioButton btn = new JRadioButton("Menu Select");
-      bg.add(btn);
-      box2.add(btn);
-      final JPanel manEdit = addManualEditor();
-      btn.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          manEdit.setVisible(false);
-          menu.setVisible(true);
-        }
-      });
-      btn.doClick();
-      btn = new JRadioButton("Text Editor");
-      bg.add(btn);
-      box2.add(btn);
-      btn.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          menu.setVisible(false);
-          manEdit.setVisible(true);
-        }
-      });
-      editBox.add(box2);
-      manEdit.setAlignmentX(0.5f);
-      editBox.add(manEdit);
-      editBox.add(menu);
-    }
+  protected void logJobName(String name) {
+    if (name == null)
+      tfJobName.setText(name = tfJobName.getText().trim());
+    log("Job: " + name, 'b');
   }
 
-  private JPanel menuNboKeywords() {
-    JPanel menu = new JPanel();
-    menu.setLayout(new BoxLayout(menu, BoxLayout.Y_AXIS));
-    menu.setBorder(BorderFactory.createLoweredBevelBorder());
-    keywordButtons = new JRadioButton[RUN_KEYWORD_LIST.length];
-    for (int i = 0; i < keywordButtons.length; i++) {
-      keywordButtons[i] = new JRadioButton(RUN_KEYWORD_LIST[i]);
-      if (file47Keywords.contains(RUN_KEYWORD_LIST[i].split(":")[0]))
-        keywordButtons[i].setSelected(true);
-      keywordButtons[i].setAlignmentX(0.0f);
-      menu.add(keywordButtons[i]);
-      keywordButtons[i].addActionListener(new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          logKeywords();
-        }
-        
-      });
-    }
-    JLabel lab2 = new JLabel("(Select one or more)");
-    menu.add(lab2);
-    menu.setAlignmentX(0.5f);
-    menu.setMinimumSize(new Dimension(300, 250));
-    menu.setVisible(false);
-    return menu;
+  protected void logKeywords(String keywords) {
+    if (keywords == null)
+      keywords = getKeywordsFromButtons();
+    log("Keywords: " + keywords, 'b');    
   }
 
-  protected void logKeywords() {
-    log("Keywords: " + getKeywordsFromButtons(), 'b');    
+  JTextPane keywordTextPane;
+
+  protected void setKeywordTextPane(String keywords) {
+    keywordTextPane.setText(keywords);
   }
 
-  private JPanel addManualEditor() {
-    JScrollPane sp = new JScrollPane();
-    JPanel d = new JPanel(new BorderLayout());
-    final JTextPane p = new JTextPane();
-    sp.setPreferredSize(new Dimension(200, 200));
-    sp.getViewport().add(p);
-    d.add(sp, BorderLayout.CENTER);
-    p.setText("$NBO\nFile=" + tfJobName.getText() + " " + file47Keywords
-        + "\n$END");
-    p.setCaretPosition(7);
-    JButton btn = new JButton("Save Changes");
-    btn.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String s = p.getText();
-        String tmp = s.replace("$NBO", "").replace("$END", "");
-        file47Keywords = "";
-        for (String x : tmp.split("\\s+")) {
-          x = x.trim();
-          System.out.println(x);
-          if (x.length() == 0)
-            continue;
-          if (x.indexOf("=") < 0) {
-            file47Keywords += x + " ";
-          } else {
-            tfJobName.setText(x.substring(x.indexOf("=") + 1));
-          }
-        }
-        addNBOKeylist();
-        editBox.repaint();
-        editBox.revalidate();
-      }
-    });
-    d.add(btn, BorderLayout.SOUTH);
-    d.setVisible(false);
-    d.setMaximumSize(new Dimension(300, 200));
-    return d;
-  }
-
-  protected void removeListParams(List<String> list,
-                                  DefaultListModel<String> listModel) {
-    log("Keyword(s) removed:", 'p');
-    for (String x : list) {
-      listModel.removeElement(x);
-      if (file47Keywords.toUpperCase().contains(x.toUpperCase())) {
-        file47Keywords = file47Keywords.substring(0,
-            file47Keywords.indexOf(x.toUpperCase()))
-            + file47Keywords.substring(file47Keywords.indexOf(x.toUpperCase())
-                + x.length());
-        log("  " + x, 'i');
-      }
-    }
-  }
+//  protected void removeListParams(List<String> list,
+//                                  DefaultListModel<String> listModel) {
+//    log("Keyword(s) removed:", 'p');
+//    for (String x : list) {
+//      listModel.removeElement(x);
+//      if (file47Keywords.toUpperCase().contains(x.toUpperCase())) {
+//        file47Keywords = file47Keywords.substring(0,
+//            file47Keywords.indexOf(x.toUpperCase()))
+//            + file47Keywords.substring(file47Keywords.indexOf(x.toUpperCase())
+//                + x.length());
+//        log("  " + x, 'i');
+//      }
+//    }
+//  }
 
   /**
    * Open the current 47 file and parse its data into three sections: pre,
    * keywords, post;
    * 
-   * @param forceNew
-   *        set true to recreate global fields file47Data and nboKeywords
+   * @param andSetJobNameField
+   *        set true to set the JobName text field as well
    * 
    * @return [pre, keywords, post]
    */
-  protected String[] get47FileData(boolean forceNew) {
-    if (file47Data != null && !forceNew)
-      return file47Data;
+  protected String[] get47FileData(boolean andSetJobNameField) {
+//    if (file47Data != null && !forceNew)
+//      return file47Data;
     file47Data = inputFileHandler.read47File();
-    file47Keywords = cleanNBOKeylist(file47Data[1], true);
+    file47Keywords = cleanNBOKeylist(file47Data[1], andSetJobNameField);
     return file47Data;
   }
 
@@ -488,7 +531,7 @@ abstract class NBODialogRun extends NBODialogModel {
       c.setVisible(true);
     editBox.getParent().setVisible(true);
     editBox.setVisible(true);
-    logKeywords();
+    logKeywords(null);
     repaint();
     revalidate();
   }
@@ -685,12 +728,14 @@ abstract class NBODialogRun extends NBODialogModel {
         }
         break;
       }
-      logInfo("saved " + n + "file" + (n == 1 ? "" : "s"), Logger.LEVEL_INFO);
+      logInfo("saved " + n + " file" + (n == 1 ? "" : "s"), Logger.LEVEL_INFO);
       if (f == null)
         return;
       modelOrigin = ORIGIN_NBO_ARCHIVE;
       inputFileHandler.setInputFile(f);
+      modelOrigin = ORIGIN_NBO_ARCHIVE;
       rbLocal.doClick();
+      modelOrigin = ORIGIN_FILE_INPUT;
       setVisible(false);
       dispose();
     }
@@ -730,18 +775,17 @@ abstract class NBODialogRun extends NBODialogModel {
    */
   protected String getKeywordsFromButtons() {
     String keywords = " " + cleanNBOKeylist(file47Keywords, false) + " ";
+    if (keywordButtons == null)
+      return keywords;
     for (int i = 0; i < keywordButtons.length; i++) {
-        String key = RUN_KEYWORD_LIST[i].split(":")[0];
-        if (keywordButtons[i].isSelected()) {
-          if (!keywords.contains(" " + key + " "))
-            keywords += key + " ";
-        } else {
-          keywords = keywords.replaceAll(" " + key + " ", " ");
-        }
-      }
+      String key = RUN_KEYWORD_LIST[i].substring(0, RUN_KEYWORD_LIST[i].indexOf(":"));
+      keywords = PT.rep(keywords, " " + key + " ", " ");
+      if (keywordButtons[i].isSelected())
+        keywords += key + " ";
+    }
     return keywords;
   }
-
+  
   /**
    * Initiates a gennbo job via NBOServe; called from RUN, VIEW, and SEARCH
    * 
@@ -758,12 +802,17 @@ abstract class NBODialogRun extends NBODialogModel {
 
     // get the current file47Data and nboKeywords
 
-    get47FileData(true);
+    get47FileData(false);
 
     String newKeywords = getKeywordsFromButtons();
-
+    
     //Check the plot file names match job name, warn user otherwise
     inputFileHandler.jobStem = inputFileHandler.jobStem.trim();
+
+    if (requiredKeyword.length() > 0 && tfJobName != null) {
+      // from another module
+      tfJobName.setText(inputFileHandler.jobStem);
+    }
     String jobName = (tfJobName == null ? inputFileHandler.jobStem : tfJobName
         .getText().trim());
 
@@ -775,7 +824,7 @@ abstract class NBODialogRun extends NBODialogModel {
       int i = JOptionPane
           .showConfirmDialog(
               null,
-              "Warning! Plot files are being created with name \""
+              "Note: Plot files are being created with name \""
                   + jobName
                   + "\", which does not match your file name \""
                   + inputFileHandler.jobStem
@@ -810,6 +859,7 @@ abstract class NBODialogRun extends NBODialogModel {
     sb.append("GLOBAL C_ESS gennbo" + sep);
     sb.append("GLOBAL C_LABEL_1 FILE=" + jobName + sep);
     log("RUN GenNBO FILE=" + jobName + " " + file47Keywords, 'I');
+        
     postNBO_r(sb, NBOService.MODE_RUN, "Running GenNBO...");
   }
 

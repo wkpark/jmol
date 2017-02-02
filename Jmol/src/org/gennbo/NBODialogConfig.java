@@ -96,7 +96,7 @@ abstract class NBODialogConfig extends JDialog {
   protected int modelOrigin = ORIGIN_UNKNOWN;
   
 
-  private static final String DEFAULT_SCRIPT = "zap;set bondpicking true;set multipleBondSpacing -0.5;set zoomlarge false;select none;";
+  private static final String DEFAULT_SCRIPT = "zap;set antialiasdisplay;set fontscaling;set bondpicking true;set multipleBondSpacing -0.5;set zoomlarge false;select none;";
 
   protected static final String INPUT_FILE_EXTENSIONS = "adf;cfi;com;g09;gau;gms;jag;log;mm2;mnd;mol;mp;nw;orc;pqs;qc;vfi;xyz;47";
   protected static final String OUTPUT_FILE_EXTENSIONS = "adf;cfi;gau;gms;jag;mm2;mnd;mp;nw;orc;pqs;qc;mol;xyz;vfi;g09;com";
@@ -104,6 +104,8 @@ abstract class NBODialogConfig extends JDialog {
 
   protected static final String sep = System.getProperty("line.separator");
 
+  protected final static String JMOL_FONT_SCRIPT = 
+      ";set fontscaling true; select _H; font label 10 arial; set labelscalereference 0.025;select !_H;font label 10 arial;set labelscalereference 0.035;select none;";
   
 
   /**
@@ -113,42 +115,25 @@ abstract class NBODialogConfig extends JDialog {
   protected NBOPlugin nboPlugin;
   
 
-  /**
-   * MODEL VIEW ....
-   */
-  final static protected Font topFont = new Font("Arial", Font.BOLD, 20);
-  
-  /**
-   * user input box .... -- should  be monospace
-   */
-  final static protected Font userInputFont = new Font("Arial", Font.PLAIN, 12);
-  
-
  
   /**
    * 14 pt   M O N O S P A C E D
    */
   final static protected Font listFont = new Font("Monospaced", Font.BOLD, 14);
   
-  
   /**
    * 16 pt   M O N O S P A C E D
    */
   final static protected Font monoFont = new Font("Monospaced", Font.BOLD, 16);
   
+  
+  
+
   /**
-   * 18 pt Arial bold italic
-   *   
+   * user input box .... -- should  be monospace?
    */
-  final static protected Font titleFont = new Font("Arial", Font.BOLD | Font.ITALIC, 18);
-  
-  
-  /**
-   * 16 pt Arial plain for search area text
-   *   
-   */
-  final static protected Font searchTextAreaFont = new Font("Arial",Font.PLAIN,16);
-  
+  final static protected Font userInputFont = new Font("Arial", Font.PLAIN, 12);
+
   /**
    * Settings and Help
    */
@@ -160,9 +145,20 @@ abstract class NBODialogConfig extends JDialog {
   final static protected Font searchOpListFont = new Font("Arial", Font.BOLD, 14);
 
   /**
+   * Status
+   */
+  final static protected Font statusFont = searchOpListFont;
+
+  /**
+   * 16 pt Arial plain for search area text
+   *   
+   */
+  final static protected Font searchTextAreaFont = new Font("Arial",Font.PLAIN,16);
+  
+ /**
    *  arial plain 16
    */
-  final static protected Font iconFont = new Font("Arial", Font.PLAIN, 16);
+  final static protected Font iconFont = searchTextAreaFont;
 
   
   /**
@@ -170,11 +166,20 @@ abstract class NBODialogConfig extends JDialog {
    */
   final static protected Font nboFont = new Font("Arial", Font.BOLD, 16);
   
+  
+  
+  /**
+   * 16 pt bold italic
+   */
+  final static protected Font homeTextFont = new Font("Arial",Font.BOLD | Font.ITALIC,16);
 
   /**
-   * 26 pt arial bold
+   * 18 pt Arial bold italic
+   *   
    */
-  final static protected Font nboFontLarge = new Font("Arial", Font.BOLD, 26);
+  final static protected Font titleFont = new Font("Arial", Font.BOLD | Font.ITALIC, 18);
+  
+
 
   /**
    * run button 20-pt arial plain
@@ -182,14 +187,36 @@ abstract class NBODialogConfig extends JDialog {
   final static protected Font runButtonFont = new Font("Arial",Font.PLAIN,20);
 
   /**
+   * MODEL VIEW ....
+   */
+  final static protected Font topFont = new Font("Arial", Font.BOLD, 20);
+  
+
+  /**
+   * 22 pt bold italic
+   */
+  final static protected Font homeButtonFont = new Font("Arial",Font.BOLD | Font.ITALIC,22);
+
+
+  /**
+   * 26 pt arial bold
+   */
+  final static protected Font nboFontLarge = new Font("Arial", Font.BOLD, 26);
+
+  /**
    * "NBOPro6@Jmol title 26-pt arial bold
    */
-  final static protected Font nboProTitleFont = new Font("Arial",Font.BOLD,26);
+  final static protected Font nboProTitleFont = nboFontLarge;
     
   /**
    * Jmol-style label font 16 bold
    */
-  private static final String JMOL_LABEL_FONT = "16 bold";
+  private static final String JMOL_LABEL_FONT = "12 bold";
+
+  /**
+   * Jmol-style label font 16 bold
+   */
+  private static final String JMOL_LABEL_H_FONT = "10 plain";
 
   private static final int MODE_PATH_SERVICE = 0;
   private static final int MODE_PATH_WORKING = 1;
@@ -209,9 +236,6 @@ abstract class NBODialogConfig extends JDialog {
   protected boolean jmolOptionVIEW = false;  // present only the VIEW option
   protected boolean jmolOptionNONBO = false; // do not try to contact NBOServe
   
-  //abstract protected void notifyLoad();
-  //abstract protected void rawInput(String str);
-
   protected NBOFileHandler inputFileHandler;
   protected NBOFileHandler saveFileHandler;
   protected char dialogMode;
@@ -402,7 +426,7 @@ abstract class NBODialogConfig extends JDialog {
         debugVerbose = ((JCheckBox) e.getSource()).isSelected();
       }
     });
-    if (!"nboView".equals(viewOpts)) {
+    if (!"nboView".equals(viewOpts) && !"default".equals(viewOpts)) {
       jCheckNboView.doClick();
     } else {
       opacity.setValue((int) (opacityOp * 10));
@@ -660,7 +684,7 @@ abstract class NBODialogConfig extends JDialog {
       return;
     }
     SB sb = new SB();
-    sb.append("select visible;font label " + JMOL_LABEL_FONT + ";label %a;");
+    sb.append("select visible;label %a;");
     if (chooseList != null) {
       Hashtable<String, String> lonePairs = (alpha) ? chooseList.lonePairs
           : chooseList.lonePairs_b;
@@ -737,6 +761,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void alertError(String line) {
+    line = PT.rep(line.replace('\r', ' '), "\n\n", "\n");
     log(line, 'r');
     vwr.alert(line);
   }
@@ -762,10 +787,8 @@ abstract class NBODialogConfig extends JDialog {
     return PT.trim(vwr.runScript(script), "\n");
   }
   
-  protected void loadModelFileQueued(File f, boolean saveOrientation,
-                                     boolean isAppend) {
-    String s = "load " + (isAppend ? "append " : "") + "\""
-        + f.getAbsolutePath() + "\"";
+  protected void loadModelFileQueued(File f, boolean saveOrientation) {
+    String s = "load \"" + f.getAbsolutePath() + "\"" + JMOL_FONT_SCRIPT ;
     if (saveOrientation)
       s = "save orientation o1;" + s + ";restore orientation o1";
     runScriptQueued(s);

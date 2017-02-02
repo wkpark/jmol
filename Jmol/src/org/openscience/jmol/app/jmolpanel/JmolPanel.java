@@ -860,7 +860,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
   JMenu pluginMenu;
 
   private void addPluginMenu(JMenuBar mb) {
-    pluginMenu = new JMenu("Plugins");
+    pluginMenu = guimap.newJMenu("plugins");
     try {
       PropertyResourceBundle bundle = new PropertyResourceBundle(getClass()
           .getResourceAsStream(

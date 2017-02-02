@@ -76,16 +76,18 @@ public class NBOService {
   static final int MODE_LABEL          = 50;
   //static final int MODE_VALUE_M = 60;
   //static final int MODE_GETRS = 61;
+  static final int MODE_MODEL_ALTER    = 61;
   static final int MODE_LABEL_BONDS    = 62;
   static final int MODE_MODEL_EDIT     = 63;
-  static final int MODE_MODEL_SYMMETRY = 64;
+  static final int MODE_MODEL_VALUE    = 64;
   static final int MODE_MODEL_SAVE     = 65;
   static final int MODE_MODEL_TO_NBO   = 66;
+  static final int MODE_MODEL_UNDO_REDO= 67;
 
   protected Viewer vwr;
   protected Process nboServer;
   protected Thread nboListener;
-  protected NBODialog nboDialog;
+  protected NBODialog dialog;
   protected NBORequest currentRequest;
   protected Object lock;
   protected Queue<NBORequest> requestQueue;  
@@ -112,7 +114,7 @@ public class NBOService {
    * @param doConnect 
    */
   public NBOService(NBODialog nboDialog, Viewer vwr, boolean doConnect) {
-    this.nboDialog = nboDialog;
+    this.dialog = nboDialog;
     this.vwr = vwr;
     this.doConnect = doConnect;
     setServerPath(nboDialog.nboPlugin.getNBOProperty("serverPath", System.getProperty("user.home")
@@ -154,7 +156,7 @@ public class NBOService {
    */
   protected void setServerPath(String path) {
     serverPath = path.replace('\\',  '/');
-    nboDialog.nboPlugin.setNBOProperty("serverPath", path);
+    dialog.nboPlugin.setNBOProperty("serverPath", path);
   }
 
   /**
@@ -253,7 +255,6 @@ public class NBOService {
               // Success!
               
               cachedReply = "";
-              nboDialog.setStatus("");
               
               // Get the next request. Note that we leave the currentRequest on 
               // the Queue because that indicates we are still working. 
@@ -265,7 +266,8 @@ public class NBOService {
 
             } catch (Throwable e1) {
               clearQueue();
-              nboDialog.setStatus(e1.getMessage());
+              e1.printStackTrace();
+              dialog.setStatus(e1.getMessage());
               continue;
               // includes thread death
             }
@@ -281,7 +283,7 @@ public class NBOService {
       nboIn = new PrintWriter(nboServer.getOutputStream());
       
     } catch (IOException e) {
-      nboDialog.logInfo(e.getMessage(), Logger.LEVEL_ERROR);
+      dialog.logInfo(e.getMessage(), Logger.LEVEL_ERROR);
       return e.getMessage();
     }
     cantStartServer = false;
@@ -451,7 +453,6 @@ public class NBOService {
     if (request == null)
       return;
     
-    nboDialog.setCurorTo(Cursor.WAIT_CURSOR);
     currentRequest = request;
     String cmdFileName = null, data = null, list = "";
     for (int i = 2, n = request.fileData.length; i < n + 2; i += 2) {
@@ -460,12 +461,12 @@ public class NBOService {
       data = request.fileData[(i + 1)%n];
       if (cmdFileName != null) {
         list += " " + cmdFileName;
-        nboDialog.inputFileHandler.writeToFile(getServerPath(cmdFileName),
+        dialog.inputFileHandler.writeToFile(getServerPath(cmdFileName),
             data);
         System.out.println("saved file " + cmdFileName + "\n" + data + "\n");
       }
     }
-    nboDialog.setStatus(request.statusInfo);
+    dialog.setStatus(request.statusInfo);
     String cmd = "<" + cmdFileName + ">";
 
     System.out.println("sending " + cmd);
@@ -490,12 +491,12 @@ public class NBOService {
    */
   protected boolean processServerReturn(String s) {
 
-    nboDialog.setCurorTo(Cursor.DEFAULT_CURSOR);
-
     // Check for the worst
-    
+
+    System.out.println(s);
+
     if (s.indexOf("FORTRAN STOP") >= 0) {
-      nboDialog.alertError("NBOServe has stopped working - restarting");
+      dialog.alertError("NBOServe has stopped working - restarting");
       clearQueue();
       restart();
       return true;
@@ -503,7 +504,7 @@ public class NBOService {
 
     if (isFortranError(s) || s.indexOf("missing or invalid") >= 0) {
       if (!s.contains("end of file")) {
-        nboDialog.alertError(s);
+        dialog.alertError(s);
       }
       clearQueue();
       restart();
@@ -527,7 +528,7 @@ public class NBOService {
         //   NBOServe v6: development version (A_000000)
         // this was unsolicited.
         if (s.indexOf("NBOServe v") >= 0) {
-          nboDialog.setLicense(s.substring(s.lastIndexOf("NBOServe v")));
+          dialog.setLicense(s.substring(s.lastIndexOf("NBOServe v")));
         }
         return true;
       }
@@ -543,7 +544,7 @@ public class NBOService {
         return true;
       }
 
-      if ((pt = s.indexOf("*start*")) < 0) {
+      if ((pt = s.lastIndexOf("*start*")) < 0) {
         
         // Note that RUN can dump all kinds of things to SYSOUT prior to completion.
         
@@ -565,6 +566,7 @@ public class NBOService {
       if (currentRequest != null && removeRequest) {
         requestQueue.remove();
         currentRequest = null;
+        dialog.setStatus("");
       }
     }
   }
@@ -576,7 +578,9 @@ public class NBOService {
    * @param level
    */
   protected void logServerLine(String line, int level) {
-    nboDialog.logInfo(line, level);
+    dialog.logInfo(line, level);
+    if (level == Logger.LEVEL_ERROR)
+      dialog.setStatus("");
   }
 
   /**

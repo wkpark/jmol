@@ -969,7 +969,7 @@ abstract class NBODialogView extends NBODialogRun {
     loadModelFileQueued(
         f,
         NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(
-            NBOFileHandler.pathWithoutExtension(getJmolFilename())), false);
+            NBOFileHandler.pathWithoutExtension(getJmolFilename())));
 
   }
 
@@ -1108,10 +1108,13 @@ abstract class NBODialogView extends NBODialogRun {
       }
       sb.append(key + i + " " + tmp2 + sep);
     }
-//    postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_RAW, null, "", "jview.txt", sb.toString());
+    
+    // I do not understand why a LABEL command has to be given here. A bug? 
+    
+    postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_RAW, null, "",  "jview.txt", sb.toString());
 
     postNBO_v(new SB().append("CMD JVIEW"), NBOService.MODE_RAW, null,
-        "Sending Jmol orientation",  "jview.txt", sb.toString());
+        "Sending Jmol orientation", null, null);
 
     //    sb = getMetaHeader(true);
     //    sb.append("CMD LABEL");

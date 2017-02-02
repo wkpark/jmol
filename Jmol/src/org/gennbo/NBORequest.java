@@ -79,6 +79,9 @@ class NBORequest {
    * first and last blank lines.
    */
   public String[] getReplyLines() {
+    int pt = reply.lastIndexOf("\n");
+    if (pt > 0 &&  reply.lastIndexOf(" ") > pt)
+      reply = reply.substring(0, pt + 1);
     return PT.trim(reply, "\n").split("\n");
   }
 

@@ -184,7 +184,7 @@ public class NBODialog extends NBODialogSearch {
       msg = "SEARCH";
       break;
     }
-    log("Entering " + msg, 'I');
+    logCmd("Entering " + msg);
 
     
     if (!jmolOptionNOZAP) // use Jmol command NBO OPTIONS NOZAP to allow this
@@ -236,7 +236,7 @@ public class NBODialog extends NBODialogSearch {
       setThis(searchButton);
       break;
     }
-    centerPanel.setDividerLocation(350);
+    resetDivider();
     if (topPanel != null)
       topPanel.add(icon, BorderLayout.EAST);
     setStatus("");
@@ -251,7 +251,7 @@ public class NBODialog extends NBODialogSearch {
       jmolFrame.setSize(bounds.width, 630);
     dialogMode = DIALOG_HOME;
     // createDialog(Math.max(570, 615);
-    setBounds(bounds.x + bounds.width, bounds.y, 615, Math.max(bounds.height, 630));
+    setBounds(bounds.x + bounds.width, bounds.y, 650, Math.max(bounds.height, 630));
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -302,6 +302,8 @@ public class NBODialog extends NBODialogSearch {
     topPanel = buildTopPanel();
     getContentPane().add((homePanel = mainPage()),BorderLayout.CENTER);
     getContentPane().add(licenseInfo,BorderLayout.SOUTH);
+    resetDivider();
+
     //centerPanel.setLeftComponent(mainPage());
     this.dialogMode = DIALOG_HOME;
     this.getContentPane().add(topPanel,BorderLayout.NORTH);    
@@ -634,9 +636,11 @@ public class NBODialog extends NBODialogSearch {
     t.setAlignmentX(0.5f);
     t.setMaximumSize(new Dimension(10000, 80));
     p.add(t);
-
-    centerPanel.setDividerLocation(355);
     return p;
+  }
+
+  private void resetDivider() {
+    centerPanel.setDividerLocation(365);
   }
 
   protected void nboOutput() {
@@ -872,7 +876,7 @@ public class NBODialog extends NBODialogSearch {
         .getPredefinedCursor(isBusy ? Cursor.WAIT_CURSOR
             : Cursor.DEFAULT_CURSOR));
     if (isBusy) {
-      log(statusInfo, 'p');
+      logStatus(statusInfo);
       if (statusInfo.indexOf("...") >= 0) {
         if (runTimer != null) {
           runTimer.stop();

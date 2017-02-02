@@ -23,7 +23,6 @@
  */
 package org.gennbo;
 
-import java.awt.Cursor;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -60,29 +59,32 @@ public class NBOService {
 
   // modes of operation
 
-  static final int MODE_ERROR = -1;
-  static final int MODE_RAW = 0;// leave this 0; it is referred to that in StatusListener
+  static final int MODE_ERROR          = -1;
+  static final int MODE_RAW            = 0;// leave this 0; it is referred to that in StatusListener
 
-  // these are for panel state
-  static final int MODE_MODEL          = 1; // don't change this number -- it is used for LOAD NBO 
-  static final int MODE_RUN            = 20;
+  // these are for postToNBO; n * 10 + module value(s)
+  
+  static final int MODE_MODEL_ALTER    = 11;
+  static final int MODE_MODEL_EDIT     = 21;
+  static final int MODE_MODEL_NEW      = 31; 
+  static final int MODE_MODEL_SAVE     = 41;
+  static final int MODE_MODEL_SYMMETRY = 51;
+  static final int MODE_MODEL_TO_NBO   = 61;
+  static final int MODE_MODEL_UNDO_REDO= 71;
+  static final int MODE_MODEL_VALUE    = 81;
 
-  // these are for rawCmdNew only
-  static final int MODE_VALUE          = 45;
-  static final int MODE_LIST           = 46;
-  static final int MODE_LIST_MO        = 47;
-  static final int MODE_IMAGE          = 88;
-  static final int MODE_SEARCH_SELECT  = 90;
-  static final int MODE_LABEL          = 50;
-  //static final int MODE_VALUE_M = 60;
-  //static final int MODE_GETRS = 61;
-  static final int MODE_MODEL_ALTER    = 61;
-  static final int MODE_LABEL_BONDS    = 62;
-  static final int MODE_MODEL_EDIT     = 63;
-  static final int MODE_MODEL_VALUE    = 64;
-  static final int MODE_MODEL_SAVE     = 65;
-  static final int MODE_MODEL_TO_NBO   = 66;
-  static final int MODE_MODEL_UNDO_REDO= 67;
+  static final int MODE_RUN_GENNBO     = 12;
+
+  static final int MODE_VIEW_IMAGE     = 13;
+  static final int MODE_VIEW_LIST      = 23; 
+
+  static final int MODE_SEARCH_VALUE       = 14;
+  static final int MODE_SEARCH_LIST_MO     = 24;
+  static final int MODE_SEARCH_SELECT      = 34;
+  static final int MODE_SEARCH_LABEL       = 44;
+  static final int MODE_SEARCH_LABEL_BONDS = 54;
+  static final int MODE_SEARCH_LIST        = 64;
+
 
   protected Viewer vwr;
   protected Process nboServer;

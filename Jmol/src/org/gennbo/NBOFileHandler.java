@@ -58,6 +58,9 @@ class NBOFileHandler extends JPanel {
     fileDir = dialog.getWorkingPath();
     this.useExt = useExt;
     setLayout(new GridBagLayout());
+    setMaximumSize(new Dimension(350, 40));
+    setPreferredSize(new Dimension(350, 40));
+    setMinimumSize(new Dimension(350, 40));
     GridBagConstraints c = new GridBagConstraints();
     boolean canEditTextFields = (mode == MODE_MODEL_SAVE || mode == MODE_MODEL_USE);
 
@@ -76,7 +79,7 @@ class NBOFileHandler extends JPanel {
     tfDir.setText(fileDir);
     add(tfDir, c);
     c.gridx = 1;
-    (tfName = new JTextField()).setPreferredSize(new Dimension(100, 20));
+    (tfName = new JTextField()).setPreferredSize(new Dimension(120, 20));
     tfName.setEditable(canEditTextFields);
     //    tfName.addActionListener(new ActionListener() {
     //      @Override

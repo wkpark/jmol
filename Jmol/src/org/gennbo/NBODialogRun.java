@@ -37,8 +37,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
 import java.net.URI;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -62,7 +60,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.Timer;
 
 import org.jmol.util.Logger;
 
@@ -103,24 +100,18 @@ abstract class NBODialogRun extends NBODialogModel {
     panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    //ESS////////////////////////////////////////
-    panel.add(createTitleBox(" Select Job ", new HelpBtn("run_job_help.htm")));
-    Box inputBox = createBorderBox(true);
-    panel.add(inputBox);
-
-    //INPUT/////////////////////////
-    if (inputFileHandler == null) {
-      inputFileHandler = newNBOFileHandler("", "47", NBOFileHandler.MODE_RUN,
-          "47");
-    } else {
-      inputFileHandler = newNBOFileHandler(inputFileHandler.jobStem,
-          inputFileHandler.tfExt.getText(), NBOFileHandler.MODE_RUN, "47");
-    }
+    getNewInputFileHandler(NBOFileHandler.MODE_RUN);
     inputFileHandler.setBrowseEnabled(false);
 
+    panel.add(createTitleBox(" Select Job ", new HelpBtn("run_job_help.htm")));
+    Box inputBox = createBorderBox(true);
     inputBox.add(createSourceBox());
     inputBox.add(inputFileHandler);
-    inputBox.setMaximumSize(new Dimension(355, 80));
+    inputBox.setMinimumSize(new Dimension(360, 80));
+    inputBox.setPreferredSize(new Dimension(360,80));
+    inputBox.setMaximumSize(new Dimension(360, 80));
+    panel.add(inputBox);
+
     //EDIT////////////////
     panel.add(
         createTitleBox(" Choose $NBO Keywords ", new HelpBtn(
@@ -473,13 +464,13 @@ abstract class NBODialogRun extends NBODialogModel {
   protected void logJobName(String name) {
     if (name == null)
       tfJobName.setText(name = tfJobName.getText().trim());
-    log("Job: " + name, 'b');
+    logValue("Job: " + name);
   }
 
   protected void logKeywords(String keywords) {
     if (keywords == null)
       keywords = getKeywordsFromButtons();
-    log("Keywords: " + keywords, 'b');    
+    logValue("Keywords: " + keywords);    
   }
 
   JTextPane keywordTextPane;
@@ -858,9 +849,9 @@ abstract class NBODialogRun extends NBODialogModel {
     sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
     sb.append("GLOBAL C_ESS gennbo" + sep);
     sb.append("GLOBAL C_LABEL_1 FILE=" + jobName + sep);
-    log("RUN GenNBO FILE=" + jobName + " " + file47Keywords, 'I');
+    logCmd("RUN GenNBO FILE=" + jobName + " " + file47Keywords);
         
-    postNBO_r(sb, NBOService.MODE_RUN, "Running GenNBO...");
+    postNBO_r(sb, NBOService.MODE_RUN_GENNBO, "Running GenNBO...");
   }
 
   /**

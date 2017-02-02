@@ -156,7 +156,7 @@ abstract class NBODialogView extends NBODialogRun {
     ///panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
     runScriptNow("set bondpicking true");
 
-    Box b = createViewJobBox();
+    Box b = createViewSearchJobBox(NBOFileHandler.MODE_VIEW);
     if (!jmolOptionNONBO)
       panel.add(b, BorderLayout.NORTH);
 
@@ -179,6 +179,19 @@ abstract class NBODialogView extends NBODialogRun {
     }
 
     return panel;
+  }
+
+  protected Box createViewSearchJobBox(int mode) {
+    Box topBox = createTitleBox(" Select Job ", new HelpBtn(
+        (mode== NBOFileHandler.MODE_SEARCH ? "search" : "view") + "_job_help.htm"));
+    Box inputBox = createBorderBox(true);
+    inputBox.setPreferredSize(new Dimension(360, 50));
+    inputBox.setMaximumSize(new Dimension(360, 50));
+    topBox.add(inputBox);
+    getNewInputFileHandler(mode);
+    inputBox.add(Box.createVerticalStrut(5));
+    inputBox.add(inputFileHandler);
+    return topBox;
   }
 
   private Component createBottomBox() {
@@ -256,20 +269,6 @@ abstract class NBODialogView extends NBODialogRun {
       createImage1or2D(false);
     } else if (viewBtn.isSelected())
       createImage3D();
-  }
-
-  private Box createViewJobBox() {
-    Box topBox = createTitleBox(" Select Job ",
-        new HelpBtn("view_job_help.htm"));
-    Box inputBox = createBorderBox(true);
-    inputBox.setPreferredSize(new Dimension(355, 40));
-    inputBox.setMaximumSize(new Dimension(355, 40));
-    topBox.add(inputBox);
-    inputFileHandler = newNBOFileHandler("", "47", NBOFileHandler.MODE_VIEW,
-        "47");
-    inputBox.add(inputFileHandler);
-    inputBox.setMaximumSize(new Dimension(350, 75));
-    return topBox;
   }
 
   private Component createSelectOrbitalBox() {
@@ -963,7 +962,7 @@ abstract class NBODialogView extends NBODialogRun {
       alphaList = list;
 
     if (!jmolOptionNONBO) {
-      postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_LIST,
+      postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_VIEW_LIST,
           list, "Getting list", null, null);
     }
     loadModelFileQueued(
@@ -1051,11 +1050,11 @@ abstract class NBODialogView extends NBODialogRun {
     }
     appendOrbitalPhaseSign(sb, ind);
     String msg = (oneD ? "Profile " : "Contour ") + (ind + 1);
-    log(msg, 'I');
+    logCmd(msg);
     sb.append("CMD ").append(msg).append(sep);
     appendOrbitalPhaseSign(sb, ind);
 
-    postNBO_v(sb, NBOService.MODE_IMAGE, null, (oneD ? "Profiling.."
+    postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, (oneD ? "Profiling.."
         : "Contouring.."), null, null);
   }
 
@@ -1145,11 +1144,11 @@ abstract class NBODialogView extends NBODialogRun {
       profileList += " " + (++pt);
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
     }
-    log(msg, 'I');
+    logCmd(msg);
     sb = getMetaHeader(false);
     appendLineParams(sb);
     sb.append("CMD DRAW" + profileList);
-    postNBO_v(sb, NBOService.MODE_IMAGE, null, "Drawing...", null, null);
+    postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, "Drawing...", null, null);
   }
 
   protected void createImage3D() {
@@ -1166,12 +1165,12 @@ abstract class NBODialogView extends NBODialogRun {
       tmp += " " + (i + 1);
       list += " " + (++pt);
     }
-    log(tmp, 'I');
+    logCmd(tmp);
     String jviewData = sb.toString();
     sb = getMetaHeader(false);
     appendCameraParams(sb);
     sb.append("CMD VIEW" + list);
-    postNBO_v(sb, NBOService.MODE_IMAGE, null, "Raytracing...", null, jviewData);
+    postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, "Raytracing...", null, jviewData);
   }
 
   private void initializeImage() {
@@ -1454,16 +1453,13 @@ abstract class NBODialogView extends NBODialogRun {
       addMouseListener(this);
     }
 
+    /**
+     * @param list 
+     * @param isNew  unused
+     */
     public void setModelList(DefaultListModel<String> list, boolean isNew) {
       setSelectedIndices(new int[0]);
       setModel(list);
-      //setColorScheme();
-      //      if (isNew) {
-      //        clearOrbitals(false);
-      //        setLastOrbitalSelection();
-      //      }
-      //for (int i = list.getSize(); --i >= 0;)
-        //setLabel(i);
       clearOrbitals(true);
       updateIsosurfacesInJmol(Integer.MIN_VALUE);
     }
@@ -1729,13 +1725,13 @@ abstract class NBODialogView extends NBODialogRun {
                               DefaultListModel<String> list) {
     String[] lines = req.getReplyLines();
     switch (mode) {
-    case NBOService.MODE_LIST:
+    case NBOService.MODE_VIEW_LIST:
       list.clear();
       for (int i = 0; i < lines.length; i++) {
         list.addElement(lines[i]);
       }
       break;
-    case NBOService.MODE_IMAGE:
+    case NBOService.MODE_VIEW_IMAGE:
       String fname = inputFileHandler.inputFile.getParent() + "\\"
           + inputFileHandler.jobStem + ".bmp";
       File f = new File(fname);

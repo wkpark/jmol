@@ -651,7 +651,7 @@ abstract class NBODialogConfig extends JDialog {
       box2.setAlignmentX(0);
       box2.add(label, BorderLayout.WEST);
       box2.add(rightSideComponent, BorderLayout.EAST);
-      box2.setMaximumSize(new Dimension(355, 25));
+      box2.setMaximumSize(new Dimension(360, 25));
       box.add(box2);
     } else
       box.add(label);
@@ -721,6 +721,23 @@ abstract class NBODialogConfig extends JDialog {
     d.setLocation(x, y);
   }
 
+  protected void logCmd(String msg) {
+    log(msg, 'I');
+  }
+
+  protected void logValue(String msg) {
+    log(msg, 'b');
+  }
+
+  protected void logStatus(String msg) {
+    log(msg, 'p');
+  }
+
+  protected void logError(String msg) {
+    log(msg, 'r');
+  }
+
+
   /**
    * appends output to session dialog panel
    * 
@@ -729,7 +746,7 @@ abstract class NBODialogConfig extends JDialog {
    * @param chFormat
    *        p, b, r ("red"), i, etc.
    */
-  protected synchronized void log(String line, char chFormat) {
+  private synchronized void log(String line, char chFormat) {
     if (dontLog(line, chFormat))
       return;
     if (line.trim().length() >= 1) {
@@ -899,5 +916,14 @@ abstract class NBODialogConfig extends JDialog {
   protected void colorMeshes() {
     updatePanelSettings();
   }
+
+  protected void getNewInputFileHandler(int mode) {
+    if (inputFileHandler == null)
+      inputFileHandler = newNBOFileHandler("", "47", mode, "47");
+    else
+      inputFileHandler = newNBOFileHandler(inputFileHandler.jobStem, "47", mode,
+          "47");
+  }
+
 
 }

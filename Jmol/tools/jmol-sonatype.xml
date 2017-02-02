@@ -27,7 +27,7 @@
   <property name="artifactId" value="jmol" />
   
   <property file="${dist}/Jmol.properties" prefix="Jmol.properties" />
-  <property name="version" value="${Jmol.properties.___JmolVersion}" />
+  <property name="version" value="${Jmol.properties.Jmol.___JmolVersion}" />
   <propertyregex property="version"
                  override = "true"
                  input="${version}"

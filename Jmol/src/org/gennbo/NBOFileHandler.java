@@ -312,7 +312,7 @@ class NBOFileHandler extends JPanel {
     SB postParams = new SB();
     SB params = preParams;
     // ignore everything after the last $END token
-    for (int i = 0, n = tokens.length - 1; i < n; i++) {
+    for (int i = 0, n = tokens.length; i < n; i++) {
       s = PT.trim(tokens[i], "\t\r\n ");
       if (params == preParams && s.indexOf("$NBO") >= 0) {
         String[] prePost = PT.split(s, "$NBO");

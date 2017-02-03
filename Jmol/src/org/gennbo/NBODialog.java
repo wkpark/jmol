@@ -100,11 +100,11 @@ public class NBODialog extends NBODialogSearch {
   protected JLabel licenseInfo;
 
   private JButton helpBtn;
-  
+
   private JDialog settingsDialog;
   private JPanel topPanel;
   protected JButton modelButton, runButton, viewButton, searchButton;
-  
+
   private JPanel homePanel;
 
   protected JPanel nboOutput;
@@ -122,10 +122,11 @@ public class NBODialog extends NBODialogSearch {
    * @param vwr
    *        The interacting display we are reproducing (source of view angle
    *        info etc)
-   * @param plugin 
-   * @param jmolOptions 
+   * @param plugin
+   * @param jmolOptions
    */
-  public NBODialog(NBOPlugin plugin, JFrame jmolFrame, Viewer vwr, Map<String, Object> jmolOptions) {
+  public NBODialog(NBOPlugin plugin, JFrame jmolFrame, Viewer vwr,
+      Map<String, Object> jmolOptions) {
     super(jmolFrame);
     setName(plugin.getName());
     setTitle(getName() + " " + plugin.getVersion());
@@ -136,24 +137,24 @@ public class NBODialog extends NBODialogSearch {
     this.setIconImage(nboPlugin.getIcon("nbo6logo20x20").getImage());
     this.setLayout(new BorderLayout());
     sendDefaultScript();
-    
+
     //get saved properties
-    
+
     createDialog(jmolFrame);
-    
+
     if (!jmolOptionNOSET)
       setDefaults(false);
-    
+
     if (jmolOptionVIEW || jmolOptionNONBO)
-      this.openPanel(DIALOG_VIEW);
+      openPanel(DIALOG_VIEW);
   }
-  
-  protected void openPanel(char type) {
+
+  protected void openPanel(int type) {
     if (jmolOptionNONBO && "rsm".indexOf("" + type) >= 0) {
       vwr.alert("This option requires NBOServe");
       return;
-    }    
-    if (type == 'c') {
+    }
+    if (type == DIALOG_CONFIG) {
       settingsDialog.setVisible(true);
       return;
     }
@@ -167,9 +168,9 @@ public class NBODialog extends NBODialogSearch {
         return;
       }
     }
-    
+
     nboService.restart();
-    String msg = "";
+    String msg = null;
     switch (type) {
     case DIALOG_MODEL:
       msg = "MODEL";
@@ -184,19 +185,21 @@ public class NBODialog extends NBODialogSearch {
       msg = "SEARCH";
       break;
     }
-    logCmd("Entering " + msg);
+    if (msg != null)
+      logCmd("Entering " + msg);
 
-    
     if (!jmolOptionNOZAP) // use Jmol command NBO OPTIONS NOZAP to allow this
       runScriptQueued("zap");
     nboService.restartIfNecessary();
     if (dialogMode == DIALOG_HOME) {
       remove(homePanel);
       add(centerPanel, BorderLayout.CENTER);
-      if (type != 'c')
-        dialogMode = type;
     }
+    dialogMode = type;
     switch (dialogMode) {
+    case DIALOG_MODEL:
+    case DIALOG_RUN:
+      break;
     case DIALOG_VIEW:
     case DIALOG_SEARCH:
       runScriptNow("select none");
@@ -205,31 +208,31 @@ public class NBODialog extends NBODialogSearch {
     nboService.clearQueue();
     viewSettingsBox.setVisible(false);
     if (!checkEnabled())
-      type = 'c';
+      type = DIALOG_CONFIG;
     if (topPanel != null) {
       topPanel.remove(icon);
     }
+    if (type != DIALOG_CONFIG)
+      dialogMode = type;
     switch (type) {
-    case 'm':
-      dialogMode = DIALOG_MODEL;
+    case DIALOG_CONFIG:
+      break;
+    case DIALOG_MODEL:
       centerPanel.setLeftComponent(modulePanel = buildModelPanel());
       icon = new JLabel(nboPlugin.getIcon("nbomodel_logo"));
       setThis(modelButton);
       break;
-    case 'r':
-      dialogMode = DIALOG_RUN;
+    case DIALOG_RUN:
       centerPanel.setLeftComponent(modulePanel = buildRunPanel());
       icon = new JLabel(nboPlugin.getIcon("nborun_logo"));
       setThis(runButton);
       break;
-    case 'v':
-      dialogMode = DIALOG_VIEW;
+    case DIALOG_VIEW:
       centerPanel.setLeftComponent(modulePanel = buildViewPanel());
       icon = new JLabel(nboPlugin.getIcon("nboview_logo"));
       setThis(viewButton);
       break;
-    case 's':
-      dialogMode = DIALOG_SEARCH;
+    case DIALOG_SEARCH:
       centerPanel.setLeftComponent(modulePanel = buildSearchPanel());
       //settingsBox.setVisible(true);
       icon = new JLabel(nboPlugin.getIcon("nbosearch_logo"));
@@ -243,53 +246,24 @@ public class NBODialog extends NBODialogSearch {
     invalidate();
     setVisible(true);
   }
-  
+
   private void createDialog(JFrame jmolFrame) {
-    
+    dialogMode = DIALOG_HOME;
     Rectangle bounds = jmolFrame.getBounds();
     if (bounds.height < 630)
       jmolFrame.setSize(bounds.width, 630);
-    dialogMode = DIALOG_HOME;
     // createDialog(Math.max(570, 615);
-    setBounds(bounds.x + bounds.width, bounds.y, 650, Math.max(bounds.height, 630));
+    setBounds(bounds.x + bounds.width, bounds.y, 650,
+        Math.max(bounds.height, 630));
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        nboService.closeProcess(); 
+        nboService.closeProcess();
         close();
       }
     });
 
     placeNBODialog(this);
-    helpBtn = new HelpBtn(""){
-      @Override
-      public void actionPerformed(ActionEvent e){
-        String url = "http://nbo6.chem.wisc.edu/jmol_help/";
-        switch(dialogMode){
-        case DIALOG_MODEL:
-          url += "model_help.htm";
-          break;
-        case DIALOG_RUN:
-          url += "run_help.htm";
-          break;
-        case DIALOG_VIEW:
-          url += "view_help.htm";
-          break;
-        case DIALOG_SEARCH:
-          url += "search_help.htm";
-          break;
-        default:
-          url += "Jmol_NBOPro6_help.htm";
-        }
-        try {
-          Desktop.getDesktop().browse(new URI(url));
-        } catch (Exception e1) {
-          alertError("Could not open help pages");
-        } 
-        
-      }
-    };
-    
     licenseInfo = new JLabel("License not found", SwingConstants.CENTER);
     //licenseInfo.setBackground(null);
 
@@ -298,18 +272,19 @@ public class NBODialog extends NBODialogSearch {
     licenseInfo.setBackground(Color.black);
 
     nboOutput();
-    centerPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,new JPanel(),nboOutput);
+    centerPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JPanel(),
+        nboOutput);
     topPanel = buildTopPanel();
-    getContentPane().add((homePanel = mainPage()),BorderLayout.CENTER);
-    getContentPane().add(licenseInfo,BorderLayout.SOUTH);
+    getContentPane().add((homePanel = mainPage()), BorderLayout.CENTER);
+    getContentPane().add(licenseInfo, BorderLayout.SOUTH);
     resetDivider();
 
     //centerPanel.setLeftComponent(mainPage());
     this.dialogMode = DIALOG_HOME;
-    this.getContentPane().add(topPanel,BorderLayout.NORTH);    
-    settingsDialog = new JDialog(this,"Settings");
-    settingsDialog.setSize(new Dimension(350,400));
-    settingsDialog.setLocation(this.getX() + 100,this.getY()+100);
+    this.getContentPane().add(topPanel, BorderLayout.NORTH);
+    settingsDialog = new JDialog(this, "Settings");
+    settingsDialog.setSize(new Dimension(350, 400));
+    settingsDialog.setLocation(this.getX() + 100, this.getY() + 100);
     settingsPanel = new JPanel();
     buildSettingsPanel(settingsPanel);
     settingsDialog.add(settingsPanel);
@@ -317,88 +292,76 @@ public class NBODialog extends NBODialogSearch {
     if (!jmolOptionNONBO && nboService.isOffLine())
       settingsDialog.setVisible(true);
   }
-  
+
   /**
    * Places main dialog adjacent to main jmol window
+   * 
    * @param d
    */
   private void placeNBODialog(JDialog d) {
     Dimension screenSize = d.getToolkit().getScreenSize();
     Dimension size = d.getSize();
-    int x = Math.min(screenSize.width - size.width,
-        d.getParent().getX()+d.getParent().getWidth()) - 10;
+    int x = Math.min(screenSize.width - size.width, d.getParent().getX()
+        + d.getParent().getWidth()) - 10;
     int y = d.getParent().getY();
     System.out.println("------" + x + "   " + y);
     d.setLocation(x, y);
-  } 
+  }
 
-  private JButton getMainButton(final JButton b, final char mode, Font font) {
+  private JButton getMainButton(final JButton b, final int mode, Font font) {
     b.setBorder(null);
     b.setMargin(new Insets(5, 5, 5, 5));
     b.setContentAreaFilled(false);
     b.setForeground(Color.white);
     b.setFont(font);
-    if (mode != 'h')
+    switch (mode) {
+    case DIALOG_HELP:
+    case DIALOG_HOME:
+      break;
+    default:
       b.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
           openPanel(mode);
         }
       });
+    }
     return b;
   }
-  
+
   /**
    * Top panel with logo/modules/file choosing options
    * 
    * @return top panel
    */
-  protected JPanel buildTopPanel() {
-    JPanel p = new JPanel(new BorderLayout());
-    Font f = topFont;
-    Box b = Box.createHorizontalBox();
-    b.add(Box.createRigidArea(new Dimension(20, 0)));
+  private JPanel buildTopPanel() {
 
     modelButton = new JButton("Model");
     runButton = new JButton("Run");
     viewButton = new JButton("View");
     searchButton = new JButton("Search");
+    helpBtn = new HelpBtn(null);
 
+    JPanel p = new JPanel(new BorderLayout());
     if (!jmolOptionNONBO) {
-      b.add(getMainButton(modelButton, 'm', f));
+      Box b = Box.createHorizontalBox();
       b.add(Box.createRigidArea(new Dimension(20, 0)));
-
-      b.add(getMainButton(runButton, 'r', f));
+      b.add(getMainButton(modelButton, DIALOG_MODEL, topFont));
       b.add(Box.createRigidArea(new Dimension(20, 0)));
-
-      b.add(getMainButton(viewButton, 'v', f));
+      b.add(getMainButton(runButton, DIALOG_RUN, topFont));
       b.add(Box.createRigidArea(new Dimension(20, 0)));
-
-      b.add(getMainButton(searchButton, 's', f));
+      b.add(getMainButton(viewButton, DIALOG_VIEW, topFont));
+      b.add(Box.createRigidArea(new Dimension(20, 0)));
+      b.add(getMainButton(searchButton, DIALOG_SEARCH, topFont));
       b.add(Box.createRigidArea(new Dimension(30, 50)));
+      b.add(getMainButton(new JButton("Settings"), DIALOG_CONFIG,
+          settingHelpFont));
+      b.add(Box.createRigidArea(new Dimension(20, 0)));
+      b.add(getMainButton(helpBtn, DIALOG_HELP, settingHelpFont));
+      b.add(Box.createRigidArea(new Dimension(20, 0)));
+      b.add(getMainButton(new HelpBtn("Manual", "NBOPro6_man.pdf"), DIALOG_HOME, settingHelpFont));
+      p.add(b, BorderLayout.CENTER);
     }
-
-    b.add(getMainButton(new JButton("Settings"), 'c', settingHelpFont));
-    b.add(Box.createRigidArea(new Dimension(20, 0)));
-    b.add(getMainButton(helpBtn, 'h', settingHelpFont));
-    b.add(Box.createRigidArea(new Dimension(20, 0)));    
-    JButton btn = new JButton("Manual");
-    b.add(getMainButton(btn, 'h', settingHelpFont));
-    btn.addActionListener(new ActionListener(){
-      @Override
-      public void actionPerformed(ActionEvent arg0) {
-        if (Desktop.isDesktopSupported()) {
-          try {
-            String url = 
-                "http://nbo6.chem.wisc.edu/jmol_help/NBOPro6_man.pdf";
-            Desktop.getDesktop().browse(new URI(url));
-          } catch (Exception ex) {
-            alertError("Could open NBOPro6 manual");
-          }
-      }
-      }
-    });
-    p.add(b, BorderLayout.CENTER);
     icon = new JLabel();
     icon.setFont(nboFont);
     icon.setForeground(Color.white);
@@ -407,54 +370,59 @@ public class NBODialog extends NBODialogSearch {
     p.setPreferredSize(new Dimension(500, 60));
     return p;
   }
-  
+
   /**
    * sets components colors in container recursively
+   * 
    * @param comp
    * @param foregroundColor
    * @param backgroundColor
    */
-  protected void setComponents(Component comp, Color foregroundColor, Color backgroundColor){
-    if(comp instanceof JTextField ||comp instanceof JTextPane || comp instanceof JButton)
+  private void setComponents(Component comp, Color foregroundColor,
+                             Color backgroundColor) {
+    if (comp instanceof JTextField || comp instanceof JTextPane
+        || comp instanceof JButton)
       return;
-    if(comp instanceof JComboBox)
-      comp.setBackground(new Color(248,248,248));
-    if(foregroundColor!=null)comp.setForeground(foregroundColor);
-    if(backgroundColor!=null)comp.setBackground(backgroundColor);
-    if(comp instanceof Container){
-      for(Component c:((Container)comp).getComponents()){
+    if (comp instanceof JComboBox)
+      comp.setBackground(new Color(248, 248, 248));
+    if (foregroundColor != null)
+      comp.setForeground(foregroundColor);
+    if (backgroundColor != null)
+      comp.setBackground(backgroundColor);
+    if (comp instanceof Container) {
+      for (Component c : ((Container) comp).getComponents()) {
         setComponents(c, foregroundColor, backgroundColor);
       }
     }
   }
-  
-  private JPanel mainPage(){
+
+  private JPanel mainPage() {
     JPanel p = new JPanel();
     p.setBackground(Color.white);
-    
-    
-   haveService = nboService.restartIfNecessary(); // BH temporarily
-    
-    p.setLayout(new BoxLayout(p,BoxLayout.Y_AXIS));
-    //Header stuff////////////
-    ImageIcon imageIcon = nboPlugin.getIcon("nbo6logo");        
 
-    Image image = imageIcon.getImage(); 
-    Image newimg = image.getScaledInstance(20, 20,  java.awt.Image.SCALE_SMOOTH); 
+    haveService = nboService.restartIfNecessary(); // BH temporarily
+
+    p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    //Header stuff////////////
+    ImageIcon imageIcon = nboPlugin.getIcon("nbo6logo");
+
+    Image image = imageIcon.getImage();
+    Image newimg = image.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
     imageIcon = new ImageIcon(newimg);
     JLabel lab = new JLabel(imageIcon);
     Box b = Box.createHorizontalBox();
-    
+
     b.add(lab);
     lab = new JLabel("NBOServe (v6) toolbox");
     b.add(lab);
-    b.add(Box.createRigidArea(new Dimension(370,0)));
+    b.add(Box.createRigidArea(new Dimension(370, 0)));
     icon.setOpaque(true);
     icon.setBackground(Color.LIGHT_GRAY);
-    icon.setText(haveService ? "  Connected  ":"<html><center>Not<br>Connected</center></html>");
-    icon.setForeground(haveService ? Color.black:Color.red);
+    icon.setText(haveService ? "  Connected  "
+        : "<html><center>Not<br>Connected</center></html>");
+    icon.setForeground(haveService ? Color.black : Color.red);
     icon.setBorder(BorderFactory.createLineBorder(Color.black));
-    
+
     p.add(b);
     lab = new JLabel(getName());
     lab.setFont(nboProTitleFont);
@@ -469,168 +437,149 @@ public class NBODialog extends NBODialogSearch {
     GridBagConstraints c = new GridBagConstraints();
     p2.setBorder(BorderFactory.createLineBorder(Color.black));
     JButton btn = new JButton("Model");
-  
+
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
-    btn.setMinimumSize(new Dimension(150,30));
+    btn.setMinimumSize(new Dimension(150, 30));
     btn.setFont(homeButtonFont);
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        openPanel('m');
+        openPanel(DIALOG_MODEL);
       }
     });
     c.gridx = 0;
     c.gridy = 0;
     c.gridwidth = 1;
     c.gridheight = 1;
-    p2.add(btn,c);
+    p2.add(btn, c);
     c.gridx = 1;
     c.gridy = 0;
     c.gridwidth = 3;
-    p2.add(lab = new JLabel("  Create & edit molecular model and input files"),c);
-  
+    p2.add(lab = new JLabel("  Create & edit molecular model and input files"),
+        c);
+
     c.gridx = 5;
     c.gridwidth = 1;
-    p2.add(Box.createRigidArea(new Dimension(60,10)),c);
+    p2.add(Box.createRigidArea(new Dimension(60, 10)), c);
     lab.setFont(homeTextFont);
     JTextPane tp = new JTextPane();
     tp.setContentType("text/html");
-    tp.setText("<HTML><center>Frank Weinhold<br><I>(Acknowledgments: Eric Glendening, John Carpenter, " +
-        "Mark Muyskens, Isaac Mades, Scott Ostrander, John Blair, Craig Weinhold)</I></center></HTML>");
+    tp.setText("<HTML><center>Frank Weinhold<br><I>(Acknowledgments: Eric Glendening, John Carpenter, "
+        + "Mark Muyskens, Isaac Mades, Scott Ostrander, John Blair, Craig Weinhold)</I></center></HTML>");
     tp.setEditable(false);
     tp.setBackground(null);
-    tp.setPreferredSize(new Dimension(430,60));
+    tp.setPreferredSize(new Dimension(430, 60));
     c.gridx = 1;
     c.gridy = 1;
     c.gridwidth = 3;
     c.fill = GridBagConstraints.HORIZONTAL;
-    p2.add(tp,c);
-  
+    p2.add(tp, c);
+
     c.weightx = 0;
-    
+
     //RUN/////////////
     btn = new JButton("Run");
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
-    btn.setMinimumSize(new Dimension(150,30));
+    btn.setMinimumSize(new Dimension(150, 30));
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        
-        openPanel('r');
+
+        openPanel(DIALOG_RUN);
       }
     });
     c.gridx = 0;
     c.gridy = 2;
     c.gridwidth = 1;
     btn.setFont(homeButtonFont);
-    p2.add(btn,c);
+    p2.add(btn, c);
     c.gridx = 1;
     c.gridy = 2;
     c.gridwidth = 3;
-    p2.add(lab = new JLabel("  Launch NBO analysis for chosen archive file"),c);
+    p2.add(lab = new JLabel("  Launch NBO analysis for chosen archive file"), c);
     lab.setFont(homeTextFont);
     tp = new JTextPane();
     tp.setContentType("text/html");
     tp.setBackground(null);
-    tp.setText("<HTML><center>Eric Glendening, Jay Badenhoop, Alan Reed, John Carpenter, Jon Bohmann, " +
-    		"Christine Morales, and Frank Weinhold</center></HTML>");
+    tp.setText("<HTML><center>Eric Glendening, Jay Badenhoop, Alan Reed, John Carpenter, Jon Bohmann, "
+        + "Christine Morales, and Frank Weinhold</center></HTML>");
     c.gridx = 1;
     c.gridy = 3;
     c.gridwidth = 3;
-    p2.add(tp,c);
-  
+    p2.add(tp, c);
+
     //VIEW//////////////
     btn = new JButton("View");
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        
-        openPanel('v');
+
+        openPanel(DIALOG_VIEW);
       }
     });
     btn.setFont(homeButtonFont);
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
-    btn.setMinimumSize(new Dimension(150,30));
+    btn.setMinimumSize(new Dimension(150, 30));
     c.gridx = 0;
     c.gridy = 4;
     c.gridwidth = 1;
-    p2.add(btn,c);
+    p2.add(btn, c);
     c.gridx = 1;
     c.gridy = 4;
     c.gridwidth = 3;
-    p2.add(lab = new JLabel("  Display NBO orbitals in 1D/2D/3D imagery"),c);
+    p2.add(lab = new JLabel("  Display NBO orbitals in 1D/2D/3D imagery"), c);
     lab.setFont(homeTextFont);
     tp = new JTextPane();
-    tp.setMaximumSize(new Dimension(430,60));
+    tp.setMaximumSize(new Dimension(430, 60));
     tp.setContentType("text/html");
     tp.setBackground(null);
-    tp.setText("<HTML><center>Mark Wendt and Frank Weinhold<br><I> (Acknowledgments: Eric Glendening, John Carpenter, " +
-        "Mark Muyskens, Scott Ostrander, Zdenek Havlas, Dave Anderson)</I></center></HTML>");
+    tp.setText("<HTML><center>Mark Wendt and Frank Weinhold<br><I> (Acknowledgments: Eric Glendening, John Carpenter, "
+        + "Mark Muyskens, Scott Ostrander, Zdenek Havlas, Dave Anderson)</I></center></HTML>");
     c.gridx = 1;
     c.gridy = 5;
     c.gridwidth = 3;
-    p2.add(tp,c);
-  
+    p2.add(tp, c);
+
     //SEARCH/////////////
     btn = new JButton("Search");
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
-    btn.setMinimumSize(new Dimension(150,30));
+    btn.setMinimumSize(new Dimension(150, 30));
     btn.setFont(homeButtonFont);
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        
-        openPanel('s');
+
+        openPanel(DIALOG_SEARCH);
       }
     });
     c.gridx = 0;
     c.gridy = 6;
     c.gridwidth = 1;
-    p2.add(btn,c);
+    p2.add(btn, c);
     c.gridx = 1;
     c.gridy = 6;
     c.gridwidth = 3;
-    p2.add(lab = new JLabel("  Search NBO output interactively"),c);
+    p2.add(lab = new JLabel("  Search NBO output interactively"), c);
     lab.setFont(homeTextFont);
     tp = new JTextPane();
-    tp.setMaximumSize(new Dimension(430,60));
+    tp.setMaximumSize(new Dimension(430, 60));
     tp.setContentType("text/html");
     tp.setBackground(null);
     tp.setText("<HTML><center>Frank Weinhold</center></HTML>");
     c.gridx = 1;
     c.gridy = 7;
     c.gridwidth = 3;
-    p2.add(tp,c);  
+    p2.add(tp, c);
     p.add(p2);
-//    b = Box.createHorizontalBox();
-//    b.add(btn = new JButton("Manual"));
-//    btn.addActionListener(new ActionListener(){
-//      @Override
-//      public void actionPerformed(ActionEvent arg0) {
-//        if (Desktop.isDesktopSupported()) {
-//          try {
-//            String url = 
-//                "http://nbo6.chem.wisc.edu/jmol_help/NBOPro6_man.pdf";
-//            Desktop.getDesktop().browse(new URI(url));
-//          } catch (IOException ex) {
-//            alertError("Could open NBOPro6 manual");
-//          } catch (URISyntaxException e) {
-//            alertError("Could open NBOPro6 manual");
-//          }
-//      }
-//      }
-//    });
-//    btn.setFont(f);
-//    p.add(b);
     JTextPane t = new JTextPane();
     t.setContentType("text/html");
-    t.setText("<HTML><Font color=\"RED\"><center>\u00a9Copyright 2017 Board of Regents of the University of Wisconsin System " +
-        "on behalf of \nthe Theoretical Chemistry Institute.  All Rights Reserved</center></font></HTML>");
-    
+    t.setText("<HTML><Font color=\"RED\"><center>\u00a9Copyright 2017 Board of Regents of the University of Wisconsin System "
+        + "on behalf of \nthe Theoretical Chemistry Institute.  All Rights Reserved</center></font></HTML>");
+
     t.setForeground(Color.RED);
     t.setBackground(null);
     t.setAlignmentX(0.5f);
@@ -643,22 +592,21 @@ public class NBODialog extends NBODialogSearch {
     centerPanel.setDividerLocation(365);
   }
 
-  protected void nboOutput() {
+  private void nboOutput() {
     nboOutput = new JPanel(new BorderLayout());
     viewSettingsBox = new JPanel(new BorderLayout());
     viewSettingsBox.add(new JLabel("Settings"), BorderLayout.NORTH);
     JPanel s = new JPanel(new BorderLayout());
-    
-    
-    s.add(viewSettingsBox,BorderLayout.NORTH);
+
+    s.add(viewSettingsBox, BorderLayout.NORTH);
     viewSettingsBox.setVisible(!jmolOptionNONBO);
-    nboOutput.add(viewSettingsBox,BorderLayout.NORTH);
-    nboOutput.add(s,BorderLayout.CENTER);
+    nboOutput.add(viewSettingsBox, BorderLayout.NORTH);
+    nboOutput.add(s, BorderLayout.CENTER);
     JLabel lab = new JLabel("Session Dialog");
     lab.setFont(monoFont);
     s.add(lab, BorderLayout.PAGE_START);
     JScrollPane p1 = new JScrollPane();
-    if(jpNBODialog == null){
+    if (jpNBODialog == null) {
       jpNBODialog = new JTextPane();
       jpNBODialog.setEditable(false);
       jpNBODialog.setBorder(null);
@@ -667,11 +615,11 @@ public class NBODialog extends NBODialogSearch {
     }
     jpNBODialog.setContentType("text/html");
     //jpNBODialog.setFont(new Font("Arial",Font.PLAIN,10));
-    setComponents(s,Color.WHITE,Color.BLACK);
+    setComponents(s, Color.WHITE, Color.BLACK);
     p1.getViewport().add(jpNBODialog);
     p1.setBorder(null);
     s.add(p1, BorderLayout.CENTER);
-    JPanel box = new JPanel(new GridLayout(2,1));
+    JPanel box = new JPanel(new GridLayout(2, 1));
     statusLab = new JLabel();
     statusLab.setForeground(Color.red);
     statusLab.setBackground(Color.white);
@@ -684,62 +632,62 @@ public class NBODialog extends NBODialogSearch {
       @Override
       public void actionPerformed(ActionEvent e) {
         clearOutput();
-      } 
+      }
     });
     box2.add(clear);
     JButton btn = new JButton("Save Output");
-    
-    btn.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          if (jpNBODialog == null)
-            return;
-          JFileChooser myChooser = new JFileChooser();
-          if (lastOutputSaveName == null)
-            lastOutputSaveName = inputFileHandler.tfDir.getText() + "/nboDialog.txt";
-          String savePath = lastOutputSaveName;
-          myChooser.setSelectedFile(new File(savePath));
 
-          myChooser.setFileFilter(new FileNameExtensionFilter(".txt",".txt"));
-          myChooser.setFileHidingEnabled(true);
-          
-          int button = myChooser.showSaveDialog(jpNBODialog);
-          if (button == JFileChooser.APPROVE_OPTION) {
-            saveDialogOutput(myChooser.getSelectedFile().toString());
-          }
+    btn.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (jpNBODialog == null)
+          return;
+        JFileChooser myChooser = new JFileChooser();
+        if (lastOutputSaveName == null)
+          lastOutputSaveName = inputFileHandler.tfDir.getText()
+              + "/nboDialog.txt";
+        String savePath = lastOutputSaveName;
+        myChooser.setSelectedFile(new File(savePath));
+
+        myChooser.setFileFilter(new FileNameExtensionFilter(".txt", ".txt"));
+        myChooser.setFileHidingEnabled(true);
+
+        int button = myChooser.showSaveDialog(jpNBODialog);
+        if (button == JFileChooser.APPROVE_OPTION) {
+          saveDialogOutput(myChooser.getSelectedFile().toString());
         }
-      });
+      }
+    });
     box2.add(btn);
     box.add(box2);
     s.add(box, BorderLayout.SOUTH);
   }
 
   protected void saveDialogOutput(String saveFileName) {
-    String output = bodyText.replaceAll("<br>",sep);
+    String output = bodyText.replaceAll("<br>", sep);
     output = output.replaceAll("<b>", "");
     output = output.replaceAll("</b>", "");
-    output = output.replaceAll("<i>","");
-    output = output.replaceAll("</i>","");
+    output = output.replaceAll("<i>", "");
+    output = output.replaceAll("</i>", "");
     inputFileHandler.writeToFile(saveFileName, output);
   }
 
   public void close() {
-    if(modulePanel != null)
+    if (modulePanel != null)
       inputFileHandler.clearInputFile(false);
     runScriptNow("select off");
     dispose();
   }
-  
 
-  protected void setThis(JButton btn) {
-    for(Component c:((Container)topPanel.getComponent(0)).getComponents()){
-      if(c instanceof JButton){
-        if(((JButton)c).equals(btn)){
+  private void setThis(JButton btn) {
+    for (Component c : ((Container) topPanel.getComponent(0)).getComponents()) {
+      if (c instanceof JButton) {
+        if (((JButton) c).equals(btn)) {
           btn.setEnabled(false);
           btn.setBorder(new LineBorder(Color.WHITE, 2));
-        }else{
-          ((JButton)c).setBorder(null);
-          ((JButton)c).setEnabled(true);
+        } else {
+          ((JButton) c).setBorder(null);
+          ((JButton) c).setEnabled(true);
         }
       }
     }
@@ -754,18 +702,18 @@ public class NBODialog extends NBODialogSearch {
    */
   @SuppressWarnings("incomplete-switch")
   public void notifyCallback(CBK type, Object[] data) {
-    if (!isVisible()) 
+    if (!isVisible())
       return;
     switch (type) {
     case STRUCTUREMODIFIED:
-      if(dialogMode == DIALOG_MODEL){
+      if (dialogMode == DIALOG_MODEL) {
       }
       break;
     case PICK:
       int atomIndex = ((Integer) data[2]).intValue();
       System.out.println("----" + type.toString() + ":  " + atomIndex);
       String atomno;
-      if(atomIndex == -3)
+      if (atomIndex == -3)
         atomno = data[1].toString();
       else if (atomIndex < 0)
         break;
@@ -784,11 +732,11 @@ public class NBODialog extends NBODialogSearch {
       }
       break;
     case LOADSTRUCT:
-      if (vwr.ms.ac == 0) 
+      if (vwr.ms.ac == 0)
         return;
       if (nboView)
-        runScriptNow("select add visible.bonds;color bonds lightgrey;" +
-          "wireframe 0.1;select none");
+        runScriptNow("select add visible.bonds;color bonds lightgrey;"
+            + "wireframe 0.1;select none");
       switch (dialogMode) {
       case DIALOG_MODEL:
         notifyLoad_m();
@@ -806,13 +754,13 @@ public class NBODialog extends NBODialogSearch {
       break;
     }
   }
-  
+
   /**
    * clear output panel
    */
-  protected void clearOutput(){
+  protected void clearOutput() {
     bodyText = "";
-   // String fontFamily = jpNBOLog.getFont().getFamily();
+    // String fontFamily = jpNBOLog.getFont().getFamily();
     if (jpNBODialog != null)
       jpNBODialog.setText("");
   }
@@ -832,16 +780,17 @@ public class NBODialog extends NBODialogSearch {
       setNewBasis();
       break;
     }
-  }  
+  }
 
   /**
-   * Carry out all functions to load a new file or basis 
+   * Carry out all functions to load a new file or basis
+   * 
    * @param file
    */
   void loadOrSetBasis(File file) {
     isNewModel = true;
     switch (dialogMode) {
-    case DIALOG_VIEW: 
+    case DIALOG_VIEW:
       setViewerBasis();
       break;
     default:
@@ -850,14 +799,15 @@ public class NBODialog extends NBODialogSearch {
   }
 
   void setLicense(String line) {
-    licenseInfo.setText("<html><div style='text-align: center'>" + line + "</html>");
-  }
-  
-  @Override
-  protected NBOFileHandler newNBOFileHandler(String name, String ext, int mode, String useExt) {
-    return new NBOFileHandler(name, ext, mode, useExt, this);
+    licenseInfo.setText("<html><div style='text-align: center'>" + line
+        + "</html>");
   }
 
+  @Override
+  protected NBOFileHandler newNBOFileHandler(String name, String ext, int mode,
+                                             String useExt) {
+    return new NBOFileHandler(name, ext, mode, useExt, this);
+  }
 
   //  protected Component getComponentatPoint(Point p, Component top){
   //    Component c = null;
@@ -901,7 +851,6 @@ public class NBODialog extends NBODialogSearch {
 
   Timer runTimer;
   private long runStartTime;
-  
 
   protected synchronized void showRunTime() {
     String t = statusLab.getText();
@@ -923,6 +872,5 @@ public class NBODialog extends NBODialogSearch {
 
     }
   }
-
 
 }

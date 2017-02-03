@@ -25,7 +25,6 @@ package org.gennbo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,10 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Hashtable;
 
 import javajs.util.PT;
@@ -321,9 +317,9 @@ abstract class NBODialogSearch extends NBODialogView {
     topBox.add(back);
     topBox.add(new HelpBtn("a") {
       @Override
-      public void actionPerformed(ActionEvent e) {
-        doGetHelp();
-      }
+      public String getHelpPage() {
+        return getSearchHelpURL();
+      }      
     });
     Box box2 = createTitleBox(" Select Keyword ", topBox);
     back.addActionListener(new ActionListener() {
@@ -361,6 +357,12 @@ abstract class NBODialogSearch extends NBODialogView {
     return panel;
   }
 
+  protected String getSearchHelpURL() {
+    return (nboKeywordNumber == KEYWD_WEBHELP ? "search_help.htm"
+        : keyProp.equals("E2") ? "search_e2pert_help.htm"
+            : "search_" + keyProp + "_help.htm");
+  }
+
   protected void doSetSpin() {
     if (alphaSpin.isSelected()) {
       setBonds(true);
@@ -395,23 +397,6 @@ abstract class NBODialogSearch extends NBODialogView {
     case KEYWD_CMO:
       list1.removeAllElements();
       getListSearch("n", list1);
-    }
-  }
-
-  protected void doGetHelp() {
-    String url = "http://nbo6.chem.wisc.edu/jmol_help/";
-    if (nboKeywordNumber == KEYWD_WEBHELP) {
-      url += "search_help.htm";
-    } else if (keyProp.equals("E2")) {
-      url += "search_e2pert_help.htm";
-    } else {
-      url += "search_" + keyProp + "_help.htm";
-    }
-    try {
-      Desktop.getDesktop().browse(new URI(url));
-    } catch (IOException e1) {
-      vwr.alert("Could not open browser");
-    } catch (URISyntaxException e1) {
     }
   }
 

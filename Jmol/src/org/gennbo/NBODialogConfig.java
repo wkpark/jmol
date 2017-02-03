@@ -26,7 +26,6 @@ package org.gennbo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -35,8 +34,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -80,18 +77,27 @@ abstract class NBODialogConfig extends JDialog {
   abstract protected NBOFileHandler newNBOFileHandler(String name, String ext,
                                                       int mode, String useExt);
 
-  static final char DIALOG_HOME =   'h';
-  static final char DIALOG_SEARCH = 's';
-  static final char DIALOG_VIEW =   'v';
-  static final char DIALOG_RUN =    'r';
-  static final char DIALOG_MODEL =  'm';
-  static final char DIALOG_CONFIG = 'c';
+  public static final String NBO_WEB_SITE = "http://nbo6.chem.wisc.edu";
+  
+  protected static final String ARCHIVE_DIR = NBO_WEB_SITE +"/jmol_nborxiv/";
 
-  protected static final int ORIGIN_UNKNOWN = 0;
-  protected static final int ORIGIN_NIH = 1;
+  protected static final String RUN_EXTENSIONS = "47;gau;gms";
+
+
+
+  static final int DIALOG_HOME   = 0;
+  static final int DIALOG_MODEL  = 1;
+  static final int DIALOG_RUN    = 2;
+  static final int DIALOG_VIEW   = 3;
+  static final int DIALOG_SEARCH = 4;
+  static final int DIALOG_CONFIG = 5;
+  static final int DIALOG_HELP   = 6;
+
+  protected static final int ORIGIN_UNKNOWN      = 0;
+  protected static final int ORIGIN_NIH          = 1;
   protected static final int ORIGIN_LINE_FORMULA = 2;
-  protected static final int ORIGIN_FILE_INPUT = 3;
-  protected static final int ORIGIN_NBO_ARCHIVE = 4;
+  protected static final int ORIGIN_FILE_INPUT   = 3;
+  protected static final int ORIGIN_NBO_ARCHIVE  = 4;
   
   protected int modelOrigin = ORIGIN_UNKNOWN;
   
@@ -208,16 +214,6 @@ abstract class NBODialogConfig extends JDialog {
    */
   final static protected Font nboProTitleFont = nboFontLarge;
     
-  /**
-   * Jmol-style label font 16 bold
-   */
-  private static final String JMOL_LABEL_FONT = "12 bold";
-
-  /**
-   * Jmol-style label font 16 bold
-   */
-  private static final String JMOL_LABEL_H_FONT = "10 plain";
-
   private static final int MODE_PATH_SERVICE = 0;
   private static final int MODE_PATH_WORKING = 1;
 
@@ -238,7 +234,7 @@ abstract class NBODialogConfig extends JDialog {
   
   protected NBOFileHandler inputFileHandler;
   protected NBOFileHandler saveFileHandler;
-  protected char dialogMode;
+  protected int dialogMode;
   protected boolean isOpenShell;
   protected boolean isJmolNBO;
   protected boolean haveService;
@@ -864,28 +860,55 @@ abstract class NBODialogConfig extends JDialog {
 
   }
 
-  class HelpBtn extends JButton implements ActionListener {
-
-    private String url;
-
+  class HelpBtn extends JButton {
+    
+    String url;
+    
     protected HelpBtn(String url) {
-      super("Help");
-      setBackground(Color.black);
-      setForeground(Color.white);
-      this.url = url;
-      addActionListener(this);
+      this("Help", url);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent arg0) {
-      try {
-        URI uri = new URI("http://nbo6.chem.wisc.edu/jmol_help/" + url);
-        Desktop.getDesktop().browse(uri);
-      } catch (URISyntaxException e) {
-        // TODO
-      } catch (IOException e) {
-        // TODO
-      }
+    protected HelpBtn(String label, String page) {
+      super(label);
+      setBackground(Color.black);
+      setForeground(Color.white);
+      url = page;
+      addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+          vwr.showUrl(NBODialogConfig.NBO_WEB_SITE + "/jmol_help/" + getHelpPage());
+        }        
+      });
+    }
+
+    /**
+     * Get the proper help page for this context
+     * 
+     * @return a web page URI
+     */
+    public String getHelpPage() {
+      String u = url;
+      if (u == null)
+        switch (dialogMode) {
+        case DIALOG_MODEL:
+          u = "model_help.htm";
+          break;
+        case DIALOG_RUN:
+          u = "run_help.htm";
+          break;
+        case DIALOG_VIEW:
+          u = "view_help.htm";
+          break;
+        case DIALOG_SEARCH:
+          u = "search_help.htm";
+          break;
+        case DIALOG_CONFIG:
+        case DIALOG_HOME:
+        default:
+          u = "Jmol_NBOPro6_help.htm";
+          break;
+        }
+      return u;
     }
   }
 

@@ -70,10 +70,6 @@ abstract class NBODialogRun extends NBODialogModel {
 
   protected static boolean ALLOW_SELECT_ALL = false;
 
-  protected static final String ARCHIVE_DIR = "http://nbo6.chem.wisc.edu/jmol_nborxiv/";
-
-  protected static final String RUN_EXTENSIONS = "47;gau;gms";
-
   protected static final String[] RUN_KEYWORD_LIST = {
       "CMO: Bonding character of canonical MO's",
       "DIPOLE: Dipole moment analysis",

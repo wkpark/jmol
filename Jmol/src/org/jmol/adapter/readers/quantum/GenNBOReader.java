@@ -161,6 +161,8 @@ public class GenNBOReader extends MOReader {
     }
     boolean isMO = !nboType.equals("AO");
     nOrbitals = orbitals.size();
+    if (nOrbitals == 0)
+      return;
     line = null;
     if (!isMO)
       nOrbitals = nOrbitals0 + nAOs;
@@ -234,7 +236,7 @@ public class GenNBOReader extends MOReader {
     fileName += ext;
     String data = vwr.getFileAsString3(fileName, false, null);
     Logger.info(data.length() + " bytes read from " + fileName);
-    if (data.length() == 0 || data.indexOf("java.io.FileNotFound") >= 0)
+    if (data.length() == 0 || data.indexOf("java.io.FileNotFound") >= 0 && nboType != "AO")
       throw new Exception(" supplemental file " + fileName + " was not found");
     return data;
   }

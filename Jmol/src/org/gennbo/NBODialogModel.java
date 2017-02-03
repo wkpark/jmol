@@ -129,7 +129,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   /**
    * A model is being loaded into Jmol that NBO does not know about yet
    */
-  private boolean notFromNBO;
+  protected boolean notFromNBO;
 
   protected String selected = "";
 
@@ -858,16 +858,15 @@ abstract class NBODialogModel extends NBODialogConfig {
       }
       jtLineFormula.setText("");
       saveFileHandler.setInput(null, model, "mol");
-      s = "set zoomlarge false;load " + model;
       logCmd("get " + model);
-      if (runScriptNow(s) == null) {
+      if (loadModelFileNow(model) == null) {
         model = (model.charAt(0) == ':' ? "$" : ":") + model.substring(1);
         if (model.startsWith("$=")) {
           logError("RCSB does not recognize ligand code " + model.substring(2) + ".");
           return;
         }
         logCmd("get " + model);
-        if (runScriptNow("load :" + model) == null) {
+        if (loadModelFileNow(model) == null) {
           logError("Neither NIH/CIR nor PubChem have recognize this identifier.");
           notFromNBO = false;
         }

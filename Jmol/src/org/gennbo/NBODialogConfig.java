@@ -9,7 +9,7 @@
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
- *  License as published by the Free Software Foundation; either
+ *  License as published by the Free Software Foundation; either"
  *  version 2.1 of the License, or (at your option) any later version.
  *
  *  This library is distributed in the hope that it will be useful,
@@ -72,6 +72,8 @@ import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 abstract class NBODialogConfig extends JDialog {
 
+  abstract protected void setStatus(String statusInfo);
+
   abstract protected void updatePanelSettings();
 
   abstract protected NBOFileHandler newNBOFileHandler(String name, String ext,
@@ -115,7 +117,7 @@ abstract class NBODialogConfig extends JDialog {
   protected static final String sep = System.getProperty("line.separator");
 
   protected final static String JMOL_FONT_SCRIPT = 
-      ";set fontscaling true; select _H; font label 10 arial; set labelscalereference 0.025;select !_H;font label 10 arial;set labelscalereference 0.035;select none;";
+      ";set fontscaling true; select _H; font label 10 arial plain 0.025;select !_H;font label 10 arial plain 0.035;select none;";
   
 
   /**
@@ -483,7 +485,7 @@ abstract class NBODialogConfig extends JDialog {
             "org/gennbo/assets/atomColors.txt");
         runScriptNow(atomColors + ";refresh");
       } catch (IOException e) {
-        log("atomColors.txt not found", 'r');
+        logError("atomColors.txt not found");
       }
       nboView = true;
     }
@@ -759,6 +761,7 @@ abstract class NBODialogConfig extends JDialog {
       if (chFormat == 'r') {
         format0 = "b style=color:red";
         format1 = "b";
+        setStatus("");
       }
 
       if (!format0.equals("p"))
@@ -779,7 +782,7 @@ abstract class NBODialogConfig extends JDialog {
 
   protected void alertError(String line) {
     line = PT.rep(line.replace('\r', ' '), "\n\n", "\n");
-    log(line, 'r');
+    logError(line);
     vwr.alert(line);
   }
 
@@ -804,13 +807,19 @@ abstract class NBODialogConfig extends JDialog {
     return PT.trim(vwr.runScript(script), "\n");
   }
   
+  protected boolean iAmLoading;
   protected void loadModelFileQueued(File f, boolean saveOrientation) {
+    iAmLoading = true;
     String s = "load \"" + f.getAbsolutePath() + "\"" + JMOL_FONT_SCRIPT ;
     if (saveOrientation)
       s = "save orientation o1;" + s + ";restore orientation o1";
     runScriptQueued(s);
   }
 
+  protected String loadModelFileNow(String s) {
+    iAmLoading = true;
+    return runScriptNow("load " + s);
+  }
 
   private boolean connect() {
     if (!nboService.haveGenNBO())
@@ -955,6 +964,5 @@ abstract class NBODialogConfig extends JDialog {
       inputFileHandler = newNBOFileHandler(inputFileHandler.jobStem, "47", mode,
           "47");
   }
-
 
 }

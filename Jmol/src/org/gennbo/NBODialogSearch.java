@@ -714,7 +714,7 @@ abstract class NBODialogSearch extends NBODialogView {
   }
 
   private void load(int nn, boolean withBondPicking) {
-    runScriptNow("load " + inputFileHandler.newNBOFileForExt("" + nn) + (withBondPicking ? ";set bondpicking true" : ""));
+    loadModelFileNow(inputFileHandler.newNBOFileForExt("" + nn) + (withBondPicking ? ";set bondpicking true" : ""));
   }
 
   protected void setKeyword(final String[] get, final String[] labs) {
@@ -894,8 +894,7 @@ abstract class NBODialogSearch extends NBODialogView {
       list1.removeAllElements();
       getListSearch("r", list1);
     } else if (keyProp.equals("OPBAS")) {
-      runScriptNow("load "
-          + inputFileHandler.newNBOFileForExt(""
+      loadModelFileNow("" + inputFileHandler.newNBOFileForExt(""
               + (31 + comboBasis.getSelectedIndex())));
       list1.removeAllElements();
       list2.removeAllElements();

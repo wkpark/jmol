@@ -92,6 +92,19 @@ public class FileDropper implements DropTargetListener {
   }
 
   private void loadFile(String fname, int x, int y) {
+    if (fname.endsWith(".URL")) {
+//      [InternetShortcut]
+//      URL=http://nbo6.chem.wisc.edu/jmol_nborxiv/allyl.47
+//      IDList=
+//      HotKey=0
+//      IconFile=C:\Users\RM\AppData\Local\Mozilla\Firefox\Profiles\r4gp03t7.default\shortcutCache\x76TB2sbngvxLh95XTl2MA==.ico
+//      IconIndex=0
+      String data = vwr.getAsciiFileOrNull(fname);
+      if (data == null || data.indexOf("URL=") < 0)
+        return;
+      fname = data.substring(data.indexOf("URL=") + 4);
+      fname = fname.substring(0,  fname.indexOf("\n"));
+    }
     fname = fname.replace('\\', '/').trim();
     if (fname.indexOf("://") < 0)
       fname = (fname.startsWith("/") ? "file://" : "file:///") + fname;

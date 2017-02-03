@@ -44,6 +44,7 @@ import java.io.File;
 import java.util.Map;
 
 import javajs.swing.SwingConstants;
+import javajs.util.PT;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -709,6 +710,35 @@ public class NBODialog extends NBODialogSearch {
     case LOADSTRUCT:
       if (vwr.ms.ac == 0)
         return;
+      String f = runScriptNow("print _modelFile");
+      if (!f.equals("null") && !iAmLoading) {
+        if (!f.endsWith(".47")) {
+          if (dialogMode != DIALOG_MODEL) {
+            openPanel(DIALOG_MODEL);
+            return;
+          }
+        }
+        if (dialogMode == DIALOG_MODEL) {
+          notFromNBO = true;
+        } else {
+          if (dialogMode != DIALOG_RUN) {
+            openPanel(DIALOG_RUN);
+            return;
+          }
+          if (f.startsWith("http")) {
+            retrieveFile(f, null);
+            return;
+          }
+          if (f.startsWith("file:"))
+            f = PT.trim(f.substring(5), "/");
+          if (!f.contains(":"))
+            f = "/" + f;
+          inputFileHandler.loadSelectedFile(new File(f));
+          return;
+        }
+      }
+
+      iAmLoading = false;
       if (nboView)
         runScriptNow("select add visible.bonds;color bonds lightgrey;"
             + "wireframe 0.1;select none");
@@ -794,7 +824,8 @@ public class NBODialog extends NBODialogSearch {
   //    return c;
   //  }
 
-  void setStatus(String statusInfo) {
+  @Override
+  protected void setStatus(String statusInfo) {
     boolean isBusy = (statusInfo != null && statusInfo.length() > 0);
     statusLab.setText(statusInfo);
     centerPanel.setCursor(Cursor

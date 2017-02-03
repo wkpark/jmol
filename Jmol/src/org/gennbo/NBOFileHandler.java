@@ -155,7 +155,7 @@ class NBOFileHandler extends JPanel {
     return true;
   }
 
-  private boolean loadSelectedFile(File selectedFile) {
+  protected boolean loadSelectedFile(File selectedFile) {
     dialog.nboService.restartIfNecessary();
     inputFile = selectedFile;
     //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 

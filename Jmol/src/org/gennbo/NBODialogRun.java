@@ -663,70 +663,24 @@ abstract class NBODialogRun extends NBODialogModel {
         }
         repaint();
       } else if (e.getSource() == download) {
-        downloadNBOArchiveFile();
+        String s = null;
+        for (int i = 0; i < jcLinks.length; i++) {
+          if (!jcLinks[i].isSelected())
+            continue;
+          s = baseDir + jcLinks[i].getText();
+          break;
+        }
+        if (s == null)
+          return;      
+        setVisible(false);
+        if (!retrieveFile(s, tfPath.getText())) {
+          setVisible(true);
+          return;
+        }
+        dispose();
       }
     }
 
-    /**
-     * Get an NBO archive .47 file.
-     * 
-     */
-    public void downloadNBOArchiveFile() {
-      File f = null;
-      String path = tfPath.getText().trim();
-      logInfo("saving to " + path, Logger.LEVEL_INFO);
-
-      int n = 0;
-      for (int i = 0; i < jcLinks.length; i++) {
-        if (!jcLinks[i].isSelected())
-          continue;
-        if (path.endsWith("/") || path.endsWith("\\"))
-          path += jcLinks[i].getText();
-        else
-          path += "/" + jcLinks[i].getText();
-        f = new File(path);
-        if (f.exists()) {
-          int j = JOptionPane
-              .showConfirmDialog(
-                  null,
-                  "File "
-                      + f.getAbsolutePath()
-                      + " already exists, do you want to overwrite contents, along with its associated .nn and .nbo files?",
-                  "Warning", JOptionPane.YES_NO_OPTION);
-          if (j == JOptionPane.NO_OPTION)
-            return;
-        }
-        String s = baseDir + jcLinks[i].getText();
-        logCmd("retrieve " + s);
-
-        try {
-          String fileData = vwr.getAsciiFileOrNull(s);
-          if (fileData == null) {
-            logError("Error reading " + s);
-            break;
-          }
-          if (inputFileHandler.writeToFile(path, fileData)) {
-            logInfo(f.getName() + " (" + fileData.length() + " bytes)",
-                Logger.LEVEL_INFO);
-            n++;
-          } else {
-            logError("Error writing to " + f);
-          }
-        } catch (Throwable e) {
-          alertError("Error reading " + s + ": " + e);
-        }
-        break;
-      }
-      if (f == null)
-        return;
-      modelOrigin = ORIGIN_NBO_ARCHIVE;
-      inputFileHandler.setInputFile(f);
-      modelOrigin = ORIGIN_NBO_ARCHIVE;
-      rbLocal.doClick();
-      modelOrigin = ORIGIN_FILE_INPUT;
-      setVisible(false);
-      dispose();
-    }
   }
 
   /**
@@ -774,6 +728,59 @@ abstract class NBODialogRun extends NBODialogModel {
     return keywords;
   }
   
+  /**
+   * get a resource and put it in the specified path
+   * 
+   * @param s
+   * @param path
+   * @return true if successful
+   */
+  public boolean retrieveFile(String s, String path) {
+    File f = null;
+    if (path == null)
+      path = inputFileHandler.fileDir;
+    logCmd("retrieve " + s);
+
+    String name = s.substring(s.lastIndexOf("/") + 1);
+    if (path.endsWith("/") || path.endsWith("\\"))
+      path += name;
+    else 
+      path += (path.endsWith("\\") ? "\\" : "/") + name;
+    f = new File(path);
+    if (f.exists()) {
+      int j = JOptionPane
+          .showConfirmDialog(
+              null,
+              "File "
+                  + f.getAbsolutePath()
+                  + " already exists, do you want to overwrite contents, along with its associated .nn and .nbo files?",
+              "Warning", JOptionPane.YES_NO_OPTION);
+      if (j == JOptionPane.NO_OPTION)
+        return false;
+    }
+    try {
+      String fileData = vwr.getAsciiFileOrNull(s);
+      if (fileData == null) {
+        logError("Error reading " + s);
+        return false;
+      }
+      if (inputFileHandler.writeToFile(path, fileData)) {
+        logInfo(f.getName() + " (" + fileData.length() + " bytes)",
+            Logger.LEVEL_INFO);
+      } else {
+        logError("Error writing to " + f);
+      }
+    } catch (Throwable e) {
+      alertError("Error reading " + s + ": " + e);
+    }
+    modelOrigin = ORIGIN_NBO_ARCHIVE;
+    inputFileHandler.setInputFile(f);
+    modelOrigin = ORIGIN_NBO_ARCHIVE;
+    rbLocal.doClick();
+    modelOrigin = ORIGIN_FILE_INPUT;
+    return true;
+  }
+
   /**
    * Initiates a gennbo job via NBOServe; called from RUN, VIEW, and SEARCH
    * 

@@ -426,7 +426,11 @@ public class Measures extends AtomShape implements JmolMeasurementClient {
     htMin = null;
     //toggling one that is hidden should be interpreted as DEFINE
     bsSelected = new BS();
-    defineAll(Integer.MIN_VALUE, new Measurement().setPoints(ms, indices, null, defaultTickInfo), false, true, true);
+    Measurement m = new Measurement().setPoints(ms, indices, null, defaultTickInfo);
+    defineAll(Integer.MIN_VALUE, m, false, true, true);
+    int i = find(m);
+    if (i >= 0)
+      bsSelected.set(i);
     setIndices();
     reformatDistances();
   }

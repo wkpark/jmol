@@ -155,6 +155,7 @@ abstract class NBODialogRun extends NBODialogModel {
     
     if (inputFileHandler.tfExt.getText().equals("47"))
       notifyLoad_r();
+    inputFileHandler.setBrowseEnabled(true);
 
     return panel;
   }
@@ -168,6 +169,7 @@ abstract class NBODialogRun extends NBODialogModel {
     Box box = Box.createHorizontalBox();
     ButtonGroup bg = new ButtonGroup();
     rbLocal = new JRadioButton("Local");
+    rbLocal.setSelected(true);
     rbLocal.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -295,7 +297,7 @@ abstract class NBODialogRun extends NBODialogModel {
         String[] tokens = PT.getTokens(PT.rep(PT.rep(s, "$NBO", ""), "$END", "").trim());
         for (String x : tokens) {
           if (x.indexOf("=") < 0) {
-            file47Keywords += x + " ";
+            file47Keywords += x.toUpperCase() + " ";
           } else {
             tfJobName.setText(x.substring(x.indexOf("=") + 1));
           }

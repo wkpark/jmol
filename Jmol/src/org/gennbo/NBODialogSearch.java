@@ -223,7 +223,7 @@ abstract class NBODialogSearch extends NBODialogView {
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());    
     panel.add(createViewSearchJobBox(NBOFileHandler.MODE_SEARCH), BorderLayout.NORTH);
-    inputFileHandler.tfName.setText("");
+//    inputFileHandler.tfName.setText("");
     
     
     /////INPUT FILE/////////////

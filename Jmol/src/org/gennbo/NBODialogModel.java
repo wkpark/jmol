@@ -23,6 +23,7 @@
  */
 package org.gennbo;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -54,11 +55,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jmol.i18n.GT;
+import org.jmol.java.BS;
 import org.jmol.util.Elements;
 
 abstract class NBODialogModel extends NBODialogConfig {
@@ -109,7 +112,7 @@ abstract class NBODialogModel extends NBODialogConfig {
 
   ///  private static final String LOAD_SCRIPT = ";set zoomlarge false;zoomTo 0.5 {*} 0;";
 
-  protected String editActionName;
+  protected String actionIDName;
   private Box innerEditBox;
   private JTextField jtNIHInput, jtLineFormula;
   private JComboBox<String> jcSymOps;
@@ -122,8 +125,8 @@ abstract class NBODialogModel extends NBODialogConfig {
   Stack<String> undoStack, redoStack;
 
   protected JTextField currVal;
-  protected JTextField[] atomNumBox;
-  protected JLabel valLab = new JLabel("");
+  protected JTextField[] atomNumBoxes;
+  protected JLabel valueLabel = new JLabel("");
   protected JPanel panel;
 
   /**
@@ -131,12 +134,10 @@ abstract class NBODialogModel extends NBODialogConfig {
    */
   protected boolean notFromNBO;
 
-  protected String selected = "";
-
   private JButton rebond;
 
   private JLabel atomsLabel;
-  protected int editAction;
+  protected int actionID;
   private Box editComponent;
   private Box inputHeader;
   private Box saveHeader;
@@ -370,14 +371,14 @@ abstract class NBODialogModel extends NBODialogConfig {
     innerEditBox.setVisible(false);
     Box atBox = Box.createHorizontalBox();
     atBox.add(atomsLabel = new JLabel("")); // "Atoms:"
-    atomNumBox = new JTextField[4];
+    atomNumBoxes = new JTextField[4];
     for (int i = 0; i < 4; i++) {
-      atomNumBox[i] = new JTextField();
-      atomNumBox[i].setFont(userInputFont);
-      atomNumBox[i].setMaximumSize(new Dimension(50, 50));
-      atBox.add(atomNumBox[i]).setVisible(false);
+      atomNumBoxes[i] = new JTextField();
+      atomNumBoxes[i].setFont(userInputFont);
+      atomNumBoxes[i].setMaximumSize(new Dimension(50, 50));
+      atBox.add(atomNumBoxes[i]).setVisible(false);
       final int num = i;
-      atomNumBox[i].addKeyListener(new KeyListener(){
+      atomNumBoxes[i].addKeyListener(new KeyListener(){
 
         @Override
         public void keyTyped(KeyEvent e) {}
@@ -392,7 +393,7 @@ abstract class NBODialogModel extends NBODialogConfig {
         }
         
       });
-      atomNumBox[i].addFocusListener(new FocusListener() {
+      atomNumBoxes[i].addFocusListener(new FocusListener() {
         @Override
         public void focusGained(FocusEvent arg0) {
           if (num == boxCount - 1) {
@@ -402,26 +403,20 @@ abstract class NBODialogModel extends NBODialogConfig {
 
         @Override
         public void focusLost(FocusEvent arg0) {
-          int atnum = Integer.MAX_VALUE;
-          try {
-            atnum = Integer.parseInt(atomNumBox[num].getText());
-          } catch (Exception e) {
+          int atnum = PT.parseInt(atomNumBoxes[num].getText());
+          if (atnum > vwr.ms.ac || atnum < 1) {
+            System.out.println("num is " + num + " v="
+                + atomNumBoxes[num].getText());
+            atomNumBoxes[num].setText("");
+          } else {
+            setAtomBoxesFromSelection(null);
           }
-          if (atnum > vwr.ms.ac) {
-            atomNumBox[num].setText("");
-          }
-          selected = modelEditGetSelected();
-          getValue();
-          showSelected(PT.getTokens(selected));
-          editValueTf.setText("");
-          editValueTf.setEnabled(selected.length() > 0);
         }
       });
-      atomNumBox[i].addActionListener(new ActionListener() {
+      atomNumBoxes[i].addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          selected = modelEditGetSelected();
-          applyEdit();
+          setAtomBoxesFromSelection(null);
         }
       });
     }
@@ -430,7 +425,6 @@ abstract class NBODialogModel extends NBODialogConfig {
 
     Box box = Box.createHorizontalBox();
     box.add(new JLabel("Symmetry Type: "));
-
     jcSymOps = new JComboBox<String>();
     jcSymOps.addItem("<Select Transition Metal>");
     jcSymOps.setMaximumSize(new Dimension(180, 40));
@@ -438,14 +432,20 @@ abstract class NBODialogModel extends NBODialogConfig {
     box.add(jcSymOps);
     box.setVisible(false);
     innerEditBox.add(box);
-    currVal = new JTextField();
+    
+    currVal = new JTextField("pick atoms...");
     currVal.setFont(titleFont);
-    currVal.setMaximumSize(new Dimension(200, 40));
-    currVal.setEditable(false);
+    currVal.setBackground(new Color(220,220,220));
+    currVal.setMinimumSize(new Dimension(250, 40));
+    currVal.setPreferredSize(new Dimension(250, 40));
+    currVal.setMaximumSize(new Dimension(250, 40));
+//    currVal.setEditable(false);
+    currVal.setHorizontalAlignment(SwingConstants.CENTER);
     innerEditBox.add(currVal).setVisible(false);
-    valLab = new JLabel();
-    valLab.setAlignmentX(0.5f);
-    innerEditBox.add(valLab).setVisible(false);
+    
+    valueLabel = new JLabel();
+    valueLabel.setAlignmentX(0.5f);
+    innerEditBox.add(valueLabel).setVisible(false);
 
     editValueTf = new JTextField("Select atoms...");
     editValueTf.setVisible(false);
@@ -453,7 +453,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     editValueTf.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        applyEdit();
+        postActionToNBO_m(actionID);
       }
     });
     editValueTf.getDocument().addDocumentListener(new DocumentListener() {
@@ -474,40 +474,118 @@ abstract class NBODialogModel extends NBODialogConfig {
           jbApply.setEnabled(false);
       }
     });
-
     innerEditBox.add(editValueTf).setVisible(false);
 
+    
+    Box lowBox = Box.createHorizontalBox();
     jbClear = new JButton("Clear Selected");
     jbClear.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        clearSelected();
+        clearSelected(true);
       }
     });
     jbApply = new JButton("Apply");
     jbApply.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        applyEdit();
+        postActionToNBO_m(actionID);
       }
     });
-    Box lowBox = Box.createHorizontalBox();
     lowBox.add(jbClear).setVisible(false);
     lowBox.add(jbApply).setVisible(false);
     innerEditBox.add(lowBox);
 
   }
 
+  protected void updateSelected(boolean doPost) {
+    String selected = modelEditGetSelected();          
+    String script = "measure delete;";
+    int cnt = selected.split(" ").length;
+    editValueTf.setEnabled(cnt > 0);
+    editValueTf.setText("");
+    editValueTf.requestFocus();
+    switch (boxCount) {
+    case BOX_COUNT_4:
+      String desc = "";
+      if (cnt > 1) 
+        script += "measure " + selected + " \" \";";
+      switch (cnt) {
+      case 0:
+        currVal.setText("pick atoms...");
+        break;
+      case 1:
+        desc = (actionID == MODEL_ACTION_ALTER ? "atomic number or symbol"
+            : "atomic number");
+        break;
+      case 2:
+        desc = "distance";
+        break;
+      case 3:
+      case 4:
+        desc = (cnt == 3 ? "angle" : "dihedral angle");
+        break;
+      }
+      valueLabel.setText("(" + desc + ")");
+      valueLabel.setVisible(cnt > 0);
+      break;
+    case BOX_COUNT_2:
+      if (cnt == 2) {
+        jbApply.setEnabled(true);
+        if (editValueTf.isVisible())
+          editValueTf.requestFocus();
+        else
+          atomNumBoxes[1].requestFocus();
+      }
+      break;
+    case BOX_COUNT_1:
+      if (cnt == 1) {
+        if (actionID == MODEL_ACTION_REBOND) {
+          jcSymOps.removeAllItems();
+          jcSymOps.setEnabled(true);
+          int atomInd = Integer.parseInt(atomNumBoxes[0].getText()) - 1;
+          int val = vwr.ms.at[atomInd].getValence();
+          jbApply.setEnabled(true);
+          switch (val) {
+          case 4:
+            for (String x : new String[] { "td", "c3vi", "c4v" })
+              jcSymOps.addItem(x);
+            break;
+          case 5:
+            for (String x : new String[] { "c4vo", "c4vi" })
+              jcSymOps.addItem(x);
+            break;
+          case 6:
+            for (String x : new String[] { "c3vo", "c3vi", "c5vo", "c5vi" })
+              jcSymOps.addItem(x);
+            break;
+          default:
+            jcSymOps.addItem("<Select Transition Metal>");
+            jcSymOps.setEnabled(false);
+            jbApply.setEnabled(false);
+          }
+        }
+      }
+    }
+    if (actionID == MODEL_ACTION_ALTER) {
+      postActionToNBO_m(MODEL_ACTION_VALUE);
+    }
+    runScriptQueued(script);
+    editValueTf.setText("");
+    editValueTf.setEnabled(selected.length() > 0);
+    showSelected(selected);
+    if (actionID == MODEL_ACTION_VALUE || doPost)
+      postActionToNBO_m(actionID);
+  }
+
   protected String modelEditGetSelected() {
     String s = "";
     for (int j = 0; j < boxCount; j++)
-      s += atomNumBox[j].getText() + " ";
-    s = PT.rep(s.trim(), "  ", " ");
-    return  s.trim();
+      s += atomNumBoxes[j].getText().trim() + " ";
+    return PT.rep(s.trim(), "  ", " ").trim();
   }
 
   private Box getSaveComponent() {
-
     Box sBox = createBorderBox(true);
     final String[] SAVE_OPTIONS = { "<Select File Type>",
         "XYZ                        [.xyz]",
@@ -626,18 +704,19 @@ abstract class NBODialogModel extends NBODialogConfig {
    * @param s
    *        - array containing atomnums
    */
-  protected void showSelected(String[] s) {
-    String sel = "";
-    for (String x : s)
-      sel += " " + (Integer.parseInt(x) - 1);
-    runScriptNow("select on ({" + sel + " })");
+  protected void showSelected(String s) {
+    BS bs = new BS();
+    for (String x : PT.getTokens(s))
+      bs.set((Integer.parseInt(x) - 1));
+    String script = "select on " + bs + ";";
+    runScriptQueued(script);
   }
 
   private void createInput(final JTextField field, JRadioButton radio) {
     field.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        getModelFromTextBox(field);
+        loadtModelFromTextBox(field);
       }
     });
     addFocusListeners(field, radio);
@@ -673,10 +752,9 @@ abstract class NBODialogModel extends NBODialogConfig {
    * @param action
    */
   protected void actionSelected(int action) {
-    editActionName = MODEL_ACTIONS[action].toLowerCase();
-    editAction = action;
-    runScriptNow("set refreshing true"); // just in case
-    clearSelected();
+    actionID = action;
+    runScriptQueued("set refreshing true; measurements delete"); // just in case
+    clearSelected(true);
     switch (action) {
     case MODEL_ACTION_MUTATE:
       boxCount = BOX_COUNT_1;
@@ -708,12 +786,12 @@ abstract class NBODialogModel extends NBODialogConfig {
       label = "Select atom" + (boxCount > 1 ? "s" : "") + "...";
     jbApply.setEnabled(false);
     for (int i = 0; i < 4; i++)
-      atomNumBox[i].setVisible(i < boxCount);
+      atomNumBoxes[i].setVisible(i < boxCount);
     atomsLabel.setText(boxCount == 0 ? "" : "Atom" + (boxCount > 1 ? "s" : "") + ":");
     editValueTf.setText(label);
     editValueTf.setEnabled(false);
-    jcSymOps.getParent().setVisible(editAction == MODEL_ACTION_REBOND);
-    switch (editAction) {
+    jcSymOps.getParent().setVisible(actionID == MODEL_ACTION_REBOND);
+    switch (actionID) {
     case MODEL_ACTION_ALTER:
     case MODEL_ACTION_MUTATE:
     case MODEL_ACTION_TWIST:
@@ -725,10 +803,10 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
 
     currVal.setVisible(boxCount == BOX_COUNT_4);
-    valLab.setVisible(editAction == MODEL_ACTION_ALTER);
+    valueLabel.setVisible(true);//actionID == MODEL_ACTION_ALTER);
 
-    jbApply.setVisible(editAction != MODEL_ACTION_VALUE);
-    jbClear.setVisible(editAction != MODEL_ACTION_VALUE);
+    jbApply.setVisible(actionID != MODEL_ACTION_VALUE);
+    jbClear.setVisible(true);
     innerEditBox.repaint();
     innerEditBox.revalidate();
   }
@@ -761,58 +839,71 @@ abstract class NBODialogModel extends NBODialogConfig {
       logCmd("Undo");
     }
   };
+  private boolean resetOnAtomClick;
 
   /**
    * Clear out the text fields
+   * @param andShow TODO
    * 
    */
-  protected void clearSelected() {
-    for (int i = 0; i < boxCount; i++)
-      atomNumBox[i].setText("");
+  protected void clearSelected(boolean andShow) {
+    for (int i = 0; i < boxCount; i++) {
+      System.out.println("clearing all boxes");
+      atomNumBoxes[i].setText("");
+    }
+    
     if (currVal != null)
       currVal.setText("");
-    if (valLab != null)
-      valLab.setText(" ");
-    runScriptNow("measure off;select none;refresh");
-    selected = "";
+    if (valueLabel != null)
+      valueLabel.setText(" ");
     if (editValueTf != null) {
       editValueTf.setText("Select atoms...");
       editValueTf.setEnabled(false);
       jbApply.setEnabled(false);
     }
+    if (andShow)
+      updateSelected(false);
   }
 
   /**
    * Apply the selected edit action to a model.
    * 
+   * @param actionID
+   * 
    */
-  protected void applyEdit() {
+  protected void postActionToNBO_m(int actionID) {
     SB sb = new SB();
-
-    String cmd = editActionName + " " + selected + " ";
-    String val = editValueTf.getText();
-    if (editAction == MODEL_ACTION_ALTER && PT.parseInt(val) == Integer.MIN_VALUE)
+    String selected = modelEditGetSelected();
+    String cmd = MODEL_ACTIONS[actionID].toLowerCase() + " " + selected + " ";
+    String val = editValueTf.getText().trim();
+    if (actionID == MODEL_ACTION_ALTER && PT.parseInt(val) == Integer.MIN_VALUE) {
+      if (val.length() == 0)
+        return;
       val = "" + Elements.elementNumberFromSymbol(val, true);
-      if (boxCount == BOX_COUNT_4 || boxCount == BOX_COUNT_1)
-        cmd += val;
-      else if (editAction == MODEL_ACTION_3CHB) {
-        if (!val.startsWith(":"))
-          cmd += ":";
-        cmd += val;
-      }
-    if (editAction == MODEL_ACTION_REBOND)
+    }
+    if (boxCount == BOX_COUNT_4 || boxCount == BOX_COUNT_1)
+      cmd += val;
+    else if (actionID == MODEL_ACTION_3CHB) {
+      if (!val.startsWith(":"))
+        cmd += ":";
+      cmd += val;
+    }
+    if (actionID == MODEL_ACTION_REBOND)
       cmd += jcSymOps.getSelectedItem().toString();
     runScriptNow("save orientation o2");
     sb.append("CMD " + cmd);
     logCmd(cmd);
     jbApply.setEnabled(false);
-    
-    if (editAction  == MODEL_ACTION_VALUE)
-      postNBO_m(sb, NBOService.MODE_MODEL_VALUE, "Checking Value", null, null);
-    else
-      postNBO_m(sb, (editAction == MODEL_ACTION_ALTER ? 
-          NBOService.MODE_MODEL_ALTER : NBOService.MODE_MODEL_EDIT), "Editing model", null, null);
 
+    if (actionID == MODEL_ACTION_VALUE) {
+      postNBO_m(sb, NBOService.MODE_MODEL_VALUE, "Checking Value", null, null);
+    } else {
+      postNBO_m(sb,
+          (actionID == MODEL_ACTION_ALTER ? NBOService.MODE_MODEL_ALTER
+              : NBOService.MODE_MODEL_EDIT), "Editing model", null, null);
+      resetOnAtomClick = true;
+    } 
+    
   }
 
   /**
@@ -829,14 +920,14 @@ abstract class NBODialogModel extends NBODialogConfig {
    * 
    * @param textBox
    */
-  protected void getModelFromTextBox(JTextField textBox) {
+  protected void loadtModelFromTextBox(JTextField textBox) {
     String model = textBox.getText().trim();
     if (model.length() == 0)
       return;
     String s = "";
     inputFileHandler.setInput(null, "", "");
     saveFileHandler.setInput(null, "", "");
-    clearSelected();
+    clearSelected(false);
     if (textBox == jtNIHInput) {
       modelOrigin = ORIGIN_NIH;
       notFromNBO = true;
@@ -936,7 +1027,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sb.append("GLOBAL C_FNAME " + fname + sep);
     sb.append("GLOBAL C_IN_EXT " + ext.toLowerCase() + sep);
     sb.append("CMD use");
-    clearSelected();
+    clearSelected(false);
     logCmd("use." + ess + " " + fname + "." + ext);
     postNBO_m(sb, NBOService.MODE_MODEL_NEW, "Loading model from NBO...", null, null);
 
@@ -999,18 +1090,25 @@ abstract class NBODialogModel extends NBODialogConfig {
 
   /**
    * callback notification from Jmol
-   * @param atomno Jmol's atom number - 1-based
+   * 
+   * @param atomno
+   *        Jmol's atom number - 1-based
    * 
    */
   protected void notifyPick_m(String atomno) {
-
+    runScriptNow("measure delete;" + (resetOnAtomClick ? "select none" : ""));
+    if (resetOnAtomClick) {
+      clearSelected(false);
+    }
+    resetOnAtomClick = false;
     if (boxCount == 0)
       return;
     String[] tok = atomno.split(",");
+    String selected = " " + modelEditGetSelected() + " ";
     if (tok.length > 1) {
       //Bond selection
       if (boxCount == BOX_COUNT_2)
-        clearSelected();
+        clearSelected(true);
       String[] tok2 = tok[1].split(" ");
       String at1 = tok2[2].replaceAll("[\\D]", "");
       if (!selected.contains(" " + at1 + " "))
@@ -1020,169 +1118,35 @@ abstract class NBODialogModel extends NBODialogConfig {
         notifyPick_m(at2);
       return;
     }
-    editValueTf.requestFocus();
-    editValueTf.setText("");
-    if (boxCount < 3)
-      editValueTf.setEnabled(true);
-    boolean isSelected = (vwr.evaluateExpressionAsVariable("{*}[" + atomno + "].selected")
-        .asFloat() == 1); 
+    boolean isSelected = (vwr.evaluateExpressionAsVariable(
+        "{*}[" + atomno + "].selected").asFloat() == 1);
     if (isSelected) {
-      selected = (" " + selected).replace(" " + atomno + " ", " ").trim();
-      if (selected.length() > 0)
-        selected += " ";
-      runScriptNow("select remove {*}[" + atomno + "];measure off;");
-      String[] split = selected.split(" ");
-      for (int i = 0; i < atomNumBox.length; i++)
-        atomNumBox[i].setText(i >= split.length ? "" : "  " + split[i]);
+      selected = PT.rep(selected, " " + atomno + " ", " ").trim();
     } else {
-      selected += atomno + " ";
+      if (PT.getTokens(selected).length >= boxCount) {
+        clearSelected(true);
+        selected = "";
+      }
+      selected += " " + atomno;
     }
-    
-  //  System.out.println(atomno + " / " + selected);
-    selected = PT.rep(selected, "  ", " ").trim();
-    int cnt = (selected.equals("") ? 1 : PT.getTokens(selected).length);
-    if (selected.length() > 0)
-      selected += " ";
-    switch (boxCount) {
-    case BOX_COUNT_4:
-      String desc = "atomic number or symbol";
-      String script = null;
-      switch (cnt) {
-      case 0:
-        desc = "";
-        script = "";
-        break;
-      case 5:
-        clearSelected();
-        selected += atomno + " ";
-        cnt = 1;
-        //$FALL-THROUGH$
-      case 1:
-        editValueTf.setText("");
-        script = "print {*}[" + atomno + "].elemno";
-        editValueTf.setEnabled(true);
-        break;
-      case 2:
-        desc = "distance";
-        runScriptNow("measure off;measure " + selected 
-            + "\"2:%0.4VALUE //A\"" + ";measure " + selected
-            + "\"2:%0.4VALUE //A\"");
-        break;
-      case 3:
-      case 4:
-        desc = (cnt == 3 ? "angle" : "dihedral angle");
-        runScriptNow("measure off;measure " + selected);
-        break;
-      }
-      String sval = "";
-      if (script == null) {
-        script = "print measure(";
-        String[] tokens = PT.getTokens(selected);
-        for (String x : tokens)
-          script += "{*}[" + x + "] ";
-        String s = runScriptNow(script + ")");
-        try {
-        String[] s2 = PT.getTokens("" + s); 
-        if (s2.length < 2)
-          System.out.println(script);
-        s = s2[1];
-        double val = Double.parseDouble(s);
-        val = round(val, 2);
-        sval = "" + val;
-        } catch (Exception e) {
-          System.out.println("TESTERROR1");
-        }
-      } else {
-        sval = "" + runScriptNow(script);
-      }
-      currVal.setText("current value: " + sval);
-      String s = "(" + desc + ")";//editAction.equals("value") ? desc : "new " + desc;
-      valLab.setText(s);// + ":");
-      valLab.setVisible(true);
-      //log(sval, 'b');
-      break;
-    case BOX_COUNT_2:
-      if (cnt == 2) {
-        jbApply.setEnabled(true);
-        if (editValueTf.isVisible())
-          editValueTf.requestFocus();
-        else
-          atomNumBox[1].requestFocus();
-      } else if (cnt == 3) {
-        clearSelected();
-        selected += atomno + " ";
-        cnt = 1;
-      }
-      break;
-    case BOX_COUNT_1:
-      if (cnt == 2) {
-        clearSelected();
-        selected += atomno + " ";
-        cnt = 1;
-      }
-      if (cnt == 1) {
-        if (editAction == MODEL_ACTION_REBOND) {
-          jcSymOps.removeAllItems();
-          jcSymOps.setEnabled(true);
-          int atomInd = Integer.parseInt(atomno) - 1;
-          int val = vwr.ms.at[atomInd].getValence();
-          jbApply.setEnabled(true);
-          switch (val) {
-          case 4:
-            for (String x : new String[] { "td", "c3vi", "c4v" })
-              jcSymOps.addItem(x);
-            break;
-          case 5:
-            for (String x : new String[] { "c4vo", "c4vi" })
-              jcSymOps.addItem(x);
-            break;
-          case 6:
-            for (String x : new String[] { "c3vo", "c3vi", "c5vo", "c5vi" })
-              jcSymOps.addItem(x);
-            break;
-          default:
-            jcSymOps.addItem("<Select Transition Metal>");
-            jcSymOps.setEnabled(false);
-            jbApply.setEnabled(false);
-          }
-        }
-        editValueTf.setEnabled(true);
-        editValueTf.setText("");
-        editValueTf.requestFocus();
-      }
-    }
-    if (cnt == 0 || isSelected)
-      return;
-    runScriptNow("select add {*}[" + atomno + "]");
-      atomNumBox[cnt - 1].setText("  " + atomno);
-
+    setAtomBoxesFromSelection(selected);
   }
 
-  protected void getValue() {
-    String script = "";
-    String[] ats = selected.split(" ");
-    int cnt = ats.length;
-    if (cnt == 1) {
-     // valLab.setText("(Atomic number)");
-      editValueTf.setText("");
-      editValueTf.setEnabled(true);
-      script = "print {*}[" + selected + "].elemno";
-      if (currVal != null)
-        currVal.setText("atomic number: " + runScriptNow(script));
-    } else {
-      runScriptNow("measure off;measure " + selected + " " + (cnt == 2 ? 
-             "\"2:%0.4VALUE //A\"" + ";measure " + selected
-            + "\"2:%0.4VALUE //A\"" :""));
-      script = "print measure({*}[";
-      for (int i = 0; i < ats.length - 1; i++)
-        script += ats[i] + "],{*}[";
-      script += ats[ats.length - 1] + "]);";
-      String s = runScriptNow(script);
-      if (s != null) {
-        if (s.split("\\s+").length > 1)
-          currVal.setText((cnt == 2 ? "distance: " : cnt == 3 ? "angle: " : cnt == 4 ? "dihedral angle: " : "value: ") + s.split("\\s+")[1]);
-      }
+  protected void setAtomBoxesFromSelection(String selected) {
+    if (selected == null)
+      selected = modelEditGetSelected();
+    String[] split = PT.getTokens(selected);
+    System.out.println("setting " + selected);
+    for (int i = 0; i < atomNumBoxes.length; i++) {
+      atomNumBoxes[i].setText(i >= split.length ? "" : "  " + split[i]);
+      System.out.println("set  i=" + i + " " + atomNumBoxes[i].getText());
     }
+    updateSelected(false);
+    
+  }
+
+  private void setCurrentValue(String sval) {
+    currVal.setText(sval.length() == 0 ? "pick atoms..." : "current value: " + sval);
   }
 
   /**
@@ -1211,8 +1175,8 @@ abstract class NBODialogModel extends NBODialogConfig {
       redo.setEnabled(!redoStack.isEmpty());
     // "({1})"
     rebond.setEnabled(((String) vwr.evaluateExpression("{transitionMetal}")).length() > 4);
-    if (editAction == MODEL_ACTION_MUTATE) {
-      actionSelected(editAction);
+    if (actionID == MODEL_ACTION_MUTATE) {
+      actionSelected(actionID);
     }
     runScriptNow("select none; select on;refresh");
   }
@@ -1327,7 +1291,9 @@ abstract class NBODialogModel extends NBODialogConfig {
           + ";restore orientation o2;set refreshing true");
       break;
     case NBOService.MODE_MODEL_VALUE:
-      logValue(a[0]);
+      String sval = a[0].trim();
+      logValue(sval);
+      setCurrentValue(sval);
       break;
     }
   }

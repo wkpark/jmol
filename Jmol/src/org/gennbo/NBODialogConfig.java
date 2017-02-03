@@ -117,7 +117,10 @@ abstract class NBODialogConfig extends JDialog {
   protected static final String sep = System.getProperty("line.separator");
 
   protected final static String JMOL_FONT_SCRIPT = 
-      ";set fontscaling true; select _H; font label 10 arial plain 0.025;select !_H;font label 10 arial plain 0.035;select none;";
+      ";set fontscaling true; " +
+      "select _H; font label 10 arial plain 0.025;" +
+      "select !_H;font label 10 arial bold 0.025;" +
+      "select none;";
   
 
   /**
@@ -413,7 +416,7 @@ abstract class NBODialogConfig extends JDialog {
 
     jCheckNboView = new JCheckBox("Emulate NBO View");
     jCheckNboView.setSelected(true);
-    settingsBox.add(jCheckNboView);
+//    settingsBox.add(jCheckNboView);
     jCheckNboView.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {

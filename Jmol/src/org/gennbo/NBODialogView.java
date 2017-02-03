@@ -149,6 +149,8 @@ abstract class NBODialogView extends NBODialogRun {
   protected final static int VIEW_STATE_VECTOR = 2;
   protected final static int VIEW_STATE_CAMERA = 3;
 
+  public static final int MAX_COLUMNS = 14; // orbitals
+
   protected JPanel buildViewPanel() {
     startingModelCount = vwr.ms.mc;
     panel = new JPanel(new BorderLayout());
@@ -171,12 +173,12 @@ abstract class NBODialogView extends NBODialogRun {
 
     inputFileHandler.setBrowseEnabled(true);
 
-    String fileType = runScriptNow("print _fileType");
-    if (fileType.equals("GenNBO")) {
-      File f = new File(
-          runScriptNow("select within(model, visible); print _modelFile"));
-      inputFileHandler.setInputFile(NBOFileHandler.newNBOFile(f, "47"));
-    }
+//    String fileType = runScriptNow("print _fileType");
+//    if (fileType.equals("GenNBO")) {
+//      File f = new File(
+//          runScriptNow("select within(model, visible); print _modelFile"));
+//      inputFileHandler.setInputFile(NBOFileHandler.newNBOFile(f, "47"));
+//    }
 
     return panel;
   }
@@ -435,11 +437,7 @@ abstract class NBODialogView extends NBODialogRun {
     int x = (getX() + getWidth()) / 2 + 150;
     int y = (getY() + getHeight()) / 2 - 175;
     d.setLocation(x, y);
-    String[] sel = new String[3];
-    sel[0] = planeFields[0].getText();
-    sel[1] = planeFields[1].getText();
-    sel[2] = planeFields[2].getText();
-    showSelected(sel);
+    showSelected(planeFields);
     d.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -459,6 +457,13 @@ abstract class NBODialogView extends NBODialogRun {
     });
 
     plane.setVisible(true);
+  }
+
+  private void showSelected(JTextField[] t) {
+    String s = "";
+    for (int i = t.length; --i >= 0;)
+      s += " " + t[i].getText();
+    showSelected(s);    
   }
 
   /**
@@ -512,10 +517,7 @@ abstract class NBODialogView extends NBODialogRun {
     int x = (getX() + getWidth()) / 2 + 150;
     int y = (getY() + getHeight()) / 2 - 150;
     d.setLocation(x, y);
-    String[] sel = new String[2];
-    sel[0] = vectorFields[0].getText();
-    sel[1] = vectorFields[1].getText();
-    showSelected(sel);
+    showSelected(vectorFields);
     d.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -1191,23 +1193,15 @@ abstract class NBODialogView extends NBODialogRun {
    * @param atomno
    */
   protected void notifyPick_v(String atomno) {
-    String[] sel;
     switch (viewState) {
     case VIEW_STATE_VECTOR:
       vectorFields[viewVectorPt++].setText(atomno);
-      sel = new String[2];
-      sel[0] = vectorFields[0].getText();
-      sel[1] = vectorFields[1].getText();
-      showSelected(sel);
+      showSelected(vectorFields);
       viewVectorPt = viewVectorPt % 2;
       break;
     case VIEW_STATE_PLANE:
       planeFields[viewPlanePt++].setText(atomno);
-      sel = new String[3];
-      sel[0] = planeFields[0].getText();
-      sel[1] = planeFields[1].getText();
-      sel[2] = planeFields[2].getText();
-      showSelected(sel);
+      showSelected(planeFields);
       viewPlanePt = viewPlanePt % 3;
       break;
     case VIEW_STATE_MAIN:
@@ -1428,7 +1422,7 @@ abstract class NBODialogView extends NBODialogRun {
     public OrbitalList() {
       super();
       setLayoutOrientation(JList.VERTICAL_WRAP);
-      setVisibleRowCount(jmolOptionNONBO ? 15 : 10);
+      setVisibleRowCount(jmolOptionNONBO ? 15 : MAX_COLUMNS);
       setFont(nboFontLarge);
       //setColorScheme();
       setFont(listFont);

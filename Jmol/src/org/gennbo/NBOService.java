@@ -103,8 +103,12 @@ public class NBOService {
   private String exeName = "NBOServe.exe";
   private boolean doConnect;
   
-  protected boolean isReady;
+  private boolean isReady;
 
+  private void setReady(boolean tf) {
+    System.out.println("isready = " + tf);
+    isReady = tf;
+  }
   /**
    * A class to manage communication between Jmol and NBOServe.
    * 
@@ -312,11 +316,13 @@ public class NBOService {
     
     // 2. Monitor every 10 ms until no further activity. 
     
-    isReady = true;
+    setReady(true);
     int m = 0;
     do {
       n = m;
       Thread.sleep(10);
+      if (nboOut == null)
+        return null;
     } while ((m = nboOut.available()) > n);
     while (n > buffer.length) {
       buffer = AU.doubleLengthByte(buffer);
@@ -339,7 +345,7 @@ public class NBOService {
    */
   public void closeProcess() {
     
-    isReady = false;
+    setReady(false);
     nboOut = null;
     
     try {
@@ -415,6 +421,7 @@ public class NBOService {
    */
   protected void postToNBO(NBORequest request) {
     synchronized (lock) {
+      restartIfNecessary();
       if (isReady && requestQueue.isEmpty() && currentRequest == null) {
         currentRequest = request;
         requestQueue.add(currentRequest);
@@ -499,8 +506,10 @@ public class NBOService {
 
     if (s.indexOf("FORTRAN STOP") >= 0) {
       dialog.alertError("NBOServe has stopped working - restarting");
+      currentRequest = null;
       clearQueue();
       restart();
+      setReady(true);
       return true;
     }
 
@@ -508,8 +517,10 @@ public class NBOService {
       if (!s.contains("end of file")) {
         dialog.alertError(s);
       }
+      currentRequest = null;
       clearQueue();
       restart();
+      setReady(true);
       return true;
     }
 

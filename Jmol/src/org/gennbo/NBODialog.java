@@ -28,7 +28,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -42,7 +41,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.net.URI;
 import java.util.Map;
 
 import javajs.swing.SwingConstants;
@@ -169,52 +167,28 @@ public class NBODialog extends NBODialogSearch {
       }
     }
 
-    nboService.restart();
-    String msg = null;
-    switch (type) {
-    case DIALOG_MODEL:
-      msg = "MODEL";
-      break;
-    case DIALOG_RUN:
-      msg = "RUN";
-      break;
-    case DIALOG_VIEW:
-      msg = "VIEW";
-      break;
-    case DIALOG_SEARCH:
-      msg = "SEARCH";
-      break;
-    }
-    if (msg != null)
-      logCmd("Entering " + msg);
+    logCmd("Entering " + getDialogName(type));
 
-    if (!jmolOptionNOZAP) // use Jmol command NBO OPTIONS NOZAP to allow this
-      runScriptQueued("zap");
-    nboService.restartIfNecessary();
-    if (dialogMode == DIALOG_HOME) {
+    nboService.restart();
+//  nboService.restartIfNecessary();
+    nboService.clearQueue();
+        
+    if (!checkEnabled()) {
+      openPanel(DIALOG_CONFIG);
+      return;
+    }
+    
+    if (dialogMode == DIALOG_HOME && type != DIALOG_CONFIG) {
       remove(homePanel);
       add(centerPanel, BorderLayout.CENTER);
     }
-    dialogMode = type;
-    switch (dialogMode) {
-    case DIALOG_MODEL:
-    case DIALOG_RUN:
-      break;
-    case DIALOG_VIEW:
-    case DIALOG_SEARCH:
-      runScriptNow("select none");
-      break;
-    }
-    nboService.clearQueue();
+    
     viewSettingsBox.setVisible(false);
-    if (!checkEnabled())
-      type = DIALOG_CONFIG;
-    if (topPanel != null) {
+
+    if (topPanel != null)
       topPanel.remove(icon);
-    }
-    if (type != DIALOG_CONFIG)
-      dialogMode = type;
-    switch (type) {
+
+    switch (dialogMode = type) {
     case DIALOG_CONFIG:
       break;
     case DIALOG_MODEL:
@@ -245,6 +219,7 @@ public class NBODialog extends NBODialogSearch {
     setStatus("");
     invalidate();
     setVisible(true);
+    runScriptQueued(jmolOptionNOZAP ? "select none" : "zap");
   }
 
   private void createDialog(JFrame jmolFrame) {
@@ -359,7 +334,7 @@ public class NBODialog extends NBODialogSearch {
       b.add(Box.createRigidArea(new Dimension(20, 0)));
       b.add(getMainButton(helpBtn, DIALOG_HELP, settingHelpFont));
       b.add(Box.createRigidArea(new Dimension(20, 0)));
-      b.add(getMainButton(new HelpBtn("Manual", "NBOPro6_man.pdf"), DIALOG_HOME, settingHelpFont));
+      b.add(getMainButton(new HelpBtn("Manual", "NBOPro6_man.pdf", "NBOPro6"), DIALOG_HOME, settingHelpFont));
       p.add(b, BorderLayout.CENTER);
     }
     icon = new JLabel();

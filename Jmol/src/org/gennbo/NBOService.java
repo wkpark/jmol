@@ -305,7 +305,7 @@ public class NBOService {
     
     // 1. Check for available bytes.
     
-    int n = nboOut.available();
+    int n = (nboOut == null ? 0 : nboOut.available());
     if (n <= 0) {
       return null;
     }

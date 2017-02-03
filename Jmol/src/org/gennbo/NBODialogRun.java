@@ -673,13 +673,13 @@ abstract class NBODialogRun extends NBODialogModel {
      */
     public void downloadNBOArchiveFile() {
       File f = null;
-      logInfo("saving to " + tfPath.getText().trim(), Logger.LEVEL_INFO);
+      String path = tfPath.getText().trim();
+      logInfo("saving to " + path, Logger.LEVEL_INFO);
 
       int n = 0;
       for (int i = 0; i < jcLinks.length; i++) {
         if (!jcLinks[i].isSelected())
           continue;
-        String path = tfPath.getText().trim();
         if (path.endsWith("/") || path.endsWith("\\"))
           path += jcLinks[i].getText();
         else
@@ -697,10 +697,12 @@ abstract class NBODialogRun extends NBODialogModel {
             return;
         }
         String s = baseDir + jcLinks[i].getText();
+        logCmd("retrieve " + s);
+
         try {
           String fileData = vwr.getAsciiFileOrNull(s);
           if (fileData == null) {
-            logInfo("Error reading " + s, Logger.LEVEL_ERROR);
+            logError("Error reading " + s);
             break;
           }
           if (inputFileHandler.writeToFile(path, fileData)) {
@@ -708,14 +710,13 @@ abstract class NBODialogRun extends NBODialogModel {
                 Logger.LEVEL_INFO);
             n++;
           } else {
-            logInfo("Error writing to " + f, Logger.LEVEL_ERROR);
+            logError("Error writing to " + f);
           }
         } catch (Throwable e) {
           alertError("Error reading " + s + ": " + e);
         }
         break;
       }
-      logInfo("saved " + n + " file" + (n == 1 ? "" : "s"), Logger.LEVEL_INFO);
       if (f == null)
         return;
       modelOrigin = ORIGIN_NBO_ARCHIVE;

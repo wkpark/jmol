@@ -51,12 +51,16 @@ public class NBOPlugin implements JmolPlugin {
   public void start(JFrame frame, Viewer vwr, Map<String, Object> jmolOptions) {
     this.vwr = vwr;
     if (getNBOProperty("serverPath", null) == null) {
-        vwr.alert("NBOServe.exe has not been installed. See http://nbo6.chem.wisc.edu/new6_css.htm for additional information");
+        vwr.alert("NBOServe.exe has not been installed. See " + NBODialogConfig.NBO_WEB_SITE + "/new6_css.htm for additional information");
     }
     nboDialog = new NBODialog(this, frame, vwr, jmolOptions);
     System.out.println("NBO Plugin started.");    
   }
 
+  @Override
+  public String getWebSite() {
+    return NBODialogConfig.NBO_WEB_SITE;
+  }
   @Override
   public String getName() {
     return "NBOPro6@Jmol";

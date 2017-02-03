@@ -77,21 +77,24 @@ abstract class NBODialogConfig extends JDialog {
   abstract protected NBOFileHandler newNBOFileHandler(String name, String ext,
                                                       int mode, String useExt);
 
-  public static final String NBO_WEB_SITE = "http://nbo6.chem.wisc.edu";
-  
+  protected static final String NBO_WEB_SITE = "http://nbo6.chem.wisc.edu";  
   protected static final String ARCHIVE_DIR = NBO_WEB_SITE +"/jmol_nborxiv/";
 
-  protected static final String RUN_EXTENSIONS = "47;gau;gms";
+  protected static final int DIALOG_HOME   = 0;
+  protected static final int DIALOG_MODEL  = 1;
+  protected static final int DIALOG_RUN    = 2;
+  protected static final int DIALOG_VIEW   = 3;
+  protected static final int DIALOG_SEARCH = 4;
+  protected static final int DIALOG_CONFIG = 5;
+  protected static final int DIALOG_HELP   = 6;
 
-
-
-  static final int DIALOG_HOME   = 0;
-  static final int DIALOG_MODEL  = 1;
-  static final int DIALOG_RUN    = 2;
-  static final int DIALOG_VIEW   = 3;
-  static final int DIALOG_SEARCH = 4;
-  static final int DIALOG_CONFIG = 5;
-  static final int DIALOG_HELP   = 6;
+  final private static String[] dialogNames = new String[] {
+    "Home", "Model", "Run", "View", "Search", "Settings", "Help"
+  };
+      
+  protected static String getDialogName(int type) {
+    return dialogNames[type];
+  }
 
   protected static final int ORIGIN_UNKNOWN      = 0;
   protected static final int ORIGIN_NIH          = 1;
@@ -106,7 +109,8 @@ abstract class NBODialogConfig extends JDialog {
 
   protected static final String INPUT_FILE_EXTENSIONS = "adf;cfi;com;g09;gau;gms;jag;log;mm2;mnd;mol;mp;nw;orc;pqs;qc;vfi;xyz;47";
   protected static final String OUTPUT_FILE_EXTENSIONS = "adf;cfi;gau;gms;jag;mm2;mnd;mp;nw;orc;pqs;qc;mol;xyz;vfi;g09;com";
-  protected static final String JMOL_EXTENSIONS = "xyz;mol";
+  protected static final String JMOL_EXTENSIONS = "xyz;mol";  
+//  protected static final String RUN_EXTENSIONS = "47;gau;gms";
 
   protected static final String sep = System.getProperty("line.separator");
 
@@ -862,22 +866,26 @@ abstract class NBODialogConfig extends JDialog {
 
   class HelpBtn extends JButton {
     
-    String url;
+    String page;
     
-    protected HelpBtn(String url) {
-      this("Help", url);
+    protected HelpBtn(String page) {
+      this("Help", page, null);
     }
 
-    protected HelpBtn(String label, String page) {
+    protected HelpBtn(String label, String page, String tooltip) {
       super(label);
       setBackground(Color.black);
       setForeground(Color.white);
-      url = page;
+      this.page = page;
+      tooltip = "Help for " + (tooltip != null ? tooltip : page == null
+          || page.length() == 1 ? "this module" : page);
+      setToolTipText(tooltip);
       addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent arg0) {
-          vwr.showUrl(NBODialogConfig.NBO_WEB_SITE + "/jmol_help/" + getHelpPage());
-        }        
+          vwr.showUrl(NBODialogConfig.NBO_WEB_SITE + "/jmol_help/"
+              + getHelpPage());
+        }
       });
     }
 
@@ -887,7 +895,7 @@ abstract class NBODialogConfig extends JDialog {
      * @return a web page URI
      */
     public String getHelpPage() {
-      String u = url;
+      String u = page;
       if (u == null)
         switch (dialogMode) {
         case DIALOG_MODEL:

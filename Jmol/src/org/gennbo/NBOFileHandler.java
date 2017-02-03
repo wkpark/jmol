@@ -184,6 +184,7 @@ class NBOFileHandler extends JPanel {
    * @param inputFile
    */
   protected void setInputFile(File inputFile) {
+    dialog.logValue("Input file=" + inputFile);
     clearInputFile(false); // clear CURRENT input file's server directory
     dialog.isOpenShell = false;
     this.inputFile = inputFile;

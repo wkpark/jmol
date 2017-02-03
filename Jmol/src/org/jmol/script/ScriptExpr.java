@@ -870,10 +870,14 @@ abstract class ScriptExpr extends ScriptParam {
         if (vwr.ms.mc != 1 || vwr.ms.haveBioModels) {
           // old Chime scripts use *.C for _C
           int atomID = instruction.intValue;
-          if (atomID > 0)
-            rpn.addXBs(compareInt(T.atomid, T.opEQ, atomID));
-          else
+          if (atomID > 0) {
+            BS bs = compareInt(T.atomid, T.opEQ, atomID);
+            if (atomID == 2) // *.CA (alpha carbon only)
+              bs.or(compareInt(T.element, T.opEQ, 20)); // CA.CA
+            rpn.addXBs(bs);            
+          } else {
             rpn.addXBs(getAtomBits(instruction.tok, value));
+          }
         } else {
           // Chime legacy hack.  *.C for _C
           rpn.addXBs(((ScriptEval) this).lookupIdentifierValue("_" + value));

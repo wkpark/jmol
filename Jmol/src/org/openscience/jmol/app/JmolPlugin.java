@@ -18,5 +18,6 @@ public interface JmolPlugin {
   ImageIcon getMenuIcon();
   String getMenuText();
   boolean isStarted();
+  String getWebSite();
 
 }

@@ -372,9 +372,7 @@ abstract class NBODialogRun extends NBODialogModel {
 
   protected void setBonds(boolean alpha) {
     try {
-    if (chooseList == null)
-      return;
-    SB tmp = (alpha ? chooseList.bonds : chooseList.bonds_b);
+      SB tmp = inputFileHandler.getChooseListBonds(alpha);
     if (tmp == null)
       return;
     String bonds = tmp.toString();
@@ -417,45 +415,6 @@ abstract class NBODialogRun extends NBODialogModel {
     }
     } catch (Exception e) {
       System.out.println("Cannot create bonds: " + e.getMessage());
-    }
-  }
-
-  protected void setChooseList(String data) {
-    chooseList = new ChooseList();
-    String[] tokens = PT.split(data, "END");
-    int ind = 0;
-    SB bonds = chooseList.bonds;
-    SB bonds3c = chooseList.bonds3c;
-    Hashtable<String, String> lonePairs = chooseList.lonePairs;
-    if (data.trim().contains("ALPHA")) {
-      isOpenShell = true;
-      ind = 1;
-    }
-
-    for (String x : tokens) {
-      String[] list = x.trim().split("\\s+");
-      if (list[0].trim().equals("BETA")) {
-        bonds = chooseList.bonds_b;
-        bonds3c = chooseList.bonds3c_b;
-        lonePairs = chooseList.lonePairs_b;
-        ind = 1;
-      }
-
-      if (list[ind].trim().equals("LONE"))
-        for (int j = 1 + ind; j < list.length; j += 2)
-          lonePairs.put(list[j], list[j + 1]);
-
-      else if (list[ind].trim().equals("BOND"))
-        for (int j = 1 + ind; j < list.length; j += 3)
-          bonds.append(list[j] + ":" + list[j + 1] + " " + list[j + 2] + "\n");
-
-      else if (list[ind].equals("3C"))
-        for (int j = 1 + ind; j < list.length; j += 4)
-          bonds3c.append(list[j] + ":" + list[j + 1] + " " + list[j + 2] + " "
-              + list[j + 3] + "\n");
-
-      ind = 0;
-
     }
   }
 
@@ -683,33 +642,6 @@ abstract class NBODialogRun extends NBODialogModel {
       }
     }
 
-  }
-
-  /**
-   * Structure for maintaining contents of $CHOOSE list
-   */
-  class ChooseList {
-
-    protected Hashtable<String, String> lv;
-    protected Hashtable<String, String> lv_b;
-    protected Hashtable<String, String> lonePairs;
-    protected Hashtable<String, String> lonePairs_b;
-    protected SB bonds;
-    protected SB bonds_b;
-    protected SB bonds3c;
-    protected SB bonds3c_b;
-
-    public ChooseList() {
-      lv = new Hashtable<String, String>();
-      lv_b = new Hashtable<String, String>();
-      lonePairs = new Hashtable<String, String>();
-      lonePairs_b = new Hashtable<String, String>();
-      bonds = new SB();
-      bonds_b = new SB();
-      bonds3c = new SB();
-      bonds3c_b = new SB();
-
-    }
   }
 
   /**

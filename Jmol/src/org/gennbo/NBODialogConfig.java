@@ -63,7 +63,6 @@ import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
-import org.gennbo.NBODialogRun.ChooseList;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
@@ -255,8 +254,6 @@ abstract class NBODialogConfig extends JDialog {
   protected JComboBox<Color> colorBox1, colorBox2;
   protected JCheckBox jCheckAtomNum, jCheckSelHalo, jCheckDebugVerbose,
       jCheckNboView, jCheckWireMesh;
-
-  protected ChooseList chooseList;
 
   protected String bodyText = "";
   protected boolean showAtNum, nboView, useWireMesh;
@@ -690,10 +687,10 @@ abstract class NBODialogConfig extends JDialog {
     }
     SB sb = new SB();
     sb.append("select visible;label %a;");
-    if (chooseList != null) {
-      Hashtable<String, String> lonePairs = (alpha) ? chooseList.lonePairs
-          : chooseList.lonePairs_b;
-      Hashtable<String, String> loneV = chooseList.lv;
+
+    Map<String, String> lonePairs = inputFileHandler.getChooseListMap(alpha, true);
+    Map<String, String> loneV = inputFileHandler.getChooseListMap(alpha, false);
+    if (lonePairs != null) {
       for (int i = 1; i <= vwr.ms.ac; i++) {
         sb.append("select visible && atomno=" + i + ";label ");
         String atNum = new Integer(i).toString();
@@ -961,11 +958,8 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void getNewInputFileHandler(int mode) {
-    if (inputFileHandler == null)
-      inputFileHandler = newNBOFileHandler("", "47", mode, "47");
-    else
-      inputFileHandler = newNBOFileHandler(inputFileHandler.jobStem, "47", mode,
-          "47");
+      inputFileHandler = newNBOFileHandler(inputFileHandler == null ? "" : inputFileHandler.jobStem, 
+          "47", mode, "47");
   }
 
 }

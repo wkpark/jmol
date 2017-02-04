@@ -62,7 +62,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -1186,28 +1185,31 @@ abstract class NBODialogView extends NBODialogRun {
   private int viewPlanePt = 0;
 
   /**
-   * Set the value of the atom number for vectors (profiles) or planes
-   * (contours) via a callback from Jmol atom picking.
-   * 
-   * @param atomno
+   * Callback from Jmol from an atom or bond click to set the value of the atom number for vectors (profiles) or planes
+   * (contours)
+   * @param atomnoOrBondInfo either a single number or ["bond","1 3 O1 #1 -- C2 #2 1.171168",0.0,0.0,0.58555] as a String
    */
-  protected void notifyPick_v(String atomno) {
+  protected void notifyPick_v(String atomnoOrBondInfo) {
+    String[] tok = atomnoOrBondInfo.split(",");
     switch (viewState) {
     case VIEW_STATE_VECTOR:
-      vectorFields[viewVectorPt++].setText(atomno);
+      if (tok.length != 1)
+        return;
+      vectorFields[viewVectorPt++].setText(atomnoOrBondInfo);
       showSelected(vectorFields);
       viewVectorPt = viewVectorPt % 2;
       break;
     case VIEW_STATE_PLANE:
-      planeFields[viewPlanePt++].setText(atomno);
+      if (tok.length != 1)
+        return;
+      planeFields[viewPlanePt++].setText(atomnoOrBondInfo);
       showSelected(planeFields);
       viewPlanePt = viewPlanePt % 3;
       break;
     case VIEW_STATE_MAIN:
       DefaultListModel<String> list = (betaSpin.isSelected() ? betaList : alphaList);
-      String[] tok = atomno.split(",");
-      if (tok.length < 2) {
-         showOrbital(findNextAtomicOrbital(atomno, list));
+      if (tok.length == 1) {
+         showOrbital(findNextAtomicOrbital(atomnoOrBondInfo, list));
         return;
       }
       tok = tok[1].split(" ");
@@ -1221,18 +1223,42 @@ abstract class NBODialogView extends NBODialogRun {
         break;
       case BASIS_PNHO:
       case BASIS_NHO:
-        showOrbital(selectOnNHO(at1 + "(" + at2 + ")", at2 + "(" + at1 + ")", list));
+        showOrbital(nextOrbital_v(at1 + "(" + at2 + ")", at2 + "(" + at1 + ")", list));
         break;
       case BASIS_PNBO:
       case BASIS_NBO:
       case BASIS_PNLMO:
       case BASIS_NLMO:
-        showOrbital(selectOnNHO(at1 + "-" + at2, null, list));
+        showOrbital(nextOrbital_v(at1 + "-" + at2, null, list));
         break;
       }
     }
   }
 
+  /**
+   * check for the next orbital upon bond clicking 
+   * 
+   * @param b1
+   * @param b2
+   * @param list
+   * @return  the next orbital index, or -1
+   */
+  protected int nextOrbital_v(String b1, String b2, DefaultListModel<String> list) {
+    int curr = -1, size = list.getSize();
+    if (currOrb.contains(b1))
+      curr = list.indexOf(currOrb);
+    for (int i = curr + 1; i < size + curr; i++) {
+      int ipt = i % size;
+      String str = list.getElementAt(i % size).replace(" ", "");
+      if (str.contains(b1) || b2 != null && str.contains(b2)) {
+        orbitals.setSelectedIndex(ipt);
+        currOrb = str;
+        return ipt;
+      }
+    }
+    return curr;
+  }
+  
   protected void showOrbital(int i) {
     if (i < 0)
       return;
@@ -1242,68 +1268,22 @@ abstract class NBODialogView extends NBODialogRun {
     orbitals.updateIsosurfacesInJmol(i);
   }
 
+  private boolean includeRydberg = false; // BH thinking this is not necessary
+  
   protected int findNextAtomicOrbital(String atomno, AbstractListModel<String> list) {
     int ind = Integer.parseInt(atomno) - 1;
     String at = vwr.ms.at[ind].getElementSymbol() + atomno + "(";
     int curr = (currOrb.contains(at) ? orbitals.getSelectedIndex() : -1);
     for (int i = curr + 1, size = list.getSize(); i < size + curr; i++) {
       String str = list.getElementAt(i % size).replaceAll(" ", "");
-      if (!str.contains(at + "lp)") && !str.contains(at + "ry)"))
-        continue;
-      orbitals.setSelectedIndex(i % size);
-      currOrb = str;
-      return i % size;
-    }
-    return curr;
-  }
-
-//  protected int selectOnNBO(String at1, String at2, DefaultListModel<String> list) {
-//    String bond = at1 + "-" + at2;
-//    int curr = -1, size = list.getSize();
-//    if (currOrb.replace(" ", "").contains(bond))
-//      curr = list.indexOf(currOrb);
-//    for (int i = curr + 1; i < size + curr; i++) {
-//      String str = list.getElementAt(i % size).replace(" ", "");
-//      if (str.contains(bond)) {
-//        orbitals.setSelectedIndex(i % size);
-//        currOrb = list.get(i % size);
-//        return i % size;
-//      }
-//    }
-//    return curr;
-//  }
-
-  protected int selectOnNHO(String b1, String b2, DefaultListModel<String> list) {
-    int curr = -1, size = list.getSize();
-    if (currOrb.replace(" ", "").contains(b1))
-      curr = list.indexOf(currOrb);
-    int n = orbitals.getVisibleRowCount();
-    for (int i = curr + 1; i < size + curr; i++) {
-      String str = list.getElementAt(i % size).replace(" ", "");
-      if (str.contains(b1) || b2 != null && str.contains(b2)) {
-        final int ipt = i % size;
-        orbitals.setSelectedIndex(ipt);
-        currOrb = list.get(ipt);
-// BH: I cannot get this to work!
-//        orbitals.setVisibleRowCount(n);
-//        revalidate();
-//        repaint();
-//        SwingUtilities.invokeLater(new Runnable() {
-//
-//          @Override
-//          public void run() {
-//            orbitals.ensureIndexIsVisible(ipt); // this does not work.
-// 
-//          }
-//          
-//        });
+      if (str.contains(at + "lp)") || includeRydberg && str.contains(at + "ry)")) {
+        orbitals.setSelectedIndex(i % size);
+        currOrb = str;
         return i % size;
       }
     }
     return curr;
   }
-
-  // we already have this information in Jmol; no need to get it again
 
   protected void notifyList_v(AbstractListModel<String> list) {
     if (list != null) {
@@ -1424,12 +1404,38 @@ abstract class NBODialogView extends NBODialogRun {
     lineVal = new String[] { "0.03", "0.05", "4", "0.05", "0.05", "0.1", "0.1" };
   }
 
+  /**
+   * return a script ISOSURFACE ID id COLOR color1 color2 NBO/MO n [optional BETA] [display options]
+   * also used in VIEW
+   * @param id ISOSURFACE ID
+   * @param type NBO type
+   * @param orbitalNumber 1-based
+   * @param isBeta
+   * @param isNegative
+   * @return Jmol ISOSURFACE command string
+   */
+  protected String getJmolIsosurfaceScript(String id, String type, int orbitalNumber,
+                                           boolean isBeta, boolean isNegative) {
+    return ";select visible;isosurface "
+        + id
+        + " color "
+        + (isNegative ? color1 + " " + color2 : color2 + " " + color1)
+        + " cutoff 0.0316 NBO "
+        + type
+        + " "
+        + orbitalNumber
+        + (isBeta ? " beta" : "")
+        + " frontonly "
+        + (useWireMesh ? " mesh nofill" : " nomesh fill translucent "
+            + opacityOp) + ";select none;";
+  }
+
   class OrbitalList extends JList<String> implements ListSelectionListener,
       MouseListener, KeyListener {
 
     protected BS bsOn = new BS();
     protected BS bsNeg = new BS();
-    private BS bsKnown = new BS();
+    protected BS bsKnown = new BS();
 
     public OrbitalList() {
       super();
@@ -1472,7 +1478,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     private JLabel cellLabel;
     protected boolean myTurn;
-    private boolean toggled;
+    protected boolean toggled;
 
     protected Component renderCell(int index) {
       if (cellLabel == null) {
@@ -1571,7 +1577,7 @@ abstract class NBODialogView extends NBODialogRun {
           } else {
             bsKnown.set(i);
             // create the isosurface
-            script += getJmolIsosurfaceScript(id, type, i, isBeta, bsNeg.get(i));
+            script += getJmolIsosurfaceScript(id, type, i + 1, isBeta, bsNeg.get(i));
           }
         }
         if (bsOn.get(i)) {
@@ -1620,11 +1626,6 @@ abstract class NBODialogView extends NBODialogRun {
     public void valueChanged(ListSelectionEvent e) {
     }
 
-    private void toggleOrbitalNegation(int i) {
-      bsNeg.setBitTo(i, !bsNeg.get(i));
-      bsKnown.clear(i); // to - just switch colors?
-      //setLabel(i);
-    }
 
 //    protected void setLabel(int i) {
 //      String label0 = getModel().getElementAt(i);
@@ -1647,12 +1648,12 @@ abstract class NBODialogView extends NBODialogRun {
     public void mouseReleased(MouseEvent e) {
       //      System.out.println("RELEASE" + e);      
       //      System.out.println("release " + PT.toJSON(null, getSelectedIndices()));
-      boolean toggled = this.toggled;
+      //boolean toggled = this.toggled;
       killMouseTimer();
       int i = getSelectedIndex();
 //        if (toggled)
 //          this.toggleOrbitalNegation(i);
-      this.toggled = false;
+      toggled = false;
       updateIsosurfacesInJmol(i);
     }
 
@@ -1676,7 +1677,10 @@ abstract class NBODialogView extends NBODialogRun {
         int i = getSelectedIndex();
         if (bsOn.get(i)) {
           toggled = true;
-          toggleOrbitalNegation(i);
+          // toggle:
+          bsNeg.setBitTo(i, !bsNeg.get(i));
+          bsKnown.clear(i); // to - just switch colors?
+//          toggleOrbitalNegation(i);
           repaint();
         }
           
@@ -1745,22 +1749,6 @@ abstract class NBODialogView extends NBODialogRun {
       }
     }, statusMessage, "v_cmd.txt", sb.toString(), dataFileName, fileData);
     nboService.postToNBO(req);
-  }
-
-  protected String getJmolIsosurfaceScript(String id, String type, int i,
-                                           boolean isBeta, boolean isNegative) {
-    return ";select visible;isosurface "
-        + id
-        + " color "
-        + (isNegative ? color1 + " " + color2 : color2 + " " + color1)
-        + " cutoff 0.0316 NBO "
-        + type
-        + " "
-        + (i + 1)
-        + (isBeta ? " beta" : "")
-        + " frontonly "
-        + (useWireMesh ? " mesh nofill" : " nomesh fill translucent "
-            + opacityOp) + ";select none;";
   }
 
   /**

@@ -171,19 +171,21 @@ public class NBODialog extends NBODialogSearch {
     logCmd("Entering " + getDialogName(type));
 
     nboService.restart();
-//  nboService.restartIfNecessary();
+    //  nboService.restartIfNecessary();
     nboService.clearQueue();
-        
+
     if (!checkEnabled()) {
       openPanel(DIALOG_CONFIG);
       return;
     }
-    
-    if (dialogMode == DIALOG_HOME && type != DIALOG_CONFIG) {
-      remove(homePanel);
-      add(centerPanel, BorderLayout.CENTER);
+
+    if (type != DIALOG_CONFIG) {
+      if (dialogMode == DIALOG_HOME) {
+        remove(homePanel);
+        add(centerPanel, BorderLayout.CENTER);
+      }
+      resetModuleVariables();
     }
-    
     viewSettingsBox.setVisible(false);
 
     if (topPanel != null)
@@ -221,6 +223,15 @@ public class NBODialog extends NBODialogSearch {
     invalidate();
     setVisible(true);
     runScriptQueued(jmolOptionNOZAP ? "select none" : "zap");
+  }
+
+  /**
+   * Rest all variables that might be an issue
+   * 
+   */
+  private void resetModuleVariables() {
+    // Anything here that looks like it needs resetting prior to changing panels.
+    
   }
 
   private void createDialog(JFrame jmolFrame) {

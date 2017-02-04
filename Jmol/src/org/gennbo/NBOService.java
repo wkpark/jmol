@@ -367,6 +367,7 @@ public class NBOService {
       // we don't care
     }
     nboServer = null;
+    currentRequest = null;
   }
 
   /**
@@ -509,7 +510,6 @@ public class NBOService {
       currentRequest = null;
       clearQueue();
       restart();
-      setReady(true);
       return true;
     }
 
@@ -520,7 +520,6 @@ public class NBOService {
       currentRequest = null;
       clearQueue();
       restart();
-      setReady(true);
       return true;
     }
 

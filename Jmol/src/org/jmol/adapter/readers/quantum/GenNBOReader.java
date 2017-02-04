@@ -123,7 +123,7 @@ public class GenNBOReader extends MOReader {
       isOK = readData31(line1); 
     }
     if (!isOK)
-      Logger.error("Unimplemented shell type -- no orbitals avaliable: " + line);
+      Logger.error("Unimplemented shell type -- no orbitals available: " + line);
     if (isOutputFile) 
       return;
     if (isOK)
@@ -159,18 +159,19 @@ public class GenNBOReader extends MOReader {
       discardLinesUntilContains("BETA");
       filterMO();
     }
-    boolean isMO = !nboType.equals("AO");
+    boolean isAO = nboType.equals("AO");
+    boolean isNBO = !isAO && !nboType.equals("MO");
     nOrbitals = orbitals.size();
     if (nOrbitals == 0)
       return;
     line = null;
-    if (!isMO)
+    if (!isNBO)
       nOrbitals = nOrbitals0 + nAOs;
     for (int i = nOrbitals0; i < nOrbitals; i++) {
       Map<String, Object> mo = orbitals.get(i);
       float[] coefs = new float[nAOs];
       mo.put("coefficients", coefs);
-      if (isMO) {
+      if (!isAO) {
         if (line == null) {
           while (rd() != null && Float.isNaN(parseFloatStr(line))) {
             filterMO(); //switch a/b
@@ -539,6 +540,14 @@ public class GenNBOReader extends MOReader {
       type = "NBO";
     tokens = map.get((betaOnly ? "beta_" : "") + type);
     moData.put("nboLabelMap", map);
+    if (tokens == null) {
+      tokens = new String[nAOs];
+      for (int i = 0; i < nAOs; i++)
+        tokens[i] = nboType + (i + 1);
+      map.put(nboType, tokens);
+      if (isOpenShell)
+        map.put("beta_" + nboType, tokens);        
+    }
     moData.put("nboLabels", tokens);
     boolean addBetaSet = (isOpenShell && !betaOnly && !isArchive); 
     if (addBetaSet) 

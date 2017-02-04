@@ -62,6 +62,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -148,8 +150,6 @@ abstract class NBODialogView extends NBODialogRun {
   protected final static int VIEW_STATE_PLANE = 1;
   protected final static int VIEW_STATE_VECTOR = 2;
   protected final static int VIEW_STATE_CAMERA = 3;
-
-  public static final int MAX_COLUMNS = 14; // orbitals
 
   protected JPanel buildViewPanel() {
     startingModelCount = vwr.ms.mc;
@@ -287,9 +287,7 @@ abstract class NBODialogView extends NBODialogRun {
 
           @Override
           public void run() {
-
-            if (alphaList != null)
-              alphaList = betaList = null;
+            alphaList = betaList = null;
             setNewBasis();
           }
         });
@@ -953,7 +951,7 @@ abstract class NBODialogView extends NBODialogRun {
     boolean isBeta = isOpenShell && !alphaSpin.isSelected();
 
     DefaultListModel<String> list = (isBeta ? betaList : alphaList);
-    if (list != null) {
+    if (list != null && list.size() > 0) {
       orbitals.setModelList(list, false);
       return;
     }
@@ -964,6 +962,7 @@ abstract class NBODialogView extends NBODialogRun {
       alphaList = list;
 
     if (!jmolOptionNONBO) {
+      logCmd("select " + comboBasis.getSelectedItem()  + " " + (isBeta ? "beta" : isOpenShell ? "alpha" : ""));
       postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_VIEW_LIST,
           list, "Getting list", null, null);
     }
@@ -1211,7 +1210,9 @@ abstract class NBODialogView extends NBODialogRun {
          showOrbital(findNextAtomicOrbital(atomno, list));
         return;
       }
-      String[] tok2 = tok[1].split(" ");
+      tok = tok[1].split(" ");
+      String at1 = tok[2];
+      String at2 = tok[5];
       switch (comboBasis.getSelectedIndex()) {
       case BASIS_AO:
       case BASIS_PNAO:
@@ -1220,13 +1221,13 @@ abstract class NBODialogView extends NBODialogRun {
         break;
       case BASIS_PNHO:
       case BASIS_NHO:
-        showOrbital(selectOnNHO(tok2[2], tok2[5], list));
+        showOrbital(selectOnNHO(at1 + "(" + at2 + ")", at2 + "(" + at1 + ")", list));
         break;
       case BASIS_PNBO:
       case BASIS_NBO:
       case BASIS_PNLMO:
       case BASIS_NLMO:
-        showOrbital(selectOnNBO(tok2[2], tok2[5], list));
+        showOrbital(selectOnNHO(at1 + "-" + at2, null, list));
         break;
       }
     }
@@ -1256,37 +1257,46 @@ abstract class NBODialogView extends NBODialogRun {
     return curr;
   }
 
-  protected int selectOnNBO(String at1, String at2, DefaultListModel<String> list) {
-    String bond = at1 + "-" + at2;
-    int curr = -1, size = list.getSize();
-    if (currOrb.replace(" ", "").contains(bond))
-      curr = list.indexOf(currOrb);
-    for (int i = curr + 1; i < size + curr; i++) {
-      String str = list.getElementAt(i % size).replace(" ", "");
-      if (str.contains(bond)) {
-        orbitals.setSelectedIndex(i % size);
-        currOrb = list.get(i % size);
-        return i % size;
-      }
-    }
-    return curr;
-  }
+//  protected int selectOnNBO(String at1, String at2, DefaultListModel<String> list) {
+//    String bond = at1 + "-" + at2;
+//    int curr = -1, size = list.getSize();
+//    if (currOrb.replace(" ", "").contains(bond))
+//      curr = list.indexOf(currOrb);
+//    for (int i = curr + 1; i < size + curr; i++) {
+//      String str = list.getElementAt(i % size).replace(" ", "");
+//      if (str.contains(bond)) {
+//        orbitals.setSelectedIndex(i % size);
+//        currOrb = list.get(i % size);
+//        return i % size;
+//      }
+//    }
+//    return curr;
+//  }
 
-  protected int selectOnNHO(String at1, String at2, DefaultListModel<String> list) {
-    String bond = at1 + "(" + at2 + ")";
-    String bond2 = at2 + "(" + at1 + ")";
+  protected int selectOnNHO(String b1, String b2, DefaultListModel<String> list) {
     int curr = -1, size = list.getSize();
-    if (currOrb.replace(" ", "").contains(bond))
+    if (currOrb.replace(" ", "").contains(b1))
       curr = list.indexOf(currOrb);
+    int n = orbitals.getVisibleRowCount();
     for (int i = curr + 1; i < size + curr; i++) {
       String str = list.getElementAt(i % size).replace(" ", "");
-      if (str.contains(bond)) {
-        orbitals.setSelectedIndex(i % size);
-        currOrb = list.get(i % size);
-        return i % size;
-      } else if (str.contains(bond2)) {
-        orbitals.setSelectedIndex(i % size);
-        currOrb = list.get(i % size);
+      if (str.contains(b1) || b2 != null && str.contains(b2)) {
+        final int ipt = i % size;
+        orbitals.setSelectedIndex(ipt);
+        currOrb = list.get(ipt);
+// BH: I cannot get this to work!
+//        orbitals.setVisibleRowCount(n);
+//        revalidate();
+//        repaint();
+//        SwingUtilities.invokeLater(new Runnable() {
+//
+//          @Override
+//          public void run() {
+//            orbitals.ensureIndexIsVisible(ipt); // this does not work.
+// 
+//          }
+//          
+//        });
         return i % size;
       }
     }
@@ -1360,16 +1370,18 @@ abstract class NBODialogView extends NBODialogRun {
       viewSettingsBox.setVisible(!jmolOptionNONBO);
 
       // set list
-
-      if (type.startsWith("P"))
-          type = type.substring(1);
-      if (type.equalsIgnoreCase("NLMO"))
-          type = "NBO";
-      String[] a = ((Map<String, String[]>) moData.get("nboLabelMap"))
-          .get((isBeta ? "beta_" : "") + type);
       DefaultListModel<String> list = (isBeta ? betaList : alphaList);
-      for (int i = 0; i < a.length; i++)
-        list.addElement((i + 1) + ". " + a[i] + "   ");
+      if (jmolOptionNONBO) {
+        if (type.startsWith("P"))
+          type = type.substring(1);
+        if (type.equalsIgnoreCase("NLMO"))
+          type = "NBO";
+        String[] a = ((Map<String, String[]>) moData.get("nboLabelMap"))
+            .get((isBeta ? "beta_" : "") + type);
+        list.clear();
+        for (int i = 0; i < a.length; i++)
+          list.addElement((i + 1) + ". " + a[i] + "   ");
+      }
       orbitals.setModelList(list, true);
     } catch (NullPointerException e) {
       //not a problem? log(e.getMessage() + " reading file", 'r');
@@ -1422,7 +1434,7 @@ abstract class NBODialogView extends NBODialogRun {
     public OrbitalList() {
       super();
       setLayoutOrientation(JList.VERTICAL_WRAP);
-      setVisibleRowCount(jmolOptionNONBO ? 15 : MAX_COLUMNS);
+      setVisibleRowCount(-1); // indicates to automatically calculate max number of rows
       setFont(nboFontLarge);
       //setColorScheme();
       setFont(listFont);
@@ -1460,6 +1472,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     private JLabel cellLabel;
     protected boolean myTurn;
+    private boolean toggled;
 
     protected Component renderCell(int index) {
       if (cellLabel == null) {
@@ -1471,10 +1484,13 @@ abstract class NBODialogView extends NBODialogRun {
           }
 
         };
+        cellLabel.setFont(listFont);
+        cellLabel.setMinimumSize(new Dimension(180, 20));
+        cellLabel.setPreferredSize(new Dimension(180, 20));
+        cellLabel.setMaximumSize(new Dimension(180, 20));
+        cellLabel.setOpaque(true);
       }
-      cellLabel.setFont(listFont);
       cellLabel.setText(getModel().getElementAt(index));
-      cellLabel.setOpaque(true);
       myTurn = true;
       Color bgcolor = (!bsOn.get(index) ? Color.WHITE
           : bsNeg.get(index) ? orbColor2 : orbColor1);
@@ -1531,16 +1547,22 @@ abstract class NBODialogView extends NBODialogRun {
         script += updateBitSetFromModel();
       else
         updateModelFromBitSet();
+      logCmd("select...");
       //System.out.println("update " + bsOn + " " + bsKnown + " " +  iClicked);
-      for (int i = model.getSize(); --i >= 0;) {
+      for (int i = 0, n = model.getSize(); i < n; i++) {
         boolean isOn = bsOn.get(i);
         if (i == iClicked || isOn && !bsKnown.get(i)
             || isSelectedIndex(i) != isOn) {
           String id = "mo" + i;
-          if (!isOn || bsKnown.get(i))
-            bsOn.setBitTo(i, !isOn);
+          if (!isOn || bsKnown.get(i)) {
+            if (isOn && bsNeg.get(i)) {
+              bsKnown.clear(i);
+              bsNeg.clear(i);
+            }
+            bsOn.setBitTo(i, isOn = !isOn);
+          }
           boolean isKnown = bsKnown.get(i);
-          if (isKnown && !bsOn.get(i)) {
+          if (!bsOn.get(i)) {
             // just turn it off
             script += "isosurface mo" + i + " off;";
           } else if (isKnown) {
@@ -1552,10 +1574,13 @@ abstract class NBODialogView extends NBODialogRun {
             script += getJmolIsosurfaceScript(id, type, i, isBeta, bsNeg.get(i));
           }
         }
+        if (bsOn.get(i)) {
+          logCmd("...orbital " + orbitals.getModel().getElementAt(i) + (bsNeg.get(i) ? " [-]" : ""));
+        }
       }
       updateModelFromBitSet();
       runScriptQueued(script);
-      //      System.out.println("known" + bsKnown + " on" + bsOn + " neg" + bsNeg + " " + script);
+      //System.out.println("known" + bsKnown + " on" + bsOn + " neg" + bsNeg + " " + script);
     }
 
     private String updateBitSetFromModel() {
@@ -1611,6 +1636,9 @@ abstract class NBODialogView extends NBODialogRun {
 
     @Override
     public void mousePressed(MouseEvent e) {
+      killMouseTimer();
+      mouseTimer = getMouseTimer();
+              
       //      System.out.println("PRESS" + e);
       //      System.out.println("press " + PT.toJSON(null, getSelectedIndices()) + e.getClickCount());
     }
@@ -1619,22 +1647,50 @@ abstract class NBODialogView extends NBODialogRun {
     public void mouseReleased(MouseEvent e) {
       //      System.out.println("RELEASE" + e);      
       //      System.out.println("release " + PT.toJSON(null, getSelectedIndices()));
+      boolean toggled = this.toggled;
+      killMouseTimer();
+      int i = getSelectedIndex();
+//        if (toggled)
+//          this.toggleOrbitalNegation(i);
+      this.toggled = false;
+      updateIsosurfacesInJmol(i);
     }
 
-    private long lastTime = 0;
-    private int lastPicked = 999;
-    private final static long DBLCLICK_THRESHOLD_MS = 300;
+    private void killMouseTimer() {
+      if (mouseTimer != null)
+        mouseTimer.stop();
+      mouseTimer = null;
+      toggled = false;
+    }
 
+    private final static int DBLCLICK_THRESHOLD_MS = 300;
+
+    private Timer mouseTimer;
+    
+    
+    private Timer getMouseTimer() {
+      Timer t = new Timer(DBLCLICK_THRESHOLD_MS, new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        int i = getSelectedIndex();
+        if (bsOn.get(i)) {
+          toggled = true;
+          toggleOrbitalNegation(i);
+          repaint();
+        }
+          
+      }        
+      });
+      
+      t.setRepeats(false);
+      t.start();
+      System.out.println("timer started");
+      return t;
+      
+    }
     @Override
     public void mouseClicked(MouseEvent e) {
-      int i = getSelectedIndex();
-      if (e.getClickCount() > 1 || lastPicked == i
-          && System.currentTimeMillis() - lastTime < DBLCLICK_THRESHOLD_MS) {
-        toggleOrbitalNegation(i);
-      }
-      updateIsosurfacesInJmol(i);
-      lastTime = System.currentTimeMillis();
-      lastPicked = i;
     }
 
     @Override
@@ -1724,6 +1780,7 @@ abstract class NBODialogView extends NBODialogRun {
       for (int i = 0; i < lines.length; i++) {
         list.addElement(lines[i]);
       }
+      orbitals.setModelList(list, true);
       break;
     case NBOService.MODE_VIEW_IMAGE:
       String fname = inputFileHandler.inputFile.getParent() + "\\"

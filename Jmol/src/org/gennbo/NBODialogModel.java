@@ -891,7 +891,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (actionID == MODEL_ACTION_REBOND)
       cmd += jcSymOps.getSelectedItem().toString();
     runScriptNow("save orientation o2");
-    sb.append("CMD " + cmd);
+    postAddCmd(sb, cmd);
     logCmd(cmd);
     jbApply.setEnabled(false);
 
@@ -912,7 +912,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   protected void getSymmetry() {
     String cmd = "symmetry";
     logCmd(cmd);
-    postNBO_m(new SB().append("CMD " + cmd), NBOService.MODE_MODEL_SYMMETRY,  "Checking Symmetry", null, null);
+    postNBO_m(postAddCmd(new SB(), cmd), NBOService.MODE_MODEL_SYMMETRY,  "Checking Symmetry", null, null);
   }
 
   /**
@@ -968,7 +968,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       jtNIHInput.setText("");
       s = "show " + model;
       saveFileHandler.setInput(null, "line", "mol");
-      sb.append("CMD " + s);
+      postAddCmd(sb, s);
       logCmd(s);
       postNBO_m(sb, NBOService.MODE_MODEL_NEW, "model from line input...",
           null, null);
@@ -992,11 +992,11 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (undoRedo)
       runScriptNow("save orientation o2");
     SB sb = new SB();
-    sb.append("GLOBAL C_PATH " + nboService.getServerPath(null) + "/" + sep);
-    sb.append("GLOBAL C_ESS c" + sep);
-    sb.append("GLOBAL C_FNAME jmol_outfile" + sep);
-    sb.append("GLOBAL C_IN_EXT cfi" + sep);
-    sb.append("CMD use");
+    postAddGlobalC(sb, "PATH", nboService.getServerPath(null) + "/");
+    postAddGlobalC(sb, "ESS", "c");
+    postAddGlobalC(sb, "FNAME", "jmol_outfile");
+    postAddGlobalC(sb, "IN_EXT", "cfi");
+    postAddCmd(sb, "use");
     postNBO_m(sb, (undoRedo ? NBOService.MODE_MODEL_UNDO_REDO : NBOService.MODE_MODEL_TO_NBO), (alsoLoadJmol ? "Loading" : "Sending") + " model to NB", "jmol_outfile.cfi", s);
 
   }
@@ -1022,11 +1022,11 @@ abstract class NBODialogModel extends NBODialogConfig {
       jtLineFormula.setText("");
     }
     modelOrigin = ORIGIN_FILE_INPUT;
-    sb.append("GLOBAL C_PATH " + path + sep);
-    sb.append("GLOBAL C_ESS " + ess + sep);
-    sb.append("GLOBAL C_FNAME " + fname + sep);
-    sb.append("GLOBAL C_IN_EXT " + ext.toLowerCase() + sep);
-    sb.append("CMD use");
+    postAddGlobalC(sb, "PATH", path);
+    postAddGlobalC(sb, "ESS", ess);
+    postAddGlobalC(sb, "FNAME", fname);
+    postAddGlobalC(sb, "IN_EXT", ext.toLowerCase());
+    postAddCmd(sb, "use");
     clearSelected(false);
     logCmd("use." + ess + " " + fname + "." + ext);
     postNBO_m(sb, NBOService.MODE_MODEL_NEW, "Loading model from NBO...", null, null);
@@ -1049,11 +1049,12 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
     String ess = getEss(ext, false);
     SB sb = new SB();
-    sb.append("GLOBAL C_PATH " + path + sep);
-    sb.append("GLOBAL C_ESS " + ess + sep);
-    sb.append("GLOBAL C_FNAME " + fname + sep);
-    sb.append("GLOBAL C_OUT_EXT " + ext + sep);
-    sb.append("CMD save");
+    
+    postAddGlobalC(sb, "PATH", path);
+    postAddGlobalC(sb, "ESS", ess);
+    postAddGlobalC(sb, "FNAME", fname);
+    postAddGlobalC(sb, "OUT_EXT", ext.toLowerCase());
+    postAddCmd(sb, "save");
     postNBO_m(sb, NBOService.MODE_MODEL_SAVE, "Saving model...", null, null);
     logCmd("save." + ess + " " + fname);
     logValue("--Model Saved--<br>" + path + "\\" + fname + "." + ext);

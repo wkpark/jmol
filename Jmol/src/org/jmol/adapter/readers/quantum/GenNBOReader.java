@@ -45,29 +45,42 @@ import java.util.Map;
  * 
  * acknowledgments: Grange Hermitage, Frank Weinhold
  * 
+ * 
+ * upgrade to NBO 6 allows reading of resonance structures, including base structure
+ * 
+ * 
  * @author hansonr
  **/
 
-/*
- * NBO output analysis is based on
- * 
- * ********************************** NBO 5.G
- * *********************************** N A T U R A L A T O M I C O R B I T A L A
- * N D N A T U R A L B O N D O R B I T A L A N A L Y S I S
- * ***********************
- * ******************************************************* (c) Copyright
- * 1996-2004 Board of Regents of the University of Wisconsin System on behalf of
- * the Theoretical Chemistry Institute. All Rights Reserved.
- * 
- * Cite this program as:
- * 
- * NBO 5.G. E. D. Glendening, J. K. Badenhoop, A. E. Reed, J. E. Carpenter, J.
- * A. Bohmann, C. M. Morales, and F. Weinhold (Theoretical Chemistry Institute,
- * University of Wisconsin, Madison, WI, 2001); http://www.chem.wisc.edu/~nbo5
- * 
- * /AONBO / : Print the AO to NBO transformation
- */
+
 public class GenNBOReader extends MOReader {
+
+  
+//
+//  *********************************** NBO 6.0 ***********************************
+//              N A T U R A L   A T O M I C   O R B I T A L   A N D
+//           N A T U R A L   B O N D   O R B I T A L   A N A L Y S I S
+//  **************************** Robert Hanson (100634) ***************************
+//   (c) Copyright 1996-2014 Board of Regents of the University of Wisconsin System
+//       on behalf of the Theoretical Chemistry Institute.  All rights reserved.
+//
+//           Cite this program as:
+//
+//           NBO 6.0.  E. D. Glendening, J. K. Badenhoop, A. E. Reed,
+//           J. E. Carpenter, J. A. Bohmann, C. M. Morales, C. R. Landis,
+//           and F. Weinhold (Theoretical Chemistry Institute, University
+//           of Wisconsin, Madison, WI, 2013); http://nbo6.chem.wisc.edu/
+//
+//        /NLMO   / : Form natural localized molecular orbitals
+//        /NRT    / : Natural Resonance Theory Analysis
+//        /AOPNAO / : Print the AO to PNAO transformation
+//        /SAO    / : Print the AO overlap matrix
+//        /STERIC / : Print NBO/NLMO steric analysis
+//        /CMO    / : Print analysis of canonical MOs
+//        /PLOT   / : Write information for the orbital plotter
+//        /FILE   / : Set to co2_p
+//
+//  Filename set to co2_p
 
   private boolean isOutputFile;
   private String nboType = "";
@@ -94,6 +107,8 @@ public class GenNBOReader extends MOReader {
      * molname.41 AO density matrix 
      * molname.46 Basis label file
      * molname.47 archive file
+     * molname.nbo output file
+     * 
      */
     String line1 = rd().trim();
     isArchive = (line1.indexOf("$GENNBO") >= 0 || line1.indexOf("$NBO") >= 0); // GENNBO 6

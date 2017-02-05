@@ -99,7 +99,7 @@ abstract class NBODialogView extends NBODialogRun {
 
   //  protected String vectorDef, planeDef;
   protected DefaultListModel<String> alphaList, betaList;
-  protected JComboBox<String> comboBasis;
+  protected JComboBox<String> comboBasis1;
   protected JRadioButton alphaSpin, betaSpin;
   private JRadioButton atomOrient;
 
@@ -275,11 +275,11 @@ abstract class NBODialogView extends NBODialogRun {
   private Component createSelectOrbitalBox() {
     Box horizBox = Box.createHorizontalBox();
     alphaList = betaList = null;
-    comboBasis = new JComboBox<String>(basSet);
-    comboBasis.setMaximumSize(new Dimension(70, 25));
-    comboBasis.setUI(new StyledComboBoxUI(180, -1));
-    horizBox.add(comboBasis);
-    comboBasis.addActionListener(new ActionListener() {
+    comboBasis1 = new JComboBox<String>(basSet);
+    comboBasis1.setMaximumSize(new Dimension(70, 25));
+    comboBasis1.setUI(new StyledComboBoxUI(180, -1));
+    horizBox.add(comboBasis1);
+    comboBasis1.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         EventQueue.invokeLater(new Runnable() {
@@ -359,7 +359,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     orbPanel.setAlignmentX(0.0f);
     orbPanel.add(new JLabel(
-        "click to turn up to 9 orbitals on/off; dbl-click to reverse phase"),
+        "click to turn up to 9 orbitals on/off; hold to reverse phase"),
         BorderLayout.SOUTH);
     newOrbitals();
     return orbPanel;
@@ -376,7 +376,7 @@ abstract class NBODialogView extends NBODialogRun {
    */
   protected File ensurePlotFile(int fileNum) {
     if (fileNum == 0)
-      fileNum = 31 + comboBasis.getSelectedIndex();
+      fileNum = 31 + comboBasis1.getSelectedIndex();
     File f = inputFileHandler.newNBOFileForExt("" + fileNum);
     if (!f.exists() || f.length() == 0) {
       runGenNBOJob("PLOT");
@@ -928,7 +928,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     runScriptNow("isosurface delete");
 
-    if (comboBasis.getSelectedIndex() == BASIS_MO) {
+    if (comboBasis1.getSelectedIndex() == BASIS_MO) {
       file47Keywords = cleanNBOKeylist(inputFileHandler.read47File()[1], true);
       if (!file47Keywords.contains("CMO")) {
         runGenNBOJob("CMO");
@@ -961,8 +961,8 @@ abstract class NBODialogView extends NBODialogRun {
       alphaList = list;
 
     if (!jmolOptionNONBO) {
-      logCmd("select " + comboBasis.getSelectedItem()  + " " + (isBeta ? "beta" : isOpenShell ? "alpha" : ""));
-      postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_VIEW_LIST,
+      logCmd("select " + comboBasis1.getSelectedItem()  + " " + (isBeta ? "beta" : isOpenShell ? "alpha" : ""));
+      postNBO_v(postAddCmd(getMetaHeader(true), "LABEL"), NBOService.MODE_VIEW_LIST,
           list, "Getting list", null, null);
     }
     loadModelFileQueued(
@@ -986,14 +986,11 @@ abstract class NBODialogView extends NBODialogRun {
    */
   protected SB getMetaHeader(boolean addBasis) {
     SB sb = new SB();
-    sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
-    sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
+    postAddGlobalC(sb, "PATH", inputFileHandler.inputFile.getParent());
+    postAddGlobalC(sb, "JOBSTEM", inputFileHandler.jobStem);
     if (addBasis)
-      sb.append("GLOBAL I_BAS_1 " + (comboBasis.getSelectedIndex() + 1) + sep);
-    if (isOpenShell)
-      sb.append("GLOBAL I_SPIN " + (alphaSpin.isSelected() ? "1" : "-1") + sep);
-    else
-      sb.append("GLOBAL I_SPIN 0" + sep);
+      postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
+    postAddGlobalI(sb, "SPIN", (!isOpenShell ? 0 : alphaSpin.isSelected() ? 1 : -1), null);
     return sb;
   }
 
@@ -1004,10 +1001,7 @@ abstract class NBODialogView extends NBODialogRun {
    */
   private void appendCameraParams(SB sb) {
     for (int i = 0; i < camFields.length; i++)
-      if (!camFields[i].getText().equals(camVal[i])) {
-        camVal[i] = camFields[i].getText();
-        sb.append("GLOBAL CAMERA_" + camFieldIDs[i] + " " + camVal[i] + sep);
-      }
+      postAddGlobalT(sb,"CAMERA_" + camFieldIDs[i], camFields[i]);
   }
 
   /**
@@ -1017,10 +1011,7 @@ abstract class NBODialogView extends NBODialogRun {
    * @param i
    */
   private void appendOrbitalPhaseSign(SB sb, int i) {
-    if (orbitals.bsNeg.get(i))
-      sb.append("GLOBAL SIGN -1" + sep);
-    else
-      sb.append("GLOBAL SIGN +1" + sep);
+    postAddGlobal(sb, "SIGN", (orbitals.bsNeg.get(i) ? "-1" : "+1"));
   }
 
   //contour/profile selected orbital in orbital list
@@ -1049,48 +1040,26 @@ abstract class NBODialogView extends NBODialogRun {
       appendPlaneParams(sb);
     }
     appendOrbitalPhaseSign(sb, ind);
-    String msg = (oneD ? "Profile " : "Contour ") + (ind + 1);
-    logCmd(msg);
-    sb.append("CMD ").append(msg).append(sep);
-    appendOrbitalPhaseSign(sb, ind);
-
+    String cmd = (oneD ? "Profile " : "Contour ") + (ind + 1);
+    logCmd(cmd);
+    postAddCmd(sb, cmd);
     postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, (oneD ? "Profiling.."
         : "Contouring.."), null, null);
   }
 
   private void appendLineParams(SB sb) {
     for (int i = 0; i < lineFields.length; i++)
-      if (!lineVal[i].equals(lineFields[i].getText())) {
-        lineVal[i] = lineFields[i].getText();
-        sb.append("GLOBAL LINES_" + (char) ('a' + i) + " " + lineVal[i] + sep);
-      }
+      postAddGlobalT(sb, "LINES_" + (char) ('a' + i), lineFields[i]);
   }
 
   private void appendVectorParams(SB sb) {
-    //vector definitions included every time
-    sb.append("GLOBAL VECTOR_a " + (vectorFields[0].getText()) + sep);
-    sb.append("GLOBAL VECTOR_b " + (vectorFields[1].getText()) + sep);
-    //other variables only included as needed
-    for (int i = 2; i < vectorFields.length; i++)
-      if (!vecVal[i].equals(vectorFields[i].getText())) {
-        vecVal[i] = vectorFields[i].getText();
-        sb.append("GLOBAL VECTOR_" + (char) ('a' + i) + " "
-            + (vectorFields[i].getText()) + sep);
-      }
+    for (int i = 0; i < vectorFields.length; i++)
+      postAddGlobalT(sb, "VECTOR_" + (char) ('a' + i), vectorFields[i]);
   }
 
   private void appendPlaneParams(SB sb) {
-    //Plane definitions included every time
-    sb.append("GLOBAL PLANE_a " + (planeFields[0].getText()) + sep);
-    sb.append("GLOBAL PLANE_b " + (planeFields[1].getText()) + sep);
-    sb.append("GLOBAL PLANE_c " + (planeFields[2].getText()) + sep);
-    //other variables only included if changed
-    for (int i = 3; i < planeFields.length; i++)
-      if (!plVal[i].equals(planeFields[i].getText())) {
-        plVal[i] = planeFields[i].getText();
-        sb.append("GLOBAL PLANE_" + (char) ('a' + i) + " "
-            + (planeFields[i].getText()) + sep);
-      }
+    for (int i = 0; i < planeFields.length; i++)
+        postAddGlobalT(sb, "PLANE_" + (char) ('a' + i), planeFields[i]);
   }
 
   private void setJmolView(boolean is2D) {
@@ -1110,9 +1079,9 @@ abstract class NBODialogView extends NBODialogRun {
     
     // I do not understand why a LABEL command has to be given here. A bug? 
     
-    postNBO_v(getMetaHeader(true).append("CMD LABEL"), NBOService.MODE_RAW, null, "",  "jview.txt", sb.toString());
+    postNBO_v(postAddCmd(getMetaHeader(true), "LABEL"), NBOService.MODE_RAW, null, "",  "jview.txt", sb.toString());
 
-    postNBO_v(new SB().append("CMD JVIEW"), NBOService.MODE_RAW, null,
+    postNBO_v(postAddCmd(new SB(), "JVIEW"), NBOService.MODE_RAW, null,
         "Sending Jmol orientation", null, null);
 
     //    sb = getMetaHeader(true);
@@ -1135,11 +1104,7 @@ abstract class NBODialogView extends NBODialogRun {
         .nextSetBit(i + 1)) {
       sb = getMetaHeader(true);
       appendOrbitalPhaseSign(sb, i);
-      if (oneD)
-        sb.append("CMD PROFILE " + (i + 1) + sep);
-      else
-        sb.append("CMD CONTOUR " + (i + 1) + sep);
-      
+      postAddCmd(sb, (oneD ? "PROFILE" : "CONTOUR") + (i + 1));
       msg += " " + (i + 1);
       profileList += " " + (++pt);
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
@@ -1147,7 +1112,7 @@ abstract class NBODialogView extends NBODialogRun {
     logCmd(msg);
     sb = getMetaHeader(false);
     appendLineParams(sb);
-    sb.append("CMD DRAW" + profileList);
+    postAddCmd(sb, "DRAW" + profileList);
     postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, "Drawing...", null, null);
   }
 
@@ -1159,7 +1124,7 @@ abstract class NBODialogView extends NBODialogRun {
     for (int pt = 0, i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       sb = getMetaHeader(true);
       appendOrbitalPhaseSign(sb, i);
-      sb.append("CMD PROFILE " + (i + 1) + sep);
+      postAddCmd(sb, "PROFILE " + (i + 1));
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending profile " + (i + 1),
           null, null);
       tmp += " " + (i + 1);
@@ -1169,7 +1134,7 @@ abstract class NBODialogView extends NBODialogRun {
     String jviewData = sb.toString();
     sb = getMetaHeader(false);
     appendCameraParams(sb);
-    sb.append("CMD VIEW" + list);
+    postAddCmd(sb, "VIEW" + list);
     postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, "Raytracing...", null, jviewData);
   }
 
@@ -1215,7 +1180,7 @@ abstract class NBODialogView extends NBODialogRun {
       tok = tok[1].split(" ");
       String at1 = tok[2];
       String at2 = tok[5];
-      switch (comboBasis.getSelectedIndex()) {
+      switch (comboBasis1.getSelectedIndex()) {
       case BASIS_AO:
       case BASIS_PNAO:
       case BASIS_NAO:
@@ -1319,7 +1284,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     Map<String, Object> moData = (Map<String, Object>) vwr
         .getCurrentModelAuxInfo().get("moData");
-    String type = comboBasis.getSelectedItem().toString();
+    String type = comboBasis1.getSelectedItem().toString();
     if (type.charAt(0) == 'P')
       type = type.substring(1);
     boolean isBeta = isOpenShell && !alphaSpin.isSelected() && betaList != null;
@@ -1374,10 +1339,10 @@ abstract class NBODialogView extends NBODialogRun {
   }
 
   protected void setViewerBasis() {
-    if (comboBasis.getSelectedIndex() != BASIS_MO)
-      comboBasis.setSelectedIndex(BASIS_PNBO);
+    if (comboBasis1.getSelectedIndex() != BASIS_MO)
+      comboBasis1.setSelectedIndex(BASIS_PNBO);
     else
-      comboBasis.setSelectedIndex(BASIS_MO);
+      comboBasis1.setSelectedIndex(BASIS_MO);
   }
 
   /**
@@ -1547,7 +1512,7 @@ abstract class NBODialogView extends NBODialogRun {
     protected void updateIsosurfacesInJmol(int iClicked) {
       DefaultListModel<String> model = (DefaultListModel<String>) getModel();
       boolean isBeta = betaSpin.isSelected();
-      String type = comboBasis.getSelectedItem().toString();
+      String type = comboBasis1.getSelectedItem().toString();
       String script = "select visible;";
       if (iClicked == Integer.MAX_VALUE)
         script += updateBitSetFromModel();

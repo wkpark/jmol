@@ -682,11 +682,11 @@ abstract class NBODialogConfig extends JDialog {
    */
   protected void showAtomNums(boolean alpha) {
     if (!showAtNum) {
-      runScriptNow("select visible;label off; select none;refresh");
+      runScriptNow("measurements off;select visible;label off; select none;refresh");
       return;
     }
     SB sb = new SB();
-    sb.append("select visible;label %a;");
+    sb.append("measurements off;select visible;label %a;");
 
     Map<String, String> lonePairs = inputFileHandler.getChooseListMap(alpha, true);
     Map<String, String> loneV = inputFileHandler.getChooseListMap(alpha, false);
@@ -961,5 +961,29 @@ abstract class NBODialogConfig extends JDialog {
       inputFileHandler = newNBOFileHandler(inputFileHandler == null ? "" : inputFileHandler.jobStem, 
           "47", mode, "47");
   }
+
+  protected SB postAddCmd(SB sb, String cmd) {
+    return sb.append("CMD ").append(cmd).append(sep);
+  }
+
+  protected void postAddGlobal(SB sb, String key, String val) {
+    sb.append("GLOBAL ").append(key).append(" ").append(val).append(sep);
+  }
+
+  protected void postAddGlobalT(SB sb, String key, JTextField t) {
+    sb.append("GLOBAL ").append(key).append(" ").append(t.getText()).append(sep);
+  }
+
+  protected void postAddGlobalI(SB sb, String label, int offset, JComboBox<String> cb) {
+    sb.append("GLOBAL I_").append(label).append(" ").appendI(cb == null ? offset : cb.getSelectedIndex() + offset).append(sep);  
+   }
+
+  protected void postAddGlobalC(SB sb, String label, String val) {
+    sb.append("GLOBAL C_").append(label).append(" ").append(val).append(sep);  
+   }
+
+
+
+
 
 }

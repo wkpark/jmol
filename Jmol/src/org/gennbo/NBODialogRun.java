@@ -783,10 +783,11 @@ abstract class NBODialogRun extends NBODialogModel {
       return;
     get47FileData(true);
     SB sb = new SB();
-    sb.append("GLOBAL C_PATH " + inputFileHandler.inputFile.getParent() + sep);
-    sb.append("GLOBAL C_JOBSTEM " + inputFileHandler.jobStem + sep);
-    sb.append("GLOBAL C_ESS gennbo" + sep);
-    sb.append("GLOBAL C_LABEL_1 FILE=" + jobName + sep);
+    postAddGlobalC(sb, "PATH", inputFileHandler.inputFile.getParent());
+    postAddGlobalC(sb, "JOBSTEM", inputFileHandler.jobStem);    
+    postAddGlobalC(sb, "ESS", "gennbo");
+    postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
+
     logCmd("RUN GenNBO FILE=" + jobName + " " + file47Keywords);
         
     postNBO_r(sb, NBOService.MODE_RUN_GENNBO, "Running GenNBO...");

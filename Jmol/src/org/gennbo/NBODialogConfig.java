@@ -324,7 +324,7 @@ abstract class NBODialogConfig extends JDialog {
       @Override
       public void actionPerformed(ActionEvent e) {
         showAtNum = !showAtNum;
-        showAtomNums(false);
+        setStructure(null);
       }
     });
     showAtNum = true;
@@ -676,43 +676,6 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   /**
-   * label atoms: (number lone pairs)+atomnum
-   * 
-   * @param alpha
-   */
-  protected void showAtomNums(boolean alpha) {
-    if (!showAtNum) {
-      runScriptNow("measurements off;select visible;label off; select none;refresh");
-      return;
-    }
-    SB sb = new SB();
-    sb.append("measurements off;select visible;label %a;");
-
-    Map<String, String> lonePairs = inputFileHandler.getChooseListMap(alpha, true);
-    Map<String, String> loneV = inputFileHandler.getChooseListMap(alpha, false);
-    if (lonePairs != null) {
-      for (int i = 1; i <= vwr.ms.ac; i++) {
-        sb.append("select visible && atomno=" + i + ";label ");
-        String atNum = new Integer(i).toString();
-        String lp, lv;
-        if ((lp = lonePairs.get(atNum)) != null)
-          if (!lp.equals("0"))
-            sb.append("<sup>(" + lp + ")</sup>");
-        if ((lv = loneV.get(atNum)) != null)
-          if (!lv.equals("0"))
-            sb.append("<sub>[" + lv + "]</sub>");
-        sb.append("%a;");
-      }
-    }
-    String color = (nboView) ? "black" : "gray";
-    sb.append("select visible;color labels white;" +
-    		"select visible && {H*};color labels " + color + ";"
-        + "set labeloffset 0 0 {visible}; select none;refresh");
-    runScriptNow(sb.toString());
-
-  }
-
-  /**
    * Centers the dialog on the screen.
    * 
    * @param d
@@ -983,6 +946,56 @@ abstract class NBODialogConfig extends JDialog {
    }
 
 
+  private String atomTypeLast = "alpha";
+  
+
+  /**
+   * label atoms: (number lone pairs)+atomnum
+   * 
+   * @param type  alpha or beta
+   */
+  protected void setStructure(String type) {
+    setResStruct(type, -1);
+  }
+
+  /**
+   * Changes bonds and labels on the Jmol model when new resonance structure is selected
+   * 
+   * @param type
+   * @param rsNum
+   *        - index of RS in Combo Box
+   */
+  protected void setResStruct(String type, int rsNum) {
+    if (!showAtNum) {
+      runScriptNow("measurements off;select visible;label off; select none;refresh");
+      return;
+    }
+//    boolean atomsOnly = (type == null);
+    if (type == null) {
+      type = atomTypeLast;
+    } else {
+      atomTypeLast = type;
+    }
+    SB sb = new SB();
+    sb.append("measurements off;select visible;label %a;");
+    String color = (nboView) ? "black" : "gray";
+    sb.append("select visible;color labels white;"
+        + "select visible & _H;color labels " + color + ";"
+        + "set labeloffset 0 0 {visible}; select none;refresh;");
+
+    String s = inputFileHandler.setStructure(sb, type, rsNum);
+    if (s == null) {
+      runScriptNow(sb.toString());
+      return;
+    }
+    sb.append(s);    
+    if (nboView) {
+      sb.append("select add {*}.bonds;color bonds lightgrey;"
+          + "wireframe 0.1;");
+    }
+    sb.append(JMOL_FONT_SCRIPT);
+    runScriptQueued(sb.toString());
+  }
 
 
 

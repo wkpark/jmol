@@ -9,10 +9,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -24,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.jmol.adapter.readers.quantum.NBOParser;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 
@@ -40,8 +40,6 @@ class NBOFileHandler extends JPanel {
   
   protected File inputFile;
 
-  protected ChooseList chooseList;
-
 
   protected JTextField tfDir, tfName, tfExt;
   private JButton btnBrowse;
@@ -51,14 +49,13 @@ class NBOFileHandler extends JPanel {
   protected NBODialog dialog;
   protected boolean canReRun;
 
+  private Lst<Object> structureList;
+
   protected final static int MODE_MODEL_USE = 1;
   protected final static int MODE_RUN = 2;
   protected final static int MODE_VIEW = 3;
   protected final static int MODE_SEARCH = 4;
   protected final static int MODE_MODEL_SAVE = 5;
-
-  protected int[][] resStructDef;
-  protected Map<Integer, String> resStructList;
 
   
   public NBOFileHandler(String name, String ext, final int mode, String useExt,
@@ -218,7 +215,8 @@ class NBOFileHandler extends JPanel {
     boolean isOK = true;
     String msg = "";
     if (dialog.dialogMode != NBODialogConfig.DIALOG_MODEL) {
-      if (!createChooseList(true)) {
+      setStructure(null, null, -1);
+      if (structureList == null  || structureList.size() == 0) {
         msg = "problems getting a $CHOOSE list for " + inputFile;
         isOK = false;
       } else {
@@ -252,49 +250,6 @@ class NBOFileHandler extends JPanel {
       tfName.setText(jobStem);
       tfExt.setText("47");
     }
-  }
-
-  /**
-   * gets a valid $CHOOSE list from nbo file if it exists and corrects the bonds
-   * in the Jmol model
-   * @param isCheckOnly 
-   * 
-   * 
-   * @return false if output contains error
-   */
-  private boolean createChooseList(boolean isCheckOnly) {
-    chooseList = null;
-    dialog.isOpenShell = false;
-
-    File f = newNBOFileForExt("nbo");
-    if (!f.exists() || f.length() == 0)
-      return false;    
-    String fdata = getFileData(f.toString());
-    String[] tokens = PT.split(fdata, "\n $CHOOSE");
-    int i = 1;
-    if (tokens.length < 2) {
-      dialog.logInfo("$CHOOSE record was not found in " + f,
-          Logger.LEVEL_INFO);
-      return false;
-    }
-    if (tokens[1].trim().startsWith("keylist")) {
-      if (!tokens[1].contains("Structure accepted:")) {
-        if (tokens[1].contains("missing END?")) {
-          dialog.logInfo("Plot files not found. Have you used RUN yet?",
-              Logger.LEVEL_ERROR);
-          return false;
-        } else if (tokens[2].contains("ignoring")) {
-          System.out.println("Ignoring $CHOOSE list");
-        } else {
-          return false;
-        }
-      }
-      i = 3;
-    }
-    //if (!isCheckOnly)
-    chooseList = new ChooseList(tokens[i].substring(0, tokens[i].indexOf("$END")));
-    dialog.isOpenShell = chooseList.isOpenShell;
-    return true;
   }
   
   /**
@@ -489,183 +444,23 @@ class NBOFileHandler extends JPanel {
     return null;
   }
 
+
   /**
-   * Structure for maintaining contents of $CHOOSE list
+   * create the resonance structure list.
+   * @param sb string buffer to write Jmol scripts to if desired
+   * 
+   * @param type
+   *        nrtstra, nrtstrb, alpha, beta
+   * @param index index into list of this type
+   * @return the map for this structure
    */
-  class ChooseList {
-
-    protected Hashtable<String, String> lv;
-    protected Hashtable<String, String> lv_b;
-    protected Hashtable<String, String> lonePairs;
-    protected Hashtable<String, String> lonePairs_b;
-    protected SB bonds;
-    protected SB bonds_b;
-    protected SB bonds3c;
-    protected SB bonds3c_b;
-    protected boolean isOpenShell;
-
-    public ChooseList(String data) {
-      lv = new Hashtable<String, String>();
-      lv_b = new Hashtable<String, String>();
-      lonePairs = new Hashtable<String, String>();
-      lonePairs_b = new Hashtable<String, String>();
-      bonds = new SB();
-      bonds_b = new SB();
-      bonds3c = new SB();
-      bonds3c_b = new SB();
-
-      setData(data);
+  public String setStructure(SB sb, String type, int index) {
+    if (structureList == null) {
+      NBOParser nboParser = new NBOParser();
+      structureList = nboParser.getAllStructures(getInputFile("nbo"));
     }
-
-    private void setData(String data) {
-      String[] tokens = PT.split(data, "END");
-      int ind = 0;
-      SB bonds = this.bonds;
-      SB bonds3c = this.bonds3c;
-      Hashtable<String, String> lonePairs = this.lonePairs;
-      if (data.trim().contains("ALPHA")) {
-        isOpenShell = true;
-        ind = 1;
-      }
-
-      for (String x : tokens) {
-        String[] list = x.trim().split("\\s+");
-        if (list[0].trim().equals("BETA")) {
-          bonds = this.bonds_b;
-          bonds3c = this.bonds3c_b;
-          lonePairs = this.lonePairs_b;
-          ind = 1;
-        }
-
-        if (list[ind].trim().equals("LONE"))
-          for (int j = 1 + ind; j < list.length; j += 2)
-            lonePairs.put(list[j], list[j + 1]);
-
-        else if (list[ind].trim().equals("BOND"))
-          for (int j = 1 + ind; j < list.length; j += 3)
-            bonds
-                .append(list[j] + ":" + list[j + 1] + " " + list[j + 2] + "\n");
-
-        else if (list[ind].equals("3C"))
-          for (int j = 1 + ind; j < list.length; j += 4)
-            bonds3c.append(list[j] + ":" + list[j + 1] + " " + list[j + 2]
-                + " " + list[j + 3] + "\n");
-
-        ind = 0;
-
-      }
-
-    }
-    
-    /**
-     * Takes two strings from .nbo file and parses RS list information toks[0] =
-     * primary rs matrix toks[1] = change list using accountants notation; creates
-     * fields int[][] resStructDef and Map<Integer, String> resStructList
-     * 
-     */
-    protected void parseRSList() {
-      
-//      TOPO matrix for the leading resonance structure:
-  //
-//        Atom  1   2   3
-//        ---- --- --- ---
-//      1.  O   2   2   0
-//      2.  C   2   0   2
-//      3.  O   0   2   2
-  //
-//            Resonance
-//       RS   Weight(%)                  Added(Removed)
-//    ---------------------------------------------------------------------------
-//       1*(3)  49.51
-//       2*(2)  25.63   ( O  1- C  2),  C  2- O  3,  O  1, ( O  3)
-//       3*(2)  24.45    O  1- C  2, ( C  2- O  3), ( O  1),  O  3
-//       4       0.21   ( O  1- C  2), ( O  1- C  2),  C  2- O  3,  C  2- O  3,
-//                       O  1,  O  1, ( O  3), ( O  3)
-//       5       0.21    O  1- C  2,  O  1- C  2, ( C  2- O  3), ( C  2- O  3),
-//                      ( O  1), ( O  1),  O  3,  O  3
-//       6-11    0.00
-//    ---------------------------------------------------------------------------
-//             100.00   * Total *                [* = reference structure]
-  //
-      
-      
-      String data = getInputFile("nbo");
-      String[] toks = PT.split(data,
-          "TOPO matrix for the leading resonance structure:\n");
-      if (toks.length < 2) {
-        if (toks[0].contains("0 candidate reference structure(s)"))
-          dialog.alertError("0 candidate reference structure(s) calculated by SR LEWIS"
-              + " Candidate reference structure taken from NBO search");
-        return;
-      }
-      String[] toks2 = PT
-          .split(toks[1],
-              "---------------------------------------------------------------------------");
-      String[] rsList = new String[2];
-      rsList[0] = toks2[0].substring(toks2[0].lastIndexOf('-'),
-          toks2[0].indexOf("Res")).trim();
-      rsList[0] = rsList[0].replace("-\n", "");
-      rsList[1] = toks2[1];
-      String[] tmp1 = rsList[0].split("\n");
-      int size = tmp1.length;
-      resStructDef = new int[size][size];
-      for (int i = 0; i < size; i++) {
-        String[] tmp = tmp1[i].substring(10).trim().split("\\s+");
-        for (int j = 0; j < tmp.length; j++) {
-          if (tmp[j].length() > 0)
-            resStructDef[i][j] = Integer.parseInt(tmp[j]);
-        }
-      }
-      resStructList = new Hashtable<Integer, String>();
-      try {
-        BufferedReader br = new BufferedReader(new StringReader(rsList[1]));
-        String line = br.readLine();
-        line = br.readLine();
-        int num = 1;
-        String list = "";
-        while ((line = br.readLine()) != null) {
-          String n = line.substring(0, 10).trim();
-          if (n.equals("")) {
-            list += line.substring(18).trim();
-          } else if (n.contains("-")) {
-            break;
-          } else {
-            if (!list.equals("")) {
-              Integer rs = new Integer(++num);
-              resStructList.put(rs, list);
-            }
-            list = "";
-            list += line.substring(18).trim();
-          }
-        }
-        Integer rs = new Integer(++num);
-        resStructList.put(rs, list);
-      } catch (Exception e) {
-      }
-    }
-
-    public Map<String, String> getMap(boolean isAlpha, boolean isLonePair) {
-      return (isLonePair ? (isAlpha ? lonePairs : lonePairs_b) : isAlpha ? lv
-          : lv_b);
-    }
-
-    
-  }
-
-
-  public void parseRSList() {
-    if (chooseList != null)
-      chooseList.parseRSList();
-  }
-
-
-  public SB getChooseListBonds(boolean alpha) {
-    return (chooseList == null ? null : alpha ? chooseList.bonds : chooseList.bonds_b);
-  }
-
-  public Map<String, String> getChooseListMap(boolean isAlpha, boolean isLonePair) {
-    return (chooseList == null ? null : chooseList.getMap(isAlpha, isLonePair));
-
+    Map<String, Object> map = NBOParser.getStructureMap(structureList, type, index);
+    return (map == null ? null : NBOParser.setStructure(sb, dialog.vwr, map));
   }
 
 

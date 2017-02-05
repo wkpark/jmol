@@ -1163,7 +1163,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       return;
     }
     runScriptNow(JMOL_FONT_SCRIPT + ";select within(model,visible);rotate best;");
-    showAtomNums(false);
+    setStructure(null);
     showComponents(true);
     innerEditBox.setVisible(true);
     if (vwr.ms.ac > 0)

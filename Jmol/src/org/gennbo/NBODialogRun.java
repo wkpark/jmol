@@ -38,7 +38,6 @@ import java.awt.event.FocusListener;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.JSJSONParser;
@@ -370,53 +369,6 @@ abstract class NBODialogRun extends NBODialogModel {
     return tmp.trim();
   }
 
-  protected void setBonds(boolean alpha) {
-    try {
-      SB tmp = inputFileHandler.getChooseListBonds(alpha);
-    if (tmp == null)
-      return;
-    String bonds = tmp.toString();
-    if (!bonds.trim().equals("")) {
-      vwr.ms.deleteAllBonds();
-      for (String s : bonds.split("\n")) {
-        String[] tokens = s.split(":");
-        String key = tokens[0];
-        String[] atoms = tokens[1].split(" ");
-        int at1 = Integer.parseInt(atoms[0]);
-        int at2 = Integer.parseInt(atoms[1]);
-        int order = 0;
-        short mag = 250;
-        switch (key.charAt(0)) {
-        case 'S':
-          order = 1;
-          break;
-        case 'D':
-          order = 2;
-          break;
-        case 'T':
-          order = 3;
-          mag = 150;
-          break;
-        case 'Q':
-          order = 4;
-          mag = 100;
-          break;
-        default:
-          order = Integer.parseInt(key);
-          mag = 100;
-        }
-        vwr.ms.bondAtoms(vwr.ms.at[at1 - 1], vwr.ms.at[at2 - 1], order, mag,
-            vwr.ms.bsVisible, 0, true, true);
-      }
-    }
-    if (nboView) {
-      String s2 = runScriptNow("print {*}.bonds");
-      runScriptNow("select " + s2 + ";color bonds lightgrey");
-    }
-    } catch (Exception e) {
-      System.out.println("Cannot create bonds: " + e.getMessage());
-    }
-  }
 
   protected void logJobName(String name) {
     if (name == null)
@@ -472,8 +424,7 @@ abstract class NBODialogRun extends NBODialogModel {
     if (vwr.ms.ac == 0)
       return;
     get47FileData(true);
-    showAtomNums(true);
-    setBonds(true);
+    setStructure("alpha");
     addNBOKeylist();
     for (Component c : panel.getComponents())
       c.setVisible(true);

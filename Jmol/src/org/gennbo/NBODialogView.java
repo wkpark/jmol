@@ -307,8 +307,7 @@ abstract class NBODialogView extends NBODialogRun {
           @Override
           public void run() {
             if (betaSpin.isSelected()) {
-              setBonds(false);
-              showAtomNums(false);
+              setStructure("beta");
             }
             if (nboView) {
               runScriptNow("select *;color bonds lightgrey");
@@ -327,8 +326,7 @@ abstract class NBODialogView extends NBODialogRun {
           @Override
           public void run() {
             if (alphaSpin.isSelected()) {
-              setBonds(true);
-              showAtomNums(true);
+              setStructure("alpha");
             }
             if (nboView) {
               runScriptNow("select*;color bonds lightgrey");
@@ -1262,8 +1260,7 @@ abstract class NBODialogView extends NBODialogRun {
 
     if (vwr.ms.ac == 0)
       return;
-    showAtomNums(alphaSpin.isSelected());
-    setBonds(alphaSpin.isSelected());
+    setStructure(alphaSpin.isSelected() ? "alpha" : "beta");
 
     centerBox.setVisible(true);
     bottomBox.setVisible(!jmolOptionNONBO);

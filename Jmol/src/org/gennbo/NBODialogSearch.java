@@ -32,8 +32,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Hashtable;
-import java.util.Map;
 
 import javajs.util.PT;
 import javajs.util.SB;
@@ -56,8 +54,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
-
-import org.gennbo.NBOFileHandler.ChooseList;
 
 abstract class NBODialogSearch extends NBODialogView {
 
@@ -428,13 +424,7 @@ abstract class NBODialogSearch extends NBODialogView {
   }
 
   protected void doSetSpin() {
-    if (alphaSpin.isSelected()) {
-      setBonds(true);
-      showAtomNums(true);
-    } else {
-      setBonds(false);
-      showAtomNums(false);
-    }
+    setStructure(alphaSpin.isSelected() ? "alpha" : "beta");
     switch (searchKeywordNumber) {
     case KEYWD_NBO:
     case KEYWD_BEND:
@@ -463,7 +453,7 @@ abstract class NBODialogSearch extends NBODialogView {
       comboUnit1.setSelectedIndex(0);
     SB script = new SB();
     if (relabel) {
-      showAtomNums(alphaSpin.isSelected());
+      setStructure(alphaSpin.isSelected() ? "alpha" : "beta");
       script
           .append("select add {*}.bonds; color bonds lightgrey; select none;");
       for (int i = 0; i < nBonds; i++) {
@@ -1065,7 +1055,7 @@ abstract class NBODialogSearch extends NBODialogView {
 
     if (relabel) {
       runScriptQueued("select add {*}.bonds; color bonds lightgrey; select none; measurements off");
-      showAtomNums(alphaSpin.isSelected());
+      setStructure(alphaSpin.isSelected() ? "alpha" : "beta");
       relabel = false;
     }
     if (isLabel) {
@@ -1130,18 +1120,14 @@ abstract class NBODialogSearch extends NBODialogView {
       if (cb == comboUnit1) {
         changeKey(nrt);
         //Parsing RS list here ensures RS list will be in .nbo file
-        inputFileHandler.parseRSList();
         comboUnit1.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            if (isOpenShell)
-              setResStruct(comboUnit1.getSelectedIndex() + 1,
-                  alphaSpin.isSelected());
-            else
-              setResStruct(comboUnit1.getSelectedIndex() + 1, true);
+            setResStruct((alphaSpin.isSelected() ? "nrtstra" : "nrtstrb"),
+                comboUnit1.getSelectedIndex());
           }
         });
-        setResStruct(1, alphaSpin.isSelected());
+        setResStruct(alphaSpin.isSelected() ? "nrtstra": "nrtstrb", 0);
       }
       break;
     case KEYWD_OPBAS:
@@ -1153,99 +1139,6 @@ abstract class NBODialogSearch extends NBODialogView {
 
       }
     }
-  }
-
-  /**
-   * Changes bonds and labels on the Jmol model when new RS is selected
-   * 
-   * @param rsNum
-   *        - index of RS in Combo Box
-   * @param alpha
-   */
-  protected void setResStruct(int rsNum, boolean alpha) {
-    ChooseList chooseList = inputFileHandler.chooseList;
-
-    if (chooseList == null)
-      return;
-
-    int[][] resStructDef = inputFileHandler.resStructDef;
-    Map<Integer, String> resStructList = inputFileHandler.resStructList;
-    int sz = resStructDef.length;
-    Map<String, String> lonePairs = new Hashtable<String, String>();
-    int[][] tmp = new int[sz][sz];
-    for (int i = 0; i < sz; i++)
-      for (int j = 0; j < sz; j++)
-        tmp[i][j] = resStructDef[i][j];
-    String rs = resStructList.get(new Integer(rsNum));
-    if (rs != null) {
-      String[] rsList = rs.split(",");
-      int inc;
-      for (int i = 0; i < rsList.length; i++) {
-        if (rsList[i].contains("("))
-          inc = -1;
-        else
-          inc = 1;
-        String bond = rsList[i].replaceAll("[\\D]", " ").trim();
-        String[] toks = bond.split("\\s+");
-        int a1 = Integer.parseInt(toks[0]) - 1;
-        if (toks.length < 2) {
-          tmp[a1][a1] += inc;
-        } else {
-          int a2 = Integer.parseInt(toks[1]) - 1;
-          tmp[a1][a2] += inc;
-          tmp[a2][a1] += inc;
-        }
-      }
-    }
-    vwr.ms.deleteAllBonds();
-    int[] bondCounts = new int[vwr.ms.ac];
-    for (int i = 0; i < sz; i++) {
-      for (int j = i; j < sz; j++) {
-        if (tmp[i][j] > 0) {
-          if (i == j) {
-            lonePairs.put(new Integer(i + 1).toString(),
-                new Integer(tmp[i][j]).toString());
-            //vwr.ms.at[i].setValence(vwr.ms.at[i].getValence() + 2*tmp[i][j]);
-            continue;
-          }
-          if (tmp[i][j] > 0) {
-            int mad = (tmp[i][j] > 2) ? 150 : 250;
-            vwr.ms.bondAtoms(vwr.ms.at[i], vwr.ms.at[j], tmp[i][j],
-                (short) mad, vwr.ms.bsVisible, 0, true, true);
-            bondCounts[i] += tmp[i][j];
-            bondCounts[j] += tmp[i][j];
-          }
-        }
-      }
-    }
-    if (nboView) {
-      runScriptQueued("select add {*}.bonds;color bonds lightgrey;"
-          + "wireframe 0.1;select remove {*}");
-    }
-    for (int i = 0; i < vwr.ms.ac; i++) {
-      vwr.ms.at[i].setFormalCharge(0);
-      vwr.ms.at[i].setValence(bondCounts[i]);
-    }
-    SB sb = new SB();
-    vwr.ms.fixFormalCharges(vwr.getAllAtoms());
-    for (int i = 1; i <= vwr.ms.ac; i++) {
-      sb.append("select (atomno=" + i + ");label ");
-      String atNum = new Integer(i).toString();
-      String lp;
-      if ((lp = lonePairs.get(atNum)) != null)
-        if (!lp.equals("0"))
-          sb.append("<sup>(" + lp + ")</sup>");
-      sb.append("%a");
-      int charge = vwr.ms.at[i - 1].getFormalCharge();
-      if (charge != 0)
-         sb.append("<sup>" + Math.abs(charge) + (charge > 0 ? "+" : charge < 0 ? "-" : "") + "</sup>");
-      sb.append(";");
-    }
-    runScriptQueued(sb.toString());
-    runScriptQueued("select remove{*}; " + "select add (atomno="
-        + (comboAtom1.getSelectedIndex()) + ");" + "select add (atomno="
-        + (comboAtom2.getSelectedIndex()) + ");");
-
   }
 
 
@@ -1519,8 +1412,7 @@ abstract class NBODialogSearch extends NBODialogView {
     runScriptNow("isosurface delete");
 
     rbSelection = -1;
-    showAtomNums(true);
-    setBonds(true);
+    setStructure("alpha");
     if (isOpenShell) {
       alphaSpin.setVisible(true);
       betaSpin.setVisible(true);

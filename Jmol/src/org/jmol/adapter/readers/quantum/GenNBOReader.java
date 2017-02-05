@@ -85,7 +85,7 @@ public class GenNBOReader extends MOReader {
   private boolean isOutputFile;
   private String nboType = "";
   private int nOrbitals0;
-  private boolean isArchive;
+  private boolean is47File;
   private boolean isOpenShell;
   private boolean alphaOnly, betaOnly;
 
@@ -111,10 +111,10 @@ public class GenNBOReader extends MOReader {
      * 
      */
     String line1 = rd().trim();
-    isArchive = (line1.indexOf("$GENNBO") >= 0 || line1.indexOf("$NBO") >= 0); // GENNBO 6
-    alphaOnly =  isArchive || checkFilterKey("ALPHA");
-    betaOnly =  !isArchive && checkFilterKey("BETA");
-    if (isArchive) {
+    is47File = (line1.indexOf("$GENNBO") >= 0 || line1.indexOf("$NBO") >= 0); // GENNBO 6
+    alphaOnly =  is47File || checkFilterKey("ALPHA");
+    betaOnly =  !is47File && checkFilterKey("BETA");
+    if (is47File) {
       readData47();
       return;
     }
@@ -239,7 +239,39 @@ public class GenNBOReader extends MOReader {
       orbitalsRead = false;
       return true;
     }
+    if (line.indexOf("$NRTSTRA") >= 0) {
+      getStructures("NRTSTRA");
+      return true;
+    }
+    if (line.indexOf("$NRTSTRB") >= 0) {
+      getStructures("NRTSTRB");
+      return true;
+    }
+    if (line.indexOf("$CHOOSE") >= 0) {
+      getStructures("CHOOSE");
+      return true;
+    }
     return checkNboLine();
+  }
+
+  private int nStructures = 0;
+  NBOParser nboParser;
+  
+  @SuppressWarnings("unchecked")
+  private void getStructures(String type) throws Exception {
+    if (nboParser == null)
+      nboParser = new NBOParser();
+    
+    Lst<Object> structures = (Lst<Object>) asc.getAtomSetAuxiliaryInfo(asc.iSet).get("nboStructures");
+    if (structures == null) 
+      asc.setCurrentModelInfo("nboStructures", structures = new Lst<Object>());
+    SB sb = new SB();
+    while (!rd().trim().equals("$END"))
+      sb.append(line).append("\n");
+    nStructures = nboParser.getStructures(sb.toString(), type, structures);
+    appendLoadNote(nStructures + " NBO " + type + " resonance structures");
+    if (moData != null)
+      moData.put("nboStructures", structures);
   }
 
   private String getFileData(String ext) throws Exception {
@@ -564,7 +596,7 @@ public class GenNBOReader extends MOReader {
         map.put("beta_" + nboType, tokens);        
     }
     moData.put("nboLabels", tokens);
-    boolean addBetaSet = (isOpenShell && !betaOnly && !isArchive); 
+    boolean addBetaSet = (isOpenShell && !betaOnly && !is47File); 
     if (addBetaSet) 
       nOrbitals *= 2;
     for (int i = 0; i < nOrbitals; i++)

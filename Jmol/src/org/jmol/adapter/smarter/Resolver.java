@@ -534,6 +534,7 @@ public class Resolver {
     return (leader.indexOf("$GENNBO") >= 0
       || lines[1].startsWith(" Basis set information needed for plotting orbitals")
       || lines[1].indexOf("s in the AO basis:") >= 0
+      || lines[1].indexOf("***** NBO ") >= 0
       || lines[2].indexOf(" N A T U R A L   A T O M I C   O R B I T A L") >= 0);
   }
   

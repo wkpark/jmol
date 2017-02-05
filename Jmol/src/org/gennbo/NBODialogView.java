@@ -339,8 +339,8 @@ abstract class NBODialogView extends NBODialogRun {
     });
     horizBox.add(alphaSpin);
     horizBox.add(betaSpin);
-    alphaSpin.setVisible(isOpenShell);
-    betaSpin.setVisible(isOpenShell);
+    alphaSpin.setVisible(isOpenShell());
+    betaSpin.setVisible(isOpenShell());
     horizBox.add(new HelpBtn("view_orbital_help.htm"));
     return horizBox;
   }
@@ -945,7 +945,7 @@ abstract class NBODialogView extends NBODialogRun {
       return;
     }
 
-    boolean isBeta = isOpenShell && !alphaSpin.isSelected();
+    boolean isBeta = isOpenShell() && !alphaSpin.isSelected();
 
     DefaultListModel<String> list = (isBeta ? betaList : alphaList);
     if (list != null && list.size() > 0) {
@@ -959,7 +959,7 @@ abstract class NBODialogView extends NBODialogRun {
       alphaList = list;
 
     if (!jmolOptionNONBO) {
-      logCmd("select " + comboBasis1.getSelectedItem()  + " " + (isBeta ? "beta" : isOpenShell ? "alpha" : ""));
+      logCmd("select " + comboBasis1.getSelectedItem()  + " " + (isBeta ? "beta" : isOpenShell() ? "alpha" : ""));
       postNBO_v(postAddCmd(getMetaHeader(true), "LABEL"), NBOService.MODE_VIEW_LIST,
           list, "Getting list", null, null);
     }
@@ -988,7 +988,7 @@ abstract class NBODialogView extends NBODialogRun {
     postAddGlobalC(sb, "JOBSTEM", inputFileHandler.jobStem);
     if (addBasis)
       postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
-    postAddGlobalI(sb, "SPIN", (!isOpenShell ? 0 : alphaSpin.isSelected() ? 1 : -1), null);
+    postAddGlobalI(sb, "SPIN", (!isOpenShell() ? 0 : alphaSpin.isSelected() ? 1 : -1), null);
     return sb;
   }
 
@@ -1284,10 +1284,10 @@ abstract class NBODialogView extends NBODialogRun {
     String type = comboBasis1.getSelectedItem().toString();
     if (type.charAt(0) == 'P')
       type = type.substring(1);
-    boolean isBeta = isOpenShell && !alphaSpin.isSelected() && betaList != null;
+    boolean isBeta = isOpenShell() && !alphaSpin.isSelected() && betaList != null;
     try {
-      alphaSpin.setVisible(isOpenShell); // old
-      betaSpin.setVisible(isOpenShell); // old
+      alphaSpin.setVisible(isOpenShell()); // old
+      betaSpin.setVisible(isOpenShell()); // old
 
       setDefaultParameterArrays();
 

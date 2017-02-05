@@ -592,7 +592,7 @@ abstract class NBODialogSearch extends NBODialogView {
     case KEYWD_NRT:
       runScriptNow("set bondpicking true");
       keyProp = "NRT";
-      if (isOpenShell)
+      if (isOpenShell())
         setKeyword("s a a' rs".split(" "), new String[] { "Spin: ", "Atom A: ",
             "Atom A': ", "Res Struct: " });
       else
@@ -764,7 +764,7 @@ abstract class NBODialogSearch extends NBODialogView {
             doSetBasis();
           }
         });
-        if (isOpenShell) {
+        if (isOpenShell()) {
           //b.add(Box.createRigidArea(new Dimension(20,0)));
           b.add(alphaSpin);
           b.add(betaSpin);
@@ -1413,7 +1413,7 @@ abstract class NBODialogSearch extends NBODialogView {
 
     rbSelection = -1;
     setStructure("alpha");
-    if (isOpenShell) {
+    if (isOpenShell()) {
       alphaSpin.setVisible(true);
       betaSpin.setVisible(true);
     } else {
@@ -1531,7 +1531,7 @@ abstract class NBODialogSearch extends NBODialogView {
     switch (mode) {
     case NBOService.MODE_SEARCH_VALUE:
       line = lines[0];
-      if (isOpenShell) {
+      if (isOpenShell()) {
         String spin = (alphaSpin.isSelected() ? "&uarr;" : "&darr;");
         int ind = line.indexOf(')') + 1;
         line = line.substring(0, ind) + spin + line.substring(ind);

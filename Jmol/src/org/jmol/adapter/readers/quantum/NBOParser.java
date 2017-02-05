@@ -11,6 +11,9 @@ import javajs.util.SB;
 
 public class NBOParser {
 
+  private boolean haveBeta;
+
+
   public Lst<Object> getAllStructures(String output) {
     if (output == null)
       return null;
@@ -45,6 +48,7 @@ public class NBOParser {
    */
   public int getStructures(String output, String nrtType, Lst<Object> list) {
 
+    System.out.println(output);
     //    $NRTSTRA
     //    STR        ! Wgt = 49.51%
     //      LONE 1 2 3 2 END
@@ -109,6 +113,8 @@ public class NBOParser {
           }
           htData.put("index", Integer.valueOf(index++));
           htData.put("spin", spin = tok.toLowerCase());
+          if (spin.equals("beta"))
+            haveBeta = true;
           htData.put("type", nrtType == null ? spin : nrtType);
           n++;
           break;
@@ -148,6 +154,7 @@ public class NBOParser {
         }
       }
     } catch (Exception e) {
+      e.printStackTrace();
       list.clear();
       return -1;
     }
@@ -170,11 +177,11 @@ public class NBOParser {
     if (type == null || structureList == null)
       return null;
     type = type.toLowerCase();
-    String spin = (type.indexOf("a") >= 0 ? "alpha" : "beta");
+    String spin = (type.indexOf("b") < 0 ? "alpha" : "beta");
     for (int i = 0; i < structureList.size(); i++) {
       Map<String, Object> map = (Map<String, Object>) structureList.get(i);
       if (spin.equals(map.get("spin")) && type.equals(map.get("type"))
-          && (i < 0 || i == ((Integer) map.get("index")).intValue())) {      
+          && (index < 0 || i == ((Integer) map.get("index")).intValue())) {      
         return map;
       }
     }
@@ -183,7 +190,8 @@ public class NBOParser {
 
 
   /**
-   * Starting with a structure map, do what needs to be done to change the current structure to that. 
+   * Starting with a structure map, do what needs to be done to change the
+   * current structure to that.
    * 
    * @param sb
    * @param vwr
@@ -191,7 +199,7 @@ public class NBOParser {
    * @return a string that can be used to optionally label the atoms
    */
   @SuppressWarnings("unchecked")
-  public static String setStructure(SB sb, Viewer vwr, Map<String, Object> map) {
+  public static String setStructure(SB sb, Viewer vwr, Map<String, Object> map, boolean addCharge) {
     if (map == null)
       return null;
     Lst<Object> bonds = (Lst<Object>) map.get("bond");
@@ -239,16 +247,23 @@ public class NBOParser {
       sb.append("select (atomindex=" + i + ");label ");
       if (lp[i] > 0)
         sb.append("<sup>(" + lp[i] + ")</sup>");
-        if (lv[i]> 0)
-            sb.append("<sub>[" + lv[i] + "]</sub>");
+      if (lv[i] > 0)
+        sb.append("<sub>[" + lv[i] + "]</sub>");
       sb.append("%a");
-      int charge = vwr.ms.at[i].getFormalCharge();
-      if (charge != 0)
-        sb.append("<sup>" + Math.abs(charge)
-            + (charge > 0 ? "+" : charge < 0 ? "-" : "") + "</sup>");
+      if (addCharge) {
+        int charge = vwr.ms.at[i].getFormalCharge();
+        if (charge != 0)
+          sb.append("<sup>" + Math.abs(charge)
+              + (charge > 0 ? "+" : charge < 0 ? "-" : "") + "</sup>");
+      }
       sb.append(";");
     }
     return sb.toString();
+  }
+
+
+  public boolean isOpenShell() {
+    return haveBeta;
   }
 
 

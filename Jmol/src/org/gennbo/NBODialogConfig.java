@@ -243,7 +243,6 @@ abstract class NBODialogConfig extends JDialog {
   protected NBOFileHandler inputFileHandler;
   protected NBOFileHandler saveFileHandler;
   protected int dialogMode;
-  protected boolean isOpenShell;
   protected boolean isJmolNBO;
   protected boolean haveService;
 
@@ -995,6 +994,10 @@ abstract class NBODialogConfig extends JDialog {
     }
     sb.append(JMOL_FONT_SCRIPT);
     runScriptQueued(sb.toString());
+  }
+
+  protected boolean isOpenShell() {
+    return inputFileHandler.isOpenShell;
   }
 
 

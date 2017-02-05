@@ -48,6 +48,7 @@ class NBOFileHandler extends JPanel {
   protected String useExt;
   protected NBODialog dialog;
   protected boolean canReRun;
+  protected boolean isOpenShell;
 
   private Lst<Object> structureList;
 
@@ -165,6 +166,8 @@ class NBOFileHandler extends JPanel {
   protected boolean loadSelectedFile(File selectedFile) {
     dialog.nboService.restartIfNecessary();
     inputFile = selectedFile;
+    structureList = null;
+    isOpenShell = false;
     //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 
     //return false;
     if (dialog.dialogMode == NBODialogConfig.DIALOG_MODEL)
@@ -193,7 +196,7 @@ class NBOFileHandler extends JPanel {
   protected void setInputFile(File inputFile) {
     dialog.logValue("Input file=" + inputFile);
     clearInputFile(false); // clear CURRENT input file's server directory
-    dialog.isOpenShell = false;
+    isOpenShell = false;
     this.inputFile = inputFile;
     if (inputFile.getName().indexOf(".") > 0)
       jobStem = getJobStem(inputFile);
@@ -458,9 +461,12 @@ class NBOFileHandler extends JPanel {
     if (structureList == null) {
       NBOParser nboParser = new NBOParser();
       structureList = nboParser.getAllStructures(getInputFile("nbo"));
+      isOpenShell = nboParser.isOpenShell();
     }
     Map<String, Object> map = NBOParser.getStructureMap(structureList, type, index);
-    return (map == null ? null : NBOParser.setStructure(sb, dialog.vwr, map));
+    boolean addCharge = false; // BH does not work. You cannot get charges just from 
+    // counting bonds.
+    return (map == null ? null : NBOParser.setStructure(sb, dialog.vwr, map, addCharge));
   }
 
 

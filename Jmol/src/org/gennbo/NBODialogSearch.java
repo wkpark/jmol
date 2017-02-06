@@ -736,7 +736,7 @@ abstract class NBODialogSearch extends NBODialogView {
         comboAtom1.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            doSearchAtom1Action(comboAtom1.getSelectedIndex(), comboAtom2.getSelectedIndex());
+            doSearchAtom1Action(comboAtom1.getSelectedIndex(), comboAtom2 == null ? -1 : comboAtom2.getSelectedIndex());
           }
         });
         innerListPanel.add(comboAtom1);

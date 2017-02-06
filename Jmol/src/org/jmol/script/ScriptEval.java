@@ -2535,6 +2535,7 @@ public class ScriptEval extends ScriptExpr {
       getCmdExt().dispatch(tok, false, st);
       break;
     default:
+      System.out.println(T.nameOf(tok) + " is not a command");
       error(ERROR_unrecognizedCommand);
     }
   }

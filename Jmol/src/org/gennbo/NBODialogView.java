@@ -90,36 +90,56 @@ abstract class NBODialogView extends NBODialogRun {
   protected final int BASIS_NLMO = 8;
   protected final int BASIS_MO = 9;
 
-  protected OrbitalList orbitals;
   private JScrollPane orbScroll;
   private Box centerBox, bottomBox;
   private Box vecBox;
-  protected Box planeBox;
-  private JRadioButton profileBtn, contourBtn, viewBtn;
-
-  //  protected String vectorDef, planeDef;
-  protected DefaultListModel<String> alphaList, betaList;
-  protected JComboBox<String> comboBasis1;
-  protected JRadioButton alphaSpin, betaSpin;
+  private Box planeBox;
+  private JRadioButton profileBtn, contourBtn, viewBtn;  
   private JRadioButton atomOrient;
+  private DefaultListModel<String> alphaList, betaList;
 
+  /**
+   * "Jmol" vs. "Atom" perspective chosen 
+   */
+  private boolean jmolView;
+  
+
+  // effectively private, but need to be protected
+  // because they are used by private inner classes
+ 
+  protected OrbitalList orbitals;
+  
+  /**
+   * The state of the VIEW panel, in terms of what modal dialogs are open;
+   * reset to VIEW_STATE_MAIN each time openPanel() is run.
+   */
   protected int viewState;
-  protected boolean positiveSign, jmolView;
-  protected JRadioButton[] storage;
+  
+  protected final static int VIEW_STATE_MAIN = 0;
+  protected final static int VIEW_STATE_PLANE = 1;
+  protected final static int VIEW_STATE_VECTOR = 2;
+  protected final static int VIEW_STATE_CAMERA = 3;
+
+  
+  // used in SEARCH and in some cases NBODialg itself:
+  
+  protected JComboBox<String> comboBasis1; 
+  protected JRadioButton alphaSpin, betaSpin; 
   protected Container viewSettingsBox;
-  protected int startingModelCount;
-  protected int modelCount = 1;
   protected boolean isNewModel = true;
 
+  // used by SEARCH; cleared by openPanel() using 
+ 
   protected String currOrb = "";
   protected int currOrbIndex;
-  
+
+
   //NBOServe view settings
   private String[] plVal, vecVal, lineVal;
-  protected final JTextField[] vectorFields = new JTextField[8];
-  protected final JTextField[] planeFields = new JTextField[12];
-  protected final JTextField[] camFields = new JTextField[53];
-  protected final JTextField[] lineFields = new JTextField[7];
+  private final JTextField[] vectorFields = new JTextField[8];
+  private final JTextField[] planeFields = new JTextField[12];
+  private final JTextField[] camFields = new JTextField[53];
+  private final JTextField[] lineFields = new JTextField[7];
 
   private String[] camVal = { "6.43", "0.0", "0.0", "50.0", "2.0", "2.0",
       "0.0", "0.60", "1.0", "1.0", "40.0", "0.0", "0.60", "1.0", "1.0", "40.0",
@@ -143,15 +163,7 @@ abstract class NBODialogView extends NBODialogRun {
       // 49 - 51
       "5a", "5b", "5c", "6" };
 
-  //  protected final JTextField[] contourFields = new JTextField[7];
-
-  protected final static int VIEW_STATE_MAIN = 0;
-  protected final static int VIEW_STATE_PLANE = 1;
-  protected final static int VIEW_STATE_VECTOR = 2;
-  protected final static int VIEW_STATE_CAMERA = 3;
-
   protected JPanel buildViewPanel() {
-    startingModelCount = vwr.ms.mc;
     panel = new JPanel(new BorderLayout());
     viewState = VIEW_STATE_MAIN;
     ///panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -939,8 +951,7 @@ abstract class NBODialogView extends NBODialogRun {
     resetCurrentOrbitalClicked();
     
     if (comboBasis1.getSelectedIndex() == BASIS_MO) {
-      file47Keywords = cleanNBOKeylist(inputFileHandler.read47File()[1], true);
-      if (!file47Keywords.contains("CMO")) {
+      if (!cleanNBOKeylist(inputFileHandler.read47File(false)[1], true).contains("CMO")) {
         doRunGenNBOJob("CMO");
         return;
       }
@@ -1405,7 +1416,7 @@ abstract class NBODialogView extends NBODialogRun {
     return ";select visible;isosurface "
         + id
         + " color "
-        + (isNegative ? color1 + " " + color2 : color2 + " " + color1)
+        + (isNegative ? orbColorJmol1 + " " + orbColorJmol2 : orbColorJmol2 + " " + orbColorJmol1)
         + " cutoff 0.0316 NBO "
         + type
         + " "

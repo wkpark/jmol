@@ -47,6 +47,8 @@ class NBORequest {
    */
   boolean isRUN;
 
+  public long timeStamp;
+
   NBORequest(){}
   
   void set(Runnable returnMethod, String statusInfo, String... fileData) {
@@ -65,6 +67,9 @@ class NBORequest {
    * @param reply
    */
   void sendReply(String reply) {
+    
+    System.out.println("CMD IS >>>>" + fileData[1] + "<<<<<");
+    System.out.println("REPLY IS >>>>" + reply + "<<<<<");
     this.reply = reply;
     if (callbackMethod != null)
       callbackMethod.run();

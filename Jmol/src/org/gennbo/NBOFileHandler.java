@@ -216,7 +216,6 @@ class NBOFileHandler extends JPanel {
               + "\nor select a new location for your NBOServe executable");
       return;
     }
-    dialog.isJmolNBO = true;
     fileDir = inputFile.getParent();
     boolean canLoad = true;
     boolean isOK = true;
@@ -274,7 +273,7 @@ class NBOFileHandler extends JPanel {
    * 
    * @return [ pre-keyword params, keywords, post-keyword params ]
    */
-  protected String[] read47File() {
+  protected String[] read47File(boolean doAll) {
     clearStructureList();
     String[] fileData = new String[] { "", "", "", "" };
     String nboKeywords = "";
@@ -297,6 +296,8 @@ class NBOFileHandler extends JPanel {
           params.append(s).append(sep);
         nboKeywords = PT.trim(prePost[1], "\t\r\n ");
         params = postParams;
+        if (!doAll)
+          break;
         continue;
       }
       params.append(s).append(sep).append("$END").append(sep);
@@ -310,10 +311,10 @@ class NBOFileHandler extends JPanel {
   }
 
   private String removeFileKeyword(String nboKeywords) {
-    String[] tokens = PT.getTokens(nboKeywords);
+    String[] tokens = PT.getTokens(nboKeywords.toUpperCase());
     nboKeywords = "";
     for (int i = tokens.length; --i >= 0;)
-      if (tokens[i].toUpperCase().indexOf("FILE=") < 0)
+      if (tokens[i].indexOf("FILE=") < 0)
         nboKeywords += " " + tokens[i];
     return nboKeywords.trim();
   }
@@ -393,11 +394,8 @@ class NBOFileHandler extends JPanel {
       tfName.setText(name);
     if (tfExt != null)
       tfExt.setText(ext);
-    if (dialog.saveFileHandler != null && this != dialog.saveFileHandler)
-      dialog.saveFileHandler.setInput(dir, name,
-          PT.isOneOf(ext, NBODialogConfig.OUTPUT_FILE_EXTENSIONS) ? ext : "");
-    //System.out.println("-------" + f + n + "/" + e);
     if (dir != null && name != null && ext != null) {
+      dialog.modelSetSaveParametersFromInput(this, dir, name, ext);
       inputFile = new File(dir + "\\" + name + "." + ext);
     }
   }
@@ -436,10 +434,10 @@ class NBOFileHandler extends JPanel {
       this.writeToFile(inputFile.getAbsolutePath(), data);    
   }
 
-  public String[] update47File(String jobName, String keywords) {
+  public String[] update47File(String jobName, String keywords, boolean doMerge) {
     if (!useExt.equals("47"))
       return null;
-    String[] fileData = read47File();
+    String[] fileData = read47File(true);
     if (writeToFile(inputFile.getAbsolutePath(), fileData[0] + "$NBO\n "
         + "FILE=" + jobName + " " + keywords + "  $END" + sep + fileData[2])) {
       fileData[1] = keywords;

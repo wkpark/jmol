@@ -58,6 +58,7 @@ abstract public class ScriptParam extends ScriptError {
   }
 
   protected boolean checkToken(int i) {
+    System.out.println("iToken,i,slen" + iToken + "  "+ i + " " + slen);
     return (iToken = i) < slen;
   }
 

@@ -231,8 +231,10 @@ public class NBODialog extends NBODialogSearch {
    */
   private void resetModuleVariables() {
 
-    resetCurrentOrbitalClicked();
     // Anything here that looks like it needs resetting prior to changing panels.
+
+    resetCurrentOrbitalClicked();
+    resetVariables_c();
     
   }
 
@@ -600,7 +602,7 @@ public class NBODialog extends NBODialogSearch {
       jpNBODialog.setEditable(false);
       jpNBODialog.setBorder(null);
       //jpNBODialog.setFont(new Font("Arial", Font.PLAIN, 16));
-      bodyText = "";
+      nboOutputBodyText = "";
     }
     jpNBODialog.setContentType("text/html");
     //jpNBODialog.setFont(new Font("Arial",Font.PLAIN,10));
@@ -657,7 +659,7 @@ public class NBODialog extends NBODialogSearch {
   }
 
   protected void saveDialogOutput(String saveFileName) {
-    String output = bodyText.replaceAll("<br>", sep);
+    String output = nboOutputBodyText.replaceAll("<br>", sep);
     output = output.replaceAll("<b>", "");
     output = output.replaceAll("</b>", "");
     output = output.replaceAll("<i>", "");
@@ -736,7 +738,7 @@ public class NBODialog extends NBODialogSearch {
           }
         }
         if (dialogMode == DIALOG_MODEL) {
-          notFromNBO = true;
+          setModelNotFromNBO();
         } else {
           if (dialogMode != DIALOG_RUN) {
             doOpenPanel(DIALOG_RUN);
@@ -781,7 +783,7 @@ public class NBODialog extends NBODialogSearch {
    * clear output panel
    */
   protected void doClearOutput() {
-    bodyText = "";
+    nboOutputBodyText = "";
     // String fontFamily = jpNBOLog.getFont().getFamily();
     if (jpNBODialog != null)
       jpNBODialog.setText("");

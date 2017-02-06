@@ -252,6 +252,7 @@ public class NBOService {
           
           while (!Thread.currentThread().isInterrupted()) {
             try {
+              Thread.sleep(1);
 
               // Get and process the return, continuing if incomplete or no activity.
 
@@ -305,7 +306,7 @@ public class NBOService {
    * @throws IOException
    * @throws InterruptedException
    */
-  protected String getNBOMessage() throws IOException, InterruptedException {
+  protected synchronized String getNBOMessage() throws IOException, InterruptedException {
     
     // 1. Check for available bytes.
     
@@ -443,36 +444,42 @@ public class NBOService {
 
 
   //////////////////////////// Send Request to NBOServe ///////////////////////////
-  
+
   /**
    * Start the current request by writing its metacommands to disk and sending a
    * command to NBOServe directing it to that file via its stdin.
    * 
-   * We allow the Jmol command 
+   * We allow the Jmol command
    * 
    * set TESTFLAG2 TRUE
    * 
-   * to give us an alert just prior to sending the command to NBOServe.
-   * This allows us to edit these files in PSPad (which will scan for changed
-   * files and load them again if requested) and thus send any modification we
-   * want to NBOServe for testing.
+   * to give us an alert just prior to sending the command to NBOServe. This
+   * allows us to edit these files in PSPad (which will scan for changed files
+   * and load them again if requested) and thus send any modification we want to
+   * NBOServe for testing.
    * 
    * @param request
    */
   protected void startRequest(NBORequest request) {
     if (request == null)
       return;
-    
+
+    if (request.timeStamp != 0) {
+      System.out.println("SENDING TWICE?");
+      return;
+    }
+    request.timeStamp = System.currentTimeMillis();
+
     currentRequest = request;
+
     String cmdFileName = null, data = null, list = "";
     for (int i = 2, n = request.fileData.length; i < n + 2; i += 2) {
-      
-      cmdFileName = request.fileData[i%n];
-      data = request.fileData[(i + 1)%n];
+
+      cmdFileName = request.fileData[i % n];
+      data = request.fileData[(i + 1) % n];
       if (cmdFileName != null) {
         list += " " + cmdFileName;
-        dialog.inputFileHandler.writeToFile(getServerPath(cmdFileName),
-            data);
+        dialog.inputFileHandler.writeToFile(getServerPath(cmdFileName), data);
         System.out.println("saved file " + cmdFileName + "\n" + data + "\n");
       }
     }
@@ -480,10 +487,11 @@ public class NBOService {
     String cmd = "<" + cmdFileName + ">";
 
     System.out.println("sending " + cmd);
-    
+
     if (vwr.getBoolean(T.testflag2))
-      vwr.alert("files " + list + " have been generated; ready to send " + cmd + "\n\n" + data);
-    
+      vwr.alert("files " + list + " have been generated; ready to send " + cmd
+          + "\n\n" + data);
+
     if (nboIn == null)
       restart();
     nboIn.println(cmd);
@@ -567,7 +575,8 @@ public class NBOService {
       pt = s.indexOf("*end*");
       if (pt < 0) {
         System.out.println("bad start/end packet from NBOServe: " + s);
-        return true;
+        removeRequest = false;
+        return false;
       }
 
       // standard expectation

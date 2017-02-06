@@ -105,43 +105,65 @@ abstract class NBODialogModel extends NBODialogConfig {
       "Display point-group symmetry of current model"
       };
 
-  //encodes number of atoms that can be selected
-  private int boxCount;
   private final static int BOX_COUNT_4 = 4, BOX_COUNT_2 = 2, BOX_COUNT_1 = 1;
   private final static int MAX_HISTORY = 5;
 
   ///  private static final String LOAD_SCRIPT = ";set zoomlarge false;zoomTo 0.5 {*} 0;";
 
+  private NBOFileHandler saveFileHandler;
+
   private Box innerEditBox;
   private JTextField jtNIHInput, jtLineFormula;
+  private JTextField currVal;
   private JComboBox<String> jcSymOps;
-  
-  protected JTextField editValueTf;
-  protected JButton jbApply, jbClear;
-  protected JComboBox<String> jComboSave;
-  protected JButton undo, redo;
-  protected Stack<String> undoStack, redoStack;
-
-  protected JTextField currVal;
-  protected JTextField[] atomNumBoxes;
-  protected JLabel valueLabel = new JLabel("");
-  protected JPanel panel;
-
-  /**
-   * A model is being loaded into Jmol that NBO does not know about yet
-   */
-  protected boolean notFromNBO;
-
-  private JButton rebond;
-
+  private JButton rebond, jbClear;
   private JLabel atomsLabel;
-  protected int actionID;
   private Box editComponent;
   private Box inputHeader;
   private Box saveHeader;
   private Component inputComponent;
   private Box saveComponent;
-  private Box editHeader;
+  private Box editHeader;  
+  private JTextField[] atomNumBoxes;
+  private JLabel valueLabel = new JLabel("");
+  
+  // only used by private listeners 
+  
+  protected JTextField editValueTf;
+  protected JButton jbApply;
+  protected JComboBox<String> jComboSave;
+  protected JButton undo, redo;
+  protected Stack<String> undoStack, redoStack;
+
+  // used by other modules
+  
+  JPanel panel;
+
+
+  /**
+   * identifies which action button as pressed -- for example, MODEL_ACTION_ALTER
+   */
+  private int actionID;
+
+  /**
+   * encodes number of atoms that can be selected
+   */  
+  private int boxCount;
+  
+ /**
+   * A model is being loaded into Jmol that NBO does not know about yet
+   */
+  private boolean notFromNBO;
+
+  /**
+   * A flag to indicate that when the next atom is clicked, the selection should be cleared.
+   * Set to true each time a non-value option action is processed.
+   */
+  private boolean resetOnAtomClick;
+
+  protected void setModelNotFromNBO() {
+    notFromNBO = true;
+  }
 
   private void showComponents(boolean tf) {
     editHeader.setVisible(tf);
@@ -150,7 +172,16 @@ abstract class NBODialogModel extends NBODialogConfig {
     saveComponent.setVisible(tf);
   }
 
+  void modelSetSaveParametersFromInput(NBOFileHandler nboFileHandler,
+                                       String dir, String name, String ext) {
+    if (saveFileHandler != null && nboFileHandler != saveFileHandler)
+      saveFileHandler.setInput(dir, name,
+          PT.isOneOf(ext, NBODialogConfig.OUTPUT_FILE_EXTENSIONS) ? ext : "");
+  }
+
+
   protected JPanel buildModelPanel() {
+    resetVariables_m();
     panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -177,6 +208,12 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
     return panel;
 
+  }
+
+  private void resetVariables_m() {
+    actionID = 0;
+    boxCount = 0;
+    notFromNBO = false;
   }
 
   private Box getEditHeader() {
@@ -873,9 +910,6 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (andShow)
       updateSelected(false);
   }
-
-  private boolean resetOnAtomClick;
-
 
   /**
    * Apply the selected edit action to a model.

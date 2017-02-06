@@ -81,15 +81,13 @@ abstract class NBODialogRun extends NBODialogModel {
       "STERIC: Natural steric analysis" };
 
   protected Box editBox;
-
   protected JRadioButton rbLocal;
   protected JRadioButton[] keywordButtons;
   protected JButton btnRun;
   protected JTextField tfJobName;
 
-  protected String[] file47Data;
 
-  protected String file47Keywords;
+  //protected String file47Keywords;
 
   protected JPanel buildRunPanel() {
     panel = new JPanel();
@@ -287,7 +285,7 @@ abstract class NBODialogRun extends NBODialogModel {
     textPanel.setAlignmentX(0.5f);
     
     keywordTextPane = new JTextPane();
-    doSetKeywordTextPane(file47Keywords);
+    doSetKeywordTextPane(cleanNBOKeylist(inputFileHandler.read47File(false)[1], true));
     
     JScrollPane sp = new JScrollPane();
     sp.getViewport().add(keywordTextPane);
@@ -308,16 +306,20 @@ abstract class NBODialogRun extends NBODialogModel {
 
   protected void doRunSaveButton() {
     String s = keywordTextPane.getText();
-    file47Keywords = "";
+    String keywords = "";
     String[] tokens = PT.getTokens(PT.rep(PT.rep(s, "$NBO", ""), "$END", "").trim());
     for (String x : tokens) {
-      if (x.indexOf("=") < 0) {
-        file47Keywords += x.toUpperCase() + " ";
+      String xuc = x.toUpperCase();
+      if (xuc.indexOf("FILE=") < 0) {
+        keywords += xuc + " ";
       } else {
         tfJobName.setText(x.substring(x.indexOf("=") + 1));
       }
     }
+    String name = tfJobName.getText();
+    inputFileHandler.update47File(name, keywords, false);
     addNBOKeylist();
+    tfJobName.setText(name);
     editBox.repaint();
     editBox.revalidate();
   }
@@ -329,9 +331,10 @@ abstract class NBODialogRun extends NBODialogModel {
     menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
     menuPanel.setBorder(BorderFactory.createLoweredBevelBorder());
     keywordButtons = new JRadioButton[RUN_KEYWORD_LIST.length];
+    String keywords = cleanNBOKeylist(inputFileHandler.read47File(false)[1], false);
     for (int i = 0; i < keywordButtons.length; i++) {
       keywordButtons[i] = new JRadioButton(RUN_KEYWORD_LIST[i]);
-      if (file47Keywords.contains(RUN_KEYWORD_LIST[i].split(":")[0]))
+      if (keywords.contains(RUN_KEYWORD_LIST[i].split(":")[0]))
         keywordButtons[i].setSelected(true);
       keywordButtons[i].setAlignmentX(0.0f);
       menuPanel.add(keywordButtons[i]);
@@ -413,28 +416,10 @@ abstract class NBODialogRun extends NBODialogModel {
 //      }
 //    }
 //  }
-
-  /**
-   * Open the current 47 file and parse its data into three sections: pre,
-   * keywords, post;
-   * 
-   * @param andSetJobNameField
-   *        set true to set the JobName text field as well
-   * 
-   * @return [pre, keywords, post]
-   */
-  protected String[] get47FileData(boolean andSetJobNameField) {
-//    if (file47Data != null && !forceNew)
-//      return file47Data;
-    file47Data = inputFileHandler.read47File();
-    file47Keywords = cleanNBOKeylist(file47Data[1], andSetJobNameField);
-    return file47Data;
-  }
-
+  
   protected void notifyLoad_r() {
     if (vwr.ms.ac == 0)
       return;
-    get47FileData(true);
     doSetStructure("alpha");
     addNBOKeylist();
     for (Component c : panel.getComponents())
@@ -613,7 +598,7 @@ abstract class NBODialogRun extends NBODialogModel {
    * @return new list, including trailing space character.
    */
   protected String getKeywordsFromButtons() {
-    String keywords = " " + cleanNBOKeylist(file47Keywords, false) + " ";
+    String keywords = " " + cleanNBOKeylist(cleanNBOKeylist(inputFileHandler.read47File(false)[1], false), false) + " ";
     if (keywordButtons == null)
       return keywords;
     for (int i = 0; i < keywordButtons.length; i++) {
@@ -694,8 +679,6 @@ abstract class NBODialogRun extends NBODialogModel {
 
     // get the current file47Data and nboKeywords
 
-    get47FileData(false);
-
     String newKeywords = getKeywordsFromButtons();
     
     //Check the plot file names match job name, warn user otherwise
@@ -741,17 +724,16 @@ abstract class NBODialogRun extends NBODialogModel {
 
     jobName = (jobName.equals("") ? inputFileHandler.jobStem : jobName);    
 
-    String[] fileData = inputFileHandler.update47File(jobName, newKeywords);
+    String[] fileData = inputFileHandler.update47File(jobName, newKeywords, true);
     if (fileData == null)
       return;
-    get47FileData(true);
     SB sb = new SB();
     postAddGlobalC(sb, "PATH", inputFileHandler.inputFile.getParent());
     postAddGlobalC(sb, "JOBSTEM", inputFileHandler.jobStem);    
     postAddGlobalC(sb, "ESS", "gennbo");
     postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
 
-    logCmd("RUN GenNBO FILE=" + jobName + " " + file47Keywords);
+    logCmd("RUN GenNBO FILE=" + jobName + " " + cleanNBOKeylist(fileData[1], false));
         
     postNBO_r(sb, NBOService.MODE_RUN_GENNBO, "Running GenNBO...");
   }

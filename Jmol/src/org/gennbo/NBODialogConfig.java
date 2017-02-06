@@ -229,9 +229,7 @@ abstract class NBODialogConfig extends JDialog {
 
   protected Viewer vwr;
   protected NBOService nboService;
-
   protected JLabel icon;
-
   protected JSplitPane centerPanel;
   protected JPanel modulePanel;
   
@@ -240,12 +238,6 @@ abstract class NBODialogConfig extends JDialog {
   protected boolean jmolOptionVIEW = false;  // present only the VIEW option
   protected boolean jmolOptionNONBO = false; // do not try to contact NBOServe
   
-  protected NBOFileHandler inputFileHandler;
-  protected NBOFileHandler saveFileHandler;
-  protected int dialogMode;
-  protected boolean isJmolNBO;
-  protected boolean haveService;
-
   protected JLabel statusLab;
   protected JTextPane jpNBODialog;
   protected JSlider opacity = new JSlider(0, 10);
@@ -254,19 +246,51 @@ abstract class NBODialogConfig extends JDialog {
   protected JCheckBox jCheckAtomNum, jCheckSelHalo, jCheckDebugVerbose,
       jCheckNboView, jCheckWireMesh;
 
-  protected String bodyText = "";
+
+  // Jmol/NBO visual settings
+ 
   protected Color orbColor1, orbColor2, backgroundColor;
-  protected String color1, color2;
+  protected String orbColorJmol1, orbColorJmol2;
   protected float opacityOp;
   protected boolean nboView;
   protected boolean useWireMesh;
-  
   private boolean showAtNum;
-
-  //protected Hashtable<String, String[]> lists;
-
   protected boolean debugVerbose;
 
+
+  // private/protected variables
+  
+  /**
+   * Tracks the last resonance structure type (nrtstra, nrtstrb, alpha, beta);
+   * reset to “alpha” by openPanel()
+   */
+  private String rsTypeLast = "alpha";
+ 
+ 
+  /**
+   * The input file handler; recreated via openPanel()
+   */
+  protected NBOFileHandler inputFileHandler;
+
+  /**
+   * the dialog that is currently open, for example DIALOG_MODEL-- persistent
+   */
+  protected int dialogMode;
+ 
+  /**
+   * true if NBOServe has successfully restarted-- persistent
+   */
+  protected boolean haveService;
+ 
+  /**
+   * String value of what is showing in the session dialog -- persistent
+   */
+  protected String nboOutputBodyText = "";
+
+  protected void resetVariables_c() {
+    rsTypeLast = "alpha";
+  }
+  
   protected NBODialogConfig(JFrame f) {
     super(f);
   }
@@ -507,9 +531,9 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void setOrbitalDisplayOptions() {
-    color1 = "[" + orbColor1.getRed() + " " + orbColor1.getGreen() + " "
+    orbColorJmol1 = "[" + orbColor1.getRed() + " " + orbColor1.getGreen() + " "
         + orbColor1.getBlue() + "]";
-    color2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
+    orbColorJmol2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
         + orbColor2.getBlue() + "]";
     colorMeshes();
     if (!nboView)
@@ -743,7 +767,7 @@ abstract class NBODialogConfig extends JDialog {
 
       if (!format0.equals("p"))
         line = "<" + format0 + ">" + line + "</" + format1 + ">";
-      jpNBODialog.setText("<html><font face=\"Arial\">" + (bodyText = bodyText + line + "\n<br>")
+      jpNBODialog.setText("<html><font face=\"Arial\">" + (nboOutputBodyText = nboOutputBodyText + line + "\n<br>")
           + "</font></html>");
     }
     jpNBODialog.setCaretPosition(jpNBODialog.getDocument().getLength());
@@ -963,10 +987,6 @@ abstract class NBODialogConfig extends JDialog {
     sb.append("GLOBAL C_").append(label).append(" ").append(val).append(sep);  
    }
 
-
-  private String atomTypeLast = "alpha";
-  
-
   /**
    * label atoms: (number lone pairs)+atomnum
    * 
@@ -979,7 +999,7 @@ abstract class NBODialogConfig extends JDialog {
   /**
    * Changes bonds and labels on the Jmol model when new resonance structure is selected
    * 
-   * @param type
+   * @param type one of nrtstra, nrtstrb, alpha, beta
    * @param rsNum
    *        - index of RS in Combo Box
    */
@@ -990,9 +1010,9 @@ abstract class NBODialogConfig extends JDialog {
     }
 //    boolean atomsOnly = (type == null);
     if (type == null) {
-      type = atomTypeLast;
+      type = rsTypeLast;
     } else {
-      atomTypeLast = type;
+      rsTypeLast = type;
     }
     SB sb = new SB();
     sb.append("measurements off;select visible;label %a;");

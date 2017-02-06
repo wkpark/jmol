@@ -253,8 +253,11 @@ public class NBOParser {
     vwr.ms.fixFormalCharges(vwr.getAllAtoms());
     if (sb == null)
       return null;
+    sb.append("select visible;label %a;");
     for (int i = vwr.ms.ac; --i >= 0;) {
-      sb.append("select (atomindex=" + i + ");label ");
+      if (lp[i] == 0 && lv[i] == 0)
+        continue;
+      sb.append("select @" + (i + 1) + ";label ");
       if (lp[i] > 0)
         sb.append("<sup>(" + lp[i] + ")</sup>");
       if (lv[i] > 0)

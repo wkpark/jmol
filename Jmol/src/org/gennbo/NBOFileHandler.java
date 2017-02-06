@@ -127,7 +127,7 @@ class NBOFileHandler extends JPanel {
     btnBrowse.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        browsePressed();
+        doFileBrowsePressed();
       }
     });
     add(btnBrowse, c);
@@ -135,7 +135,7 @@ class NBOFileHandler extends JPanel {
     setInput(fileDir, name, ext);
   }
 
-  protected boolean browsePressed() {
+  protected boolean doFileBrowsePressed() {
     if (dialog.nboService.isWorking()
         && dialog.statusLab.getText().startsWith("Running")) {
       int i = JOptionPane.showConfirmDialog(dialog,
@@ -166,7 +166,7 @@ class NBOFileHandler extends JPanel {
   protected boolean loadSelectedFile(File selectedFile) {
     dialog.nboService.restartIfNecessary();
     inputFile = selectedFile;
-    structureList = null;
+    clearStructureList();
     isOpenShell = false;
     //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 
     //return false;
@@ -181,10 +181,14 @@ class NBOFileHandler extends JPanel {
     }
     canReRun = true;
     setInputFile(inputFile);
-    dialog.logJobName(jobStem);
+    dialog.doLogJobName(jobStem);
     fileDir = inputFile.getParent();
     dialog.saveWorkingPath(fileDir.toString());
     return true;
+  }
+
+  protected void clearStructureList() {
+    structureList = null;
   }
 
   /**
@@ -238,7 +242,7 @@ class NBOFileHandler extends JPanel {
       if (dialog.dialogMode != NBODialogConfig.DIALOG_RUN) {
         if (canReRun) {
           canReRun = false;
-          dialog.runGenNBOJob("PLOT");
+          dialog.doRunGenNBOJob("PLOT");
         } else {
           dialog.alertError("Error occurred during run: " + msg);
         }
@@ -271,6 +275,7 @@ class NBOFileHandler extends JPanel {
    * @return [ pre-keyword params, keywords, post-keyword params ]
    */
   protected String[] read47File() {
+    clearStructureList();
     String[] fileData = new String[] { "", "", "", "" };
     String nboKeywords = "";
     SB data = new SB();
@@ -439,8 +444,8 @@ class NBOFileHandler extends JPanel {
         + "FILE=" + jobName + " " + keywords + "  $END" + sep + fileData[2])) {
       fileData[1] = keywords;
       fileData[3] = "FILE=" + jobName + " " + keywords; 
-      dialog.logJobName(jobName);
-      dialog.logKeywords(keywords);
+      dialog.doLogJobName(jobName);
+      dialog.doLogKeywords(keywords);
       return fileData;
     }
     dialog.logInfo("Could not create " + inputFile, Logger.LEVEL_ERROR);

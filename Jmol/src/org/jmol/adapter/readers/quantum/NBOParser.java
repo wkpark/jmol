@@ -18,6 +18,7 @@ public class NBOParser {
     if (output == null)
       return null;
     Lst<Object> list = new Lst<Object>();
+    output = PT.rep(output,  "the $CHOOSE", "");
     getStructures(getBlock(output, "$CHOOSE"), "CHOOSE", list);
     getStructures(getBlock(output, "$NRTSTRA"), "NRTSTRA", list);
     getStructures(getBlock(output, "$NRTSTRB"), "NRTSTRB", list);
@@ -86,6 +87,8 @@ public class NBOParser {
     int n = 0;
     try {
       boolean ignoreSTR = (output.indexOf("ALPHA") >= 0);
+      if (!ignoreSTR && !output.contains("STR"))
+        output = "STR " + output + " END";
       nrtType = nrtType.toLowerCase();
       String spin = (nrtType.equals("nrtstrb") ? "beta" : "alpha");
       if (nrtType.equals("choose"))
@@ -196,10 +199,13 @@ public class NBOParser {
    * @param sb
    * @param vwr
    * @param map
+   * @param addCharge   currently not working
+   * 
    * @return a string that can be used to optionally label the atoms
    */
   @SuppressWarnings("unchecked")
-  public static String setStructure(SB sb, Viewer vwr, Map<String, Object> map, boolean addCharge) {
+  public static String setStructure(SB sb, Viewer vwr, Map<String, Object> map,
+                                    boolean addCharge) {
     if (map == null)
       return null;
     Lst<Object> bonds = (Lst<Object>) map.get("bond");
@@ -216,30 +222,34 @@ public class NBOParser {
     }
 
     vwr.ms.deleteAllBonds();
-    if (needLP)
+    if (needLP && lonePairs != null)
       for (int i = lonePairs.size(); --i >= 0;) {
         int[] na = (int[]) lonePairs.get(i);
         int nlp = na[0];
         int a1 = na[1] - 1;
         lp[a1] = nlp;
       }
-    for (int i = bonds.size(); --i >= 0;) {
-      int[] oab = (int[]) bonds.get(i);
-      int a1 = oab[1] - 1;
-      int a2 = oab[2] - 1;
-      int order = oab[0];
-      if (needLP) {
-        bondCounts[a1] += order;
-        bondCounts[a2] += order;
+    if (bonds != null)
+      for (int i = bonds.size(); --i >= 0;) {
+        int[] oab = (int[]) bonds.get(i);
+        int a1 = oab[1] - 1;
+        int a2 = oab[2] - 1;
+        int order = oab[0];
+        if (needLP) {
+          bondCounts[a1] += order;
+          bondCounts[a2] += order;
+        }
+        int mad = (order > 3 ? 100 : order > 2 ? 150 : 200);
+        vwr.ms.bondAtoms(vwr.ms.at[a1], vwr.ms.at[a2], order, (short) mad,
+            vwr.ms.bsVisible, 0, true, true);
       }
-      int mad = (order > 3 ? 100 : order > 2 ? 150 : 200);
-      vwr.ms.bondAtoms(vwr.ms.at[a1], vwr.ms.at[a2], order, (short) mad,
-          vwr.ms.bsVisible, 0, true, true);
-    }
     for (int i = vwr.ms.ac; --i >= 0;) {
       vwr.ms.at[i].setFormalCharge(0);
       vwr.ms.at[i].setValence(bondCounts[i]);
     }
+    // It is not entirely possible to determine charge just by how many
+    // bonds there are to an atom. But we can come close for most standard
+    // structures - NOT CO2(+), though.
     vwr.ms.fixFormalCharges(vwr.getAllAtoms());
     if (sb == null)
       return null;

@@ -117,7 +117,7 @@ abstract class NBODialogRun extends NBODialogModel {
     tfJobName.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        logJobName(null);
+        doLogJobName(null);
       }
     });
     tfJobName.addFocusListener(new FocusListener() {
@@ -128,7 +128,7 @@ abstract class NBODialogRun extends NBODialogModel {
 
       @Override
       public void focusLost(FocusEvent e) {
-        logJobName(null);
+        doLogJobName(null);
       }});
     
     editBox.setVisible(false);
@@ -145,7 +145,7 @@ abstract class NBODialogRun extends NBODialogModel {
     btnRun.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        runGenNBOJob("");
+        doRunGenNBOJob("");
       }
     });
 
@@ -172,20 +172,16 @@ abstract class NBODialogRun extends NBODialogModel {
     rbLocal.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        inputFileHandler.setBrowseEnabled(true);
-        if (modelOrigin != ORIGIN_NBO_ARCHIVE)
-          inputFileHandler.browsePressed();
+        doLocalBtn();
       }
     });
     box.add(rbLocal);
     bg.add(rbLocal);
     JRadioButton btn = new JRadioButton("NBOrXiv");
-    final NBODialogRun d = this;
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        ArchiveViewer aView = new ArchiveViewer(d, ARCHIVE_DIR);
-        aView.setVisible(true);
+        doArchiveButton();
       }
     });
     box.add(btn);
@@ -205,6 +201,17 @@ abstract class NBODialogRun extends NBODialogModel {
     box.add(btn);
     bg.add(btn);
     return box;
+  }
+
+  protected void doArchiveButton() {
+    ArchiveViewer aView = new ArchiveViewer(this, ARCHIVE_DIR);
+    aView.setVisible(true);
+  }
+
+  protected void doLocalBtn() {
+    inputFileHandler.setBrowseEnabled(true);
+    if (modelOrigin != ORIGIN_NBO_ARCHIVE)
+      inputFileHandler.doFileBrowsePressed();
   }
 
   protected void addNBOKeylist() {
@@ -258,7 +265,7 @@ abstract class NBODialogRun extends NBODialogModel {
       @Override
       public void actionPerformed(ActionEvent e) {
         mainMenuOptions.setVisible(false);
-        setKeywordTextPane(getKeywordsFromButtons());
+        doSetKeywordTextPane(getKeywordsFromButtons());
         mainTextEditor.setVisible(true);
       }
     });
@@ -280,7 +287,7 @@ abstract class NBODialogRun extends NBODialogModel {
     textPanel.setAlignmentX(0.5f);
     
     keywordTextPane = new JTextPane();
-    setKeywordTextPane(file47Keywords);
+    doSetKeywordTextPane(file47Keywords);
     
     JScrollPane sp = new JScrollPane();
     sp.getViewport().add(keywordTextPane);
@@ -291,24 +298,28 @@ abstract class NBODialogRun extends NBODialogModel {
     saveBtn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        String s = keywordTextPane.getText();
-        file47Keywords = "";
-        String[] tokens = PT.getTokens(PT.rep(PT.rep(s, "$NBO", ""), "$END", "").trim());
-        for (String x : tokens) {
-          if (x.indexOf("=") < 0) {
-            file47Keywords += x.toUpperCase() + " ";
-          } else {
-            tfJobName.setText(x.substring(x.indexOf("=") + 1));
-          }
-        }
-        addNBOKeylist();
-        editBox.repaint();
-        editBox.revalidate();
+        doRunSaveButton();
       }
     });
     textPanel.add(saveBtn, BorderLayout.SOUTH);
     textPanel.setVisible(false);
     return textPanel;
+  }
+
+  protected void doRunSaveButton() {
+    String s = keywordTextPane.getText();
+    file47Keywords = "";
+    String[] tokens = PT.getTokens(PT.rep(PT.rep(s, "$NBO", ""), "$END", "").trim());
+    for (String x : tokens) {
+      if (x.indexOf("=") < 0) {
+        file47Keywords += x.toUpperCase() + " ";
+      } else {
+        tfJobName.setText(x.substring(x.indexOf("=") + 1));
+      }
+    }
+    addNBOKeylist();
+    editBox.repaint();
+    editBox.revalidate();
   }
 
   private JPanel addMenuOption() {
@@ -328,7 +339,7 @@ abstract class NBODialogRun extends NBODialogModel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-          logKeywords(null);
+          doLogKeywords(null);
         }
         
       });
@@ -370,13 +381,13 @@ abstract class NBODialogRun extends NBODialogModel {
   }
 
 
-  protected void logJobName(String name) {
+  protected void doLogJobName(String name) {
     if (name == null)
       tfJobName.setText(name = tfJobName.getText().trim());
     logValue("Job: " + name);
   }
 
-  protected void logKeywords(String keywords) {
+  protected void doLogKeywords(String keywords) {
     if (keywords == null)
       keywords = getKeywordsFromButtons();
     logValue("Keywords: " + keywords);    
@@ -384,7 +395,7 @@ abstract class NBODialogRun extends NBODialogModel {
 
   JTextPane keywordTextPane;
 
-  protected void setKeywordTextPane(String keywords) {
+  protected void doSetKeywordTextPane(String keywords) {
     keywordTextPane.setText(keywords);
   }
 
@@ -424,15 +435,16 @@ abstract class NBODialogRun extends NBODialogModel {
     if (vwr.ms.ac == 0)
       return;
     get47FileData(true);
-    setStructure("alpha");
+    doSetStructure("alpha");
     addNBOKeylist();
     for (Component c : panel.getComponents())
       c.setVisible(true);
     editBox.getParent().setVisible(true);
     editBox.setVisible(true);
-    logKeywords(null);
+    doLogKeywords(null);
     repaint();
     revalidate();
+    
   }
 
   @Override
@@ -673,7 +685,7 @@ abstract class NBODialogRun extends NBODialogModel {
    * 
    * @param requiredKeyword
    */
-  protected void runGenNBOJob(String requiredKeyword) {
+  protected void doRunGenNBOJob(String requiredKeyword) {
 
     if (jmolOptionNONBO) {
       alertRequiresNBOServe();

@@ -142,13 +142,13 @@ public class NBODialog extends NBODialogSearch {
     createDialog(jmolFrame);
 
     if (!jmolOptionNOSET)
-      setDefaults(false);
+      doSetDefaults(false);
 
     if (jmolOptionVIEW || jmolOptionNONBO)
-      openPanel(DIALOG_VIEW);
+      doOpenPanel(DIALOG_VIEW);
   }
 
-  protected void openPanel(int type) {
+  protected void doOpenPanel(int type) {
     if (jmolOptionNONBO && "rsm".indexOf("" + type) >= 0) {
       vwr.alert("This option requires NBOServe");
       return;
@@ -175,7 +175,7 @@ public class NBODialog extends NBODialogSearch {
     nboService.clearQueue();
 
     if (!checkEnabled()) {
-      openPanel(DIALOG_CONFIG);
+      doOpenPanel(DIALOG_CONFIG);
       return;
     }
 
@@ -230,6 +230,8 @@ public class NBODialog extends NBODialogSearch {
    * 
    */
   private void resetModuleVariables() {
+
+    resetCurrentOrbitalClicked();
     // Anything here that looks like it needs resetting prior to changing panels.
     
   }
@@ -309,7 +311,7 @@ public class NBODialog extends NBODialogSearch {
       b.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          openPanel(mode);
+          doOpenPanel(mode);
         }
       });
     }
@@ -432,7 +434,7 @@ public class NBODialog extends NBODialogSearch {
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        openPanel(DIALOG_MODEL);
+        doOpenPanel(DIALOG_MODEL);
       }
     });
     c.gridx = 0;
@@ -474,7 +476,7 @@ public class NBODialog extends NBODialogSearch {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        openPanel(DIALOG_RUN);
+        doOpenPanel(DIALOG_RUN);
       }
     });
     c.gridx = 0;
@@ -503,7 +505,7 @@ public class NBODialog extends NBODialogSearch {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        openPanel(DIALOG_VIEW);
+        doOpenPanel(DIALOG_VIEW);
       }
     });
     btn.setFont(homeButtonFont);
@@ -540,7 +542,7 @@ public class NBODialog extends NBODialogSearch {
       @Override
       public void actionPerformed(ActionEvent e) {
 
-        openPanel(DIALOG_SEARCH);
+        doOpenPanel(DIALOG_SEARCH);
       }
     });
     c.gridx = 0;
@@ -618,7 +620,7 @@ public class NBODialog extends NBODialogSearch {
     clear.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        clearOutput();
+        doClearOutput();
       }
     });
     box2.add(clear);
@@ -626,28 +628,32 @@ public class NBODialog extends NBODialogSearch {
 
     btn.addActionListener(new ActionListener() {
       @Override
-      public void actionPerformed(ActionEvent e) {
-        if (jpNBODialog == null)
-          return;
-        JFileChooser myChooser = new JFileChooser();
-        if (lastOutputSaveName == null)
-          lastOutputSaveName = inputFileHandler.tfDir.getText()
-              + "/nboDialog.txt";
-        String savePath = lastOutputSaveName;
-        myChooser.setSelectedFile(new File(savePath));
-
-        myChooser.setFileFilter(new FileNameExtensionFilter(".txt", ".txt"));
-        myChooser.setFileHidingEnabled(true);
-
-        int button = myChooser.showSaveDialog(jpNBODialog);
-        if (button == JFileChooser.APPROVE_OPTION) {
-          saveDialogOutput(myChooser.getSelectedFile().toString());
-        }
+      public void actionPerformed(ActionEvent e) {        
+        doSaveOutput();
       }
     });
     box2.add(btn);
     box.add(box2);
     s.add(box, BorderLayout.SOUTH);
+  }
+
+  protected void doSaveOutput() {
+    if (jpNBODialog == null)
+      return;
+    JFileChooser myChooser = new JFileChooser();
+    if (lastOutputSaveName == null)
+      lastOutputSaveName = inputFileHandler.tfDir.getText()
+          + "/nboDialog.txt";
+    String savePath = lastOutputSaveName;
+    myChooser.setSelectedFile(new File(savePath));
+
+    myChooser.setFileFilter(new FileNameExtensionFilter(".txt", ".txt"));
+    myChooser.setFileHidingEnabled(true);
+
+    int button = myChooser.showSaveDialog(jpNBODialog);
+    if (button == JFileChooser.APPROVE_OPTION) {
+      saveDialogOutput(myChooser.getSelectedFile().toString());
+    }
   }
 
   protected void saveDialogOutput(String saveFileName) {
@@ -725,7 +731,7 @@ public class NBODialog extends NBODialogSearch {
       if (!f.equals("null") && !iAmLoading) {
         if (!f.endsWith(".47")) {
           if (dialogMode != DIALOG_MODEL) {
-            openPanel(DIALOG_MODEL);
+            doOpenPanel(DIALOG_MODEL);
             return;
           }
         }
@@ -733,7 +739,7 @@ public class NBODialog extends NBODialogSearch {
           notFromNBO = true;
         } else {
           if (dialogMode != DIALOG_RUN) {
-            openPanel(DIALOG_RUN);
+            doOpenPanel(DIALOG_RUN);
             return;
           }
           if (f.startsWith("http")) {
@@ -774,7 +780,7 @@ public class NBODialog extends NBODialogSearch {
   /**
    * clear output panel
    */
-  protected void clearOutput() {
+  protected void doClearOutput() {
     bodyText = "";
     // String fontFamily = jpNBOLog.getFont().getFamily();
     if (jpNBODialog != null)
@@ -793,7 +799,7 @@ public class NBODialog extends NBODialogSearch {
   protected void updatePanelSettings() {
     switch (dialogMode) {
     case DIALOG_VIEW:
-      setNewBasis();
+      doSetNewBasis(false);
       break;
     }
   }
@@ -852,7 +858,7 @@ public class NBODialog extends NBODialogSearch {
 
           @Override
           public void actionPerformed(ActionEvent e) {
-            showRunTime();
+            doShowRunTime();
           }
 
         });
@@ -869,7 +875,7 @@ public class NBODialog extends NBODialogSearch {
   Timer runTimer;
   private long runStartTime;
 
-  protected synchronized void showRunTime() {
+  protected synchronized void doShowRunTime() {
     String t = statusLab.getText();
     int pt = t.indexOf("...");
     if (pt < 0)

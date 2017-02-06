@@ -158,7 +158,7 @@ public class Dialog extends JPanel implements JmolDialogInterface {
 
   String closePreview() {
     if (openPreview != null)
-      openPreview.updatePreview(vwr, null);
+      openPreview.doUpdatePreview(null);
     return null;
   }
   

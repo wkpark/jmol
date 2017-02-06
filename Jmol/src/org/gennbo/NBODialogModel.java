@@ -106,23 +106,21 @@ abstract class NBODialogModel extends NBODialogConfig {
       };
 
   //encodes number of atoms that can be selected
-  protected int boxCount;
+  private int boxCount;
   private final static int BOX_COUNT_4 = 4, BOX_COUNT_2 = 2, BOX_COUNT_1 = 1;
   private final static int MAX_HISTORY = 5;
 
   ///  private static final String LOAD_SCRIPT = ";set zoomlarge false;zoomTo 0.5 {*} 0;";
 
-  protected String actionIDName;
   private Box innerEditBox;
   private JTextField jtNIHInput, jtLineFormula;
   private JComboBox<String> jcSymOps;
+  
   protected JTextField editValueTf;
   protected JButton jbApply, jbClear;
-
   protected JComboBox<String> jComboSave;
-
   protected JButton undo, redo;
-  Stack<String> undoStack, redoStack;
+  protected Stack<String> undoStack, redoStack;
 
   protected JTextField currVal;
   protected JTextField[] atomNumBoxes;
@@ -238,18 +236,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     jComboUse.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        Object item = jComboUse.getSelectedItem();
-        String s = "";
-        if (jComboUse.getSelectedIndex() > 0) {
-          s = item.toString();
-          s = s.substring(s.indexOf("[") + 2, s.indexOf("]"));
-          inputFileHandler.tfExt.setText(s);
-          inputFileHandler.useExt = s;
-        } else {
-          inputFileHandler.tfExt.setText("");
-          s = INPUT_FILE_EXTENSIONS;
-          inputFileHandler.useExt = s;
-        }
+        doComboUseAction(jComboUse.getSelectedIndex() > 0 ? jComboUse.getSelectedItem().toString() : null);
       }
     });
     p2.add(jrLineIn);
@@ -264,7 +251,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, INPUT_FILE_EXTENSIONS, (NBODialog) this) {
 
       @Override
-      protected boolean browsePressed() {
+      protected boolean doFileBrowsePressed() {
         String folder = tfDir.getText().trim();
         String name = tfName.getText();
         String ext = tfExt.getText();
@@ -310,6 +297,17 @@ abstract class NBODialogModel extends NBODialogConfig {
     return inputBox;
   }
 
+  protected void doComboUseAction(String item) {
+    if (item == null) {
+      inputFileHandler.tfExt.setText("");
+      inputFileHandler.useExt = INPUT_FILE_EXTENSIONS;
+    } else {
+      item = item.substring(item.indexOf("[") + 2, item.indexOf("]"));
+      inputFileHandler.tfExt.setText(item);
+      inputFileHandler.useExt = item;
+    }
+  }
+
   private Box getEditComponent() {
     Box editBox = createBorderBox(false);
     Box actionBox = Box.createVerticalBox();
@@ -325,7 +323,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       jrModelActions[i].addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          actionSelected(op);
+          doModelAction(op);
         }
       });
     }
@@ -340,7 +338,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     sym.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        getSymmetry();
+        doGetSymmetry();
       }
     });
     lowBox.add(sym);
@@ -351,7 +349,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     rebond.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        actionSelected(MODEL_ACTION_REBOND);
+        doModelAction(MODEL_ACTION_REBOND);
       }
     });
     lowBox.add(rebond);
@@ -396,27 +394,18 @@ abstract class NBODialogModel extends NBODialogConfig {
       atomNumBoxes[i].addFocusListener(new FocusListener() {
         @Override
         public void focusGained(FocusEvent arg0) {
-          if (num == boxCount - 1) {
-            jbApply.setEnabled(modelEditGetSelected().length() > 0);
-          }
+          doAtomNumBoxFocus(true, num);
         }
 
         @Override
         public void focusLost(FocusEvent arg0) {
-          int atnum = PT.parseInt(atomNumBoxes[num].getText());
-          if (atnum > vwr.ms.ac || atnum < 1) {
-            System.out.println("num is " + num + " v="
-                + atomNumBoxes[num].getText());
-            atomNumBoxes[num].setText("");
-          } else {
-            setAtomBoxesFromSelection(null);
-          }
+          doAtomNumBoxFocus(false, 0);
         }
       });
       atomNumBoxes[i].addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          setAtomBoxesFromSelection(null);
+          doSetAtomBoxesFromSelection(null);
         }
       });
     }
@@ -453,7 +442,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     editValueTf.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        postActionToNBO_m(actionID);
+        doEditValueTextField();
       }
     });
     editValueTf.getDocument().addDocumentListener(new DocumentListener() {
@@ -489,13 +478,34 @@ abstract class NBODialogModel extends NBODialogConfig {
     jbApply.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        postActionToNBO_m(actionID);
+        doApply();
       }
     });
     lowBox.add(jbClear).setVisible(false);
     lowBox.add(jbApply).setVisible(false);
     innerEditBox.add(lowBox);
 
+  }
+
+  protected void doAtomNumBoxFocus(boolean isGained, int num) {
+    if (!isGained) {
+      int atnum = PT.parseInt(atomNumBoxes[num].getText());
+      if (atnum > vwr.ms.ac || atnum < 1) {
+        atomNumBoxes[num].setText("");
+      } else {
+        doSetAtomBoxesFromSelection(null);
+      }
+    } else if (num == boxCount - 1) {
+      jbApply.setEnabled(modelEditGetSelected().length() > 0);
+    }
+  }
+
+  protected void doApply() {
+    postActionToNBO_m(actionID);
+  }
+
+  protected void doEditValueTextField() {
+    postActionToNBO_m(actionID);
   }
 
   protected void updateSelected(boolean doPost) {
@@ -609,7 +619,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     saveFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_SAVE,
         OUTPUT_FILE_EXTENSIONS, (NBODialog) this) {
       @Override
-      protected boolean browsePressed() {
+      protected boolean doFileBrowsePressed() {
         String folder = tfDir.getText().trim();
         String name = tfName.getText().trim();
         String ext = tfExt.getText().trim();
@@ -684,18 +694,18 @@ abstract class NBODialogModel extends NBODialogConfig {
     jComboSave.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        Object item = jComboSave.getSelectedItem();
-        if (jComboSave.getSelectedIndex() != 0) {
-          String s = item.toString();
-          String ext = s.substring(s.indexOf("[") + 2, s.indexOf("]"));
-          saveFileHandler.tfExt.setText(ext);
-          //showSaveDialog(ext);
-        }
+        if (jComboSave.getSelectedIndex() > 0)
+          doComboSaveAction(jComboSave.getSelectedItem().toString());
       }
     });
     sBox.add(jComboSave);
     sBox.add(saveFileHandler);
     return sBox;
+  }
+
+  protected void doComboSaveAction(String item) {
+      String ext = item.substring(item.indexOf("[") + 2, item.indexOf("]"));
+      saveFileHandler.tfExt.setText(ext);
   }
 
   /**
@@ -716,7 +726,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     field.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        loadtModelFromTextBox(field);
+        doLoadtModelFromTextBox(field);
       }
     });
     addFocusListeners(field, radio);
@@ -751,7 +761,7 @@ abstract class NBODialogModel extends NBODialogConfig {
    * 
    * @param action
    */
-  protected void actionSelected(int action) {
+  protected void doModelAction(int action) {
     actionID = action;
     runScriptQueued("set refreshing true; measurements delete"); // just in case
     clearSelected(true);
@@ -781,7 +791,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     }
   }
 
-  protected void setEditBox(String label) {
+  private void setEditBox(String label) {
     if (label == null)
       label = "Select atom" + (boxCount > 1 ? "s" : "") + "...";
     jbApply.setEnabled(false);
@@ -839,8 +849,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       logCmd("Undo");
     }
   };
-  private boolean resetOnAtomClick;
-
+  
   /**
    * Clear out the text fields
    * @param andShow TODO
@@ -864,6 +873,9 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (andShow)
       updateSelected(false);
   }
+
+  private boolean resetOnAtomClick;
+
 
   /**
    * Apply the selected edit action to a model.
@@ -909,7 +921,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   /**
    * Post a request for a point group symmetry check.
    */
-  protected void getSymmetry() {
+  protected void doGetSymmetry() {
     String cmd = "symmetry";
     logCmd(cmd);
     postNBO_m(postAddCmd(new SB(), cmd), NBOService.MODE_MODEL_SYMMETRY,  "Checking Symmetry", null, null);
@@ -920,7 +932,7 @@ abstract class NBODialogModel extends NBODialogConfig {
    * 
    * @param textBox
    */
-  protected void loadtModelFromTextBox(JTextField textBox) {
+  protected void doLoadtModelFromTextBox(JTextField textBox) {
     String model = textBox.getText().trim();
     if (model.length() == 0)
       return;
@@ -1130,10 +1142,10 @@ abstract class NBODialogModel extends NBODialogConfig {
       }
       selected += " " + atomno;
     }
-    setAtomBoxesFromSelection(selected);
+    doSetAtomBoxesFromSelection(selected);
   }
 
-  protected void setAtomBoxesFromSelection(String selected) {
+  protected void doSetAtomBoxesFromSelection(String selected) {
     if (selected == null)
       selected = modelEditGetSelected();
     String[] split = PT.getTokens(selected);
@@ -1163,7 +1175,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       return;
     }
     runScriptNow(JMOL_FONT_SCRIPT + ";select within(model,visible);rotate best;");
-    setStructure(null);
+    doSetStructure(null);
     showComponents(true);
     innerEditBox.setVisible(true);
     if (vwr.ms.ac > 0)
@@ -1177,7 +1189,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     // "({1})"
     rebond.setEnabled(((String) vwr.evaluateExpression("{transitionMetal}")).length() > 4);
     if (actionID == MODEL_ACTION_MUTATE) {
-      actionSelected(actionID);
+      doModelAction(actionID);
     }
     runScriptNow("select none; select on;refresh");
   }

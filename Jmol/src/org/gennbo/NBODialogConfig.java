@@ -255,10 +255,13 @@ abstract class NBODialogConfig extends JDialog {
       jCheckNboView, jCheckWireMesh;
 
   protected String bodyText = "";
-  protected boolean showAtNum, nboView, useWireMesh;
   protected Color orbColor1, orbColor2, backgroundColor;
   protected String color1, color2;
   protected float opacityOp;
+  protected boolean nboView;
+  protected boolean useWireMesh;
+  
+  private boolean showAtNum;
 
   //protected Hashtable<String, String[]> lists;
 
@@ -313,7 +316,7 @@ abstract class NBODialogConfig extends JDialog {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        setDefaults(false);
+        doSetDefaults(false);
       }
 
     });
@@ -322,8 +325,7 @@ abstract class NBODialogConfig extends JDialog {
     jCheckAtomNum.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        showAtNum = !showAtNum;
-        setStructure(null);
+        doSettingAtomNums();
       }
     });
     showAtNum = true;
@@ -335,7 +337,7 @@ abstract class NBODialogConfig extends JDialog {
     jCheckSelHalo.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        runScriptNow("select " + jCheckSelHalo.isSelected());
+        doSettingShowHalos();
       }
     });
     jCheckSelHalo.doClick();
@@ -403,8 +405,7 @@ abstract class NBODialogConfig extends JDialog {
     jCheckWireMesh.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        useWireMesh = !useWireMesh;
-        opacity.setValue(0);
+        doSettingWireMesh();
       }
     });
     if (useWireMesh)
@@ -416,7 +417,7 @@ abstract class NBODialogConfig extends JDialog {
     jCheckNboView.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        setDefaults(!((JCheckBox) e.getSource()).isSelected());
+        doSetDefaults(!((JCheckBox) e.getSource()).isSelected());
       }
     });
     jCheckDebugVerbose = new JCheckBox("Verbose Debugging");
@@ -437,6 +438,20 @@ abstract class NBODialogConfig extends JDialog {
     return settingsPanel;
   }
 
+  protected void doSettingShowHalos() {
+    runScriptNow("select " + jCheckSelHalo.isSelected());
+  }
+
+  protected void doSettingWireMesh() {
+    useWireMesh = !useWireMesh;
+    opacity.setValue(0);
+  }
+
+  protected void doSettingAtomNums() {
+    showAtNum = !showAtNum;
+    doSetStructure(null);
+  }
+
   /**
    * Allowing passage of Jmol options. Currently: NOZAP;NOSET;JMOL;VIEW
    * @param jmolOptions 
@@ -451,7 +466,7 @@ abstract class NBODialogConfig extends JDialog {
     jmolOptionNONBO = (options.indexOf("NONBO") >= 0);
   }
 
-  protected void setDefaults(boolean isJmol) {
+  protected void doSetDefaults(boolean isJmol) {
     nboPlugin.setNBOProperty("orbitalDisplayOptions", "default");
     getOrbitalDisplayOptions();
     opacity.setValue((int) (opacityOp * 10));
@@ -545,7 +560,7 @@ abstract class NBODialogConfig extends JDialog {
 
       @Override
       public void actionPerformed(ActionEvent e) {
-        setNBOPath(tfPath, mode);
+        doSetNBOPath(tfPath, mode);
       }
 
     });
@@ -557,7 +572,7 @@ abstract class NBODialogConfig extends JDialog {
 
   }
 
-  protected void setNBOPath(JTextField tf, int mode) {
+  protected void doSetNBOPath(JTextField tf, int mode) {
     String path = PT.rep(tf.getText(), "\\", "/");
     if (path.length() == 0)
       return;
@@ -854,10 +869,14 @@ abstract class NBODialogConfig extends JDialog {
       addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent arg0) {
-          vwr.showUrl(NBODialogConfig.NBO_WEB_SITE + "/jmol_help/"
-              + getHelpPage());
+          doHelp();
         }
       });
+    }
+
+    protected void doHelp() {
+      vwr.showUrl(NBODialogConfig.NBO_WEB_SITE + "/jmol_help/"
+          + getHelpPage());
     }
 
     /**
@@ -953,8 +972,8 @@ abstract class NBODialogConfig extends JDialog {
    * 
    * @param type  alpha or beta
    */
-  protected void setStructure(String type) {
-    setResStruct(type, -1);
+  protected void doSetStructure(String type) {
+    doSearchSetResStruct(type, -1);
   }
 
   /**
@@ -964,7 +983,7 @@ abstract class NBODialogConfig extends JDialog {
    * @param rsNum
    *        - index of RS in Combo Box
    */
-  protected void setResStruct(String type, int rsNum) {
+  protected void doSearchSetResStruct(String type, int rsNum) {
     if (!showAtNum) {
       runScriptNow("measurements off;select visible;label off; select none;refresh");
       return;

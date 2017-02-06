@@ -73,16 +73,11 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     Box box = Box.createVerticalBox();
 
     // Add a checkbox to activate / deactivate preview
-    final Viewer v = vwr;
     active = new JCheckBox(GT._("Preview"), false);
     active.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (active.isSelected()) {
-          updatePreview(v, chooser.getSelectedFile());
-        } else {
-          updatePreview(null, null);
-        }
+        doPreviewAction(active.isSelected());
       }
     });
     box.add(active);
@@ -102,7 +97,7 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
         @Override
         public void actionPerformed(ActionEvent e) {
           if (active.isSelected()) {
-            updatePreview(v, chooser.getSelectedFile());
+            doUpdatePreview(chooser.getSelectedFile());
           }
         }
       });
@@ -114,6 +109,10 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     add(box);
     fileChooser.setAccessory(this);
     fileChooser.addPropertyChangeListener(this);
+  }
+
+  protected void doPreviewAction(boolean selected) {
+    doUpdatePreview(selected ? chooser.getSelectedFile() : null);
   }
 
   /**
@@ -138,19 +137,18 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     if (active.isSelected()) {
       String prop = evt.getPropertyName();
       if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(prop)) {
-        updatePreview(vwr, (File) evt.getNewValue());
+        doUpdatePreview((File) evt.getNewValue());
       }
     }
   }
 
   /**
    * Update preview
-   * @param vwr 
    * 
    * @param file
    *        File selected
    */
-  void updatePreview(Viewer vwr, File file) {
+  void doUpdatePreview(File file) {
     String script;
     if (file == null) {
       script = "zap";

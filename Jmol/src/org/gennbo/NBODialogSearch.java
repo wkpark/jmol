@@ -933,11 +933,15 @@ abstract class NBODialogSearch extends NBODialogView {
     switch (searchKeywordNumber) {
     case KEYWD_NPA:
       orb1 = comboSearchOrb2;
-      atom1 = comboAtom1;
       unit1 = comboUnit1;
-      if (op > 10) {
-        isLabel = true;
-        op = 12;
+      if (op < 6 || op > 10) {
+        orb1 = null;
+        if (op > 10) {
+          isLabel = true;
+          op = 12;
+        } else if (op <= 3){
+          atom1 = comboAtom1;          
+        }
       }
       break;
     case KEYWD_NBO:
@@ -999,9 +1003,9 @@ abstract class NBODialogSearch extends NBODialogView {
     if (orb2 != null)
       postAddGlobalI(sb, labelOrb2, offset2, orb1);
     if (atom1 != null)
-      postAddGlobalI(sb, labelAtom1, 1, atom1);
+      postAddGlobalI(sb, labelAtom1, 0, atom1);
     if (atom2 != null)
-      postAddGlobalI(sb, labelAtom2, 1, atom2);
+      postAddGlobalI(sb, labelAtom2, 0, atom2);
     if (unit1 != null)
       postAddGlobalI(sb, labelUnit1, 1, unit1);
     postAddGlobalI(sb, "OPT_" + keyProp, op, null);

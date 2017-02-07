@@ -170,18 +170,18 @@ class NBOFileHandler extends JPanel {
     isOpenShell = false;
     //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 
     //return false;
-    if (dialog.dialogMode == NBODialogBase.DIALOG_MODEL)
+    if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
       return true;
     if (!useExt.equals("47")) {
       jobStem = getJobStem(inputFile);
-      dialog.loadModelFromNBO(fileDir, jobStem, useExt);
+      dialog.modelPanel.loadModelFromNBO(fileDir, jobStem, useExt);
       tfName.setText(jobStem);
       tfExt.setText(useExt);
       return true;
     }
     canReRun = true;
     setInputFile(inputFile);
-    dialog.doLogJobName(jobStem);
+    dialog.runPanel.doLogJobName(jobStem);
     fileDir = inputFile.getParent();
     dialog.saveWorkingPath(fileDir.toString());
     return true;
@@ -204,7 +204,7 @@ class NBOFileHandler extends JPanel {
     this.inputFile = inputFile;
     if (inputFile.getName().indexOf(".") > 0)
       jobStem = getJobStem(inputFile);
-    if (dialog.modelOrigin == NBODialogBase.ORIGIN_NBO_ARCHIVE)
+    if (dialog.modelOrigin == NBODialog.ORIGIN_NBO_ARCHIVE)
       clearInputFile(true);
     setInput(inputFile.getParent(), jobStem, useExt);
     if (!getExt(inputFile).equals("47"))
@@ -220,7 +220,7 @@ class NBOFileHandler extends JPanel {
     boolean canLoad = true;
     boolean isOK = true;
     String msg = "";
-    if (dialog.dialogMode != NBODialogBase.DIALOG_MODEL) {
+    if (dialog.dialogMode != NBODialog.DIALOG_MODEL) {
       setStructure(null, null, -1);
       if (structureList == null  || structureList.size() == 0) {
         msg = "problems getting a $CHOOSE list for " + inputFile;
@@ -238,10 +238,10 @@ class NBOFileHandler extends JPanel {
       }
     }
     if (!isOK) {
-      if (dialog.dialogMode != NBODialogBase.DIALOG_RUN) {
+      if (dialog.dialogMode != NBODialog.DIALOG_RUN) {
         if (canReRun) {
           canReRun = false;
-          dialog.doRunGenNBOJob("PLOT");
+          dialog.runPanel.doRunGenNBOJob("PLOT");
         } else {
           dialog.alertError("Error occurred during run: " + msg);
         }
@@ -251,8 +251,8 @@ class NBOFileHandler extends JPanel {
     }
     if (canLoad) {
       dialog.loadOrSetBasis(new File(fileDir + "/" + jobStem + ".47"));
-    } else if (dialog.dialogMode == NBODialogBase.DIALOG_RUN) {
-      dialog.loadModelFromNBO(fileDir, jobStem, useExt);
+    } else if (dialog.dialogMode == NBODialog.DIALOG_RUN) {
+      dialog.modelPanel.loadModelFromNBO(fileDir, jobStem, useExt);
       tfName.setText(jobStem);
       tfExt.setText("47");
     }
@@ -378,8 +378,8 @@ class NBOFileHandler extends JPanel {
           // ignore
         }
     inputFile = null;
-    if (dialog.dialogMode == NBODialogBase.DIALOG_VIEW)
-      dialog.resetView();
+    if (dialog.dialogMode == NBODialog.DIALOG_VIEW)
+      dialog.viewPanel.resetView();
   }
 
   protected static String getJobStem(File inputFile) {
@@ -395,7 +395,7 @@ class NBOFileHandler extends JPanel {
     if (tfExt != null)
       tfExt.setText(ext);
     if (dir != null && name != null && ext != null) {
-      dialog.modelSetSaveParametersFromInput(this, dir, name, ext);
+      dialog.modelPanel.modelSetSaveParametersFromInput(this, dir, name, ext);
       inputFile = new File(dir + "\\" + name + "." + ext);
     }
   }
@@ -442,8 +442,8 @@ class NBOFileHandler extends JPanel {
         + "FILE=" + jobName + " " + keywords + "  $END" + sep + fileData[2])) {
       fileData[1] = keywords;
       fileData[3] = "FILE=" + jobName + " " + keywords; 
-      dialog.doLogJobName(jobName);
-      dialog.doLogKeywords(keywords);
+      dialog.runPanel.doLogJobName(jobName);
+      dialog.runPanel.doLogKeywords(keywords);
       return fileData;
     }
     dialog.logInfo("Could not create " + inputFile, Logger.LEVEL_ERROR);

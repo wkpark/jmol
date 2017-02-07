@@ -51,7 +51,6 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -61,11 +60,18 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 
-abstract class NBODialogRun extends NBODialogModel {
-  protected NBODialogRun(JFrame f) {
-    super(f);
+class NBORun {
+  
+  protected NBODialog dialog;
+  private Viewer vwr;
+
+  protected NBORun(NBODialog dialog) {
+    this.dialog = dialog;
+    this.vwr = dialog.vwr;
   }
+
 
   protected static boolean ALLOW_SELECT_ALL = false;
 
@@ -85,21 +91,22 @@ abstract class NBODialogRun extends NBODialogModel {
   protected JRadioButton[] keywordButtons;
   protected JButton btnRun;
   protected JTextField tfJobName;
+  private JPanel myPanel;
 
 
   //protected String file47Keywords;
 
   protected JPanel buildRunPanel() {
-    panel = new JPanel();
+    JPanel panel = myPanel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    getNewInputFileHandler(NBOFileHandler.MODE_RUN);
-    inputFileHandler.setBrowseEnabled(false);
+    dialog.getNewInputFileHandler(NBOFileHandler.MODE_RUN);
+    dialog.inputFileHandler.setBrowseEnabled(false);
 
-    panel.add(NBOUtil.createTitleBox(" Select Job ", new HelpBtn("run_job_help.htm")));
+    panel.add(NBOUtil.createTitleBox(" Select Job ", dialog.new HelpBtn("run_job_help.htm")));
     Box inputBox = NBOUtil.createBorderBox(true);
     inputBox.add(createSourceBox());
-    inputBox.add(inputFileHandler);
+    inputBox.add(dialog.inputFileHandler);
     inputBox.setMinimumSize(new Dimension(360, 80));
     inputBox.setPreferredSize(new Dimension(360,80));
     inputBox.setMaximumSize(new Dimension(360, 80));
@@ -107,7 +114,7 @@ abstract class NBODialogRun extends NBODialogModel {
 
     //EDIT////////////////
     panel.add(
-        NBOUtil.createTitleBox(" Choose $NBO Keywords ", new HelpBtn(
+        NBOUtil.createTitleBox(" Choose $NBO Keywords ", dialog.new HelpBtn(
             "run_keywords_help.htm"))).setVisible(false);
     editBox = NBOUtil.createBorderBox(true);
     editBox.setSize(new Dimension(350, 400));
@@ -150,10 +157,9 @@ abstract class NBODialogRun extends NBODialogModel {
     //box.add(btnRun);
     panel.add(btnRun);
     
-    if (inputFileHandler.tfExt.getText().equals("47"))
+    if (dialog.inputFileHandler.tfExt.getText().equals("47"))
       notifyLoad_r();
-    inputFileHandler.setBrowseEnabled(true);
-
+    dialog.inputFileHandler.setBrowseEnabled(true);
     return panel;
   }
 
@@ -192,7 +198,7 @@ abstract class NBODialogRun extends NBODialogModel {
         try {
           Desktop.getDesktop().browse(new URI(url));
         } catch (Exception e1) {
-          alertError("Could not open WebMO");
+          dialog.alertError("Could not open WebMO");
         }
       }
     });
@@ -202,18 +208,18 @@ abstract class NBODialogRun extends NBODialogModel {
   }
 
   protected void doArchiveButton() {
-    ArchiveViewer aView = new ArchiveViewer(this, NBOConfig.ARCHIVE_DIR);
+    ArchiveViewer aView = new ArchiveViewer(dialog, NBOConfig.ARCHIVE_DIR);
     aView.setVisible(true);
   }
 
   protected void doLocalBtn() {
-    inputFileHandler.setBrowseEnabled(true);
-    if (modelOrigin != ORIGIN_NBO_ARCHIVE)
-      inputFileHandler.doFileBrowsePressed();
+    dialog.inputFileHandler.setBrowseEnabled(true);
+    if (dialog.modelOrigin != NBODialog.ORIGIN_NBO_ARCHIVE)
+      dialog.inputFileHandler.doFileBrowsePressed();
   }
 
   protected void addNBOKeylist() {
-    if (inputFileHandler.inputFile == null)
+    if (dialog.inputFileHandler.inputFile == null)
       return;
     Box jobNameOuterBox = Box.createVerticalBox();
     jobNameOuterBox.setSize(new Dimension(250,75));
@@ -285,7 +291,7 @@ abstract class NBODialogRun extends NBODialogModel {
     textPanel.setAlignmentX(0.5f);
     
     keywordTextPane = new JTextPane();
-    doSetKeywordTextPane(cleanNBOKeylist(inputFileHandler.read47File(false)[1], true));
+    doSetKeywordTextPane(cleanNBOKeylist(dialog.inputFileHandler.read47File(false)[1], true));
     
     JScrollPane sp = new JScrollPane();
     sp.getViewport().add(keywordTextPane);
@@ -317,7 +323,7 @@ abstract class NBODialogRun extends NBODialogModel {
       }
     }
     String name = tfJobName.getText();
-    inputFileHandler.update47File(name, keywords, false);
+    dialog.inputFileHandler.update47File(name, keywords, false);
     addNBOKeylist();
     tfJobName.setText(name);
     editBox.repaint();
@@ -331,7 +337,7 @@ abstract class NBODialogRun extends NBODialogModel {
     menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
     menuPanel.setBorder(BorderFactory.createLoweredBevelBorder());
     keywordButtons = new JRadioButton[RUN_KEYWORD_LIST.length];
-    String keywords = cleanNBOKeylist(inputFileHandler.read47File(false)[1], false);
+    String keywords = cleanNBOKeylist(dialog.inputFileHandler.read47File(false)[1], false);
     for (int i = 0; i < keywordButtons.length; i++) {
       keywordButtons[i] = new JRadioButton(RUN_KEYWORD_LIST[i]);
       if (keywords.contains(RUN_KEYWORD_LIST[i].split(":")[0]))
@@ -379,7 +385,7 @@ abstract class NBODialogRun extends NBODialogModel {
           tmp += s.toUpperCase() + " ";
         }
     if (setJobNameTextField && (tfJobName.getText().equals("") || !haveJobName))
-      tfJobName.setText(inputFileHandler.jobStem);
+      tfJobName.setText(dialog.inputFileHandler.jobStem);
     return tmp.trim();
   }
 
@@ -387,13 +393,13 @@ abstract class NBODialogRun extends NBODialogModel {
   protected void doLogJobName(String name) {
     if (name == null)
       tfJobName.setText(name = tfJobName.getText().trim());
-    logValue("Job: " + name);
+    dialog.logValue("Job: " + name);
   }
 
   protected void doLogKeywords(String keywords) {
     if (keywords == null)
       keywords = getKeywordsFromButtons();
-    logValue("Keywords: " + keywords);    
+    dialog.logValue("Keywords: " + keywords);    
   }
 
   JTextPane keywordTextPane;
@@ -420,34 +426,33 @@ abstract class NBODialogRun extends NBODialogModel {
   protected void notifyLoad_r() {
     if (vwr.ms.ac == 0)
       return;
-    doSetStructure("alpha");
+    dialog.doSetStructure("alpha");
     addNBOKeylist();
-    for (Component c : panel.getComponents())
+    for (Component c : myPanel.getComponents())
       c.setVisible(true);
     editBox.getParent().setVisible(true);
     editBox.setVisible(true);
     doLogKeywords(null);
-    repaint();
-    revalidate();
+    dialog.repaint();
+    dialog.revalidate();
     
   }
 
-  @Override
-  protected void showConfirmationDialog(String st, File newFile, String ext) {
-    int i = JOptionPane.showConfirmDialog(this, st, "Message",
-        JOptionPane.YES_NO_OPTION);
-    if (i == JOptionPane.YES_OPTION) {
-      JDialog d = new JDialog(this);
-      d.setLayout(new BorderLayout());
-      JTextPane tp = new JTextPane();
-      d.add(tp, BorderLayout.CENTER);
-      d.setSize(new Dimension(500, 600));
-      tp.setText(inputFileHandler.getFileData(NBOFileHandler.newNBOFile(
-          newFile, "nbo").toString()));
-      d.setVisible(true);
-    }
-  }
-
+//  protected void showConfirmationDialog(String st, File newFile, String ext) {
+//    int i = JOptionPane.showConfirmDialog(dialog, st, "Message",
+//        JOptionPane.YES_NO_OPTION);
+//    if (i == JOptionPane.YES_OPTION) {
+//      JDialog d = new JDialog(dialog);
+//      d.setLayout(new BorderLayout());
+//      JTextPane tp = new JTextPane();
+//      d.add(tp, BorderLayout.CENTER);
+//      d.setSize(new Dimension(500, 600));
+//      tp.setText(dialog.inputFileHandler.getFileData(NBOFileHandler.newNBOFile(
+//          newFile, "nbo").toString()));
+//      d.setVisible(true);
+//    }
+//  }
+//
   class ArchiveViewer extends JDialog implements ActionListener {
     private JScrollPane archivePanel;
     private JButton selectAll, download;
@@ -455,7 +460,7 @@ abstract class NBODialogRun extends NBODialogModel {
     private JTextField tfPath;
     private String baseDir;
 
-    public ArchiveViewer(NBODialogRun d, String url) {
+    public ArchiveViewer(NBODialog d, String url) {
       super(d, "NBO Archive Files");
       GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
           .getDefaultScreenDevice();
@@ -500,12 +505,12 @@ abstract class NBODialogRun extends NBODialogModel {
       if (!baseDir.endsWith("/"))
         baseDir += "/";
       this.baseDir = baseDir;
-      String fileList = inputFileHandler.getFileData(baseDir + "47files.txt");
+      String fileList = dialog.inputFileHandler.getFileData(baseDir + "47files.txt");
       String html;
       String sep;
       if (fileList == null) {
         // presumes a raw directory listing from Apache
-        html = inputFileHandler.getFileData(baseDir);
+        html = dialog.inputFileHandler.getFileData(baseDir);
         sep = "<a";
       } else if (fileList.indexOf("{") == 0 || fileList.indexOf("[") == 0) {
         Map<String, Object> map = new JSJSONParser().parseMap(fileList, true);
@@ -598,7 +603,7 @@ abstract class NBODialogRun extends NBODialogModel {
    * @return new list, including trailing space character.
    */
   protected String getKeywordsFromButtons() {
-    String keywords = " " + cleanNBOKeylist(cleanNBOKeylist(inputFileHandler.read47File(false)[1], false), false) + " ";
+    String keywords = " " + cleanNBOKeylist(cleanNBOKeylist(dialog.inputFileHandler.read47File(false)[1], false), false) + " ";
     if (keywordButtons == null)
       return keywords;
     for (int i = 0; i < keywordButtons.length; i++) {
@@ -620,8 +625,8 @@ abstract class NBODialogRun extends NBODialogModel {
   public boolean retrieveFile(String s, String path) {
     File f = null;
     if (path == null)
-      path = inputFileHandler.fileDir;
-    logCmd("retrieve " + s);
+      path = dialog.inputFileHandler.fileDir;
+    dialog.logCmd("retrieve " + s);
 
     String name = s.substring(s.lastIndexOf("/") + 1);
     if (path.endsWith("/") || path.endsWith("\\"))
@@ -643,23 +648,23 @@ abstract class NBODialogRun extends NBODialogModel {
     try {
       String fileData = vwr.getAsciiFileOrNull(s);
       if (fileData == null) {
-        logError("Error reading " + s);
+        dialog.logError("Error reading " + s);
         return false;
       }
-      if (inputFileHandler.writeToFile(path, fileData)) {
-        logInfo(f.getName() + " (" + fileData.length() + " bytes)",
+      if (dialog.inputFileHandler.writeToFile(path, fileData)) {
+        dialog.logInfo(f.getName() + " (" + fileData.length() + " bytes)",
             Logger.LEVEL_INFO);
       } else {
-        logError("Error writing to " + f);
+        dialog.logError("Error writing to " + f);
       }
     } catch (Throwable e) {
-      alertError("Error reading " + s + ": " + e);
+      dialog.alertError("Error reading " + s + ": " + e);
     }
-    modelOrigin = ORIGIN_NBO_ARCHIVE;
-    inputFileHandler.setInputFile(f);
-    modelOrigin = ORIGIN_NBO_ARCHIVE;
+    dialog.modelOrigin = NBODialog.ORIGIN_NBO_ARCHIVE;
+    dialog.inputFileHandler.setInputFile(f);
+    dialog.modelOrigin = NBODialog.ORIGIN_NBO_ARCHIVE;
     rbLocal.doClick();
-    modelOrigin = ORIGIN_FILE_INPUT;
+    dialog.modelOrigin = NBODialog.ORIGIN_FILE_INPUT;
     return true;
   }
 
@@ -672,45 +677,44 @@ abstract class NBODialogRun extends NBODialogModel {
    */
   protected void doRunGenNBOJob(String requiredKeyword) {
 
-    if (jmolOptionNONBO) {
-      alertRequiresNBOServe();
+    if (dialog.jmolOptionNONBO) {
+      dialog.alertRequiresNBOServe();
       return;
     }
 
     // get the current file47Data and nboKeywords
 
     String newKeywords = getKeywordsFromButtons();
-    
+
     //Check the plot file names match job name, warn user otherwise
-    inputFileHandler.jobStem = inputFileHandler.jobStem.trim();
+    dialog.inputFileHandler.jobStem = dialog.inputFileHandler.jobStem.trim();
 
     if (requiredKeyword.length() > 0 && tfJobName != null) {
       // from another module
-      tfJobName.setText(inputFileHandler.jobStem);
+      tfJobName.setText(dialog.inputFileHandler.jobStem);
     }
-    String jobName = (tfJobName == null ? inputFileHandler.jobStem : tfJobName
-        .getText().trim());
+    String jobName = (tfJobName == null ? dialog.inputFileHandler.jobStem
+        : tfJobName.getText().trim());
 
     // BH Q: Would it be reasonable if the NO option is chosen to put that other job name in to the jobStem field, and also copy the .47 file to that? Or use that?
     // Or, would it be better to ask this question immediately upon file loading so that it doesn't come up, and make it so that
     // you always MUST have these two the same?
 
-    if (!jobName.equals(inputFileHandler.jobStem)) {
+    if (!jobName.equals(dialog.inputFileHandler.jobStem)) {
       int i = JOptionPane
           .showConfirmDialog(
               null,
               "Note: Plot files are being created with name \""
                   + jobName
                   + "\", which does not match your file name \""
-                  + inputFileHandler.jobStem
+                  + dialog.inputFileHandler.jobStem
                   + "\"\nTo continue, we must create a new .47 file \""
                   + jobName
                   + ".47\" so that all files related to this job are under the same name. Continue?",
               "Warning", JOptionPane.YES_NO_OPTION);
-     if (i != JOptionPane.YES_OPTION)
-       return;
-     inputFileHandler.copyAndSwitch47FileTo(jobName);
-     
+      if (i != JOptionPane.YES_OPTION)
+        return;
+      dialog.inputFileHandler.copyAndSwitch47FileTo(jobName);
     }
 
     for (String x : PT.getTokens(requiredKeyword)) {
@@ -722,19 +726,21 @@ abstract class NBODialogRun extends NBODialogModel {
     if (!newKeywords.contains("PLOT"))
       newKeywords += "PLOT";
 
-    jobName = (jobName.equals("") ? inputFileHandler.jobStem : jobName);    
+    jobName = (jobName.equals("") ? dialog.inputFileHandler.jobStem : jobName);
 
-    String[] fileData = inputFileHandler.update47File(jobName, newKeywords, true);
+    String[] fileData = dialog.inputFileHandler.update47File(jobName, newKeywords,
+        true);
     if (fileData == null)
       return;
     SB sb = new SB();
-    NBOUtil.postAddGlobalC(sb, "PATH", inputFileHandler.inputFile.getParent());
-    NBOUtil.postAddGlobalC(sb, "JOBSTEM", inputFileHandler.jobStem);    
+    NBOUtil.postAddGlobalC(sb, "PATH", dialog.inputFileHandler.inputFile.getParent());
+    NBOUtil.postAddGlobalC(sb, "JOBSTEM", dialog.inputFileHandler.jobStem);
     NBOUtil.postAddGlobalC(sb, "ESS", "gennbo");
     NBOUtil.postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
 
-    logCmd("RUN GenNBO FILE=" + jobName + " " + cleanNBOKeylist(fileData[1], false));
-        
+    dialog.logCmd("RUN GenNBO FILE=" + jobName + " "
+        + cleanNBOKeylist(fileData[1], false));
+
     postNBO_r(sb, NBOService.MODE_RUN_GENNBO, "Running GenNBO...");
   }
 
@@ -755,7 +761,7 @@ abstract class NBODialogRun extends NBODialogModel {
         processNBO_r(req, mode);
       }
     }, statusMessage, "r_cmd.txt", sb.toString());
-    nboService.postToNBO(req);
+    dialog.nboService.postToNBO(req);
   }
 
   
@@ -766,7 +772,7 @@ abstract class NBODialogRun extends NBODialogModel {
    * @param mode
    */
   protected void processNBO_r(NBORequest req, int mode) {
-    inputFileHandler.setInputFile(inputFileHandler.inputFile);
+    dialog.inputFileHandler.setInputFile(dialog.inputFileHandler.inputFile);
   }
 
 }

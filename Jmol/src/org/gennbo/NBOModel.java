@@ -34,8 +34,6 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Stack;
 
 import javajs.util.PT;
@@ -49,7 +47,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -61,13 +58,17 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jmol.i18n.GT;
-import org.jmol.java.BS;
 import org.jmol.util.Elements;
+import org.jmol.viewer.Viewer;
 
-abstract class NBODialogModel extends NBODialogBase {
+class NBOModel {
 
-  protected NBODialogModel(JFrame f) {
-    super(f);
+  protected NBODialog dialog;
+  private Viewer vwr;
+
+  protected NBOModel(NBODialog dialog) {
+    this.dialog = dialog;
+    this.vwr = dialog.vwr;
   }
 
   private final static int MODEL_ACTION_ALTER  = 0;
@@ -135,11 +136,6 @@ abstract class NBODialogModel extends NBODialogBase {
   protected JButton undo, redo;
   protected Stack<String> undoStack, redoStack;
 
-  // used by other modules
-  
-  JPanel panel;
-
-
   /**
    * identifies which action button as pressed -- for example, MODEL_ACTION_ALTER
    */
@@ -160,7 +156,7 @@ abstract class NBODialogModel extends NBODialogBase {
    * Set to true each time a non-value option action is processed.
    */
   private boolean resetOnAtomClick;
-
+  
   protected void setModelNotFromNBO() {
     notFromNBO = true;
   }
@@ -182,10 +178,10 @@ abstract class NBODialogModel extends NBODialogBase {
 
   protected JPanel buildModelPanel() {
     resetVariables_m();
-    panel = new JPanel();
+    JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    inputHeader = NBOUtil.createTitleBox(" Input Model ", new HelpBtn(
+    inputHeader = NBOUtil.createTitleBox(" Input Model ", dialog.new HelpBtn(
         "model_input_intro_help.htm"));
     panel.add(inputHeader);
     inputComponent = getInputComponent();
@@ -196,7 +192,7 @@ abstract class NBODialogModel extends NBODialogBase {
     editComponent = getEditComponent();
     panel.add(editComponent).setVisible(false);
     
-    saveHeader = NBOUtil.createTitleBox(" Save Model ", new HelpBtn(
+    saveHeader = NBOUtil.createTitleBox(" Save Model ", dialog.new HelpBtn(
         "model_save_intro_help.htm"));
     panel.add(saveHeader).setVisible(false);
     saveComponent = getSaveComponent();
@@ -226,7 +222,7 @@ abstract class NBODialogModel extends NBODialogBase {
     undo.addActionListener(undoAction);
     topBox.add(undo);
     topBox.add(redo);
-    topBox.add(new HelpBtn("model_edit_intro_help.htm"));
+    topBox.add(dialog.new HelpBtn("model_edit_intro_help.htm"));
     return NBOUtil.createTitleBox(" Edit Model ", topBox);
   }
 
@@ -285,7 +281,7 @@ abstract class NBODialogModel extends NBODialogBase {
     addFocusListeners(jComboUse, jrFileIn);
 
     inputBox.add(p2);
-    inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, NBOConfig.INPUT_FILE_EXTENSIONS, (NBODialog) this) {
+    dialog.inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, NBOConfig.INPUT_FILE_EXTENSIONS, dialog) {
 
       @Override
       protected boolean doFileBrowsePressed() {
@@ -310,13 +306,13 @@ abstract class NBODialogModel extends NBODialogBase {
         if (button == JFileChooser.APPROVE_OPTION) {
           File newFile = myChooser.getSelectedFile();
           if (newFile.toString().indexOf(".") < 0) {
-            logError("File not found");
+            dialog.logError("File not found");
             return false;
           }
           loadModelFromNBO(newFile.getParent(),
               (jobStem = getJobStem(newFile)), NBOFileHandler.getExt(newFile));
 
-          inputFileHandler
+          dialog.inputFileHandler
               .setInput(fileDir, jobStem, NBOFileHandler.getExt(newFile));
           fileDir = newFile.getParent();
 
@@ -326,22 +322,22 @@ abstract class NBODialogModel extends NBODialogBase {
       }
     };
     // BH adding focus for these as well
-    addFocusListeners(inputFileHandler.tfDir, jrFileIn);
-    addFocusListeners(inputFileHandler.tfExt, jrFileIn);
-    addFocusListeners(inputFileHandler.tfName, jrFileIn);
-    inputBox.add(inputFileHandler);
+    addFocusListeners(dialog.inputFileHandler.tfDir, jrFileIn);
+    addFocusListeners(dialog.inputFileHandler.tfExt, jrFileIn);
+    addFocusListeners(dialog.inputFileHandler.tfName, jrFileIn);
+    inputBox.add(dialog.inputFileHandler);
     inputBox.add(Box.createGlue());
     return inputBox;
   }
 
   protected void doComboUseAction(String item) {
     if (item == null) {
-      inputFileHandler.tfExt.setText("");
-      inputFileHandler.useExt = NBOConfig.INPUT_FILE_EXTENSIONS;
+      dialog.inputFileHandler.tfExt.setText("");
+      dialog.inputFileHandler.useExt = NBOConfig.INPUT_FILE_EXTENSIONS;
     } else {
       item = item.substring(item.indexOf("[") + 2, item.indexOf("]"));
-      inputFileHandler.tfExt.setText(item);
-      inputFileHandler.useExt = item;
+      dialog.inputFileHandler.tfExt.setText(item);
+      dialog.inputFileHandler.useExt = item;
     }
   }
 
@@ -617,10 +613,10 @@ abstract class NBODialogModel extends NBODialogBase {
     if (actionID == MODEL_ACTION_ALTER) {
       postActionToNBO_m(MODEL_ACTION_VALUE);
     }
-    runScriptQueued(script);
+    dialog.runScriptQueued(script);
     editValueTf.setText("");
     editValueTf.setEnabled(selected.length() > 0);
-    showSelected(selected);
+    dialog.showSelected(selected);
     if (actionID == MODEL_ACTION_VALUE || doPost)
       postActionToNBO_m(actionID);
   }
@@ -654,7 +650,7 @@ abstract class NBODialogModel extends NBODialogBase {
 
     jComboSave.setFont(NBOConfig.monoFont);
     saveFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_SAVE,
-        NBOConfig.OUTPUT_FILE_EXTENSIONS, (NBODialog) this) {
+        NBOConfig.OUTPUT_FILE_EXTENSIONS, dialog) {
       @Override
       protected boolean doFileBrowsePressed() {
         String folder = tfDir.getText().trim();
@@ -663,7 +659,7 @@ abstract class NBODialogModel extends NBODialogBase {
         if (!ext.equals("") && !folder.equals("") && !name.equals("")) {
           File f = new File(folder + "/" + name + "." + ext);
           if (!PT.isOneOf(ext, NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
-            alertError("Invalid output extenstion");
+            dialog.alertError("Invalid output extenstion");
             return false;
           }
           if (f.exists()) {
@@ -676,7 +672,7 @@ abstract class NBODialogModel extends NBODialogBase {
 
           }
           saveModel(folder, name, ext);
-          saveWorkingPath(fileDir);
+          dialog.saveWorkingPath(fileDir);
           return true;
         }
         JFileChooser myChooser = new JFileChooser();
@@ -720,9 +716,9 @@ abstract class NBODialogModel extends NBODialogBase {
             fileDir = newFile.getParent();
             saveModel(newFile.getParent(), NBOFileHandler.getJobStem(newFile),
                 ext);
-            saveWorkingPath(fileDir);
+            dialog.saveWorkingPath(fileDir);
           } else
-            logError("Invalid extension defined");
+            dialog.logError("Invalid extension defined");
         }
         return false;
       }
@@ -743,20 +739,6 @@ abstract class NBODialogModel extends NBODialogBase {
   protected void doComboSaveAction(String item) {
       String ext = item.substring(item.indexOf("[") + 2, item.indexOf("]"));
       saveFileHandler.tfExt.setText(ext);
-  }
-
-  /**
-   * add selection halos to atoms in s
-   * 
-   * @param s
-   *        - array containing atomnums
-   */
-  protected void showSelected(String s) {
-    BS bs = new BS();
-    for (String x : PT.getTokens(s))
-      bs.set((Integer.parseInt(x) - 1));
-    String script = "select on " + bs + ";";
-    runScriptQueued(script);
   }
 
   private void createInput(final JTextField field, JRadioButton radio) {
@@ -800,7 +782,7 @@ abstract class NBODialogModel extends NBODialogBase {
    */
   protected void doModelAction(int action) {
     actionID = action;
-    runScriptQueued("set refreshing true; measurements delete"); // just in case
+    dialog.runScriptQueued("set refreshing true; measurements delete"); // just in case
     clearSelected(true);
     switch (action) {
     case MODEL_ACTION_MUTATE:
@@ -866,7 +848,7 @@ abstract class NBODialogModel extends NBODialogBase {
         redo.setEnabled(false);
       }
       loadModelToNBO(curr, true);
-      logCmd("Redo");
+      dialog.logCmd("Redo");
     }
   };
 
@@ -883,7 +865,7 @@ abstract class NBODialogModel extends NBODialogBase {
       redoStack.push(curr);
       if (redoStack.size() > MAX_HISTORY)
         redoStack.removeElementAt(MAX_HISTORY);
-      logCmd("Undo");
+      dialog.logCmd("Undo");
     }
   };
   
@@ -936,9 +918,9 @@ abstract class NBODialogModel extends NBODialogBase {
     }
     if (actionID == MODEL_ACTION_REBOND)
       cmd += jcSymOps.getSelectedItem().toString();
-    runScriptNow("save orientation o2");
+    dialog.runScriptNow("save orientation o2");
     NBOUtil.postAddCmd(sb, cmd);
-    logCmd(cmd);
+    dialog.logCmd(cmd);
     jbApply.setEnabled(false);
 
     if (actionID == MODEL_ACTION_VALUE) {
@@ -957,7 +939,7 @@ abstract class NBODialogModel extends NBODialogBase {
    */
   protected void doGetSymmetry() {
     String cmd = "symmetry";
-    logCmd(cmd);
+    dialog.logCmd(cmd);
     postNBO_m(NBOUtil.postAddCmd(new SB(), cmd), NBOService.MODE_MODEL_SYMMETRY,  "Checking Symmetry", null, null);
   }
 
@@ -971,11 +953,11 @@ abstract class NBODialogModel extends NBODialogBase {
     if (model.length() == 0)
       return;
     String s = "";
-    inputFileHandler.setInput(null, "", "");
+    dialog.inputFileHandler.setInput(null, "", "");
     saveFileHandler.setInput(null, "", "");
     clearSelected(false);
     if (textBox == jtNIHInput) {
-      modelOrigin = ORIGIN_NIH;
+      dialog.modelOrigin = NBODialog.ORIGIN_NIH;
       notFromNBO = true;
       if ("$:=".indexOf(model.charAt(0)) < 0)
         model = "$" + model;
@@ -989,36 +971,36 @@ abstract class NBODialogModel extends NBODialogBase {
         default:
           // "=" can be the start of may databases if there is a / present
           if (model.indexOf("/") < 0)
-            logError("PDB codes must be of the form XXX for ligands and XXXX for standard PDB entries.");
+            dialog.logError("PDB codes must be of the form XXX for ligands and XXXX for standard PDB entries.");
           break;
         }
       }
       jtLineFormula.setText("");
       saveFileHandler.setInput(null, model, "mol");
-      logCmd("get " + model);
-      iAmLoading = true;
-      if (loadModelFileNow(model) == null) {
+      dialog.logCmd("get " + model);
+      dialog.iAmLoading = true;
+      if (dialog.loadModelFileNow(model) == null) {
         model = (model.charAt(0) == ':' ? "$" : ":") + model.substring(1);
         if (model.startsWith("$=")) {
-          logError("RCSB does not recognize ligand code " + model.substring(2) + ".");
-          iAmLoading = false;
+          dialog.logError("RCSB does not recognize ligand code " + model.substring(2) + ".");
+          dialog.iAmLoading = false;
           return;
         }
-        logCmd("get " + model);
-        if (loadModelFileNow(model) == null) {
-          logError("Neither NIH/CIR nor PubChem have recognize this identifier.");
+        dialog.logCmd("get " + model);
+        if (dialog.loadModelFileNow(model) == null) {
+          dialog.logError("Neither NIH/CIR nor PubChem have recognize this identifier.");
           notFromNBO = false;
-          iAmLoading = false;
+          dialog.iAmLoading = false;
         }
       }
     } else {
-      modelOrigin = ORIGIN_LINE_FORMULA;
+      dialog.modelOrigin = NBODialog.ORIGIN_LINE_FORMULA;
       SB sb = new SB();
       jtNIHInput.setText("");
       s = "show " + model;
       saveFileHandler.setInput(null, "line", "mol");
       NBOUtil.postAddCmd(sb, s);
-      logCmd(s);
+      dialog.logCmd(s);
       postNBO_m(sb, NBOService.MODE_MODEL_NEW, "model from line input...",
           null, null);
     }
@@ -1035,13 +1017,13 @@ abstract class NBODialogModel extends NBODialogBase {
   protected void loadModelToNBO(String s, boolean undoRedo) {
     boolean alsoLoadJmol = true;
     if (s == null) {
-      s = runScriptNow(";print data({*},'cfi');");
+      s = dialog.runScriptNow(";print data({*},'cfi');");
       alsoLoadJmol = false;
     }
     if (undoRedo)
-      runScriptNow("save orientation o2");
+      dialog.runScriptNow("save orientation o2");
     SB sb = new SB();
-    NBOUtil.postAddGlobalC(sb, "PATH", nboService.getServerPath(null) + "/");
+    NBOUtil.postAddGlobalC(sb, "PATH", dialog.nboService.getServerPath(null) + "/");
     NBOUtil.postAddGlobalC(sb, "ESS", "c");
     NBOUtil.postAddGlobalC(sb, "FNAME", "jmol_outfile");
     NBOUtil.postAddGlobalC(sb, "IN_EXT", "cfi");
@@ -1060,8 +1042,8 @@ abstract class NBODialogModel extends NBODialogBase {
   protected void loadModelFromNBO(String path, String fname, String ext) {
     if (PT.isOneOf(ext, NBOConfig.JMOL_EXTENSIONS)) {
       notFromNBO = true;
-      runScriptNow("set refreshing false"); // a bit risky
-      loadModelFileQueued(new File(path  + "\\" + fname + "." + ext), false);
+      dialog.runScriptNow("set refreshing false"); // a bit risky
+      dialog.loadModelFileQueued(new File(path  + "\\" + fname + "." + ext), false);
       return;
     }
     String ess = getEss(ext, true);
@@ -1070,14 +1052,14 @@ abstract class NBODialogModel extends NBODialogBase {
       jtNIHInput.setText("");
       jtLineFormula.setText("");
     }
-    modelOrigin = ORIGIN_FILE_INPUT;
+    dialog.modelOrigin = NBODialog.ORIGIN_FILE_INPUT;
     NBOUtil.postAddGlobalC(sb, "PATH", path);
     NBOUtil.postAddGlobalC(sb, "ESS", ess);
     NBOUtil.postAddGlobalC(sb, "FNAME", fname);
     NBOUtil.postAddGlobalC(sb, "IN_EXT", ext.toLowerCase());
     NBOUtil.postAddCmd(sb, "use");
     clearSelected(false);
-    logCmd("use." + ess + " " + fname + "." + ext);
+    dialog.logCmd("use." + ess + " " + fname + "." + ext);
     postNBO_m(sb, NBOService.MODE_MODEL_NEW, "Loading model from NBO...", null, null);
 
   }
@@ -1093,7 +1075,7 @@ abstract class NBODialogModel extends NBODialogBase {
     if (PT.isOneOf(ext, NBOConfig.JMOL_EXTENSIONS)) {
       String s = vwr.getModelExtract("1.1", false, false, ext.toUpperCase());
       String ret = vwr.writeTextFile(path + "\\" + fname + "." + ext, s);
-      logValue(ret);
+      dialog.logValue(ret);
       return;
     }
     String ess = getEss(ext, false);
@@ -1105,8 +1087,8 @@ abstract class NBODialogModel extends NBODialogBase {
     NBOUtil.postAddGlobalC(sb, "OUT_EXT", ext.toLowerCase());
     NBOUtil.postAddCmd(sb, "save");
     postNBO_m(sb, NBOService.MODE_MODEL_SAVE, "Saving model...", null, null);
-    logCmd("save." + ess + " " + fname);
-    logValue("--Model Saved--<br>" + path + "\\" + fname + "." + ext);
+    dialog.logCmd("save." + ess + " " + fname);
+    dialog.logValue("--Model Saved--<br>" + path + "\\" + fname + "." + ext);
   }
 
   /**
@@ -1146,7 +1128,7 @@ abstract class NBODialogModel extends NBODialogBase {
    * 
    */
   protected void notifyPick_m(String atomno) {
-    runScriptNow("measure delete;" + (resetOnAtomClick ? "select none" : ""));
+    dialog.runScriptNow("measure delete;" + (resetOnAtomClick ? "select none" : ""));
     if (resetOnAtomClick) {
       clearSelected(false);
     }
@@ -1205,14 +1187,14 @@ abstract class NBODialogModel extends NBODialogBase {
    */
   protected void notifyLoad_m() {
 
-    String fileContents = runScriptNow("print data({*},'cfi')");
+    String fileContents = dialog.runScriptNow("print data({*},'cfi')");
     if (notFromNBO) {
       notFromNBO = false;
       loadModelToNBO(fileContents, false);
       return;
     }
-    runScriptNow(NBOConfig.JMOL_FONT_SCRIPT + ";select within(model,visible);rotate best;");
-    doSetStructure(null);
+    dialog.runScriptNow(NBOConfig.JMOL_FONT_SCRIPT + ";select within(model,visible);rotate best;");
+    dialog.doSetStructure(null);
     showComponents(true);
     innerEditBox.setVisible(true);
     if (vwr.ms.ac > 0)
@@ -1228,23 +1210,15 @@ abstract class NBODialogModel extends NBODialogBase {
     if (actionID == MODEL_ACTION_MUTATE) {
       doModelAction(actionID);
     }
-    runScriptNow("select none; select on;refresh");
+    dialog.runScriptNow("select none; select on;refresh");
   }
   
-  protected void showConfirmationDialog(String st, File newFile, String ext) {
-    int i = JOptionPane.showConfirmDialog(null, st, "Warning",
-        JOptionPane.YES_NO_OPTION);
-    if (i == JOptionPane.YES_OPTION)
-      saveModel(newFile.getParent(), NBOFileHandler.getJobStem(newFile), ext);
-  }
-
-  protected static double round(double value, int places) {
-    if (places < 0)
-      throw new IllegalArgumentException();
-    BigDecimal bd = new BigDecimal(value);
-    bd = bd.setScale(places, RoundingMode.HALF_UP);
-    return bd.doubleValue();
-  }
+//  protected void showConfirmationDialog(String st, File newFile, String ext) {
+//    int i = JOptionPane.showConfirmDialog(null, st, "Warning",
+//        JOptionPane.YES_NO_OPTION);
+//    if (i == JOptionPane.YES_OPTION)
+//      saveModel(newFile.getParent(), NBOFileHandler.getJobStem(newFile), ext);
+//  }
 
   /**
    * Post a request to NBOServe with a callback to processNBO_s.
@@ -1264,7 +1238,7 @@ abstract class NBODialogModel extends NBODialogBase {
         processNBO_m(mode, req);
       }
     }, statusMessage, "m_cmd.txt", sb.toString(), fileName, fileData);
-    nboService.postToNBO(req);
+    dialog.nboService.postToNBO(req);
   }
 
   /**
@@ -1303,7 +1277,7 @@ abstract class NBODialogModel extends NBODialogBase {
     switch (mode) {
     case NBOService.MODE_MODEL_ALTER:
       // using quaternion analysis to reorient the structure even though it has been messed up.
-      runScriptQueued("z = show('zoom');set refreshing false;x = {*}.xyz.all;load " + s + NBOConfig.JMOL_FONT_SCRIPT
+      dialog.runScriptQueued("z = show('zoom');set refreshing false;x = {*}.xyz.all;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";compare {*} @x rotate translate 0;script inline @z;set refreshing true");
       break;
     case NBOService.MODE_MODEL_NEW:
@@ -1314,33 +1288,33 @@ abstract class NBODialogModel extends NBODialogBase {
             + ";restore orientation o4;set refreshing on";
       else
         s = ";load " + s;
-      loadModelDataQueued(s);
+      dialog.loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_SAVE:
       break;
     case NBOService.MODE_MODEL_SYMMETRY:
       // do not reorient the return in this case
       String symmetry = s.substring(0, s.indexOf("\n"));
-      logValue(symmetry);
+      dialog.logValue(symmetry);
       // fix issue with blank first line
       s = PT.rep(s.substring(s.indexOf("\n") + 1), "\"\n", "\" NBO\n");
       s = "set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";set refreshing true";
-      loadModelDataQueued(s);
+      dialog.loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_TO_NBO:
       s = "load " + s  + NBOConfig.JMOL_FONT_SCRIPT + ";set refreshing true;";
 //      s = "set refreshing off;save orientation o3;load " + s
 //          + ";restore orientation o3;set refreshing on";
-      loadModelDataQueued(s);
+      dialog.loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_UNDO_REDO:
-      loadModelDataQueued("set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
+      dialog.loadModelDataQueued("set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";restore orientation o2;set refreshing true");
       break;
     case NBOService.MODE_MODEL_VALUE:
       String sval = a[0].trim();
-      logValue(sval);
+      dialog.logValue(sval);
       setCurrentValue(sval);
       break;
     }

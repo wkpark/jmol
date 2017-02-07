@@ -26,7 +26,6 @@ package org.gennbo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
@@ -53,7 +52,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -69,12 +67,18 @@ import javax.swing.event.ListSelectionListener;
 import org.jmol.awt.AwtColor;
 import org.jmol.java.BS;
 import org.jmol.util.C;
+import org.jmol.viewer.Viewer;
 
-abstract class NBODialogView extends NBODialogRun {
+class NBOView {
 
-  protected NBODialogView(JFrame f) {
-    super(f);
+  protected NBODialog dialog;
+  protected Viewer vwr;
+
+  protected NBOView(NBODialog dialog) {
+    this.dialog = dialog;
+    this.vwr = dialog.vwr;
   }
+
 
   protected final static String[] basSet = { "AO", "PNAO", "NAO", "PNHO",
       "NHO", "PNBO", "NBO", "PNLMO", "NLMO", "MO" };
@@ -125,7 +129,6 @@ abstract class NBODialogView extends NBODialogRun {
   
   protected JComboBox<String> comboBasis1; 
   protected JRadioButton alphaSpin, betaSpin; 
-  protected Container viewSettingsBox;
   protected boolean isNewModel = true;
 
   // used by SEARCH; cleared by openPanel() using 
@@ -164,13 +167,13 @@ abstract class NBODialogView extends NBODialogRun {
       "5a", "5b", "5c", "6" };
 
   protected JPanel buildViewPanel() {
-    panel = new JPanel(new BorderLayout());
+    JPanel panel = new JPanel(new BorderLayout());
     viewState = VIEW_STATE_MAIN;
     ///panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    runScriptNow("set bondpicking true");
+    dialog.runScriptNow("set bondpicking true");
 
     Box b = createViewSearchJobBox(NBOFileHandler.MODE_VIEW);
-    if (!jmolOptionNONBO)
+    if (!dialog.jmolOptionNONBO)
       panel.add(b, BorderLayout.NORTH);
 
     centerBox = NBOUtil.createTitleBox(" Select Orbital(s) ", createSelectOrbitalBox());
@@ -182,33 +185,33 @@ abstract class NBODialogView extends NBODialogRun {
 
     updateViewSettings();
 
-    inputFileHandler.setBrowseEnabled(true);
+    dialog.inputFileHandler.setBrowseEnabled(true);
 
-//    String fileType = runScriptNow("print _fileType");
+//    String fileType = dialog.runScriptNow("print _fileType");
 //    if (fileType.equals("GenNBO")) {
 //      File f = new File(
-//          runScriptNow("select within(model, visible); print _modelFile"));
-//      inputFileHandler.setInputFile(NBOFileHandler.newNBOFile(f, "47"));
+//          dialog.runScriptNow("select within(model, visible); print _modelFile"));
+//      dialog.inputFileHandler.setInputFile(NBOFileHandler.newNBOFile(f, "47"));
 //    }
 
     return panel;
   }
 
   protected Box createViewSearchJobBox(int mode) {
-    Box topBox = NBOUtil.createTitleBox(" Select Job ", new HelpBtn(
+    Box topBox = NBOUtil.createTitleBox(" Select Job ", dialog.new HelpBtn(
         (mode== NBOFileHandler.MODE_SEARCH ? "search" : "view") + "_job_help.htm"));
     Box inputBox = NBOUtil.createBorderBox(true);
     inputBox.setPreferredSize(new Dimension(360, 50));
     inputBox.setMaximumSize(new Dimension(360, 50));
     topBox.add(inputBox);
-    getNewInputFileHandler(mode);
+    dialog.getNewInputFileHandler(mode);
     inputBox.add(Box.createVerticalStrut(5));
-    inputBox.add(inputFileHandler);
+    inputBox.add(dialog.inputFileHandler);
     return topBox;
   }
 
   private Component createBottomBox() {
-    bottomBox = NBOUtil.createTitleBox(" Display Type ", new HelpBtn(
+    bottomBox = NBOUtil.createTitleBox(" Display Type ", dialog.new HelpBtn(
         "view_display_help.htm"));
     JPanel profBox = new JPanel(new GridLayout(2, 3, 0, 0));
     profBox.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -319,9 +322,9 @@ abstract class NBODialogView extends NBODialogRun {
     });
     horizBox.add(alphaSpin);
     horizBox.add(betaSpin);
-    alphaSpin.setVisible(isOpenShell());
-    betaSpin.setVisible(isOpenShell());
-    horizBox.add(new HelpBtn("view_orbital_help.htm"));
+    alphaSpin.setVisible(dialog.isOpenShell());
+    betaSpin.setVisible(dialog.isOpenShell());
+    horizBox.add(dialog.new HelpBtn("view_orbital_help.htm"));
     return horizBox;
   }
   
@@ -365,10 +368,10 @@ abstract class NBODialogView extends NBODialogRun {
 
   protected void doSetSpin(String type) {
     if (type != null) {
-      doSetStructure(type);
+      dialog.doSetStructure(type);
     }
     if (NBOConfig.nboView) {
-      runScriptNow("select *;color bonds lightgrey");
+      dialog.runScriptNow("select *;color bonds lightgrey");
     }
     doSetNewBasis(false);
   }
@@ -386,9 +389,9 @@ abstract class NBODialogView extends NBODialogRun {
   private File ensurePlotFile(int fileNum) {
     if (fileNum == 0)
       fileNum = 31 + comboBasis1.getSelectedIndex();
-    File f = inputFileHandler.newNBOFileForExt("" + fileNum);
+    File f = dialog.inputFileHandler.newNBOFileForExt("" + fileNum);
     if (!f.exists() || f.length() == 0) {
-      doRunGenNBOJob("PLOT");
+      dialog.runPanel.doRunGenNBOJob("PLOT");
       return null;
     }
     return f;
@@ -399,7 +402,7 @@ abstract class NBODialogView extends NBODialogRun {
    */
   protected void doViewPlane() {
     viewPlanePt = 0;
-    runScriptNow("set bondpicking false");
+    dialog.runScriptNow("set bondpicking false");
     viewState = VIEW_STATE_PLANE;
     Box box = NBOUtil.createTitleBox(" Definiton of Plane ", null);
     final JPanel plane = new JPanel(new BorderLayout());
@@ -436,19 +439,17 @@ abstract class NBODialogView extends NBODialogRun {
     box2.setAlignmentX(0.0f);
     box2.setMaximumSize(new Dimension(355, 250));
     box.add(box2);
-    final JDialog d = new JDialog(this, "Vector definition");
+    final JDialog d = new JDialog(dialog, "Vector definition");
     d.setSize(new Dimension(300, 300));
     d.setVisible(true);
     d.add(box);
-    int x = (getX() + getWidth()) / 2 + 150;
-    int y = (getY() + getHeight()) / 2 - 175;
-    d.setLocation(x, y);
+    centerDialog(d, 175);
     showSelected(planeFields);
     d.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        runScriptQueued("select off");
-        runScriptNow("set bondpicking true");
+        dialog.runScriptQueued("select off");
+        dialog.runScriptNow("set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -456,8 +457,8 @@ abstract class NBODialogView extends NBODialogRun {
       @Override
       public void actionPerformed(ActionEvent e) {
         d.dispose();
-        runScriptQueued("select off");
-        runScriptNow("set bondpicking true");
+        dialog.runScriptQueued("select off");
+        dialog.runScriptNow("set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -469,14 +470,14 @@ abstract class NBODialogView extends NBODialogRun {
     String s = "";
     for (int i = t.length; --i >= 0;)
       s += " " + t[i].getText();
-    showSelected(s);    
+    dialog.showSelected(s);    
   }
 
   /**
    * Vector dialog
    */
   protected void doViewAxis() {
-    runScriptNow("set bondpicking false");
+    dialog.runScriptNow("set bondpicking false");
     viewState = VIEW_STATE_VECTOR;
     viewVectorPt = 0;
     Box box = NBOUtil.createTitleBox(" Vector Definition ", null);
@@ -516,19 +517,17 @@ abstract class NBODialogView extends NBODialogRun {
     box2.setMaximumSize(new Dimension(355, 250));
     box.add(box2);
 
-    final JDialog d = new JDialog(this, "Vector definition");
+    final JDialog d = new JDialog(dialog, "Vector definition");
     d.setSize(new Dimension(300, 300));
     d.setVisible(true);
     d.add(box);
-    int x = (getX() + getWidth()) / 2 + 150;
-    int y = (getY() + getHeight()) / 2 - 150;
-    d.setLocation(x, y);
+    centerDialog(d, 150);
     showSelected(vectorFields);
     d.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        runScriptQueued("select off");
-        runScriptNow("set bondpicking true");
+        dialog.runScriptQueued("select off");
+        dialog.runScriptNow("set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -536,8 +535,8 @@ abstract class NBODialogView extends NBODialogRun {
       @Override
       public void actionPerformed(ActionEvent e) {
         d.dispose();
-        runScriptQueued("select off");
-        runScriptNow("set bondpicking true");
+        dialog.runScriptQueued("select off");
+        dialog.runScriptNow("set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -571,7 +570,7 @@ abstract class NBODialogView extends NBODialogRun {
     box.add(box2);
     box2.setAlignmentX(0.0f);
 
-    final JDialog d = new JDialog(this, "Line settings");
+    final JDialog d = new JDialog(dialog, "Line settings");
     d.setSize(new Dimension(300, 300));
     d.setVisible(true);
     d.add(box);
@@ -596,9 +595,7 @@ abstract class NBODialogView extends NBODialogRun {
     JButton b = new JButton("OK");
     lines.add(b, BorderLayout.SOUTH);
     d.add(box, BorderLayout.SOUTH);
-    int x = (getX() + getWidth()) / 2 + 150;
-    int y = (getY() + getHeight()) / 2 - 150;
-    d.setLocation(x, y);
+    centerDialog(d, 150);
 
     b.addActionListener(new ActionListener() {
       @Override
@@ -608,6 +605,12 @@ abstract class NBODialogView extends NBODialogRun {
       }
     });
     lines.setVisible(true);
+  }
+
+  private void centerDialog(JDialog d, int h) {
+    int x = (dialog.getX() + dialog.getWidth()) / 2 + 150;
+    int y = (dialog.getY() + dialog.getHeight()) / 2 - h;
+    d.setLocation(x, y);
   }
 
   /**
@@ -656,13 +659,11 @@ abstract class NBODialogView extends NBODialogRun {
     sp.setMaximumSize(new Dimension(350, 500));
     sp.getViewport().add(panel);
 
-    final JDialog d = new JDialog(this, "Camera parameters");
+    final JDialog d = new JDialog(dialog, "Camera parameters");
     d.setSize(new Dimension(360, 500));
     d.setVisible(true);
     d.add(sp, BorderLayout.CENTER);
-    int x = (getX() + getWidth()) / 2 + 100;
-    int y = (getY() + getHeight()) / 2 - 250;
-    d.setLocation(x, y);
+    centerDialog(d, 250);
     JButton b = new JButton("OK");
     d.add(b, BorderLayout.SOUTH);
     b.setAlignmentX(0.0f);
@@ -845,8 +846,8 @@ abstract class NBODialogView extends NBODialogRun {
   }
 
   private void updateViewSettings() {
-    viewSettingsBox.removeAll();
-    viewSettingsBox.setLayout(new BorderLayout());
+    dialog.viewSettingsBox.removeAll();
+    dialog.viewSettingsBox.setLayout(new BorderLayout());
     //Box top = Box.createVerticalBox();
     JLabel lab = new JLabel("Settings:");
     lab.setBackground(Color.black);
@@ -880,7 +881,7 @@ abstract class NBODialogView extends NBODialogRun {
     bg.add(jmolOrient);
     bg.add(atomOrient);
 
-    viewSettingsBox.add(lab, BorderLayout.NORTH);
+    dialog.viewSettingsBox.add(lab, BorderLayout.NORTH);
 
     middle.add(tmp);
 
@@ -913,7 +914,7 @@ abstract class NBODialogView extends NBODialogRun {
     tmp.add(btnPla);
     tmp.add(btnLines);
     middle.add(tmp);
-    viewSettingsBox.add(middle, BorderLayout.CENTER);
+    dialog.viewSettingsBox.add(middle, BorderLayout.CENTER);
 
     final JButton btnCam = new JButton("Camera");
     btnCam.addActionListener(new ActionListener() {
@@ -924,9 +925,9 @@ abstract class NBODialogView extends NBODialogRun {
     });
 
     atomOrient.setSelected(true);
-    viewSettingsBox.add(btnCam, BorderLayout.SOUTH);
-    repaint();
-    revalidate();
+    dialog.viewSettingsBox.add(btnCam, BorderLayout.SOUTH);
+    dialog.repaint();
+    dialog.revalidate();
   }
 
   protected void doViewByJmol() {
@@ -936,7 +937,7 @@ abstract class NBODialogView extends NBODialogRun {
 
   protected void doViewByAtoms() {
     planeBox.setVisible(true);
-    nboService.restartIfNecessary();
+    dialog.nboService.restartIfNecessary();
     setDefaultParameterArrays();
     jmolView = false;
   }
@@ -946,13 +947,13 @@ abstract class NBODialogView extends NBODialogRun {
     if (doResetAlphaBeta) {
       alphaList = betaList = null;
     }
-    runScriptNow("isosurface delete");
+    dialog.runScriptNow("isosurface delete");
 
     resetCurrentOrbitalClicked();
     
     if (comboBasis1.getSelectedIndex() == BASIS_MO) {
-      if (!cleanNBOKeylist(inputFileHandler.read47File(false)[1], true).contains("CMO")) {
-        doRunGenNBOJob("CMO");
+      if (!dialog.runPanel.cleanNBOKeylist(dialog.inputFileHandler.read47File(false)[1], true).contains("CMO")) {
+        dialog.runPanel.doRunGenNBOJob("CMO");
         return;
       }
     }
@@ -968,7 +969,7 @@ abstract class NBODialogView extends NBODialogRun {
       return;
     }
 
-    boolean isBeta = isOpenShell() && !alphaSpin.isSelected();
+    boolean isBeta = dialog.isOpenShell() && !alphaSpin.isSelected();
 
     DefaultListModel<String> list = (isBeta ? betaList : alphaList);
     if (list != null && list.size() > 0) {
@@ -981,15 +982,15 @@ abstract class NBODialogView extends NBODialogRun {
     else
       alphaList = list;
 
-    if (!jmolOptionNONBO) {
-      logCmd("select " + comboBasis1.getSelectedItem()  + " " + (isBeta ? "beta" : isOpenShell() ? "alpha" : ""));
+    if (!dialog.jmolOptionNONBO) {
+      dialog.logCmd("select " + comboBasis1.getSelectedItem()  + " " + (isBeta ? "beta" : dialog.isOpenShell() ? "alpha" : ""));
       postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"), NBOService.MODE_VIEW_LIST,
           list, "Getting list", null, null);
     }
-    loadModelFileQueued(
+    dialog.loadModelFileQueued(
         f,
         NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(
-            NBOFileHandler.pathWithoutExtension(getJmolFilename())));
+            NBOFileHandler.pathWithoutExtension(dialog.getJmolFilename())));
 
   }
 
@@ -1007,11 +1008,11 @@ abstract class NBODialogView extends NBODialogRun {
    */
   protected SB getMetaHeader(boolean addBasis) {
     SB sb = new SB();
-    NBOUtil.postAddGlobalC(sb, "PATH", inputFileHandler.inputFile.getParent());
-    NBOUtil.postAddGlobalC(sb, "JOBSTEM", inputFileHandler.jobStem);
+    NBOUtil.postAddGlobalC(sb, "PATH", dialog.inputFileHandler.inputFile.getParent());
+    NBOUtil.postAddGlobalC(sb, "JOBSTEM", dialog.inputFileHandler.jobStem);
     if (addBasis)
       NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
-    NBOUtil.postAddGlobalI(sb, "SPIN", (!isOpenShell() ? 0 : alphaSpin.isSelected() ? 1 : -1), null);
+    NBOUtil.postAddGlobalI(sb, "SPIN", (!dialog.isOpenShell() ? 0 : alphaSpin.isSelected() ? 1 : -1), null);
     return sb;
   }
 
@@ -1062,7 +1063,7 @@ abstract class NBODialogView extends NBODialogRun {
     }
     appendOrbitalPhaseSign(sb, ind);
     String cmd = (oneD ? "Profile " : "Contour ") + (ind + 1);
-    logCmd(cmd);
+    dialog.logCmd(cmd);
     NBOUtil.postAddCmd(sb, cmd);
     postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, (oneD ? "Profiling.."
         : "Contouring.."), null, null);
@@ -1130,7 +1131,7 @@ abstract class NBODialogView extends NBODialogRun {
       profileList += " " + (++pt);
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
     }
-    logCmd(msg);
+    dialog.logCmd(msg);
     sb = getMetaHeader(false);
     appendLineParams(sb);
     NBOUtil.postAddCmd(sb, "DRAW" + profileList);
@@ -1151,7 +1152,7 @@ abstract class NBODialogView extends NBODialogRun {
       tmp += " " + (i + 1);
       list += " " + (++pt);
     }
-    logCmd(tmp);
+    dialog.logCmd(tmp);
     String jviewData = sb.toString();
     sb = getMetaHeader(false);
     appendCameraParams(sb);
@@ -1160,8 +1161,8 @@ abstract class NBODialogView extends NBODialogRun {
   }
 
   private void initializeImage() {
-    runScriptNow("image close");
-    nboService.restart();
+    dialog.runScriptNow("image close");
+    dialog.nboService.restart();
     setDefaultParameterArrays();
     if (jmolView)
       setJmolView(false);
@@ -1279,7 +1280,7 @@ abstract class NBODialogView extends NBODialogRun {
       return;
     orbitals.bsOn.clearAll();
     orbitals.bsNeg.clearAll();
-    runScriptNow("isosurface * off");    
+    dialog.runScriptNow("isosurface * off");    
     orbitals.updateIsosurfacesInJmol(i);
   }
 
@@ -1295,18 +1296,18 @@ abstract class NBODialogView extends NBODialogRun {
 
     if (vwr.ms.ac == 0)
       return;
-    doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
+    dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
 
     centerBox.setVisible(true);
-    bottomBox.setVisible(!jmolOptionNONBO);
+    bottomBox.setVisible(!dialog.jmolOptionNONBO);
 
     //OLD
 
     //    if (!newModel) {
     //      String frame = (startingModelCount + modelCount - 1) + ".1";
-    //      runScriptQueued("frame " + frame + ";refesh");
+    //      dialog.runScriptQueued("frame " + frame + ";refesh");
     //      colorMeshes();
-    //      runScriptQueued("var b = {visible}.bonds;select bonds @b;wireframe 0;refresh");
+    //      dialog.runScriptQueued("var b = {visible}.bonds;select bonds @b;wireframe 0;refresh");
     //      return;
     //    }
 
@@ -1319,10 +1320,10 @@ abstract class NBODialogView extends NBODialogRun {
     String type = comboBasis1.getSelectedItem().toString();
     if (type.charAt(0) == 'P')
       type = type.substring(1);
-    boolean isBeta = isOpenShell() && !alphaSpin.isSelected() && betaList != null;
+    boolean isBeta = dialog.isOpenShell() && !alphaSpin.isSelected() && betaList != null;
     try {
-      alphaSpin.setVisible(isOpenShell()); // old
-      betaSpin.setVisible(isOpenShell()); // old
+      alphaSpin.setVisible(dialog.isOpenShell()); // old
+      betaSpin.setVisible(dialog.isOpenShell()); // old
 
       setDefaultParameterArrays();
 
@@ -1344,11 +1345,11 @@ abstract class NBODialogView extends NBODialogRun {
       planeBox.add(planeFields[0]);
       planeBox.add(planeFields[1]);
       planeBox.add(planeFields[2]);
-      viewSettingsBox.setVisible(!jmolOptionNONBO);
+      dialog.viewSettingsBox.setVisible(!dialog.jmolOptionNONBO);
 
       // set list
       DefaultListModel<String> list = (isBeta ? betaList : alphaList);
-      if (jmolOptionNONBO) {
+      if (dialog.jmolOptionNONBO) {
         if (type.startsWith("P"))
           type = type.substring(1);
         if (type.equalsIgnoreCase("NLMO"))
@@ -1361,10 +1362,10 @@ abstract class NBODialogView extends NBODialogRun {
       }
       orbitals.setModelList(list, true);
     } catch (NullPointerException e) {
-      //not a problem? log(e.getMessage() + " reading file", 'r');
+      //not a problem? dialog.log(e.getMessage() + " reading file", 'r');
       e.printStackTrace();
     }
-    colorMeshes();
+    NBODialog.colorMeshes();
     //    showAtomNums(true);
     //    setBonds(true);
 
@@ -1524,7 +1525,7 @@ abstract class NBODialogView extends NBODialogRun {
         script += updateBitSetFromModel();
       else
         updateModelFromBitSet();
-      logCmd("select...");
+      dialog.logCmd("select...");
       //System.out.println("update " + bsOn + " " + bsKnown + " " +  iClicked);
       for (int i = 0, n = model.getSize(); i < n; i++) {
         boolean isOn = bsOn.get(i);
@@ -1552,11 +1553,11 @@ abstract class NBODialogView extends NBODialogRun {
           }
         }
         if (bsOn.get(i)) {
-          logCmd("...orbital " + orbitals.getModel().getElementAt(i) + (bsNeg.get(i) ? " [-]" : ""));
+          dialog.logCmd("...orbital " + orbitals.getModel().getElementAt(i) + (bsNeg.get(i) ? " [-]" : ""));
         }
       }
       updateModelFromBitSet();
-      runScriptQueued(script);
+      dialog.runScriptQueued(script);
       //System.out.println("known" + bsKnown + " on" + bsOn + " neg" + bsNeg + " " + script);
     }
 
@@ -1723,7 +1724,7 @@ abstract class NBODialogView extends NBODialogRun {
         processNBO_v(req, mode, list);
       }
     }, statusMessage, "v_cmd.txt", sb.toString(), dataFileName, fileData);
-    nboService.postToNBO(req);
+    dialog.nboService.postToNBO(req);
   }
 
   /**
@@ -1746,14 +1747,14 @@ abstract class NBODialogView extends NBODialogRun {
       orbitals.setModelList(list, true);
       break;
     case NBOService.MODE_VIEW_IMAGE:
-      String fname = inputFileHandler.inputFile.getParent() + "\\"
-          + inputFileHandler.jobStem + ".bmp";
+      String fname = dialog.inputFileHandler.inputFile.getParent() + "\\"
+          + dialog.inputFileHandler.jobStem + ".bmp";
       File f = new File(fname);
       final SB title = new SB();
       String id = "id " + PT.esc(title.toString().trim());
-      String script = "image " + id + " close;image id \"\" "
+      String script = "image " + id + " c lose;image id \"\" "
           + PT.esc(f.toString().replace('\\', '/'));
-      runScriptNow(script);
+      dialog.runScriptNow(script);
       break;
     case NBOService.MODE_RAW:
       break;

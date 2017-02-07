@@ -43,18 +43,19 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 
-abstract class NBODialogSearch extends NBODialogView {
+class NBOSearch extends NBOView {
+
+  protected NBOSearch(NBODialog dialog) {
+    super(dialog);
+  }
 
   private final static int KEYWD_WEBHELP = 0;
 
@@ -77,8 +78,8 @@ abstract class NBODialogSearch extends NBODialogView {
    * keywords in order of PRESENTATION
    * 
    */
-  private final static String[] keywordNames = { "NPA", "NBO", "BEND",
-      "E2", "NLMO", "NRT", "STERIC", "CMO", "DIPOLE", "OPBAS", "B1B2" };
+  private final static String[] keywordNames = { "NPA", "NBO", "BEND", "E2",
+      "NLMO", "NRT", "STERIC", "CMO", "DIPOLE", "OPBAS", "B1B2" };
 
   /**
    * @return name of the keyword
@@ -98,7 +99,7 @@ abstract class NBODialogSearch extends NBODialogView {
   private String getKeywordButtonLabel(int ibtn) {
     return (ibtn == 3 ? "E2PERT" : getKeywordName(btnIndexToNBOKeyword[ibtn]));
   }
-  
+
   /**
    * * does not include "HELP" (0)
    * 
@@ -106,9 +107,9 @@ abstract class NBODialogSearch extends NBODialogView {
    * @return name for the specified keyword ID
    */
   private String getKeywordName(int ikeywd) {
-    return  keywordNames[ikeywd - 1];
+    return keywordNames[ikeywd - 1];
   }
-  
+
   /**
    * Return the NBOServe keyword for a given SEARCH option; allows for a
    * different presentation ordering in Jmol relative to actual numbers in
@@ -234,14 +235,14 @@ abstract class NBODialogSearch extends NBODialogView {
    * the OPBAS operator currently selected
    */
   private int operator = 1;
-  
+
   /**
    * set true when an action is going to produce a change that will require
-   * relabeling the atoms, specifically NPA option 11/12 and NRT option 9 
+   * relabeling the atoms, specifically NPA option 11/12 and NRT option 9
    */
-  
+
   private boolean needRelabel;
-    
+
   private void resetVariables_s() {
     optionSelected = -1;
     keywordID = 0;
@@ -250,10 +251,15 @@ abstract class NBODialogSearch extends NBODialogView {
 
   /////////////////////////////////////////////////////////////////
 
-  protected NBODialogSearch(JFrame f) {
-    super(f);
-  }
+  //  private NBODialog dialog;
+  //  private Viewer vwr;
 
+  //  protected NBODialogSearch(NBODialog dialog) {
+  //    this.dialog = dialog;
+  //    this.vwr = dialog.vwr;
+  //  }
+  //
+  //
   protected JPanel buildSearchPanel() {
 
     JPanel panel = new JPanel();
@@ -329,7 +335,7 @@ abstract class NBODialogSearch extends NBODialogView {
     Box optionBox2 = Box.createVerticalBox();
     opList = new JPanel();
     comboBasisOperation = new JComboBox<String>(op);
-//    comboBasisOperation.setUI(new StyledComboBoxUI(150, 350));
+    //    comboBasisOperation.setUI(new StyledComboBoxUI(150, 350));
 
     comboBasisOperation.setMaximumSize(new Dimension(350, 30));
     comboBasisOperation.setAlignmentX(0.0f);
@@ -353,7 +359,7 @@ abstract class NBODialogSearch extends NBODialogView {
     keyWdBtn.setRolloverEnabled(false);
     topBox.add(keyWdBtn);
     topBox.add(back);
-    topBox.add(new HelpBtn("a") {
+    topBox.add(dialog.new HelpBtn("a") {
       @Override
       protected String getHelpPage() {
         return getSearchHelpURL();
@@ -377,12 +383,12 @@ abstract class NBODialogSearch extends NBODialogView {
     optionBox.add(optionBox2);
     panel.add(optionBox);
 
-    comboBasis1 = new JComboBox<String>(NBODialogView.basSet);
+    comboBasis1 = new JComboBox<String>(NBOView.basSet);
     //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
 
-    inputFileHandler.setBrowseEnabled(true);
+    dialog.inputFileHandler.setBrowseEnabled(true);
 
-    viewSettingsBox.removeAll();
+    dialog.viewSettingsBox.removeAll();
     String file = vwr.getProperty("String", "filename", null).toString();
     String ext = NBOFileHandler.getExt(new File(file));
 
@@ -392,7 +398,7 @@ abstract class NBODialogSearch extends NBODialogView {
     return panel;
   }
 
-  protected void doSearchCMOSelectNBO() {    
+  protected void doSearchCMOSelectNBO() {
     showOrbJmol("PNBO", comboSearchOrb1.getSelectedIndex(), "cmo");
   }
 
@@ -416,7 +422,7 @@ abstract class NBODialogSearch extends NBODialogView {
     opList.setLayout(new GridBagLayout());
     opList.setBackground(Color.white);
     keywordID = KEYWD_WEBHELP;
-    viewSettingsBox.setVisible(false);
+    dialog.viewSettingsBox.setVisible(false);
     GridBagConstraints c = new GridBagConstraints();
     c.fill = GridBagConstraints.HORIZONTAL;
     for (int i = 0; i < keywordNames.length * 2; i += 2) {
@@ -453,8 +459,8 @@ abstract class NBODialogSearch extends NBODialogView {
     back.setEnabled(false);
   }
 
-  protected void doSearchKeywordClicked(int index) {    
-    if (nboService.isWorking()) {
+  protected void doSearchKeywordClicked(int index) {
+    if (dialog.nboService.isWorking()) {
       vwr.alert("Please wait for NBOServe to finish working");
       return;
     }
@@ -468,7 +474,7 @@ abstract class NBODialogSearch extends NBODialogView {
   }
 
   protected void doSetSpin() {
-    doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
+    dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
     switch (keywordID) {
     case KEYWD_NBO:
     case KEYWD_BEND:
@@ -503,12 +509,12 @@ abstract class NBODialogSearch extends NBODialogView {
       comboUnit1.setSelectedIndex(0);
     SB script = new SB();
     if (needRelabel) {
-      doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
+      dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
       script
           .append("measurements off;select add {*}.bonds; color bonds lightgrey; select none;");
     }
     script.append("isosurface delete; select off;refresh");
-    runScriptNow(script.toString());
+    dialog.runScriptNow(script.toString());
     buildHome();
   }
 
@@ -516,10 +522,11 @@ abstract class NBODialogSearch extends NBODialogView {
 
     secondPick = true;
     back.setEnabled(true);
-    viewSettingsBox.setVisible(!jmolOptionNONBO);
-    keyWdBtn.setText("<html><font color=black>" + getKeyword() + "</font></html>");
+    dialog.viewSettingsBox.setVisible(!dialog.jmolOptionNONBO);
+    keyWdBtn.setText("<html><font color=black>" + getKeyword()
+        + "</font></html>");
     keyWdBtn.setVisible(true);
-    runScriptNow("isosurface delete;refresh");
+    dialog.runScriptNow("isosurface delete;refresh");
     opList.removeAll();
 
     ButtonGroup btnGroup = new ButtonGroup();
@@ -561,7 +568,7 @@ abstract class NBODialogSearch extends NBODialogView {
   }
 
   protected void showMessage() {
-    JOptionPane.showMessageDialog(this,
+    JOptionPane.showMessageDialog(dialog,
         "Error getting lists, an error may have occured during run");
   }
 
@@ -597,7 +604,7 @@ abstract class NBODialogSearch extends NBODialogView {
         "  (6) max <*r|" + operator + "|*c> value for any *r,*c",
         "  (7) min <*r|" + operator + "|*c> value for any *r,*c" };
   }
-  
+
   protected void keywordClicked(int index) throws IllegalArgumentException {
     isNewModel = false;
     keywordID = index;
@@ -614,29 +621,29 @@ abstract class NBODialogSearch extends NBODialogView {
     case KEYWD_NBO:
       load(36, true);
       comboBasis1.setSelectedIndex(BASIS_PNBO);
-      setKeyword(new String[] { "b", "o PNBO" }, 
-          new String[] { "Basis: ", "Orbital: " });
+      setKeyword(new String[] { "b", "o PNBO" }, new String[] { "Basis: ",
+          "Orbital: " });
       changeKey(nbo);
       break;
     case KEYWD_NLMO:
       load(38, true);
       comboBasis1.setSelectedIndex(BASIS_PNLMO);
-      setKeyword(new String[] { "b", "o PNLMO" }, 
-          new String[] { "Basis: ",  "Orbital: " });
+      setKeyword(new String[] { "b", "o PNLMO" }, new String[] { "Basis: ",
+          "Orbital: " });
       changeKey(nlmo);
       break;
     case KEYWD_BEND:
       load(34, true);
       comboBasis1.setSelectedIndex(BASIS_PNHO);
-      setKeyword(new String[] { "b", "o PNHO" }, 
-                  new String[] { "Basis: ",  "Orbital: " });
+      setKeyword(new String[] { "b", "o PNHO" }, new String[] { "Basis: ",
+          "Orbital: " });
       changeKey(bend);
       break;
     case KEYWD_NRT:
-      runScriptNow("set bondpicking true");
-      if (isOpenShell())
-        setKeyword("s a a' rs".split(" "), 
-            new String[] { "Spin: ", "Atom A: ",  "Atom A': ", "Res Struct: " });
+      dialog.runScriptNow("set bondpicking true");
+      if (dialog.isOpenShell())
+        setKeyword("s a a' rs".split(" "), new String[] { "Spin: ", "Atom A: ",
+            "Atom A': ", "Res Struct: " });
       else
         setKeyword("a a' rs".split(" "), new String[] { "Atom A: ",
             "Atom A': ", "Res Struct: " });
@@ -645,39 +652,40 @@ abstract class NBODialogSearch extends NBODialogView {
     case KEYWD_E2PERT:
       load(36, true);
       comboBasis1.setSelectedIndex(BASIS_PNBO);
-      setKeyword(new String[] { "b", "d nbo", "a nbo", "u" }, 
-          new String[] { "Basis: ", "d-NBO: ", "a-NBO:", "Unit: " });
+      setKeyword(new String[] { "b", "d nbo", "a nbo", "u" }, new String[] {
+          "Basis: ", "d-NBO: ", "a-NBO:", "Unit: " });
       changeKey(e2);
       break;
     case KEYWD_STERIC:
       load(38, true);
       comboBasis1.setSelectedIndex(BASIS_PNLMO);
-      setKeyword(new String[] { "b", "d nlmo", "d' nlmo", "u" }, 
-          new String[] {  "Basis: ", "d-NLMO: ", "d'-NLMO:", "Unit: " });
+      setKeyword(new String[] { "b", "d nlmo", "d' nlmo", "u" }, new String[] {
+          "Basis: ", "d-NLMO: ", "d'-NLMO:", "Unit: " });
       changeKey(steric);
       break;
     case KEYWD_CMO:
       load(40, true);
       comboBasis1.setSelectedIndex(BASIS_MO);
-      if (!cleanNBOKeylist(inputFileHandler.read47File(false)[1], true).contains("CMO")) {
-        doRunGenNBOJob("CMO");
+      if (!dialog.runPanel.cleanNBOKeylist(
+          dialog.inputFileHandler.read47File(false)[1], true).contains("CMO")) {
+        dialog.runPanel.doRunGenNBOJob("CMO");
         return;
       }
-      setKeyword(new String[] { "b", "c cmo", "n" }, 
-                 new String[] { "Basis: ", "MO: ", "NBO:" });
+      setKeyword(new String[] { "b", "c cmo", "n" }, new String[] { "Basis: ",
+          "MO: ", "NBO:" });
       changeKey(mo);
       break;
     case KEYWD_DIPOLE:
       load(38, true);
       comboBasis1.setSelectedIndex(BASIS_PNLMO);
-      setKeyword(new String[] { "b", "o", "u" }, 
-                 new String[] { "Basis: ", "Orbital: ", "Unit:" });
+      setKeyword(new String[] { "b", "o", "u" }, new String[] { "Basis: ",
+          "Orbital: ", "Unit:" });
       changeKey(dip);
       break;
     case KEYWD_OPBAS:
       load(31, true);
-      viewSettingsBox.removeAll();
-      comboBasis1 = new JComboBox<String>(NBODialogView.basSet);
+      dialog.viewSettingsBox.removeAll();
+      comboBasis1 = new JComboBox<String>(NBOView.basSet);
       //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
       comboBasis1.setEditable(false);
       comboBasisOperation.requestFocus();
@@ -686,24 +694,25 @@ abstract class NBODialogSearch extends NBODialogView {
       changeKey(new String[] {});
       break;
     case KEYWD_BAS1BAS2:
-      runScriptNow("set bondpicking true");
+      dialog.runScriptNow("set bondpicking true");
       setKeyword("b1 b2 r c".split(" "), new String[] { "Basis 1:", "Basis 2:",
           "Row:", "Column:" });
       getBasisOperations2(false);
       break;
     }
-    this.repaint();
-    this.revalidate();
+    dialog.repaint();
+    dialog.revalidate();
 
     if (index == KEYWD_OPBAS)
       comboBasisOperation.showPopup();
   }
 
   private void load(int nn, boolean withBondPicking) {
-    iAmLoading = true;
-    if (loadModelFileNow(inputFileHandler.newNBOFileForExt("" + nn)
+    dialog.iAmLoading = true;
+    if (dialog.loadModelFileNow(dialog.inputFileHandler.newNBOFileForExt(""
+        + nn)
         + (withBondPicking ? ";set bondpicking true" : "")) == null)
-      iAmLoading = false;
+      dialog.iAmLoading = false;
   }
 
   /**
@@ -716,8 +725,8 @@ abstract class NBODialogSearch extends NBODialogView {
    */
   protected void setKeyword(final String[] items, final String[] labels) {
     resetCurrentOrbitalClicked();
-    viewSettingsBox.removeAll();
-    viewSettingsBox.setLayout(new BorderLayout());
+    dialog.viewSettingsBox.removeAll();
+    dialog.viewSettingsBox.setLayout(new BorderLayout());
     JPanel outerListPanel = new JPanel(new GridLayout(labels.length, 1));
     JPanel innerListPanel = new JPanel(new GridLayout(labels.length, 1));
     for (int i = 0; i < labels.length; i++) {
@@ -771,7 +780,8 @@ abstract class NBODialogSearch extends NBODialogView {
         comboAtom1.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            doSearchAtom1Action(comboAtom1.getSelectedIndex(), comboAtom2 == null ? -1 : comboAtom2.getSelectedIndex());
+            doSearchAtom1Action(comboAtom1.getSelectedIndex(),
+                comboAtom2 == null ? -1 : comboAtom2.getSelectedIndex());
           }
         });
         innerListPanel.add(comboAtom1);
@@ -781,10 +791,11 @@ abstract class NBODialogSearch extends NBODialogView {
         comboAtom2.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            if (comboAtom1.getSelectedIndex() > 0 && comboAtom2.getSelectedIndex() > 0)
-            runScriptQueued("select on @"
-                + (comboAtom1.getSelectedIndex()) + ",@"
-                + (comboAtom2.getSelectedIndex()));
+            if (comboAtom1.getSelectedIndex() > 0
+                && comboAtom2.getSelectedIndex() > 0)
+              dialog.runScriptQueued("select on @"
+                  + (comboAtom1.getSelectedIndex()) + ",@"
+                  + (comboAtom2.getSelectedIndex()));
           }
         });
         innerListPanel.add(comboAtom2);
@@ -798,14 +809,14 @@ abstract class NBODialogSearch extends NBODialogView {
             doSetBasis();
           }
         });
-        if (isOpenShell()) {
+        if (dialog.isOpenShell()) {
           //b.add(Box.createRigidArea(new Dimension(20,0)));
           b.add(alphaSpin);
           b.add(betaSpin);
         }
         innerListPanel.add(b);
       } else if (key.equals("b2")) {
-        comboBasis2 = new JComboBox<String>(NBODialogView.basSet);
+        comboBasis2 = new JComboBox<String>(NBOView.basSet);
         //comboBasis2.setUI(new StyledComboBoxUI(180, -1));
         comboBasis2.setSelectedIndex(1);
         comboBasis2.addActionListener(new ActionListener() {
@@ -816,31 +827,30 @@ abstract class NBODialogSearch extends NBODialogView {
         });
         innerListPanel.add(comboBasis2);
       } else if (key.equals("b12")) {
-        comboBasis1 = new JComboBox<String>(NBODialogView.basSet);
+        comboBasis1 = new JComboBox<String>(NBOView.basSet);
         //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
         innerListPanel.add(comboBasis1);
       }
     }
-    logCmd(getKeyword() + " Search Results:");
+    dialog.logCmd(getKeyword() + " Search Results:");
     JLabel lab = new JLabel("Settings");
     lab.setFont(NBOConfig.nboFont);
 
     lab.setOpaque(true);
     lab.setBackground(Color.black);
     lab.setForeground(Color.white);
-    viewSettingsBox.add(lab, BorderLayout.NORTH);
-    viewSettingsBox.add(outerListPanel, BorderLayout.WEST);
-    viewSettingsBox.add(innerListPanel, BorderLayout.CENTER);
+    dialog.viewSettingsBox.add(lab, BorderLayout.NORTH);
+    dialog.viewSettingsBox.add(outerListPanel, BorderLayout.WEST);
+    dialog.viewSettingsBox.add(innerListPanel, BorderLayout.CENTER);
   }
 
   protected void doSearchAtom1Action(int atomno1, int atomno2) {
     if (atomno1 <= 0 || atomno2 <= 0)
       return;
     if (comboAtom2 == null)
-      runScriptQueued("select on @" + atomno1);
+      dialog.runScriptQueued("select on @" + atomno1);
     else
-      runScriptQueued("select on @"
-          + atomno1 + ", @" + atomno2);
+      dialog.runScriptQueued("select on @" + atomno1 + ", @" + atomno2);
   }
 
   private void setComboSearchOrbDefaultAction(final String key) {
@@ -927,11 +937,11 @@ abstract class NBODialogSearch extends NBODialogView {
       postListRequest("r", comboSearchOrb1);
       break;
     case KEYWD_OPBAS:
-      iAmLoading = true;
-      if (loadModelFileNow(""
-          + inputFileHandler.newNBOFileForExt(""
+      dialog.iAmLoading = true;
+      if (dialog.loadModelFileNow(""
+          + dialog.inputFileHandler.newNBOFileForExt(""
               + (31 + comboBasis1.getSelectedIndex()))) == null)
-        iAmLoading = false;
+        dialog.iAmLoading = false;
       postListRequest("r", comboSearchOrb1);
       postListRequest("c", comboSearchOrb2);
       break;
@@ -984,8 +994,8 @@ abstract class NBODialogSearch extends NBODialogView {
         if (op > 10) {
           isLabel = true;
           op = 12;
-        } else if (op <= 3){
-          atom1 = comboAtom1;          
+        } else if (op <= 3) {
+          atom1 = comboAtom1;
         }
       }
       break;
@@ -1118,8 +1128,9 @@ abstract class NBODialogSearch extends NBODialogView {
     //    }
 
     if (needRelabel) {
-      runScriptQueued("select add {*}.bonds; color bonds lightgrey; select none; measurements off");
-      doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
+      dialog
+          .runScriptQueued("select add {*}.bonds; color bonds lightgrey; select none; measurements off");
+      dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
       needRelabel = false;
     }
     if (isLabel) {
@@ -1127,7 +1138,8 @@ abstract class NBODialogSearch extends NBODialogView {
       postNBO_s(sb, NBOService.MODE_SEARCH_LABEL, null, "Getting labels");
     } else if (isLabelBonds) {
       needRelabel = true;
-      runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select none");
+      dialog
+          .runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select none");
       postNBO_s(sb, NBOService.MODE_SEARCH_LABEL_BONDS, null,
           "Getting bonds list");
     } else {
@@ -1186,11 +1198,12 @@ abstract class NBODialogSearch extends NBODialogView {
         comboUnit1.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            doSearchSetResStruct((alphaSpin.isSelected() ? "nrtstra" : "nrtstrb"),
-                comboUnit1.getSelectedIndex());
+            dialog.doSearchSetResStruct((alphaSpin.isSelected() ? "nrtstra"
+                : "nrtstrb"), comboUnit1.getSelectedIndex());
           }
         });
-        doSearchSetResStruct(alphaSpin.isSelected() ? "nrtstra" : "nrtstrb", 0);
+        dialog.doSearchSetResStruct(alphaSpin.isSelected() ? "nrtstra"
+            : "nrtstrb", 0);
       }
       break;
     case KEYWD_OPBAS:
@@ -1212,14 +1225,14 @@ abstract class NBODialogSearch extends NBODialogView {
    */
   protected void showOrbJmol(String type, int i, String id) {
     if (i <= 0) {
-      runScriptQueued("select visible;isosurface delete");
-      logError("Select an orbital.");
+      dialog.runScriptQueued("select visible;isosurface delete");
+      dialog.logError("Select an orbital.");
       return;
     }
     id = fixID(id);
-    runScriptQueued("select visible;isosurface delete;"
-        + NBOConfig.getJmolIsosurfaceScript(id, peeify(type), i, betaSpin.isSelected(),
-            false));
+    dialog.runScriptQueued("select visible;isosurface delete;"
+        + NBOConfig.getJmolIsosurfaceScript(id, peeify(type), i,
+            betaSpin.isSelected(), false));
   }
 
   /**
@@ -1285,7 +1298,7 @@ abstract class NBODialogSearch extends NBODialogView {
    *        ["bond","1 3 O1 #1 -- C2 #2 1.171168",0.0,0.0,0.58555] as a String
    */
   protected void notifyPick_s(String atomnoOrBondInfo) {
-    runScriptNow("isosurface delete");
+    dialog.runScriptNow("isosurface delete");
     String[] tok = atomnoOrBondInfo.split(",");
     if (tok.length < 2) {
       // single-atom pick
@@ -1483,11 +1496,11 @@ abstract class NBODialogSearch extends NBODialogView {
   protected void notifyLoad_s() {
     if (vwr.ms.ac == 0)
       return;
-    runScriptNow("isosurface delete");
+    dialog.runScriptNow("isosurface delete");
 
     optionSelected = -1;
-    doSetStructure("alpha");
-    if (isOpenShell()) {
+    dialog.doSetStructure("alpha");
+    if (dialog.isOpenShell()) {
       alphaSpin.setVisible(true);
       betaSpin.setVisible(true);
     } else {
@@ -1500,28 +1513,28 @@ abstract class NBODialogSearch extends NBODialogView {
       keywordClicked(keywordID);
     }
   }
-
-  @Override
-  protected void showConfirmationDialog(String st, File newFile, String ext) {
-    int i = JOptionPane.showConfirmDialog(this, st, "Message",
-        JOptionPane.YES_NO_OPTION);
-    if (i == JOptionPane.YES_OPTION) {
-      JDialog d = new JDialog(this);
-      d.setLayout(new BorderLayout());
-      JTextPane tp = new JTextPane();
-      d.add(tp, BorderLayout.CENTER);
-      d.setSize(new Dimension(500, 600));
-      tp.setText(inputFileHandler.getFileData(NBOFileHandler.newNBOFile(
-          newFile, "nbo").toString()));
-      d.setVisible(true);
-    }
-  }
+//
+//  protected void showConfirmationDialog(String st, File newFile, String ext) {
+//    int i = JOptionPane.showConfirmDialog(dialog, st, "Message",
+//        JOptionPane.YES_NO_OPTION);
+//    if (i == JOptionPane.YES_OPTION) {
+//      JDialog d = new JDialog(dialog);
+//      d.setLayout(new BorderLayout());
+//      JTextPane tp = new JTextPane();
+//      d.add(tp, BorderLayout.CENTER);
+//      d.setSize(new Dimension(500, 600));
+//      tp.setText(dialog.inputFileHandler.getFileData(NBOFileHandler.newNBOFile(
+//          newFile, "nbo").toString()));
+//      d.setVisible(true);
+//    }
+//  }
 
   ////////////////////////// SEARCH POSTS TO NBO ///////////////////
 
   /**
    * 
-   * @param cmd_basis a possibly space-separated set of CMD and 
+   * @param cmd_basis
+   *        a possibly space-separated set of CMD and
    * @param cb
    */
   private void postListRequest(String cmd_basis, JComboBox<String> cb) {
@@ -1587,7 +1600,7 @@ abstract class NBODialogSearch extends NBODialogView {
         processNBO_s(req, mode, cb);
       }
     }, statusMessage, "s_cmd.txt", sb.toString());
-    nboService.postToNBO(req);
+    dialog.nboService.postToNBO(req);
   }
 
   protected void showMax(String line) {
@@ -1608,12 +1621,12 @@ abstract class NBODialogSearch extends NBODialogView {
     switch (mode) {
     case NBOService.MODE_SEARCH_VALUE:
       line = lines[0];
-      if (isOpenShell()) {
+      if (dialog.isOpenShell()) {
         String spin = (alphaSpin.isSelected() ? "&uarr;" : "&darr;");
         int ind = line.indexOf(')') + 1;
         line = line.substring(0, ind) + spin + line.substring(ind);
       }
-      logValue(" " + line);
+      dialog.logValue(" " + line);
       if (line.contains("*"))
         showMax(line);
       break;
@@ -1646,7 +1659,8 @@ abstract class NBODialogSearch extends NBODialogView {
         if (isLabel ? !processLabel(sb, lines[i], pt) : !processLabelBonds(sb,
             lines[i]))
           break;
-      runScriptQueued(sb.toString() + NBOConfig.JMOL_FONT_SCRIPT + ";select none;");
+      dialog.runScriptQueued(sb.toString() + NBOConfig.JMOL_FONT_SCRIPT
+          + ";select none;");
       break;
     }
   }
@@ -1654,7 +1668,7 @@ abstract class NBODialogSearch extends NBODialogView {
   protected boolean processLabel(SB sb, String line, int count) {
     try {
       double val = Double.parseDouble(line);
-      val = round(val, 4);
+      val = NBOUtil.round(val, 4);
       sb.append(";select @" + (count) + ";label " + val);
     } catch (Exception e) {
       System.out.println("SEARCH: label processing ended!");

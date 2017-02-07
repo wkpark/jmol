@@ -28,6 +28,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -110,6 +112,14 @@ public class NBOUtil {
   }
 
   protected static final String sep = System.getProperty("line.separator");
+
+  protected static double round(double value, int places) {
+    if (places < 0)
+      throw new IllegalArgumentException();
+    BigDecimal bd = new BigDecimal(value);
+    bd = bd.setScale(places, RoundingMode.HALF_UP);
+    return bd.doubleValue();
+  }
   
 ///**
 //* Centers the dialog on the screen.

@@ -8924,9 +8924,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
           null);
   }
   
+  /**
+   * Run a script using the script function script("xxxxxx") using
+   * direct script tokens for   script  (   "xxxxxxx"   )
+   *
+   */
   @Override
   public String runScript(String script) {
-    return "" + evaluateExpression(new T[][] { new T[] {T.t(T.script), T.t(T.leftparen), SV.newS(script), T.t(T.rightparen)}, null });
+    return "" + evaluateExpression(new T[][] { new T[] {T.t(T.script), T.t(T.leftparen), SV.newS(script), T.t(T.rightparen)}});
   }
 
   /**

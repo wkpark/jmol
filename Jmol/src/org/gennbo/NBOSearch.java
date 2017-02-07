@@ -103,10 +103,9 @@ class NBOSearch extends NBOView {
   
   private static final int MODE_SEARCH_VALUE       = 14;
   private static final int MODE_SEARCH_LIST_MO     = 24;
-  private static final int MODE_SEARCH_SELECT      = 34;
-  private static final int MODE_SEARCH_LABEL       = 44;
-  private static final int MODE_SEARCH_LABEL_BONDS = 54;
-  private static final int MODE_SEARCH_LIST        = 64;
+  private static final int MODE_SEARCH_LABEL       = 34;
+  private static final int MODE_SEARCH_LABEL_BONDS = 44;
+  private static final int MODE_SEARCH_LIST        = 54;
 
 
   /**

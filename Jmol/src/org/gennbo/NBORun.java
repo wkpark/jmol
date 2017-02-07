@@ -603,7 +603,7 @@ class NBORun {
    * @return new list, including trailing space character.
    */
   protected String getKeywordsFromButtons() {
-    String keywords = " " + cleanNBOKeylist(cleanNBOKeylist(dialog.inputFileHandler.read47File(false)[1], false), false) + " ";
+    String keywords = " " + cleanNBOKeylist(dialog.inputFileHandler.read47File(false)[1], false) + " ";
     if (keywordButtons == null)
       return keywords;
     for (int i = 0; i < keywordButtons.length; i++) {

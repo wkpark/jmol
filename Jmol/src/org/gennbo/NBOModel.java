@@ -218,6 +218,8 @@ class NBOModel {
     actionID = 0;
     boxCount = 0;
     notFromNBO = false;
+    showSelectedOnFileLoad = false;
+    resetOnAtomClick = true;
   }
 
   private Box getEditHeader() {
@@ -876,6 +878,7 @@ class NBOModel {
       dialog.logCmd("Undo");
     }
   };
+  private boolean showSelectedOnFileLoad;
   
   /**
    * Clear out the text fields
@@ -883,8 +886,8 @@ class NBOModel {
    * 
    */
   protected void clearSelected(boolean andShow) {
+    System.out.println("clearing all boxes");
     for (int i = 0; i < boxCount; i++) {
-      System.out.println("clearing all boxes");
       atomNumBoxes[i].setText("");
     }
     
@@ -1210,7 +1213,12 @@ class NBOModel {
     if (actionID == MODEL_ACTION_MUTATE) {
       doModelAction(actionID);
     }
-    dialog.runScriptNow("select none; select on;refresh");
+    if (showSelectedOnFileLoad) {
+      updateSelected(false);
+      showSelectedOnFileLoad = false;
+    } else {
+      dialog.runScriptNow("select none; select on;refresh");
+    }
   }
   
 //  protected void showConfirmationDialog(String st, File newFile, String ext) {
@@ -1274,22 +1282,34 @@ class NBOModel {
 //      }
 //    }
     String s = PT.join(a, '\n', 0);
+    boolean doClear = true;
     switch (mode) {
     case MODEL_ACTION_ALTER:
       // using quaternion analysis to reorient the structure even though it has been messed up.
       dialog.runScriptQueued("z = show('zoom');set refreshing false;x = {*}.xyz.all;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";compare {*} @x rotate translate 0;script inline @z;set refreshing true");
       break;
+    case MODEL_ACTION_TWIST:
+      doClear = false;
+      //$FALL-THROUGH$
+    case MODEL_ACTION_CLIP:
+    case MODEL_ACTION_FUSE:
+    case MODEL_ACTION_LINK:
+    case MODEL_ACTION_MUTATE:
+    case MODEL_ACTION_SWITCH:
+    case MODEL_ACTION_3CHB:
     case MODE_MODEL_NEW:
     case MODE_MODEL_EDIT:
-    case MODEL_ACTION_TWIST:
       s += NBOConfig.JMOL_FONT_SCRIPT;
       if (mode == MODE_MODEL_EDIT)
         s = "set refreshing off;save orientation o4;load " + s
             + ";restore orientation o4;set refreshing on";
       else
         s = ";load " + s;
-      currVal.setText("");
+      if  (doClear)
+        clearSelected(false);
+      else
+        showSelectedOnFileLoad = true;
       dialog.loadModelDataQueued(s);
       break;
     case MODE_MODEL_SAVE:

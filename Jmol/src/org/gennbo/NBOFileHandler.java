@@ -271,6 +271,8 @@ class NBOFileHandler extends JPanel {
   /**
    * Read input parameters from .47 file
    * 
+   * @param doAll read the whole thing; else just for keywords (stops at $COORD) 
+   * 
    * @return [ pre-keyword params, keywords, post-keyword params ]
    */
   protected String[] read47File(boolean doAll) {
@@ -278,7 +280,7 @@ class NBOFileHandler extends JPanel {
     String[] fileData = new String[] { "", "", "", "" };
     String nboKeywords = "";
     SB data = new SB();
-    if (!readFileBuffered(inputFile, data))
+    if (!readFileBuffered(inputFile, data, doAll ? null : "$COORD"))
       return fileData;
     String s = PT.trim(data.toString(), "\t\r\n ");
     String[] tokens = PT.split(s, "$END");
@@ -331,12 +333,12 @@ class NBOFileHandler extends JPanel {
    * @param data
    * @return true if successful; false if not
    */
-  private boolean readFileBuffered(File inputFile, SB data) {
+  private boolean readFileBuffered(File inputFile, SB data, String stop) {
     try {
       BufferedReader b = null;
       b = new BufferedReader(new FileReader(inputFile));
       String line;
-      while ((line = b.readLine()) != null)
+      while ((line = b.readLine()) != null && (stop == null || !line.contains(stop)))
         data.append(line + sep);
       b.close();
       return true;

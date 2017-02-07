@@ -70,8 +70,9 @@ public class NBOService {
   static final int MODE_MODEL_SAVE     = 41;
   static final int MODE_MODEL_SYMMETRY = 51;
   static final int MODE_MODEL_TO_NBO   = 61;
-  static final int MODE_MODEL_UNDO_REDO= 71;
-  static final int MODE_MODEL_VALUE    = 81;
+  static final int MODE_MODEL_TWIST    = 71;
+  static final int MODE_MODEL_UNDO_REDO= 81;
+  static final int MODE_MODEL_VALUE    = 91;
 
   static final int MODE_RUN_GENNBO     = 12;
 

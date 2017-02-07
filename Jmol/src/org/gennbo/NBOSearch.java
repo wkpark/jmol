@@ -1614,6 +1614,12 @@ class NBOSearch extends NBOView {
     dialog.nboService.postToNBO(req);
   }
 
+  /**
+   * Do something in response to a reply that includes a * by an orbital's name,
+   * indicating that it is a maximum value -- perhaps display it? Briefly?
+   * 
+   * @param line
+   */
   protected void showMax(String line) {
     //BH not implemented?  
   }

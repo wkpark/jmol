@@ -610,7 +610,7 @@ class NBOModel {
         }
       }
     }
-    if (actionID == MODEL_ACTION_ALTER) {
+    if (actionID == MODEL_ACTION_ALTER || actionID == MODEL_ACTION_TWIST && cnt == 4) {
       postActionToNBO_m(MODEL_ACTION_VALUE);
     }
     dialog.runScriptQueued(script);
@@ -926,9 +926,9 @@ class NBOModel {
     if (actionID == MODEL_ACTION_VALUE) {
       postNBO_m(sb, NBOService.MODE_MODEL_VALUE, "Checking Value", null, null);
     } else {
-      postNBO_m(sb,
-          (actionID == MODEL_ACTION_ALTER ? NBOService.MODE_MODEL_ALTER
-              : NBOService.MODE_MODEL_EDIT), "Editing model", null, null);
+      actionID = (actionID == MODEL_ACTION_ALTER  ? NBOService.MODE_MODEL_ALTER
+          : actionID == MODEL_ACTION_TWIST ? NBOService.MODE_MODEL_TWIST : NBOService.MODE_MODEL_EDIT);
+      postNBO_m(sb, actionID, "Editing model", null, null);
       resetOnAtomClick = true;
     } 
     
@@ -1281,6 +1281,7 @@ class NBOModel {
           + ";compare {*} @x rotate translate 0;script inline @z;set refreshing true");
       break;
     case NBOService.MODE_MODEL_NEW:
+    case NBOService.MODE_MODEL_TWIST:
     case NBOService.MODE_MODEL_EDIT:
       s += NBOConfig.JMOL_FONT_SCRIPT;
       if (mode == NBOService.MODE_MODEL_EDIT)
@@ -1288,6 +1289,7 @@ class NBOModel {
             + ";restore orientation o4;set refreshing on";
       else
         s = ";load " + s;
+      currVal.setText("");
       dialog.loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_SAVE:

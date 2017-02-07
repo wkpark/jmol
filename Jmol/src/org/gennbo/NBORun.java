@@ -760,7 +760,7 @@ class NBORun {
       public void run() {
         processNBO_r(req, mode);
       }
-    }, statusMessage, "r_cmd.txt", sb.toString());
+    }, true, statusMessage, "r_cmd.txt", sb.toString());
     dialog.nboService.postToNBO(req);
   }
 

@@ -585,8 +585,8 @@ public class NBOService {
         
         // Note that RUN can dump all kinds of things to SYSOUT prior to completion.
         
-        logServerLine(s, (currentRequest.isRUN ? Logger.LEVEL_DEBUG : Logger.LEVEL_ERROR));
-        return (removeRequest = !currentRequest.isRUN);
+        logServerLine(s, (currentRequest.isMessy ? Logger.LEVEL_DEBUG : Logger.LEVEL_ERROR));
+        return (removeRequest = !currentRequest.isMessy);
       }
       s = s.substring(pt + 8); // includes \n
       pt = s.indexOf("*end*");

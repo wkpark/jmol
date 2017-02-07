@@ -229,12 +229,9 @@ public class NBODialog extends JDialog {
       if (!jmolOptionNOSET)
         runScriptQueued(NBOConfig.DEFAULT_SCRIPT);
 
-    //get saved properties
-
     modelPanel = new NBOModel(this);
     runPanel = new NBORun(this);
-    searchPanel = new NBOSearch(this);
-    viewPanel = searchPanel;
+    viewPanel = searchPanel = new NBOSearch(this);
     
     createDialog(jmolFrame);
 
@@ -393,7 +390,7 @@ public class NBODialog extends JDialog {
     int x = Math.min(screenSize.width - size.width, d.getParent().getX()
         + d.getParent().getWidth()) - 10;
     int y = d.getParent().getY();
-    System.out.println("------" + x + "   " + y);
+    //System.out.println("------" + x + "   " + y);
     d.setLocation(x, y);
   }
 
@@ -795,7 +792,7 @@ public class NBODialog extends JDialog {
    */
   @SuppressWarnings("incomplete-switch")
   public void notifyCallback(CBK type, Object[] data) {
-    System.out.println(type + "" +  data[1]);
+    //System.out.println(type + "" +  data[1]);
     if (!isVisible())
       return;
     switch (type) {
@@ -805,7 +802,7 @@ public class NBODialog extends JDialog {
       break;
     case PICK:
       int atomIndex = ((Integer) data[2]).intValue();
-      System.out.println("----" + type.toString() + ":  " + atomIndex);
+      //System.out.println("----" + type.toString() + ":  " + atomIndex);
       String atomno;
       if (atomIndex == -3)
         atomno = data[1].toString();

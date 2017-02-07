@@ -1237,7 +1237,7 @@ class NBOModel {
       public void run() {
         processNBO_m(mode, req);
       }
-    }, statusMessage, "m_cmd.txt", sb.toString(), fileName, fileData);
+    }, false, statusMessage, "m_cmd.txt", sb.toString(), fileName, fileData);
     dialog.nboService.postToNBO(req);
   }
 

@@ -967,7 +967,7 @@ class NBOSearch extends NBOView {
   /**
    * The main method that is called to set up the post event to NBO.
    * 
-   * @param op
+   * @param op  one-based index of the radio buttons for this SEARCH option
    */
   protected void doGetSearchValue(int op) {
     optionSelected = op - 1;
@@ -990,11 +990,13 @@ class NBOSearch extends NBOView {
       orb1 = comboSearchOrb2;
       unit1 = comboUnit1;
       if (op < 6 || op > 10) {
+        // only 6-10 use orbital 1
         orb1 = null;
         if (op > 10) {
           isLabel = true;
           op = 12;
         } else if (op <= 3) {
+          // ops 1-3 use atom1
           atom1 = comboAtom1;
         }
       }
@@ -1012,38 +1014,46 @@ class NBOSearch extends NBOView {
       break;
     case KEYWD_NRT:
       orb1 = null;
+      // only 1-6 use the first atom
       atom1 = (op <= 6 ? comboAtom1 : null);
+      // only  4,5 and 6 use the second atom
       atom2 = (op >= 4 && op <= 6 ? comboAtom2 : null);
       unit1 = comboUnit1;
       labelUnit1 = "RES_STR";
+      // atom label is 9
       isLabel = (op == 9);
+      // bond label is 10
       isLabelBonds = (op == 10);
       break;
     case KEYWD_STERIC:
       labelOrb1 = "d_NBO_1";
-      orb2 = comboSearchOrb2;
       labelOrb2 = "d_NBO_2";
+      orb2 = comboSearchOrb2;
       unit1 = comboUnit1;
       break;
     case KEYWD_CMO:
+      // op 7 requires only an NBO selection
       labelOrb1 = "NBO";
-      orb2 = comboSearchOrb2;
+      if (op != 5 && op != 7) 
+        orb1 = null;      
+      // only  ops 5 and 7 require an NBO selection
       labelOrb2 = "CMO";
+      orb2 = (op == 7 ? null : comboSearchOrb2);
       break;
     case KEYWD_DIPOLE:
       unit1 = comboUnit1;
       break;
     case KEYWD_OPBAS:
       labelOrb1 = "ROW";
-      orb2 = comboSearchOrb2;
       labelOrb2 = "COLUMN";
+      orb2 = comboSearchOrb2;
       NBOUtil.postAddGlobalI(sb, "OPERATOR", operator, null);
       NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
       break;
     case KEYWD_BAS1BAS2:
       labelOrb1 = "ROW";
-      orb2 = comboSearchOrb2;
       labelOrb2 = "COLUMN";
+      orb2 = comboSearchOrb2;
       NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
       NBOUtil.postAddGlobalI(sb, "BAS_2", 1, comboBasis2);
       break;
@@ -1058,7 +1068,7 @@ class NBOSearch extends NBOView {
     if (orb1 != null)
       NBOUtil.postAddGlobalI(sb, labelOrb1, offset1, orb1);
     if (orb2 != null)
-      NBOUtil.postAddGlobalI(sb, labelOrb2, offset2, orb1);
+      NBOUtil.postAddGlobalI(sb, labelOrb2, offset2, orb2);
     if (atom1 != null)
       NBOUtil.postAddGlobalI(sb, labelAtom1, 0, atom1);
     if (atom2 != null)
@@ -1135,15 +1145,15 @@ class NBOSearch extends NBOView {
     }
     if (isLabel) {
       needRelabel = true;
-      postNBO_s(sb, NBOService.MODE_SEARCH_LABEL, null, "Getting labels");
+      postNBO_s(sb, NBOService.MODE_SEARCH_LABEL, null, "Getting labels", false);
     } else if (isLabelBonds) {
       needRelabel = true;
       dialog
           .runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select none");
       postNBO_s(sb, NBOService.MODE_SEARCH_LABEL_BONDS, null,
-          "Getting bonds list");
+          "Getting bonds list", false);
     } else {
-      postNBO_s(sb, NBOService.MODE_SEARCH_VALUE, null, "Getting value...");
+      postNBO_s(sb, NBOService.MODE_SEARCH_VALUE, null, "Getting value...", true);
     }
   }
 
@@ -1577,7 +1587,7 @@ class NBOSearch extends NBOView {
     NBOUtil.postAddCmd(sb, cmd);
     if (keywordID == KEYWD_CMO && cmd_basis.equals("c_cmo"))
       mode = NBOService.MODE_SEARCH_LIST_MO;
-    postNBO_s(sb, mode, cb, "Getting list " + cmd);
+    postNBO_s(sb, mode, cb, "Getting list " + cmd, false);
   }
 
   /**
@@ -1590,16 +1600,17 @@ class NBOSearch extends NBOView {
    * @param cb
    *        optional JComboBox to fill
    * @param statusMessage
+   * @param isGetValue 
    */
   private void postNBO_s(SB sb, final int mode, final JComboBox<String> cb,
-                         String statusMessage) {
+                         String statusMessage, boolean isGetValue) {
     final NBORequest req = new NBORequest();
     req.set(new Runnable() {
       @Override
       public void run() {
         processNBO_s(req, mode, cb);
       }
-    }, statusMessage, "s_cmd.txt", sb.toString());
+    }, isGetValue, statusMessage, "s_cmd.txt", sb.toString());
     dialog.nboService.postToNBO(req);
   }
 

@@ -1723,7 +1723,7 @@ class NBOView {
       public void run() {
         processNBO_v(req, mode, list);
       }
-    }, statusMessage, "v_cmd.txt", sb.toString(), dataFileName, fileData);
+    }, false, statusMessage, "v_cmd.txt", sb.toString(), dataFileName, fileData);
     dialog.nboService.postToNBO(req);
   }
 

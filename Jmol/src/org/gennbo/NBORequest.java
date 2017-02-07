@@ -45,20 +45,19 @@ class NBORequest {
    * before the ***start*** flag; used to disregard this preliminary info.
    * 
    */
-  boolean isRUN;
+  boolean isMessy;
 
   public long timeStamp;
 
-  NBORequest(){}
+  NBORequest() {}
   
-  void set(Runnable returnMethod, String statusInfo, String... fileData) {
+  void set(Runnable returnMethod, boolean isMessy, String statusInfo, String... fileData) {
     this.fileData = fileData;
     this.statusInfo = statusInfo;
     this.callbackMethod = returnMethod;
     // need to flag this so that not all of sysout is returned
     // from either RUN or SEARCH
-    isRUN  = (statusInfo != null 
-        && (statusInfo.indexOf("Running") >= 0 || statusInfo.indexOf("Getting value") >= 0));
+    this.isMessy = isMessy;
   }
 
   /**

@@ -100,6 +100,15 @@ class NBOSearch extends NBOView {
     return (ibtn == 3 ? "E2PERT" : getKeywordName(btnIndexToNBOKeyword[ibtn]));
   }
 
+  
+  private static final int MODE_SEARCH_VALUE       = 14;
+  private static final int MODE_SEARCH_LIST_MO     = 24;
+  private static final int MODE_SEARCH_SELECT      = 34;
+  private static final int MODE_SEARCH_LABEL       = 44;
+  private static final int MODE_SEARCH_LABEL_BONDS = 54;
+  private static final int MODE_SEARCH_LIST        = 64;
+
+
   /**
    * * does not include "HELP" (0)
    * 
@@ -1145,15 +1154,15 @@ class NBOSearch extends NBOView {
     }
     if (isLabel) {
       needRelabel = true;
-      postNBO_s(sb, NBOService.MODE_SEARCH_LABEL, null, "Getting labels", false);
+      postNBO_s(sb, MODE_SEARCH_LABEL, null, "Getting labels", false);
     } else if (isLabelBonds) {
       needRelabel = true;
       dialog
           .runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select none");
-      postNBO_s(sb, NBOService.MODE_SEARCH_LABEL_BONDS, null,
+      postNBO_s(sb, MODE_SEARCH_LABEL_BONDS, null,
           "Getting bonds list", false);
     } else {
-      postNBO_s(sb, NBOService.MODE_SEARCH_VALUE, null, "Getting value...", true);
+      postNBO_s(sb, MODE_SEARCH_VALUE, null, "Getting value...", true);
     }
   }
 
@@ -1548,7 +1557,7 @@ class NBOSearch extends NBOView {
    * @param cb
    */
   private void postListRequest(String cmd_basis, JComboBox<String> cb) {
-    int mode = NBOService.MODE_SEARCH_LIST;
+    int mode = MODE_SEARCH_LIST;
     SB sb = getMetaHeader(false);
     String cmd;
     int metaKey = keywordID;
@@ -1586,7 +1595,7 @@ class NBOSearch extends NBOView {
     NBOUtil.postAddGlobalI(sb, "KEYWORD", metaKey, null);
     NBOUtil.postAddCmd(sb, cmd);
     if (keywordID == KEYWD_CMO && cmd_basis.equals("c_cmo"))
-      mode = NBOService.MODE_SEARCH_LIST_MO;
+      mode = MODE_SEARCH_LIST_MO;
     postNBO_s(sb, mode, cb, "Getting list " + cmd, false);
   }
 
@@ -1636,7 +1645,7 @@ class NBOSearch extends NBOView {
     String line;
     DefaultComboBoxModel<String> list;
     switch (mode) {
-    case NBOService.MODE_SEARCH_VALUE:
+    case MODE_SEARCH_VALUE:
       line = lines[0];
       if (dialog.isOpenShell()) {
         String spin = (alphaSpin.isSelected() ? "&uarr;" : "&darr;");
@@ -1647,7 +1656,7 @@ class NBOSearch extends NBOView {
       if (line.contains("*"))
         showMax(line);
       break;
-    case NBOService.MODE_SEARCH_LIST:
+    case MODE_SEARCH_LIST:
       list = (DefaultComboBoxModel<String>) cb.getModel();
       list.removeAllElements();
       if (cb == comboAtom1 || cb == comboAtom2)
@@ -1659,18 +1668,18 @@ class NBOSearch extends NBOView {
       }
       processReturnedSearchList(cb);
       break;
-    case NBOService.MODE_SEARCH_LIST_MO:
+    case MODE_SEARCH_LIST_MO:
       list = (DefaultComboBoxModel<String>) cb.getModel();
       for (int i = 0; i < lines.length; i++)
         list.addElement("  " + PT.rep(PT.rep(lines[i], "MO ", ""), " ", ".  "));
       break;
-    case NBOService.MODE_SEARCH_LABEL_BONDS:
-    case NBOService.MODE_SEARCH_LABEL:
+    case MODE_SEARCH_LABEL_BONDS:
+    case MODE_SEARCH_LABEL:
       int i0 = -1;
       for (int i = lines.length; --i >= 0 && lines[i].indexOf("END") < 0;) {
         i0 = i;
       }
-      boolean isLabel = (mode == NBOService.MODE_SEARCH_LABEL);
+      boolean isLabel = (mode == MODE_SEARCH_LABEL);
       SB sb = new SB();
       for (int i = i0, pt = 1; i < lines.length; i++, pt++)
         if (isLabel ? !processLabel(sb, lines[i], pt) : !processLabelBonds(sb,

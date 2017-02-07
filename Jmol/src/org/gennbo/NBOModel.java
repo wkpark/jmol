@@ -86,6 +86,14 @@ class NBOModel {
   private static final int MODEL_ACTION_REBOND = 9;
   private static final int MODEL_ACTION_SYMMETRY = 10;
 
+  static final int MODE_MODEL_EDIT     = 21;
+  static final int MODE_MODEL_NEW      = 31; 
+  static final int MODE_MODEL_SAVE     = 41;
+  static final int MODE_MODEL_TO_NBO   = 51;
+  static final int MODE_MODEL_UNDO_REDO= 61;
+
+
+  
   
   final static String[] MODEL_ACTIONS = { 
       "Alter", "Clip", "Fuse", "Link", "Mutate",
@@ -922,16 +930,8 @@ class NBOModel {
     NBOUtil.postAddCmd(sb, cmd);
     dialog.logCmd(cmd);
     jbApply.setEnabled(false);
-
-    if (actionID == MODEL_ACTION_VALUE) {
-      postNBO_m(sb, NBOService.MODE_MODEL_VALUE, "Checking Value", null, null);
-    } else {
-      actionID = (actionID == MODEL_ACTION_ALTER  ? NBOService.MODE_MODEL_ALTER
-          : actionID == MODEL_ACTION_TWIST ? NBOService.MODE_MODEL_TWIST : NBOService.MODE_MODEL_EDIT);
-      postNBO_m(sb, actionID, "Editing model", null, null);
-      resetOnAtomClick = true;
-    } 
-    
+    resetOnAtomClick = (actionID != MODEL_ACTION_VALUE);
+    postNBO_m(sb, actionID, (actionID == MODEL_ACTION_VALUE ? "Checking value": "Editing model"), null, null);
   }
 
   /**
@@ -940,7 +940,7 @@ class NBOModel {
   protected void doGetSymmetry() {
     String cmd = "symmetry";
     dialog.logCmd(cmd);
-    postNBO_m(NBOUtil.postAddCmd(new SB(), cmd), NBOService.MODE_MODEL_SYMMETRY,  "Checking Symmetry", null, null);
+    postNBO_m(NBOUtil.postAddCmd(new SB(), cmd), MODEL_ACTION_SYMMETRY,  "Checking Symmetry", null, null);
   }
 
   /**
@@ -1001,7 +1001,7 @@ class NBOModel {
       saveFileHandler.setInput(null, "line", "mol");
       NBOUtil.postAddCmd(sb, s);
       dialog.logCmd(s);
-      postNBO_m(sb, NBOService.MODE_MODEL_NEW, "model from line input...",
+      postNBO_m(sb, MODE_MODEL_NEW, "model from line input...",
           null, null);
     }
   }
@@ -1028,7 +1028,7 @@ class NBOModel {
     NBOUtil.postAddGlobalC(sb, "FNAME", "jmol_outfile");
     NBOUtil.postAddGlobalC(sb, "IN_EXT", "cfi");
     NBOUtil.postAddCmd(sb, "use");
-    postNBO_m(sb, (undoRedo ? NBOService.MODE_MODEL_UNDO_REDO : NBOService.MODE_MODEL_TO_NBO), (alsoLoadJmol ? "Loading" : "Sending") + " model to NB", "jmol_outfile.cfi", s);
+    postNBO_m(sb, (undoRedo ? MODE_MODEL_UNDO_REDO : MODE_MODEL_TO_NBO), (alsoLoadJmol ? "Loading" : "Sending") + " model to NB", "jmol_outfile.cfi", s);
 
   }
 
@@ -1060,7 +1060,7 @@ class NBOModel {
     NBOUtil.postAddCmd(sb, "use");
     clearSelected(false);
     dialog.logCmd("use." + ess + " " + fname + "." + ext);
-    postNBO_m(sb, NBOService.MODE_MODEL_NEW, "Loading model from NBO...", null, null);
+    postNBO_m(sb, MODE_MODEL_NEW, "Loading model from NBO...", null, null);
 
   }
 
@@ -1086,7 +1086,7 @@ class NBOModel {
     NBOUtil.postAddGlobalC(sb, "FNAME", fname);
     NBOUtil.postAddGlobalC(sb, "OUT_EXT", ext.toLowerCase());
     NBOUtil.postAddCmd(sb, "save");
-    postNBO_m(sb, NBOService.MODE_MODEL_SAVE, "Saving model...", null, null);
+    postNBO_m(sb, MODE_MODEL_SAVE, "Saving model...", null, null);
     dialog.logCmd("save." + ess + " " + fname);
     dialog.logValue("--Model Saved--<br>" + path + "\\" + fname + "." + ext);
   }
@@ -1275,16 +1275,16 @@ class NBOModel {
 //    }
     String s = PT.join(a, '\n', 0);
     switch (mode) {
-    case NBOService.MODE_MODEL_ALTER:
+    case MODEL_ACTION_ALTER:
       // using quaternion analysis to reorient the structure even though it has been messed up.
       dialog.runScriptQueued("z = show('zoom');set refreshing false;x = {*}.xyz.all;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";compare {*} @x rotate translate 0;script inline @z;set refreshing true");
       break;
-    case NBOService.MODE_MODEL_NEW:
-    case NBOService.MODE_MODEL_TWIST:
-    case NBOService.MODE_MODEL_EDIT:
+    case MODE_MODEL_NEW:
+    case MODE_MODEL_EDIT:
+    case MODEL_ACTION_TWIST:
       s += NBOConfig.JMOL_FONT_SCRIPT;
-      if (mode == NBOService.MODE_MODEL_EDIT)
+      if (mode == MODE_MODEL_EDIT)
         s = "set refreshing off;save orientation o4;load " + s
             + ";restore orientation o4;set refreshing on";
       else
@@ -1292,9 +1292,24 @@ class NBOModel {
       currVal.setText("");
       dialog.loadModelDataQueued(s);
       break;
-    case NBOService.MODE_MODEL_SAVE:
+    case MODE_MODEL_SAVE:
       break;
-    case NBOService.MODE_MODEL_SYMMETRY:
+    case MODE_MODEL_TO_NBO:
+      s = "load " + s  + NBOConfig.JMOL_FONT_SCRIPT + ";set refreshing true;";
+//      s = "set refreshing off;save orientation o3;load " + s
+//          + ";restore orientation o3;set refreshing on";
+      dialog.loadModelDataQueued(s);
+      break;
+    case MODE_MODEL_UNDO_REDO:
+      dialog.loadModelDataQueued("set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
+          + ";restore orientation o2;set refreshing true");
+      break;
+    case MODEL_ACTION_VALUE:
+      String sval = a[0].trim();
+      dialog.logValue(sval);
+      setCurrentValue(sval);
+      break;
+    case MODEL_ACTION_SYMMETRY:
       // do not reorient the return in this case
       String symmetry = s.substring(0, s.indexOf("\n"));
       dialog.logValue(symmetry);
@@ -1303,21 +1318,6 @@ class NBOModel {
       s = "set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";set refreshing true";
       dialog.loadModelDataQueued(s);
-      break;
-    case NBOService.MODE_MODEL_TO_NBO:
-      s = "load " + s  + NBOConfig.JMOL_FONT_SCRIPT + ";set refreshing true;";
-//      s = "set refreshing off;save orientation o3;load " + s
-//          + ";restore orientation o3;set refreshing on";
-      dialog.loadModelDataQueued(s);
-      break;
-    case NBOService.MODE_MODEL_UNDO_REDO:
-      dialog.loadModelDataQueued("set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
-          + ";restore orientation o2;set refreshing true");
-      break;
-    case NBOService.MODE_MODEL_VALUE:
-      String sval = a[0].trim();
-      dialog.logValue(sval);
-      setCurrentValue(sval);
       break;
     }
   }

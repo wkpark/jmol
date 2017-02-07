@@ -64,28 +64,6 @@ public class NBOService {
 
   // these are for postToNBO; n * 10 + module value(s)
   
-  static final int MODE_MODEL_ALTER    = 11;
-  static final int MODE_MODEL_EDIT     = 21;
-  static final int MODE_MODEL_NEW      = 31; 
-  static final int MODE_MODEL_SAVE     = 41;
-  static final int MODE_MODEL_SYMMETRY = 51;
-  static final int MODE_MODEL_TO_NBO   = 61;
-  static final int MODE_MODEL_TWIST    = 71;
-  static final int MODE_MODEL_UNDO_REDO= 81;
-  static final int MODE_MODEL_VALUE    = 91;
-
-  static final int MODE_RUN_GENNBO     = 12;
-
-  static final int MODE_VIEW_IMAGE     = 13;
-  static final int MODE_VIEW_LIST      = 23; 
-
-  static final int MODE_SEARCH_VALUE       = 14;
-  static final int MODE_SEARCH_LIST_MO     = 24;
-  static final int MODE_SEARCH_SELECT      = 34;
-  static final int MODE_SEARCH_LABEL       = 44;
-  static final int MODE_SEARCH_LABEL_BONDS = 54;
-  static final int MODE_SEARCH_LIST        = 64;
-
 
   protected Viewer vwr;
   protected Process nboServer;

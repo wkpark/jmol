@@ -741,7 +741,7 @@ class NBORun {
     dialog.logCmd("RUN GenNBO FILE=" + jobName + " "
         + cleanNBOKeylist(fileData[1], false));
 
-    postNBO_r(sb, NBOService.MODE_RUN_GENNBO, "Running GenNBO...");
+    postNBO_r(sb, "Running GenNBO...");
   }
 
   /**
@@ -749,16 +749,14 @@ class NBORun {
    * 
    * @param sb
    *        command data
-   * @param mode
-   *        type of request
    * @param statusMessage
    */
-  private void postNBO_r(SB sb, final int mode, String statusMessage) {
+  private void postNBO_r(SB sb, String statusMessage) {
     final NBORequest req = new NBORequest();
     req.set(new Runnable() {
       @Override
       public void run() {
-        processNBO_r(req, mode);
+        processNBO_r(req);
       }
     }, true, statusMessage, "r_cmd.txt", sb.toString());
     dialog.nboService.postToNBO(req);
@@ -771,7 +769,7 @@ class NBORun {
    * @param req
    * @param mode
    */
-  protected void processNBO_r(NBORequest req, int mode) {
+  protected void processNBO_r(NBORequest req) {
     dialog.inputFileHandler.setInputFile(dialog.inputFileHandler.inputFile);
   }
 

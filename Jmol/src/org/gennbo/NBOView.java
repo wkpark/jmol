@@ -74,6 +74,10 @@ class NBOView {
   protected NBODialog dialog;
   protected Viewer vwr;
 
+  private static final int MODE_VIEW_IMAGE     = 13;
+  private static final int MODE_VIEW_LIST      = 23; 
+
+
   protected NBOView(NBODialog dialog) {
     this.dialog = dialog;
     this.vwr = dialog.vwr;
@@ -984,7 +988,7 @@ class NBOView {
 
     if (!dialog.jmolOptionNONBO) {
       dialog.logCmd("select " + comboBasis1.getSelectedItem()  + " " + (isBeta ? "beta" : dialog.isOpenShell() ? "alpha" : ""));
-      postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"), NBOService.MODE_VIEW_LIST,
+      postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"), MODE_VIEW_LIST,
           list, "Getting list", null, null);
     }
     dialog.loadModelFileQueued(
@@ -1065,7 +1069,7 @@ class NBOView {
     String cmd = (oneD ? "Profile " : "Contour ") + (ind + 1);
     dialog.logCmd(cmd);
     NBOUtil.postAddCmd(sb, cmd);
-    postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, (oneD ? "Profiling.."
+    postNBO_v(sb, MODE_VIEW_IMAGE, null, (oneD ? "Profiling.."
         : "Contouring.."), null, null);
   }
 
@@ -1108,7 +1112,7 @@ class NBOView {
 
     //    sb = getMetaHeader(true);
     //    sb.append("CMD LABEL");
-    //    nboService.rawCmdNew("v", sb, NBOService.MODE_RAW, null, "");
+    //    nboService.rawCmdNew("v", sb, MODE_RAW, null, "");
 
   }
 
@@ -1116,7 +1120,7 @@ class NBOView {
 
     //    sb = getMetaHeader(true);
     //    sb.append("CMD LABEL");
-    //    nboService.rawCmdNew("v", sb, NBOService.MODE_RAW, null, "");
+    //    nboService.rawCmdNew("v", sb, MODE_RAW, null, "");
     //    
 
     SB sb = new SB();
@@ -1135,7 +1139,7 @@ class NBOView {
     sb = getMetaHeader(false);
     appendLineParams(sb);
     NBOUtil.postAddCmd(sb, "DRAW" + profileList);
-    postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, "Drawing...", null, null);
+    postNBO_v(sb, MODE_VIEW_IMAGE, null, "Drawing...", null, null);
   }
 
   protected void createImage3D() {
@@ -1157,7 +1161,7 @@ class NBOView {
     sb = getMetaHeader(false);
     appendCameraParams(sb);
     NBOUtil.postAddCmd(sb, "VIEW" + list);
-    postNBO_v(sb, NBOService.MODE_VIEW_IMAGE, null, "Raytracing...", null, jviewData);
+    postNBO_v(sb, MODE_VIEW_IMAGE, null, "Raytracing...", null, jviewData);
   }
 
   private void initializeImage() {
@@ -1739,14 +1743,14 @@ class NBOView {
                               DefaultListModel<String> list) {
     String[] lines = req.getReplyLines();
     switch (mode) {
-    case NBOService.MODE_VIEW_LIST:
+    case MODE_VIEW_LIST:
       list.clear();
       for (int i = 0; i < lines.length; i++) {
         list.addElement(lines[i]);
       }
       orbitals.setModelList(list, true);
       break;
-    case NBOService.MODE_VIEW_IMAGE:
+    case MODE_VIEW_IMAGE:
       String fname = dialog.inputFileHandler.inputFile.getParent() + "\\"
           + dialog.inputFileHandler.jobStem + ".bmp";
       File f = new File(fname);

@@ -170,7 +170,7 @@ class NBOFileHandler extends JPanel {
     isOpenShell = false;
     //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 
     //return false;
-    if (dialog.dialogMode == NBODialogConfig.DIALOG_MODEL)
+    if (dialog.dialogMode == NBODialogBase.DIALOG_MODEL)
       return true;
     if (!useExt.equals("47")) {
       jobStem = getJobStem(inputFile);
@@ -204,7 +204,7 @@ class NBOFileHandler extends JPanel {
     this.inputFile = inputFile;
     if (inputFile.getName().indexOf(".") > 0)
       jobStem = getJobStem(inputFile);
-    if (dialog.modelOrigin == NBODialogConfig.ORIGIN_NBO_ARCHIVE)
+    if (dialog.modelOrigin == NBODialogBase.ORIGIN_NBO_ARCHIVE)
       clearInputFile(true);
     setInput(inputFile.getParent(), jobStem, useExt);
     if (!getExt(inputFile).equals("47"))
@@ -220,7 +220,7 @@ class NBOFileHandler extends JPanel {
     boolean canLoad = true;
     boolean isOK = true;
     String msg = "";
-    if (dialog.dialogMode != NBODialogConfig.DIALOG_MODEL) {
+    if (dialog.dialogMode != NBODialogBase.DIALOG_MODEL) {
       setStructure(null, null, -1);
       if (structureList == null  || structureList.size() == 0) {
         msg = "problems getting a $CHOOSE list for " + inputFile;
@@ -238,7 +238,7 @@ class NBOFileHandler extends JPanel {
       }
     }
     if (!isOK) {
-      if (dialog.dialogMode != NBODialogConfig.DIALOG_RUN) {
+      if (dialog.dialogMode != NBODialogBase.DIALOG_RUN) {
         if (canReRun) {
           canReRun = false;
           dialog.doRunGenNBOJob("PLOT");
@@ -251,7 +251,7 @@ class NBOFileHandler extends JPanel {
     }
     if (canLoad) {
       dialog.loadOrSetBasis(new File(fileDir + "/" + jobStem + ".47"));
-    } else if (dialog.dialogMode == NBODialogConfig.DIALOG_RUN) {
+    } else if (dialog.dialogMode == NBODialogBase.DIALOG_RUN) {
       dialog.loadModelFromNBO(fileDir, jobStem, useExt);
       tfName.setText(jobStem);
       tfExt.setText("47");
@@ -378,7 +378,7 @@ class NBOFileHandler extends JPanel {
           // ignore
         }
     inputFile = null;
-    if (dialog.dialogMode == NBODialogConfig.DIALOG_VIEW)
+    if (dialog.dialogMode == NBODialogBase.DIALOG_VIEW)
       dialog.resetView();
   }
 

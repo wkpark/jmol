@@ -329,7 +329,7 @@ abstract class NBODialogSearch extends NBODialogView {
     Box optionBox2 = Box.createVerticalBox();
     opList = new JPanel();
     comboBasisOperation = new JComboBox<String>(op);
-    comboBasisOperation.setUI(new StyledComboBoxUI(150, 350));
+//    comboBasisOperation.setUI(new StyledComboBoxUI(150, 350));
 
     comboBasisOperation.setMaximumSize(new Dimension(350, 30));
     comboBasisOperation.setAlignmentX(0.0f);
@@ -355,11 +355,11 @@ abstract class NBODialogSearch extends NBODialogView {
     topBox.add(back);
     topBox.add(new HelpBtn("a") {
       @Override
-      public String getHelpPage() {
+      protected String getHelpPage() {
         return getSearchHelpURL();
       }
     });
-    Box box2 = createTitleBox(" Select Keyword ", topBox);
+    Box box2 = NBOUtil.createTitleBox(" Select Keyword ", topBox);
     back.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
@@ -378,7 +378,7 @@ abstract class NBODialogSearch extends NBODialogView {
     panel.add(optionBox);
 
     comboBasis1 = new JComboBox<String>(NBODialogView.basSet);
-    comboBasis1.setUI(new StyledComboBoxUI(180, -1));
+    //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
 
     inputFileHandler.setBrowseEnabled(true);
 
@@ -437,7 +437,7 @@ abstract class NBODialogSearch extends NBODialogView {
       String st = keyW[index].substring(keyW[index].indexOf(":") + 1);
       JTextArea jt = new JTextArea(st);
       jt.setBackground(null);
-      jt.setFont(searchTextAreaFont);
+      jt.setFont(NBOConfig.searchTextAreaFont);
       jt.setEditable(false);
       opList.add(jt, c);
       c.gridy = i + 1;
@@ -533,7 +533,7 @@ abstract class NBODialogSearch extends NBODialogView {
     for (int i = 0; i < s.length; i++) {
       if (!s[i].trim().startsWith("(")) {
         JLabel lab = new JLabel(s[i]);
-        lab.setFont(searchOpListFont);
+        lab.setFont(NBOConfig.searchOpListFont);
         lab.setForeground(Color.blue);
         opList.add(lab);
       } else {
@@ -678,7 +678,7 @@ abstract class NBODialogSearch extends NBODialogView {
       load(31, true);
       viewSettingsBox.removeAll();
       comboBasis1 = new JComboBox<String>(NBODialogView.basSet);
-      comboBasis1.setUI(new StyledComboBoxUI(180, -1));
+      //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
       comboBasis1.setEditable(false);
       comboBasisOperation.requestFocus();
       setKeyword("b1 r c".split(" "), new String[] { "Basis:", "Row:",
@@ -700,8 +700,10 @@ abstract class NBODialogSearch extends NBODialogView {
   }
 
   private void load(int nn, boolean withBondPicking) {
-    loadModelFileNow(inputFileHandler.newNBOFileForExt("" + nn)
-        + (withBondPicking ? ";set bondpicking true" : ""));
+    iAmLoading = true;
+    if (loadModelFileNow(inputFileHandler.newNBOFileForExt("" + nn)
+        + (withBondPicking ? ";set bondpicking true" : "")) == null)
+      iAmLoading = false;
   }
 
   /**
@@ -804,7 +806,7 @@ abstract class NBODialogSearch extends NBODialogView {
         innerListPanel.add(b);
       } else if (key.equals("b2")) {
         comboBasis2 = new JComboBox<String>(NBODialogView.basSet);
-        comboBasis2.setUI(new StyledComboBoxUI(180, -1));
+        //comboBasis2.setUI(new StyledComboBoxUI(180, -1));
         comboBasis2.setSelectedIndex(1);
         comboBasis2.addActionListener(new ActionListener() {
           @Override
@@ -815,13 +817,13 @@ abstract class NBODialogSearch extends NBODialogView {
         innerListPanel.add(comboBasis2);
       } else if (key.equals("b12")) {
         comboBasis1 = new JComboBox<String>(NBODialogView.basSet);
-        comboBasis1.setUI(new StyledComboBoxUI(180, -1));
+        //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
         innerListPanel.add(comboBasis1);
       }
     }
     logCmd(getKeyword() + " Search Results:");
     JLabel lab = new JLabel("Settings");
-    lab.setFont(nboFont);
+    lab.setFont(NBOConfig.nboFont);
 
     lab.setOpaque(true);
     lab.setBackground(Color.black);
@@ -925,9 +927,11 @@ abstract class NBODialogSearch extends NBODialogView {
       postListRequest("r", comboSearchOrb1);
       break;
     case KEYWD_OPBAS:
-      loadModelFileNow(""
+      iAmLoading = true;
+      if (loadModelFileNow(""
           + inputFileHandler.newNBOFileForExt(""
-              + (31 + comboBasis1.getSelectedIndex())));
+              + (31 + comboBasis1.getSelectedIndex()))) == null)
+        iAmLoading = false;
       postListRequest("r", comboSearchOrb1);
       postListRequest("c", comboSearchOrb2);
       break;
@@ -964,7 +968,7 @@ abstract class NBODialogSearch extends NBODialogView {
     int offset1 = 0, offset2 = 0;
 
     final SB sb = getMetaHeader(false);
-    postAddGlobalI(sb, "KEYWORD", keywordID, null);
+    NBOUtil.postAddGlobalI(sb, "KEYWORD", keywordID, null);
     boolean isLabel = false;
     boolean isLabelBonds = false;
 
@@ -1023,15 +1027,15 @@ abstract class NBODialogSearch extends NBODialogView {
       labelOrb1 = "ROW";
       orb2 = comboSearchOrb2;
       labelOrb2 = "COLUMN";
-      postAddGlobalI(sb, "OPERATOR", operator, null);
-      postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
+      NBOUtil.postAddGlobalI(sb, "OPERATOR", operator, null);
+      NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
       break;
     case KEYWD_BAS1BAS2:
       labelOrb1 = "ROW";
       orb2 = comboSearchOrb2;
       labelOrb2 = "COLUMN";
-      postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
-      postAddGlobalI(sb, "BAS_2", 1, comboBasis2);
+      NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
+      NBOUtil.postAddGlobalI(sb, "BAS_2", 1, comboBasis2);
       break;
     }
 
@@ -1042,16 +1046,16 @@ abstract class NBODialogSearch extends NBODialogView {
     if (!isOK)
       return;
     if (orb1 != null)
-      postAddGlobalI(sb, labelOrb1, offset1, orb1);
+      NBOUtil.postAddGlobalI(sb, labelOrb1, offset1, orb1);
     if (orb2 != null)
-      postAddGlobalI(sb, labelOrb2, offset2, orb1);
+      NBOUtil.postAddGlobalI(sb, labelOrb2, offset2, orb1);
     if (atom1 != null)
-      postAddGlobalI(sb, labelAtom1, 0, atom1);
+      NBOUtil.postAddGlobalI(sb, labelAtom1, 0, atom1);
     if (atom2 != null)
-      postAddGlobalI(sb, labelAtom2, 0, atom2);
+      NBOUtil.postAddGlobalI(sb, labelAtom2, 0, atom2);
     if (unit1 != null)
-      postAddGlobalI(sb, labelUnit1, 1, unit1);
-    postAddGlobalI(sb, "OPT_" + getKeyword(), op, null);
+      NBOUtil.postAddGlobalI(sb, labelUnit1, 1, unit1);
+    NBOUtil.postAddGlobalI(sb, "OPT_" + getKeyword(), op, null);
 
     //
     //    switch (searchKeywordNumber) {
@@ -1214,7 +1218,7 @@ abstract class NBODialogSearch extends NBODialogView {
     }
     id = fixID(id);
     runScriptQueued("select visible;isosurface delete;"
-        + getJmolIsosurfaceScript(id, peeify(type), i, betaSpin.isSelected(),
+        + NBOConfig.getJmolIsosurfaceScript(id, peeify(type), i, betaSpin.isSelected(),
             false));
   }
 
@@ -1551,13 +1555,13 @@ abstract class NBODialogSearch extends NBODialogView {
         cmd = "c";
         metaKey = 8;
       }
-      postAddGlobalI(sb, "BAS_1", 1, tmpBas);
+      NBOUtil.postAddGlobalI(sb, "BAS_1", 1, tmpBas);
     } else {
-      postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
+      NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
       cmd = cmd_basis.split(" ")[0];
     }
-    postAddGlobalI(sb, "KEYWORD", metaKey, null);
-    postAddCmd(sb, cmd);
+    NBOUtil.postAddGlobalI(sb, "KEYWORD", metaKey, null);
+    NBOUtil.postAddCmd(sb, cmd);
     if (keywordID == KEYWD_CMO && cmd_basis.equals("c_cmo"))
       mode = NBOService.MODE_SEARCH_LIST_MO;
     postNBO_s(sb, mode, cb, "Getting list " + cmd);
@@ -1642,7 +1646,7 @@ abstract class NBODialogSearch extends NBODialogView {
         if (isLabel ? !processLabel(sb, lines[i], pt) : !processLabelBonds(sb,
             lines[i]))
           break;
-      runScriptQueued(sb.toString() + JMOL_FONT_SCRIPT + ";select none;");
+      runScriptQueued(sb.toString() + NBOConfig.JMOL_FONT_SCRIPT + ";select none;");
       break;
     }
   }

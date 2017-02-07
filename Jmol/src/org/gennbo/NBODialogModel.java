@@ -64,7 +64,7 @@ import org.jmol.i18n.GT;
 import org.jmol.java.BS;
 import org.jmol.util.Elements;
 
-abstract class NBODialogModel extends NBODialogConfig {
+abstract class NBODialogModel extends NBODialogBase {
 
   protected NBODialogModel(JFrame f) {
     super(f);
@@ -176,7 +176,7 @@ abstract class NBODialogModel extends NBODialogConfig {
                                        String dir, String name, String ext) {
     if (saveFileHandler != null && nboFileHandler != saveFileHandler)
       saveFileHandler.setInput(dir, name,
-          PT.isOneOf(ext, NBODialogConfig.OUTPUT_FILE_EXTENSIONS) ? ext : "");
+          PT.isOneOf(ext, NBOConfig.OUTPUT_FILE_EXTENSIONS) ? ext : "");
   }
 
 
@@ -185,7 +185,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    inputHeader = createTitleBox(" Input Model ", new HelpBtn(
+    inputHeader = NBOUtil.createTitleBox(" Input Model ", new HelpBtn(
         "model_input_intro_help.htm"));
     panel.add(inputHeader);
     inputComponent = getInputComponent();
@@ -196,7 +196,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     editComponent = getEditComponent();
     panel.add(editComponent).setVisible(false);
     
-    saveHeader = createTitleBox(" Save Model ", new HelpBtn(
+    saveHeader = NBOUtil.createTitleBox(" Save Model ", new HelpBtn(
         "model_save_intro_help.htm"));
     panel.add(saveHeader).setVisible(false);
     saveComponent = getSaveComponent();
@@ -227,7 +227,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     topBox.add(undo);
     topBox.add(redo);
     topBox.add(new HelpBtn("model_edit_intro_help.htm"));
-    return createTitleBox(" Edit Model ", topBox);
+    return NBOUtil.createTitleBox(" Edit Model ", topBox);
   }
 
   /**
@@ -237,7 +237,7 @@ abstract class NBODialogModel extends NBODialogConfig {
    */
   private Component getInputComponent() {
 
-    Box inputBox = createBorderBox(true);
+    Box inputBox = NBOUtil.createBorderBox(true);
     inputBox.setMaximumSize(new Dimension(360, 140));
     inputBox.setPreferredSize(new Dimension(360, 140));
     inputBox.setMinimumSize(new Dimension(360, 140));
@@ -247,20 +247,20 @@ abstract class NBODialogModel extends NBODialogConfig {
     p2.setMinimumSize(new Dimension(360, 90));
 
     final JRadioButton jrJmolIn = new JRadioButton("NIH/PubChem/PDB");
-    jrJmolIn.setFont(monoFont);
+    jrJmolIn.setFont(NBOConfig.monoFont);
     final JRadioButton jrLineIn = new JRadioButton("Line Formula");
-    jrLineIn.setFont(monoFont);
+    jrLineIn.setFont(NBOConfig.monoFont);
     jrLineIn.setSelected(true);
     final JRadioButton jrFileIn = new JRadioButton("File Input");
-    jrFileIn.setFont(monoFont);
+    jrFileIn.setFont(NBOConfig.monoFont);
     ButtonGroup rg = new ButtonGroup();
     rg.add(jrJmolIn);
     rg.add(jrLineIn);
     rg.add(jrFileIn);
     createInput(jtNIHInput = new JTextField(), jrJmolIn);
     createInput(jtLineFormula = new JTextField(), jrLineIn);
-    jtNIHInput.setFont(userInputFont);
-    jtLineFormula.setFont(userInputFont);
+    jtNIHInput.setFont(NBOConfig.userInputFont);
+    jtLineFormula.setFont(NBOConfig.userInputFont);
     jtLineFormula.add(new JLabel("line formula"));
     String[] useOps = { "<Select File  Type>", "[.xyz]  XYZ", "[.mol]  MOL",
         "[.cfi]  NBO Cartesian", "[.vfi]  NBO Valence", "[.47]   NBO Archive",
@@ -285,7 +285,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     addFocusListeners(jComboUse, jrFileIn);
 
     inputBox.add(p2);
-    inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, INPUT_FILE_EXTENSIONS, (NBODialog) this) {
+    inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, NBOConfig.INPUT_FILE_EXTENSIONS, (NBODialog) this) {
 
       @Override
       protected boolean doFileBrowsePressed() {
@@ -337,7 +337,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   protected void doComboUseAction(String item) {
     if (item == null) {
       inputFileHandler.tfExt.setText("");
-      inputFileHandler.useExt = INPUT_FILE_EXTENSIONS;
+      inputFileHandler.useExt = NBOConfig.INPUT_FILE_EXTENSIONS;
     } else {
       item = item.substring(item.indexOf("[") + 2, item.indexOf("]"));
       inputFileHandler.tfExt.setText(item);
@@ -346,7 +346,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   }
 
   private Box getEditComponent() {
-    Box editBox = createBorderBox(false);
+    Box editBox = NBOUtil.createBorderBox(false);
     Box actionBox = Box.createVerticalBox();
     
     final JRadioButton[] jrModelActions = new JRadioButton[MODEL_ACTION_MAX];
@@ -409,7 +409,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     atomNumBoxes = new JTextField[4];
     for (int i = 0; i < 4; i++) {
       atomNumBoxes[i] = new JTextField();
-      atomNumBoxes[i].setFont(userInputFont);
+      atomNumBoxes[i].setFont(NBOConfig.userInputFont);
       atomNumBoxes[i].setMaximumSize(new Dimension(50, 50));
       atBox.add(atomNumBoxes[i]).setVisible(false);
       final int num = i;
@@ -460,7 +460,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     innerEditBox.add(box);
     
     currVal = new JTextField("pick atoms...");
-    currVal.setFont(titleFont);
+    currVal.setFont(NBOConfig.titleFont);
     currVal.setBackground(new Color(220,220,220));
     currVal.setMinimumSize(new Dimension(250, 40));
     currVal.setPreferredSize(new Dimension(250, 40));
@@ -633,7 +633,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   }
 
   private Box getSaveComponent() {
-    Box sBox = createBorderBox(true);
+    Box sBox = NBOUtil.createBorderBox(true);
     final String[] SAVE_OPTIONS = { "<Select File Type>",
         "XYZ                        [.xyz]",
         "MOL                        [.mol]",
@@ -652,9 +652,9 @@ abstract class NBODialogModel extends NBODialogConfig {
         "PQS Input                  [.pqs]", "Q-Chem Input               [.qc]" };
     jComboSave = new JComboBox<String>(SAVE_OPTIONS);
 
-    jComboSave.setFont(monoFont);
+    jComboSave.setFont(NBOConfig.monoFont);
     saveFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_SAVE,
-        OUTPUT_FILE_EXTENSIONS, (NBODialog) this) {
+        NBOConfig.OUTPUT_FILE_EXTENSIONS, (NBODialog) this) {
       @Override
       protected boolean doFileBrowsePressed() {
         String folder = tfDir.getText().trim();
@@ -662,7 +662,7 @@ abstract class NBODialogModel extends NBODialogConfig {
         String ext = tfExt.getText().trim();
         if (!ext.equals("") && !folder.equals("") && !name.equals("")) {
           File f = new File(folder + "/" + name + "." + ext);
-          if (!PT.isOneOf(ext, OUTPUT_FILE_EXTENSIONS)) {
+          if (!PT.isOneOf(ext, NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
             alertError("Invalid output extenstion");
             return false;
           }
@@ -681,7 +681,7 @@ abstract class NBODialogModel extends NBODialogConfig {
         }
         JFileChooser myChooser = new JFileChooser();
         if (ext.equals(""))
-          useExt = OUTPUT_FILE_EXTENSIONS;
+          useExt = NBOConfig.OUTPUT_FILE_EXTENSIONS;
         else
           useExt = ext;
         myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt
@@ -706,7 +706,7 @@ abstract class NBODialogModel extends NBODialogConfig {
           File newFile = myChooser.getSelectedFile();
           ext = NBOFileHandler.getExt(newFile);
           if (PT
-              .isOneOf(NBOFileHandler.getExt(newFile), OUTPUT_FILE_EXTENSIONS)) {
+              .isOneOf(NBOFileHandler.getExt(newFile), NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
             if (newFile.exists()) {
               int i = JOptionPane.showConfirmDialog(null, "File " + newFile
                   + " already exists, do you want to overwrite contents?",
@@ -937,7 +937,7 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (actionID == MODEL_ACTION_REBOND)
       cmd += jcSymOps.getSelectedItem().toString();
     runScriptNow("save orientation o2");
-    postAddCmd(sb, cmd);
+    NBOUtil.postAddCmd(sb, cmd);
     logCmd(cmd);
     jbApply.setEnabled(false);
 
@@ -958,7 +958,7 @@ abstract class NBODialogModel extends NBODialogConfig {
   protected void doGetSymmetry() {
     String cmd = "symmetry";
     logCmd(cmd);
-    postNBO_m(postAddCmd(new SB(), cmd), NBOService.MODE_MODEL_SYMMETRY,  "Checking Symmetry", null, null);
+    postNBO_m(NBOUtil.postAddCmd(new SB(), cmd), NBOService.MODE_MODEL_SYMMETRY,  "Checking Symmetry", null, null);
   }
 
   /**
@@ -996,16 +996,19 @@ abstract class NBODialogModel extends NBODialogConfig {
       jtLineFormula.setText("");
       saveFileHandler.setInput(null, model, "mol");
       logCmd("get " + model);
+      iAmLoading = true;
       if (loadModelFileNow(model) == null) {
         model = (model.charAt(0) == ':' ? "$" : ":") + model.substring(1);
         if (model.startsWith("$=")) {
           logError("RCSB does not recognize ligand code " + model.substring(2) + ".");
+          iAmLoading = false;
           return;
         }
         logCmd("get " + model);
         if (loadModelFileNow(model) == null) {
           logError("Neither NIH/CIR nor PubChem have recognize this identifier.");
           notFromNBO = false;
+          iAmLoading = false;
         }
       }
     } else {
@@ -1014,7 +1017,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       jtNIHInput.setText("");
       s = "show " + model;
       saveFileHandler.setInput(null, "line", "mol");
-      postAddCmd(sb, s);
+      NBOUtil.postAddCmd(sb, s);
       logCmd(s);
       postNBO_m(sb, NBOService.MODE_MODEL_NEW, "model from line input...",
           null, null);
@@ -1038,11 +1041,11 @@ abstract class NBODialogModel extends NBODialogConfig {
     if (undoRedo)
       runScriptNow("save orientation o2");
     SB sb = new SB();
-    postAddGlobalC(sb, "PATH", nboService.getServerPath(null) + "/");
-    postAddGlobalC(sb, "ESS", "c");
-    postAddGlobalC(sb, "FNAME", "jmol_outfile");
-    postAddGlobalC(sb, "IN_EXT", "cfi");
-    postAddCmd(sb, "use");
+    NBOUtil.postAddGlobalC(sb, "PATH", nboService.getServerPath(null) + "/");
+    NBOUtil.postAddGlobalC(sb, "ESS", "c");
+    NBOUtil.postAddGlobalC(sb, "FNAME", "jmol_outfile");
+    NBOUtil.postAddGlobalC(sb, "IN_EXT", "cfi");
+    NBOUtil.postAddCmd(sb, "use");
     postNBO_m(sb, (undoRedo ? NBOService.MODE_MODEL_UNDO_REDO : NBOService.MODE_MODEL_TO_NBO), (alsoLoadJmol ? "Loading" : "Sending") + " model to NB", "jmol_outfile.cfi", s);
 
   }
@@ -1055,7 +1058,7 @@ abstract class NBODialogModel extends NBODialogConfig {
    * @param ext
    */
   protected void loadModelFromNBO(String path, String fname, String ext) {
-    if (PT.isOneOf(ext, JMOL_EXTENSIONS)) {
+    if (PT.isOneOf(ext, NBOConfig.JMOL_EXTENSIONS)) {
       notFromNBO = true;
       runScriptNow("set refreshing false"); // a bit risky
       loadModelFileQueued(new File(path  + "\\" + fname + "." + ext), false);
@@ -1068,11 +1071,11 @@ abstract class NBODialogModel extends NBODialogConfig {
       jtLineFormula.setText("");
     }
     modelOrigin = ORIGIN_FILE_INPUT;
-    postAddGlobalC(sb, "PATH", path);
-    postAddGlobalC(sb, "ESS", ess);
-    postAddGlobalC(sb, "FNAME", fname);
-    postAddGlobalC(sb, "IN_EXT", ext.toLowerCase());
-    postAddCmd(sb, "use");
+    NBOUtil.postAddGlobalC(sb, "PATH", path);
+    NBOUtil.postAddGlobalC(sb, "ESS", ess);
+    NBOUtil.postAddGlobalC(sb, "FNAME", fname);
+    NBOUtil.postAddGlobalC(sb, "IN_EXT", ext.toLowerCase());
+    NBOUtil.postAddCmd(sb, "use");
     clearSelected(false);
     logCmd("use." + ess + " " + fname + "." + ext);
     postNBO_m(sb, NBOService.MODE_MODEL_NEW, "Loading model from NBO...", null, null);
@@ -1087,7 +1090,7 @@ abstract class NBODialogModel extends NBODialogConfig {
    * @param ext
    */
   protected void saveModel(String path, String fname, String ext) {
-    if (PT.isOneOf(ext, JMOL_EXTENSIONS)) {
+    if (PT.isOneOf(ext, NBOConfig.JMOL_EXTENSIONS)) {
       String s = vwr.getModelExtract("1.1", false, false, ext.toUpperCase());
       String ret = vwr.writeTextFile(path + "\\" + fname + "." + ext, s);
       logValue(ret);
@@ -1096,11 +1099,11 @@ abstract class NBODialogModel extends NBODialogConfig {
     String ess = getEss(ext, false);
     SB sb = new SB();
     
-    postAddGlobalC(sb, "PATH", path);
-    postAddGlobalC(sb, "ESS", ess);
-    postAddGlobalC(sb, "FNAME", fname);
-    postAddGlobalC(sb, "OUT_EXT", ext.toLowerCase());
-    postAddCmd(sb, "save");
+    NBOUtil.postAddGlobalC(sb, "PATH", path);
+    NBOUtil.postAddGlobalC(sb, "ESS", ess);
+    NBOUtil.postAddGlobalC(sb, "FNAME", fname);
+    NBOUtil.postAddGlobalC(sb, "OUT_EXT", ext.toLowerCase());
+    NBOUtil.postAddCmd(sb, "save");
     postNBO_m(sb, NBOService.MODE_MODEL_SAVE, "Saving model...", null, null);
     logCmd("save." + ess + " " + fname);
     logValue("--Model Saved--<br>" + path + "\\" + fname + "." + ext);
@@ -1208,7 +1211,7 @@ abstract class NBODialogModel extends NBODialogConfig {
       loadModelToNBO(fileContents, false);
       return;
     }
-    runScriptNow(JMOL_FONT_SCRIPT + ";select within(model,visible);rotate best;");
+    runScriptNow(NBOConfig.JMOL_FONT_SCRIPT + ";select within(model,visible);rotate best;");
     doSetStructure(null);
     showComponents(true);
     innerEditBox.setVisible(true);
@@ -1300,12 +1303,12 @@ abstract class NBODialogModel extends NBODialogConfig {
     switch (mode) {
     case NBOService.MODE_MODEL_ALTER:
       // using quaternion analysis to reorient the structure even though it has been messed up.
-      runScriptQueued("z = show('zoom');set refreshing false;x = {*}.xyz.all;load " + s + JMOL_FONT_SCRIPT
+      runScriptQueued("z = show('zoom');set refreshing false;x = {*}.xyz.all;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";compare {*} @x rotate translate 0;script inline @z;set refreshing true");
       break;
     case NBOService.MODE_MODEL_NEW:
     case NBOService.MODE_MODEL_EDIT:
-      s += JMOL_FONT_SCRIPT;
+      s += NBOConfig.JMOL_FONT_SCRIPT;
       if (mode == NBOService.MODE_MODEL_EDIT)
         s = "set refreshing off;save orientation o4;load " + s
             + ";restore orientation o4;set refreshing on";
@@ -1321,18 +1324,18 @@ abstract class NBODialogModel extends NBODialogConfig {
       logValue(symmetry);
       // fix issue with blank first line
       s = PT.rep(s.substring(s.indexOf("\n") + 1), "\"\n", "\" NBO\n");
-      s = "set refreshing false;load " + s + JMOL_FONT_SCRIPT
+      s = "set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";set refreshing true";
       loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_TO_NBO:
-      s = "load " + s  + JMOL_FONT_SCRIPT + ";set refreshing true;";
+      s = "load " + s  + NBOConfig.JMOL_FONT_SCRIPT + ";set refreshing true;";
 //      s = "set refreshing off;save orientation o3;load " + s
 //          + ";restore orientation o3;set refreshing on";
       loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_UNDO_REDO:
-      loadModelDataQueued("set refreshing false;load " + s + JMOL_FONT_SCRIPT
+      loadModelDataQueued("set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";restore orientation o2;set refreshing true");
       break;
     case NBOService.MODE_MODEL_VALUE:

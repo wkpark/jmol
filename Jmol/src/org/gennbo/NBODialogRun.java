@@ -96,8 +96,8 @@ abstract class NBODialogRun extends NBODialogModel {
     getNewInputFileHandler(NBOFileHandler.MODE_RUN);
     inputFileHandler.setBrowseEnabled(false);
 
-    panel.add(createTitleBox(" Select Job ", new HelpBtn("run_job_help.htm")));
-    Box inputBox = createBorderBox(true);
+    panel.add(NBOUtil.createTitleBox(" Select Job ", new HelpBtn("run_job_help.htm")));
+    Box inputBox = NBOUtil.createBorderBox(true);
     inputBox.add(createSourceBox());
     inputBox.add(inputFileHandler);
     inputBox.setMinimumSize(new Dimension(360, 80));
@@ -107,9 +107,9 @@ abstract class NBODialogRun extends NBODialogModel {
 
     //EDIT////////////////
     panel.add(
-        createTitleBox(" Choose $NBO Keywords ", new HelpBtn(
+        NBOUtil.createTitleBox(" Choose $NBO Keywords ", new HelpBtn(
             "run_keywords_help.htm"))).setVisible(false);
-    editBox = createBorderBox(true);
+    editBox = NBOUtil.createBorderBox(true);
     editBox.setSize(new Dimension(350, 400));
     tfJobName = new JTextField();
     tfJobName.addActionListener(new ActionListener() {
@@ -137,7 +137,7 @@ abstract class NBODialogRun extends NBODialogModel {
 //    box.setSize(new Dimension(250, 50));
 //    box.setAlignmentX(0.5f);
     btnRun = new JButton("Run");
-    btnRun.setFont(runButtonFont);
+    btnRun.setFont(NBOConfig.runButtonFont);
     btnRun.setVisible(false);
     btnRun.setEnabled(true);
     btnRun.addActionListener(new ActionListener() {
@@ -202,7 +202,7 @@ abstract class NBODialogRun extends NBODialogModel {
   }
 
   protected void doArchiveButton() {
-    ArchiveViewer aView = new ArchiveViewer(this, ARCHIVE_DIR);
+    ArchiveViewer aView = new ArchiveViewer(this, NBOConfig.ARCHIVE_DIR);
     aView.setVisible(true);
   }
 
@@ -239,7 +239,7 @@ abstract class NBODialogRun extends NBODialogModel {
     editBox.add(mainBox);
 
     Box jobNameInnerBox = Box.createHorizontalBox();
-    jobNameInnerBox.add(new JLabel("Jobname ")).setFont(nboFont);
+    jobNameInnerBox.add(new JLabel("Jobname ")).setFont(NBOConfig.nboFont);
     jobNameInnerBox.add(tfJobName).setMaximumSize(new Dimension(150, 30));
     jobNameInnerBox.setAlignmentX(0.5f);
     jobNameOuterBox.add(jobNameInnerBox);    
@@ -269,7 +269,7 @@ abstract class NBODialogRun extends NBODialogModel {
     });
     bg.add(btnTextEditor);
     
-    selectBox.add(new JLabel("Keywords:  ")).setFont(nboFont);
+    selectBox.add(new JLabel("Keywords:  ")).setFont(NBOConfig.nboFont);
     selectBox.add(btnMenuSelect);
     selectBox.add(btnTextEditor);
 
@@ -374,8 +374,8 @@ abstract class NBODialogRun extends NBODialogModel {
             haveJobName = true;
           }
         } else {
-          if (tmp.length() + s.length() - tmp.lastIndexOf(sep) >= 80)
-            tmp += sep + " ";
+          if (tmp.length() + s.length() - tmp.lastIndexOf(NBOUtil.sep) >= 80)
+            tmp += NBOUtil.sep + " ";
           tmp += s.toUpperCase() + " ";
         }
     if (setJobNameTextField && (tfJobName.getText().equals("") || !haveJobName))
@@ -728,10 +728,10 @@ abstract class NBODialogRun extends NBODialogModel {
     if (fileData == null)
       return;
     SB sb = new SB();
-    postAddGlobalC(sb, "PATH", inputFileHandler.inputFile.getParent());
-    postAddGlobalC(sb, "JOBSTEM", inputFileHandler.jobStem);    
-    postAddGlobalC(sb, "ESS", "gennbo");
-    postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
+    NBOUtil.postAddGlobalC(sb, "PATH", inputFileHandler.inputFile.getParent());
+    NBOUtil.postAddGlobalC(sb, "JOBSTEM", inputFileHandler.jobStem);    
+    NBOUtil.postAddGlobalC(sb, "ESS", "gennbo");
+    NBOUtil.postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
 
     logCmd("RUN GenNBO FILE=" + jobName + " " + cleanNBOKeylist(fileData[1], false));
         

@@ -220,6 +220,7 @@ class NBOModel {
     notFromNBO = false;
     showSelectedOnFileLoad = false;
     resetOnAtomClick = true;
+    serverMode = 0;
   }
 
   private Box getEditHeader() {
@@ -596,23 +597,19 @@ class NBOModel {
         if (actionID == MODEL_ACTION_REBOND) {
           jcSymOps.removeAllItems();
           jcSymOps.setEnabled(true);
-          int atomInd = Integer.parseInt(atomNumBoxes[0].getText()) - 1;
-          int val = vwr.ms.at[atomInd].getValence();
+          int atomNumber = PT.parseInt(atomNumBoxes[0].getText());
+          if (atomNumber < 1)
+            return;
+          int val = vwr.ms.at[atomNumber - 1].getValence();
           jbApply.setEnabled(true);
-          switch (val) {
-          case 4:
-            for (String x : new String[] { "td", "c3vi", "c4v" })
-              jcSymOps.addItem(x);
-            break;
-          case 5:
-            for (String x : new String[] { "c4vo", "c4vi" })
-              jcSymOps.addItem(x);
-            break;
-          case 6:
-            for (String x : new String[] { "c3vo", "c3vi", "c5vo", "c5vi" })
-              jcSymOps.addItem(x);
-            break;
-          default:
+          String[] symlist = getRebondSymList(val);
+          if (symlist != null) {
+            for (int i = 0; i < symlist.length; i++)
+              jcSymOps.addItem(symlist[i]);
+            if (currentRebondSymOp > 0)
+              jcSymOps.setSelectedIndex(currentRebondSymOp);
+            currentRebondSymOp = 0;
+          } else {
             jcSymOps.addItem("<Select Transition Metal>");
             jcSymOps.setEnabled(false);
             jbApply.setEnabled(false);
@@ -629,6 +626,17 @@ class NBOModel {
     dialog.showSelected(selected);
     if (actionID == MODEL_ACTION_VALUE || doPost)
       postActionToNBO_m(actionID);
+  }
+
+  private final static String[][] REBOND_LISTS = 
+    new String[][]  {  
+     { "td", "c3vi", "c4v" },            // 4
+     { "c4vo", "c4vi" },                 // 5
+     { "c3vo", "c3vi", "c5vo", "c5vi" }, // 6
+  };
+  
+  private static String[] getRebondSymList(int val) {
+    return  (val - 4 < REBOND_LISTS.length? REBOND_LISTS[val - 4]: null);
   }
 
   protected String modelEditGetSelected() {
@@ -879,6 +887,8 @@ class NBOModel {
     }
   };
   private boolean showSelectedOnFileLoad;
+  private int currentRebondSymOp;
+  private int serverMode;
   
   /**
    * Clear out the text fields
@@ -927,8 +937,10 @@ class NBOModel {
         cmd += ":";
       cmd += val;
     }
-    if (actionID == MODEL_ACTION_REBOND)
+    if (actionID == MODEL_ACTION_REBOND) {
+      currentRebondSymOp = jcSymOps.getSelectedIndex();
       cmd += jcSymOps.getSelectedItem().toString();
+    }
     dialog.runScriptNow("save orientation o2");
     NBOUtil.postAddCmd(sb, cmd);
     dialog.logCmd(cmd);
@@ -1196,7 +1208,8 @@ class NBOModel {
       loadModelToNBO(fileContents, false);
       return;
     }
-    dialog.runScriptNow(NBOConfig.JMOL_FONT_SCRIPT + ";select within(model,visible);rotate best;");
+    dialog.runScriptNow(NBOConfig.JMOL_FONT_SCRIPT
+        + ";select within(model,visible);"); // NOT rotate best, because these may be symmetry designed
     dialog.doSetStructure(null);
     showComponents(true);
     innerEditBox.setVisible(true);
@@ -1206,13 +1219,15 @@ class NBOModel {
         if (undoStack.size() > MAX_HISTORY)
           undoStack.removeElementAt(0);
       }
-      undo.setEnabled(undoStack.size() > 1);
-      redo.setEnabled(!redoStack.isEmpty());
+    undo.setEnabled(undoStack.size() > 1);
+    redo.setEnabled(!redoStack.isEmpty());
     // "({1})"
-    rebond.setEnabled(((String) vwr.evaluateExpression("{transitionMetal}")).length() > 4);
+    rebond.setEnabled(((String) vwr.evaluateExpression("{transitionMetal}"))
+        .length() > 4);
     if (actionID == MODEL_ACTION_MUTATE) {
       doModelAction(actionID);
-    }
+    } else if (actionID == MODEL_ACTION_REBOND && serverMode != MODEL_ACTION_SYMMETRY)
+      doGetSymmetry();
     if (showSelectedOnFileLoad) {
       updateSelected(false);
       showSelectedOnFileLoad = false;
@@ -1240,6 +1255,7 @@ class NBOModel {
    */
   private void postNBO_m(SB sb, final int mode, String statusMessage, String fileName, String fileData) {
     final NBORequest req = new NBORequest();
+    serverMode = mode;
     req.set(new Runnable() {
       @Override
       public void run() {
@@ -1290,6 +1306,7 @@ class NBOModel {
           + ";compare {*} @x rotate translate 0;script inline @z;set refreshing true");
       break;
     case MODEL_ACTION_TWIST:
+    case MODEL_ACTION_REBOND:
       doClear = false;
       //$FALL-THROUGH$
     case MODEL_ACTION_CLIP:
@@ -1301,10 +1318,11 @@ class NBOModel {
     case MODE_MODEL_NEW:
     case MODE_MODEL_EDIT:
       s += NBOConfig.JMOL_FONT_SCRIPT;
-      if (mode == MODE_MODEL_EDIT)
-        s = "set refreshing off;save orientation o4;load " + s
-            + ";restore orientation o4;set refreshing on";
-      else
+// backing off from this so we can see what NBO6 does and maybe not need to do this
+//      if (mode == MODE_MODEL_EDIT)
+//        s = "set refreshing off;save orientation o4;load " + s
+//            + ";restore orientation o4;set refreshing on";
+//      else
         s = ";load " + s;
       if  (doClear)
         clearSelected(false);
@@ -1337,6 +1355,7 @@ class NBOModel {
       s = PT.rep(s.substring(s.indexOf("\n") + 1), "\"\n", "\" NBO\n");
       s = "set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";set refreshing true";
+      showSelectedOnFileLoad = true;
       dialog.loadModelDataQueued(s);
       break;
     }

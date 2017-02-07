@@ -393,11 +393,11 @@ abstract class NBODialogSearch extends NBODialogView {
   }
 
   protected void doSearchCMOSelectNBO() {    
-    showOrbJmol("PNBO", comboSearchOrb1.getSelectedIndex(), "NBO");
+    showOrbJmol("PNBO", comboSearchOrb1.getSelectedIndex(), "cmo");
   }
 
   protected void doSearchCMOSelectMO() {
-    showOrbJmol("MO", comboSearchOrb2.getSelectedIndex(), "MO");
+    showOrbJmol("MO", comboSearchOrb2.getSelectedIndex(), "cmo");
   }
 
   protected void doComboBasisOperationAction() {
@@ -488,6 +488,12 @@ abstract class NBODialogSearch extends NBODialogView {
       break;
     case KEYWD_CMO:
       postListRequest("n", comboSearchOrb1);
+      if (radioOrbMO.isSelected())
+        radioOrbMO.doClick();
+      break;
+    case KEYWD_OPBAS:
+    case KEYWD_BAS1BAS2:
+      doSetBasis();
       break;
     }
   }
@@ -1201,12 +1207,13 @@ abstract class NBODialogSearch extends NBODialogView {
    * @param id
    */
   protected void showOrbJmol(String type, int i, String id) {
-    if (i <= 0)
+    if (i <= 0) {
+      runScriptQueued("select visible;isosurface delete");
+      logError("Select an orbital.");
       return;
+    }
     id = fixID(id);
-    runScriptQueued("select visible;isosurface ID \""
-        + id
-        + "\" delete;"
+    runScriptQueued("select visible;isosurface delete;"
         + getJmolIsosurfaceScript(id, peeify(type), i, betaSpin.isSelected(),
             false));
   }
@@ -1508,14 +1515,19 @@ abstract class NBODialogSearch extends NBODialogView {
 
   ////////////////////////// SEARCH POSTS TO NBO ///////////////////
 
-  private void postListRequest(String get, JComboBox<String> cb) {
+  /**
+   * 
+   * @param cmd_basis a possibly space-separated set of CMD and 
+   * @param cb
+   */
+  private void postListRequest(String cmd_basis, JComboBox<String> cb) {
     int mode = NBOService.MODE_SEARCH_LIST;
     SB sb = getMetaHeader(false);
     String cmd;
     int metaKey = keywordID;
-    if (metaKey >= KEYWD_OPBAS) {
+    if (keywordID == KEYWD_OPBAS || keywordID == KEYWD_BAS1BAS2) {
       cmd = "o";
-      JComboBox<String> tmpBas = ((get.startsWith("c") && metaKey == KEYWD_BAS1BAS2) ? comboBasis2
+      JComboBox<String> tmpBas = ((cmd_basis.startsWith("c") && metaKey == KEYWD_BAS1BAS2) ? comboBasis2
           : comboBasis1);
       switch (tmpBas.getSelectedIndex()) {
       case BASIS_AO:
@@ -1542,11 +1554,11 @@ abstract class NBODialogSearch extends NBODialogView {
       postAddGlobalI(sb, "BAS_1", 1, tmpBas);
     } else {
       postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
-      cmd = get.split(" ")[0];
+      cmd = cmd_basis.split(" ")[0];
     }
     postAddGlobalI(sb, "KEYWORD", metaKey, null);
     postAddCmd(sb, cmd);
-    if (get.equals("c") && keywordID == KEYWD_CMO)
+    if (keywordID == KEYWD_CMO && cmd_basis.equals("c_cmo"))
       mode = NBOService.MODE_SEARCH_LIST_MO;
     postNBO_s(sb, mode, cb, "Getting list " + cmd);
   }
@@ -1630,7 +1642,7 @@ abstract class NBODialogSearch extends NBODialogView {
         if (isLabel ? !processLabel(sb, lines[i], pt) : !processLabelBonds(sb,
             lines[i]))
           break;
-      runScriptQueued(sb.toString() + ";select none;");
+      runScriptQueued(sb.toString() + JMOL_FONT_SCRIPT + ";select none;");
       break;
     }
   }

@@ -1514,7 +1514,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       thisMesh.jvxlData.allowVolumeRender = false;
     thisMesh.setColorsFromJvxlData(sg.params.colorRgb);
     if (thisMesh.jvxlData.slabInfo != null)
-      vwr.runScript("isosurface " + thisMesh.jvxlData.slabInfo);
+      vwr.runScriptCautiously("isosurface " + thisMesh.jvxlData.slabInfo);
       
     if (sg.params.psi_monteCarloCount > 0)
       thisMesh.diameter = -1; // use set DOTSCALE

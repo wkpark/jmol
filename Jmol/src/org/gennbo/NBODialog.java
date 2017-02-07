@@ -697,6 +697,7 @@ public class NBODialog extends NBODialogSearch {
    */
   @SuppressWarnings("incomplete-switch")
   public void notifyCallback(CBK type, Object[] data) {
+    System.out.println(type + "" +  data[1]);
     if (!isVisible())
       return;
     switch (type) {
@@ -730,7 +731,7 @@ public class NBODialog extends NBODialogSearch {
       if (vwr.ms.ac == 0)
         return;
       String f = runScriptNow("print _modelFile");
-      if (!f.equals("null") && !iAmLoading) {
+      if (!iAmLoading) {
         if (!f.endsWith(".47")) {
           if (dialogMode != DIALOG_MODEL) {
             doOpenPanel(DIALOG_MODEL);

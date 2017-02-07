@@ -2276,7 +2276,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       switch (tokType) {
       case T.xyz:
         if (script != null)
-          runScript(script);
+          runScriptCautiously(script);
         break;
       case T.vibration:
         setStatusFrameChanged(true, false);
@@ -8923,9 +8923,22 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       pickedList.pushPop(SV.newV(T.bitset, BSUtil.newAndSetBit(atomIndex)),
           null);
   }
-
+  
   @Override
   public String runScript(String script) {
+    return (String) evaluateExpression(new T[] { T.t(T.script), T.t(T.leftparen), SV.newS(script), T.t(T.rightparen) });
+  }
+
+  /**
+   * formerly runScript(), this method really can ONLY be called by
+   * the viewer being run from an already-running script. If it is 
+   * invoked by a separate thread, it can wreak havoc on any queued
+   * thread, since they are not thread safe. 
+   * @param script
+   * @return output of the script.
+   */
+  @Override
+  public String runScriptCautiously(String script) {
     // from isosurface reading JVXL file with slab
     SB outputBuffer = new SB();
     try {

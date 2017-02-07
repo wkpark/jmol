@@ -541,13 +541,24 @@ abstract public class JmolViewer {
   abstract public int[] resizeInnerPanel(int width, int height);
 
   /**
+   * starting with 14.8.2-beta-2017-02-06, uses script(xxxx) function;
+   * see runScriptCautiously for the older version
+   * 
+   * @param script
+   * @return string from ScriptEvaluator#outputBuffer
+   */
+  abstract public String runScript(String script);
+
+  /**
+   * Formerly runScript(script). 
+   * 
    * run a script immediately and return output buffer string
    * Jmol 13.1.15
    * 
    * @param script
    * @return string from ScriptEvaluator#outputBuffer
    */
-  abstract public String runScript(String script);
+  public String runScriptCautiously(String script){return null;}
 
   abstract public String extractMolData(String what);
   

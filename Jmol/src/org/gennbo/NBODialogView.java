@@ -1413,18 +1413,18 @@ abstract class NBODialogView extends NBODialogRun {
    */
   protected String getJmolIsosurfaceScript(String id, String type, int orbitalNumber,
                                            boolean isBeta, boolean isNegative) {
-    return ";select visible;isosurface "
+    return ";select visible;isosurface ID \""
         + id
-        + " color "
+        + "\" color "
         + (isNegative ? orbColorJmol1 + " " + orbColorJmol2 : orbColorJmol2 + " " + orbColorJmol1)
         + " cutoff 0.0316 NBO "
         + type
         + " "
         + orbitalNumber
-        + (isBeta ? " beta" : "")
+        + (isBeta && !type.equals("MO") ? " beta" : "") // AO?
         + " frontonly "
         + (useWireMesh ? " mesh nofill" : " nomesh fill translucent "
-            + opacityOp) + ";select none;";
+            + (1 - opacityOp)) + ";select none;";
   }
 
   class OrbitalList extends JList<String> implements ListSelectionListener,

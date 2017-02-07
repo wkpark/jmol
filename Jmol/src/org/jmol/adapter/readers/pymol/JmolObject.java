@@ -362,7 +362,7 @@ class JmolObject {
     }
     if (sb != null) {
       //System.out.println("jmolobject " + sb);
-      sm.vwr.runScript(sb.toString());
+      sm.vwr.runScriptCautiously(sb.toString());
       return;
     }
     // cartoon, trace, etc.

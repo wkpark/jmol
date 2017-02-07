@@ -1305,15 +1305,13 @@ abstract class NBODialogModel extends NBODialogConfig {
       break;
     case NBOService.MODE_MODEL_NEW:
     case NBOService.MODE_MODEL_EDIT:
-      if (s.contains("\\"))
-        s = s.replaceAll("\\\\", "");
       s += JMOL_FONT_SCRIPT;
       if (mode == NBOService.MODE_MODEL_EDIT)
         s = "set refreshing off;save orientation o4;load " + s
             + ";restore orientation o4;set refreshing on";
       else
-        s = "load " + s;
-      runScriptQueued(s);
+        s = ";load " + s;
+      loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_SAVE:
       break;
@@ -1325,16 +1323,16 @@ abstract class NBODialogModel extends NBODialogConfig {
       s = PT.rep(s.substring(s.indexOf("\n") + 1), "\"\n", "\" NBO\n");
       s = "set refreshing false;load " + s + JMOL_FONT_SCRIPT
           + ";set refreshing true";
-      runScriptQueued(s);
+      loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_TO_NBO:
       s = "load " + s  + JMOL_FONT_SCRIPT + ";set refreshing true;";
 //      s = "set refreshing off;save orientation o3;load " + s
 //          + ";restore orientation o3;set refreshing on";
-      runScriptQueued(s);
+      loadModelDataQueued(s);
       break;
     case NBOService.MODE_MODEL_UNDO_REDO:
-      runScriptQueued("set refreshing false;load " + s + JMOL_FONT_SCRIPT
+      loadModelDataQueued("set refreshing false;load " + s + JMOL_FONT_SCRIPT
           + ";restore orientation o2;set refreshing true");
       break;
     case NBOService.MODE_MODEL_VALUE:
@@ -1344,4 +1342,5 @@ abstract class NBODialogModel extends NBODialogConfig {
       break;
     }
   }
+
 }

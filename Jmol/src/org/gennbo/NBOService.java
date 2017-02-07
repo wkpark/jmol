@@ -189,6 +189,7 @@ public class NBOService {
   byte[] buffer = new byte[1024];
   String cachedReply = "";
 
+  protected boolean destroyed;
   
   /**
    * Start the ProcessBuilder for NBOServe and listen to its stdout (Fortran LFN
@@ -222,6 +223,7 @@ public class NBOService {
    */
   String startProcess() {
     try {
+      destroyed = false;
       cantStartServer = true;
       if (!doConnect)
         return null;
@@ -250,7 +252,7 @@ public class NBOService {
           
           String s;
           
-          while (!Thread.currentThread().isInterrupted()) {
+          while (!destroyed && !Thread.currentThread().isInterrupted()) {
             try {
               Thread.sleep(1);
 
@@ -280,8 +282,17 @@ public class NBOService {
             }
 
           }
+          if (destroyed)
+            closeProcess();
         }
-      });
+      }) {
+
+        @Override
+        public void interrupt() {
+           destroyed = true; 
+        }
+
+      };
       nboListener.setName("NBOServiceThread" + System.currentTimeMillis());
       nboListener.start();
       
@@ -290,8 +301,12 @@ public class NBOService {
       nboIn = new PrintWriter(nboServer.getOutputStream());
       
     } catch (IOException e) {
-      dialog.logInfo(e.getMessage(), Logger.LEVEL_ERROR);
-      return e.getMessage();
+      String s = e.getMessage();
+      System.out.println(s);
+      if (s.contains("error=1455"))
+         s = "Jmol can't do that - low on memory";
+      dialog.logError(s);
+      return s;
     }
     cantStartServer = false;
     return null;
@@ -320,6 +335,8 @@ public class NBOService {
     setReady(true);
     int m = 0;
     do {
+      if (destroyed)
+        return null;
       n = m;
       Thread.sleep(10);
       if (nboOut == null)

@@ -226,6 +226,7 @@ abstract class NBODialogConfig extends JDialog {
   private static final int MODE_PATH_WORKING = 1;
 
   final static protected Color titleColor = Color.blue;
+  private static final String NBOPROPERTY_DISPLAY_OPTIONS = "displayOptions";
 
   protected Viewer vwr;
   protected NBOService nboService;
@@ -491,7 +492,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void doSetDefaults(boolean isJmol) {
-    nboPlugin.setNBOProperty("orbitalDisplayOptions", "default");
+    nboPlugin.setNBOProperty(NBOPROPERTY_DISPLAY_OPTIONS, "default");
     getOrbitalDisplayOptions();
     opacity.setValue((int) (opacityOp * 10));
     colorBox1.setSelectedItem(orbColor1);
@@ -516,7 +517,7 @@ abstract class NBODialogConfig extends JDialog {
         jCheckWireMesh.doClick();
       colorBox1.setSelectedItem(Color.cyan);
       colorBox2.setSelectedItem(Color.yellow);
-      opacity.setValue(3);
+      opacity.setValue(7);
       try {
         String atomColors = "";
         atomColors = GuiMap.getResourceString(this,
@@ -535,24 +536,25 @@ abstract class NBODialogConfig extends JDialog {
         + orbColor1.getBlue() + "]";
     orbColorJmol2 = "[" + orbColor2.getRed() + " " + orbColor2.getGreen() + " "
         + orbColor2.getBlue() + "]";
-    colorMeshes();
+    //colorMeshes();
+    updatePanelSettings(); // new
     if (!nboView)
-      nboPlugin.setNBOProperty("orbitalDisplayOptions", orbColor1.getRGB()
+      nboPlugin.setNBOProperty(NBOPROPERTY_DISPLAY_OPTIONS, orbColor1.getRGB()
           + "," + orbColor2.getRGB() + "," + opacityOp + "," + useWireMesh);
   }
 
   private String getOrbitalDisplayOptions() {
-    String options = (jmolOptionNONBO ? "jmol" : nboPlugin.getNBOProperty("orbitalDisplayOptions",
+    String options = (jmolOptionNONBO ? "jmol" : nboPlugin.getNBOProperty(NBOPROPERTY_DISPLAY_OPTIONS,
         "default"));
     if (options.equals("default") || options.equals("nboView")) {
       orbColor1 = Color.cyan;
       orbColor2 = Color.yellow;
-      opacityOp = 0.3f;
+      opacityOp = 0.7f;
       useWireMesh = false;
     } else if (options.equals("jmol")){
       orbColor1 = Color.blue;
       orbColor2 = Color.red;
-      opacityOp = 0f;
+      opacityOp = 1f;
       useWireMesh = true;
     } else {
       // color1, color2, useMesh
@@ -805,21 +807,35 @@ abstract class NBODialogConfig extends JDialog {
 
   synchronized protected String runScriptNow(String script) {
     logInfo("!$ " + script, Logger.LEVEL_DEBUG);
-    return PT.trim(vwr.runScript(script), "\n");
+//    return PT.trim(vwr.runScript(script), "\n");
+    return PT.trim("" + vwr.evaluateExpression("script(\"" + script.replace('"', '\'') + "\")"), "\n");
+
   }
   
   protected boolean iAmLoading;
   protected void loadModelFileQueued(File f, boolean saveOrientation) {
     iAmLoading = true;
-    String s = "load \"" + f.getAbsolutePath() + "\"" + JMOL_FONT_SCRIPT ;
+    String s = "load \"" + f.getAbsolutePath().replace('\\', '/') + "\"" + JMOL_FONT_SCRIPT ;
     if (saveOrientation)
       s = "save orientation o1;" + s + ";restore orientation o1";
     runScriptQueued(s);
   }
 
+  /**
+   * Uses the LOAD DATA option to load data from NBO;
+   * just getting all the "load xxx" methods in the same place.
+   * 
+   * 
+   * @param s
+   */
+  protected void loadModelDataQueued(String s) {
+    iAmLoading = true;
+    runScriptQueued(s);
+  }
+
   protected String loadModelFileNow(String s) {
     iAmLoading = true;
-    return runScriptNow("load " + s);
+    return runScriptNow("load " + s.replace('\\', '/'));
   }
 
   private boolean connect() {
@@ -959,7 +975,7 @@ abstract class NBODialogConfig extends JDialog {
   }
 
   protected void colorMeshes() {
-    updatePanelSettings();
+    // yeiks! causes file load again! updatePanelSettings();
   }
 
   protected void getNewInputFileHandler(int mode) {
@@ -1005,7 +1021,7 @@ abstract class NBODialogConfig extends JDialog {
    */
   protected void doSearchSetResStruct(String type, int rsNum) {
     if (!showAtNum) {
-      runScriptNow("measurements off;select visible;label off; select none;refresh");
+      runScriptNow("measurements off;isosurface off;select visible;label off; select none;refresh");
       return;
     }
 //    boolean atomsOnly = (type == null);
@@ -1015,7 +1031,7 @@ abstract class NBODialogConfig extends JDialog {
       rsTypeLast = type;
     }
     SB sb = new SB();
-    sb.append("measurements off;select visible;label %a;");
+    sb.append("measurements off;isosurface off;select visible;label %a;");
     String color = (nboView) ? "black" : "gray";
     sb.append("select visible;color labels white;"
         + "select visible & _H;color labels " + color + ";"
@@ -1026,7 +1042,7 @@ abstract class NBODialogConfig extends JDialog {
       runScriptNow(sb.toString());
       return;
     }
-    sb.append(s);    
+    //sb.append(s);    
     if (nboView) {
       sb.append("select add {*}.bonds;color bonds lightgrey;"
           + "wireframe 0.1;");

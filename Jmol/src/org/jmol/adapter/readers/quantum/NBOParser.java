@@ -184,7 +184,7 @@ public class NBOParser {
     for (int i = 0; i < structureList.size(); i++) {
       Map<String, Object> map = (Map<String, Object>) structureList.get(i);
       if (spin.equals(map.get("spin")) && type.equals(map.get("type"))
-          && (index < 0 || i == ((Integer) map.get("index")).intValue())) {      
+          && (index < 0 || index == ((Integer) map.get("index")).intValue())) {      
         return map;
       }
     }

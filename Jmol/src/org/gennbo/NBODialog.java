@@ -76,27 +76,6 @@ import org.openscience.jmol.app.jmolpanel.JmolPanel;
 /**
  * A dialog for interacting with NBOServer
  * 
- * The NBODialog class includes all public entry points.
- * 
- * There is really only ONE dialog -- This one. To help in managing the
- * different aspects of the task, there are several superclasses:
- * 
- * JDialog NBODialogConfig
- * 
- * -- NBODialogModel
- * 
- * ---- NBODialogRun
- * 
- * ------ NBODialogView
- * 
- * -------- NBODialogSearch
- * 
- * ---------- NBODialog
- * 
- * All of these are one object, just separated this way to allow some
- * compartmentalization of tasks along the lines of NBOPro6.
- * 
- * 
  */
 public class NBODialog extends JDialog {
 
@@ -126,8 +105,103 @@ public class NBODialog extends JDialog {
   protected JPanel viewSettingsBox;
 
 
-  //static final int DIALOG_LIST = 64; // used only for addLine
-  // local settings of the dialog type
+  protected static final int DIALOG_HOME = 0;
+  protected static final int DIALOG_MODEL = 1;
+  protected static final int DIALOG_RUN = 2;
+  protected static final int DIALOG_VIEW = 3;
+  protected static final int DIALOG_SEARCH = 4;
+  protected static final int DIALOG_CONFIG = 5;
+  protected static final int DIALOG_HELP = 6;
+  
+  final private static String[] dialogNames = new String[] { "Home", "Model",
+      "Run", "View", "Search", "Settings", "Help" };
+
+  protected static String getDialogName(int type) {
+    return dialogNames[type];
+  }
+
+  protected static final int ORIGIN_UNKNOWN = 0;
+  protected static final int ORIGIN_NIH = 1;
+  protected static final int ORIGIN_LINE_FORMULA = 2;
+  protected static final int ORIGIN_FILE_INPUT = 3;
+  protected static final int ORIGIN_NBO_ARCHIVE = 4;
+
+  protected int modelOrigin = ORIGIN_UNKNOWN;
+
+
+  
+  protected boolean jmolOptionNOZAP = false; // do no zap between modules
+  protected boolean jmolOptionNOSET = false; // do not use NBO settings by default
+  protected boolean jmolOptionVIEW = false; // present only the VIEW option
+  protected boolean jmolOptionNONBO = false; // do not try to contact NBOServe
+
+  
+  /**
+   * Allowing passage of Jmol options. Currently: NOZAP;NOSET;JMOL;VIEW
+   * 
+   * @param jmolOptions
+   */
+  protected void setJmolOptions(Map<String, Object> jmolOptions) {
+    String options = ("" + (jmolOptions == null ? "" : jmolOptions
+        .get("options"))).toUpperCase();
+    if (options.equals("VIEW"))
+      options = "VIEW;NOZAP;NOSET;NONBO";
+    jmolOptionVIEW = (options.indexOf("VIEW") >= 0);
+    jmolOptionNOZAP = (options.indexOf("NOZAP") >= 0);
+    jmolOptionNOSET = (options.indexOf("NOSET") >= 0);
+    jmolOptionNONBO = (options.indexOf("NONBO") >= 0);
+  }
+
+  protected Viewer vwr;
+  protected NBOService nboService;
+
+  /**
+   * Jmol plugin object for NBO
+   * 
+   */
+  protected NBOPlugin nboPlugin;
+
+  // private/protected variables
+
+  /**
+   * Tracks the last resonance structure type (nrtstra, nrtstrb, alpha, beta);
+   * reset to “alpha” by openPanel()
+   */
+  private String rsTypeLast = "alpha";
+
+  /**
+   * String value of what is showing in the session dialog -- persistent
+   */
+  protected String nboOutputBodyText = "";
+  
+  /**
+   * The input file handler; recreated via openPanel()
+   */
+  protected NBOFileHandler inputFileHandler;
+
+  protected JLabel icon;
+  protected JSplitPane centerPanel;
+  protected JPanel modulePanel;
+
+  protected JLabel statusLab;
+  protected JTextPane jpNBODialog;
+
+  
+  /**
+   * true if NBOServe has successfully restarted-- persistent
+   */
+  protected boolean haveService;
+
+  /**
+   * the dialog that is currently open, for example DIALOG_MODEL-- persistent
+   */
+  protected int dialogMode;
+  
+  /**
+   * configuration information source
+   */
+  protected NBOConfig config;  
+  
 
   /**
    * Creates a dialog for getting info related to output frames in nbo format.
@@ -851,11 +925,6 @@ public class NBODialog extends JDialog {
         + "</html>");
   }
 
-  protected NBOFileHandler newNBOFileHandler(String name, String ext, int mode,
-                                             String useExt) {
-    return new NBOFileHandler(name, ext, mode, useExt, this);
-  }
-
   //  protected Component getComponentatPoint(Point p, Component top){
   //    Component c = null;
   //    if(top.isShowing()) {
@@ -935,103 +1004,6 @@ public class NBODialog extends JDialog {
   }
 
 
-  protected static final int DIALOG_HOME = 0;
-  protected static final int DIALOG_MODEL = 1;
-  protected static final int DIALOG_RUN = 2;
-  protected static final int DIALOG_VIEW = 3;
-  protected static final int DIALOG_SEARCH = 4;
-  protected static final int DIALOG_CONFIG = 5;
-  protected static final int DIALOG_HELP = 6;
-  
-  final private static String[] dialogNames = new String[] { "Home", "Model",
-      "Run", "View", "Search", "Settings", "Help" };
-
-  protected static String getDialogName(int type) {
-    return dialogNames[type];
-  }
-
-  protected static final int ORIGIN_UNKNOWN = 0;
-  protected static final int ORIGIN_NIH = 1;
-  protected static final int ORIGIN_LINE_FORMULA = 2;
-  protected static final int ORIGIN_FILE_INPUT = 3;
-  protected static final int ORIGIN_NBO_ARCHIVE = 4;
-
-  protected int modelOrigin = ORIGIN_UNKNOWN;
-
-
-  
-  protected boolean jmolOptionNOZAP = false; // do no zap between modules
-  protected boolean jmolOptionNOSET = false; // do not use NBO settings by default
-  protected boolean jmolOptionVIEW = false; // present only the VIEW option
-  protected boolean jmolOptionNONBO = false; // do not try to contact NBOServe
-
-  
-  /**
-   * Allowing passage of Jmol options. Currently: NOZAP;NOSET;JMOL;VIEW
-   * 
-   * @param jmolOptions
-   */
-  protected void setJmolOptions(Map<String, Object> jmolOptions) {
-    String options = ("" + (jmolOptions == null ? "" : jmolOptions
-        .get("options"))).toUpperCase();
-    if (options.equals("VIEW"))
-      options = "VIEW;NOZAP;NOSET;NONBO";
-    jmolOptionVIEW = (options.indexOf("VIEW") >= 0);
-    jmolOptionNOZAP = (options.indexOf("NOZAP") >= 0);
-    jmolOptionNOSET = (options.indexOf("NOSET") >= 0);
-    jmolOptionNONBO = (options.indexOf("NONBO") >= 0);
-  }
-
-  protected Viewer vwr;
-  protected NBOService nboService;
-
-  /**
-   * Jmol plugin object for NBO
-   * 
-   */
-  protected NBOPlugin nboPlugin;
-
-  // private/protected variables
-
-  /**
-   * Tracks the last resonance structure type (nrtstra, nrtstrb, alpha, beta);
-   * reset to “alpha” by openPanel()
-   */
-  private String rsTypeLast = "alpha";
-
-  /**
-   * String value of what is showing in the session dialog -- persistent
-   */
-  protected String nboOutputBodyText = "";
-  
-  /**
-   * The input file handler; recreated via openPanel()
-   */
-  protected NBOFileHandler inputFileHandler;
-
-  protected JLabel icon;
-  protected JSplitPane centerPanel;
-  protected JPanel modulePanel;
-
-  protected JLabel statusLab;
-  protected JTextPane jpNBODialog;
-
-  
-  /**
-   * true if NBOServe has successfully restarted-- persistent
-   */
-  protected boolean haveService;
-
-  /**
-   * the dialog that is currently open, for example DIALOG_MODEL-- persistent
-   */
-  protected int dialogMode;
-  
-  /**
-   * configuration information source
-   */
-  protected NBOConfig config;  
-  
   protected String getJmolWorkingPath() {
     String path = JmolPanel.getJmolProperty("workingPath",
         System.getProperty("user.home"));
@@ -1174,9 +1146,14 @@ public class NBODialog extends JDialog {
     return evaluateJmolString("getProperty('filename')");
   }
 
+  /**
+   * not used for MODEL
+   * 
+   * @param mode
+   */
   protected void getNewInputFileHandler(int mode) {
-    inputFileHandler = newNBOFileHandler(inputFileHandler == null ? ""
-        : inputFileHandler.jobStem, "47", mode, "47");
+    inputFileHandler = new NBOFileHandler(inputFileHandler == null ? ""
+        : inputFileHandler.jobStem, "47", mode, "47", this);
   }
 
   /**

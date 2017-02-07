@@ -941,7 +941,7 @@ class NBOModel {
       currentRebondSymOp = jcSymOps.getSelectedIndex();
       cmd += jcSymOps.getSelectedItem().toString();
     }
-    dialog.runScriptNow("save orientation o2");
+//    dialog.runScriptNow("save orientation o2");
     NBOUtil.postAddCmd(sb, cmd);
     dialog.logCmd(cmd);
     jbApply.setEnabled(false);
@@ -1035,8 +1035,8 @@ class NBOModel {
       s = dialog.runScriptNow(";print data({*},'cfi');");
       alsoLoadJmol = false;
     }
-    if (undoRedo)
-      dialog.runScriptNow("save orientation o2");
+//    if (undoRedo)
+//      dialog.runScriptNow("save orientation o2");
     SB sb = new SB();
     NBOUtil.postAddGlobalC(sb, "PATH", dialog.nboService.getServerPath(null) + "/");
     NBOUtil.postAddGlobalC(sb, "ESS", "c");
@@ -1339,8 +1339,11 @@ class NBOModel {
       dialog.loadModelDataQueued(s);
       break;
     case MODE_MODEL_UNDO_REDO:
-      dialog.loadModelDataQueued("set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
-          + ";restore orientation o2;set refreshing true");
+      dialog.loadModelDataQueued(
+      //    "set refreshing false;load " +
+      s + NBOConfig.JMOL_FONT_SCRIPT
+          //+ ";restore orientation o2;set refreshing true"
+      );
       break;
     case MODEL_ACTION_VALUE:
       String sval = a[0].trim();

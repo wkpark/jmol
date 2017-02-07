@@ -76,6 +76,8 @@ import org.openscience.jmol.app.jmolpanel.JmolPanel;
 /**
  * A dialog for interacting with NBOServer
  * 
+ * MEMO: all save/restore orientation is turned off.
+ * 
  */
 public class NBODialog extends JDialog {
 
@@ -1106,6 +1108,10 @@ public class NBODialog extends JDialog {
   protected boolean iAmLoading;
 
   protected void loadModelFileQueued(File f, boolean saveOrientation) {
+    
+    // BH removing re-orientation for now
+    
+    saveOrientation = false;
     iAmLoading = true;
     String s = "load \"" + f.getAbsolutePath().replace('\\', '/') + "\""
         + NBOConfig.JMOL_FONT_SCRIPT;

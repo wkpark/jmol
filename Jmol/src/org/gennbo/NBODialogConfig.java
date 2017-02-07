@@ -808,7 +808,7 @@ abstract class NBODialogConfig extends JDialog {
   synchronized protected String runScriptNow(String script) {
     logInfo("!$ " + script, Logger.LEVEL_DEBUG);
 //    return PT.trim(vwr.runScript(script), "\n");
-    return PT.trim("" + vwr.evaluateExpression("script(\"" + script.replace('"', '\'') + "\")"), "\n");
+    return PT.trim("" + vwr.runScript(script.replace('"', '\'')), "\n");
 
   }
   

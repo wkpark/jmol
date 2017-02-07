@@ -833,7 +833,10 @@ public class ScriptEval extends ScriptExpr {
       } else if (expr instanceof T[]) {
         BS bs = atomExpression((T[]) expr, 0, 0, true, false, null, false);
         return (asVariable ? SV.newV(T.bitset, bs) : bs);
-
+      } else if (expr instanceof T[][]) {
+        setStatement(((T[][])expr)[0], 1);
+        return (asVariable ? parameterExpressionList(0, -1, false).get(0)
+            : parameterExpressionString(0, -1));
       }
     } catch (Exception ex) {
       Logger.error("Error evaluating: " + expr + "\n" + ex);

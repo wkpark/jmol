@@ -8926,7 +8926,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   
   @Override
   public String runScript(String script) {
-    return (String) evaluateExpression(new T[] { T.t(T.script), T.t(T.leftparen), SV.newS(script), T.t(T.rightparen) });
+    return "" + evaluateExpression(new T[][] { new T[] {T.t(T.script), T.t(T.leftparen), SV.newS(script), T.t(T.rightparen)}, null });
   }
 
   /**

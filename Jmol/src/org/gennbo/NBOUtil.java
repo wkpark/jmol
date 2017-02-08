@@ -42,6 +42,7 @@ import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 
 
+import javajs.util.PT;
 import javajs.util.SB;
 
 
@@ -120,18 +121,37 @@ public class NBOUtil {
     bd = bd.setScale(places, RoundingMode.HALF_UP);
     return bd.doubleValue();
   }
-  
-///**
-//* Centers the dialog on the screen.
-//* 
-//* @param d
-//*/
-//protected void centerDialog(JDialog d) {
-// int x = getWidth() / 2 - d.getWidth() / 2 + this.getX();
-// int y = getHeight() / 2 - d.getHeight() / 2;
-// d.setLocation(x, y);
-//}
-//
+
+  /**
+   * Get the listing  of the atoms picked -- in order of picking, if a bond
+   * @param data
+   * @return [atom1, Integer.MIN_VALUE] (atom) or [atom1, atom2] (bond) or [Integer.MIN_VALUE, 0] (other)
+   */
+  public static int[] getAtomsPicked(Object[] data) {
+    int atom1 = ((Integer) data[2]).intValue();
+    //System.out.println("----" + type.toString() + ":  " + atomIndex);
+    if (atom1 >= 0)
+      return new int[] { atom1 + 1, Integer.MIN_VALUE };
+    if (atom1 != -3)
+      return new int[] { Integer.MIN_VALUE, 0 };
+    String[] sdata = PT.getTokens(data[1].toString().replace('"', ' '));
+    atom1 = PT.parseInt(sdata[3]);
+    int atom2 = PT.parseInt(sdata[4]);
+    System.out.println(atom1 + " picked " + atom2);
+    return new int[] { atom1 + 1, atom2 + 1};
+  }
+
+  ///**
+  //* Centers the dialog on the screen.
+  //* 
+  //* @param d
+  //*/
+  //protected void centerDialog(JDialog d) {
+  // int x = getWidth() / 2 - d.getWidth() / 2 + this.getX();
+  // int y = getHeight() / 2 - d.getHeight() / 2;
+  // d.setLocation(x, y);
+  //}
+  //
 
 }
 

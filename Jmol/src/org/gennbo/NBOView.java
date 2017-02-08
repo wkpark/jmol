@@ -134,6 +134,8 @@ class NBOView {
   protected JComboBox<String> comboBasis1; 
   protected JRadioButton alphaSpin, betaSpin; 
   protected boolean isNewModel = true;
+  private boolean testingView; // set for debugVerbose and this adds all LINE and CAMERA globals
+  
 
   // used by SEARCH; cleared by openPanel() using 
  
@@ -229,23 +231,23 @@ class NBOView {
     final JButton goBtn = new JButton("GO");
     goBtn.setEnabled(false);
 
-    ActionListener al = new ActionListener() {
+    ActionListener goEnableAction = new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         goBtn.setEnabled(true);
       }
     };
-    profileBtn.addActionListener(al);
+    profileBtn.addActionListener(goEnableAction);
     profBox.add(profileBtn);//.setFont(nboFont);
 
     contourBtn = new JRadioButton("2D Contour");
     contourBtn.setToolTipText("Produce contour plot from plane parameters");
     profBox.add(contourBtn);//.setFont(nboFont);
-    contourBtn.addActionListener(al);
+    contourBtn.addActionListener(goEnableAction);
     bg.add(contourBtn);
 
     viewBtn = new JRadioButton("3D view");
-    viewBtn.addActionListener(al);
+    viewBtn.addActionListener(goEnableAction);
     bg.add(viewBtn);
     profBox.add(viewBtn);//.setFont(nboFont);
 
@@ -262,7 +264,7 @@ class NBOView {
     goBtn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        do3DViewPressed();
+        doGoPressed();
       }
     });
     profBox.add(goBtn);
@@ -351,7 +353,7 @@ class NBOView {
   }
 
 
-  protected void do3DViewPressed() {
+  protected void doGoPressed() {
     int n = orbitals.bsOn.cardinality();
     if (n > 9) {
       vwr.alert("More than 9 orbitals are selected!");
@@ -1026,8 +1028,14 @@ class NBOView {
    * @param sb
    */
   private void appendCameraParams(SB sb) {
+    // TODO -- camera fields will mess up view
     for (int i = 0; i < camFields.length; i++)
-      NBOUtil.postAddGlobalT(sb,"CAMERA_" + camFieldIDs[i], camFields[i]);
+      if(testingView || !camFields[i].getText().equals(camVal[i])){
+        camVal[i]=camFields[i].getText();
+        NBOUtil.postAddGlobalT(sb,"CAMERA_" + camFieldIDs[i], camFields[i]);
+      }
+//    for (int i = 0; i < camFields.length; i++)
+  //    NBOUtil.postAddGlobalT(sb,"CAMERA_" + camFieldIDs[i], camFields[i]);
   }
 
   /**
@@ -1059,13 +1067,11 @@ class NBOView {
 
     appendOrbitalPhaseSign(sb, ind);
     appendLineParams(sb);
-
     if (oneD) {
       appendVectorParams(sb);
     } else {
       appendPlaneParams(sb);
     }
-    appendOrbitalPhaseSign(sb, ind);
     String cmd = (oneD ? "Profile " : "Contour ") + (ind + 1);
     dialog.logCmd(cmd);
     NBOUtil.postAddCmd(sb, cmd);
@@ -1074,8 +1080,13 @@ class NBOView {
   }
 
   private void appendLineParams(SB sb) {
-    for (int i = 0; i < lineFields.length; i++)
-      NBOUtil.postAddGlobalT(sb, "LINES_" + (char) ('a' + i), lineFields[i]);
+    // TODO: temporary only that we check on this
+    for (int i = 0; i < lineFields.length; i++) {
+      if(testingView || !lineVal[i].equals(lineFields[i].getText())){
+        lineVal[i] = lineFields[i].getText();
+        NBOUtil.postAddGlobalT(sb, "LINES_" + (char) ('a' + i), lineFields[i]);
+      }
+    }
   }
 
   private void appendVectorParams(SB sb) {
@@ -1130,7 +1141,7 @@ class NBOView {
         .nextSetBit(i + 1)) {
       sb = getMetaHeader(true);
       appendOrbitalPhaseSign(sb, i);
-      NBOUtil.postAddCmd(sb, (oneD ? "PROFILE" : "CONTOUR") + (i + 1));
+      NBOUtil.postAddCmd(sb, (oneD ? "PROFILE " : "CONTOUR ") + (i + 1));
       msg += " " + (i + 1);
       profileList += " " + (++pt);
       postNBO_v(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
@@ -1158,13 +1169,14 @@ class NBOView {
     }
     dialog.logCmd(tmp);
     String jviewData = sb.toString();
-    sb = getMetaHeader(false);
+    sb = getMetaHeader(true);
     appendCameraParams(sb);
     NBOUtil.postAddCmd(sb, "VIEW" + list);
     postNBO_v(sb, MODE_VIEW_IMAGE, null, "Raytracing...", null, jviewData);
   }
 
   private void initializeImage() {
+    testingView = NBOConfig.debugVerbose;
     dialog.runScriptNow("image close");
     dialog.nboService.restart();
     setDefaultParameterArrays();
@@ -1176,35 +1188,36 @@ class NBOView {
   private int viewPlanePt = 0;
 
   /**
-   * Callback from Jmol from an atom or bond click to set the value of the atom number for vectors (profiles) or planes
-   * (contours)
-   * @param atomnoOrBondInfo either a single number or ["bond","1 3 O1 #1 -- C2 #2 1.171168",0.0,0.0,0.58555] as a String
+   * callback notification from Jmol
+   * 
+   * @param picked
+   *        [atomno1, atomno2] or [atomno1, Integer.MIN_VALUE]
+   * 
    */
-  protected void notifyPick_v(String atomnoOrBondInfo) {
-    String[] tok = atomnoOrBondInfo.split(",");
+  protected void notifyPick(int[] picked) {
+    dialog.runScriptNow("isosurface delete");
+    int at1 = picked[0];
+    int at2 = picked[1];
     switch (viewState) {
     case VIEW_STATE_VECTOR:
-      if (tok.length != 1)
+      if (at2 != Integer.MIN_VALUE)
         return;
-      vectorFields[viewVectorPt++].setText(atomnoOrBondInfo);
+      vectorFields[viewVectorPt++].setText("" + at1);
       showSelected(vectorFields);
       viewVectorPt = viewVectorPt % 2;
       break;
     case VIEW_STATE_PLANE:
-      if (tok.length != 1)
+      if (at2 != Integer.MIN_VALUE)
         return;
-      planeFields[viewPlanePt++].setText(atomnoOrBondInfo);
+      planeFields[viewPlanePt++].setText(""+ at1);
       showSelected(planeFields);
       viewPlanePt = viewPlanePt % 3;
       break;
     case VIEW_STATE_MAIN:
-      if (tok.length == 1) {
-         showOrbital(nextOrbitalForAtomPick(atomnoOrBondInfo, (DefaultListModel<String>) orbitals.getModel()));
+      if (at2 == Integer.MIN_VALUE) {
+         showOrbital(nextOrbitalForAtomPick(at1, (DefaultListModel<String>) orbitals.getModel()));
         return;
       }
-      tok = tok[1].split(" ");
-      String at1 = tok[2];
-      String at2 = tok[5];
       switch (comboBasis1.getSelectedIndex()) {
       case BASIS_AO:
       case BASIS_PNAO:
@@ -1233,9 +1246,8 @@ class NBOView {
    * @param list
    * @return the new index
    */
-  protected int nextOrbitalForAtomPick(String atomno, AbstractListModel<String> list) {
-    int ind = Integer.parseInt(atomno) - 1;
-    String at = vwr.ms.at[ind].getElementSymbol() + atomno + "(";
+  protected int nextOrbitalForAtomPick(int atomno, AbstractListModel<String> list) {
+    String at = vwr.ms.at[atomno - 1].getElementSymbol() + atomno + "(";
     int curr = (currOrb.contains(at) ? currOrbIndex : -1);
     for (int i = curr + 1, size = list.getSize(); i < size + curr; i++) {
       int ipt = i % size;
@@ -1756,7 +1768,7 @@ class NBOView {
       File f = new File(fname);
       final SB title = new SB();
       String id = "id " + PT.esc(title.toString().trim());
-      String script = "image " + id + " c lose;image id \"\" "
+      String script = "image " + id + " close;image id \"\" "
           + PT.esc(f.toString().replace('\\', '/'));
       dialog.runScriptNow(script);
       break;

@@ -262,7 +262,7 @@ public class NBOService {
 
           }
           if (destroyed)
-            closeProcess();
+            closeProcess(false);
         }
       }) {
 
@@ -340,8 +340,17 @@ public class NBOService {
   /**
    * Close the process and all channels associated with it. 
    */
-  public void closeProcess() {
+  public void closeProcess(boolean andPause) {
     
+    destroyed = true;
+    if (andPause) {
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e1) {
+      }
+      
+
+    }
     setReady(false);
     nboOut = null;
     
@@ -374,7 +383,7 @@ public class NBOService {
    * 
    */
   String restart() {
-    closeProcess();
+    closeProcess(true);
     return startProcess();
   }
 

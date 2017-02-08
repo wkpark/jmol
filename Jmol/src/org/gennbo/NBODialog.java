@@ -346,7 +346,7 @@ public class NBODialog extends JDialog {
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        nboService.closeProcess();
+        nboService.closeProcess(false);
         close();
       }
     });
@@ -803,31 +803,25 @@ public class NBODialog extends JDialog {
       }
       break;
     case PICK:
-      int atomIndex = ((Integer) data[2]).intValue();
-      //System.out.println("----" + type.toString() + ":  " + atomIndex);
-      String atomno;
-      if (atomIndex == -3)
-        atomno = data[1].toString();
-      else if (atomIndex < 0)
-        break;
-      else
-        atomno = "" + (atomIndex + 1);
+      int[] picked = NBOUtil.getAtomsPicked(data);
+      if (picked[0] < 0)
+        return; // not an atom or a bond -- maybe draw picking is on
       switch (dialogMode) {
       case DIALOG_MODEL:
-        modelPanel.notifyPick_m(atomno);
+        modelPanel.notifyPick(picked);
         return;
       case DIALOG_VIEW:
-        viewPanel.notifyPick_v(atomno);
+        viewPanel.notifyPick(picked);
         return;
       case DIALOG_SEARCH:
-        searchPanel.notifyPick_s(atomno);
+        searchPanel.notifyPick(picked);
         return;
       }
       break;
     case LOADSTRUCT:
       if (vwr.ms.ac == 0)
         return;
-      String f = runScriptNow("print _modelFile");
+      String f = "" + vwr.getParameter("_modelFile");
       if (!iAmLoading) {
         if (!f.endsWith(".47")) {
           if (dialogMode != DIALOG_MODEL) {

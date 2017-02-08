@@ -1308,29 +1308,28 @@ class NBOSearch extends NBOView {
   }
 
   /**
-   * callback for Jmol atom or bond click.
+   * callback notification from Jmol
    * 
+   * @param picked
+   *        [atomno1, atomno2] or [atomno1, Integer.MIN_VALUE]
    * 
-   * @param atomnoOrBondInfo
-   *        either a single number or
-   *        ["bond","1 3 O1 #1 -- C2 #2 1.171168",0.0,0.0,0.58555] as a String
    */
-  protected void notifyPick_s(String atomnoOrBondInfo) {
+  protected void notifyPick(int[] picked) {
     dialog.runScriptNow("isosurface delete");
-    String[] tok = atomnoOrBondInfo.split(",");
-    if (tok.length < 2) {
+    int at1 = picked[0];
+    int at2 = picked[1];
+    if (at2 == Integer.MIN_VALUE) {
       // single-atom pick
-      int n = PT.parseInt(atomnoOrBondInfo);
-      switch (n == Integer.MIN_VALUE ? KEYWD_NBO : keywordID) {
+      switch (keywordID) {
       case KEYWD_NBO:
       case KEYWD_BEND:
       case KEYWD_NLMO:
       case KEYWD_E2PERT:
-        showOrbital(nextOrbitalForAtomPick(atomnoOrBondInfo,
+        showOrbital(nextOrbitalForAtomPick(at1,
             (DefaultComboBoxModel<String>) comboSearchOrb1.getModel()));
         return;
       case KEYWD_CMO:
-        showOrbital(nextOrbitalForAtomPick(atomnoOrBondInfo,
+        showOrbital(nextOrbitalForAtomPick(at1,
             (DefaultComboBoxModel<String>) comboSearchOrb2.getModel()));
         return;
       case KEYWD_NPA:
@@ -1342,64 +1341,54 @@ class NBOSearch extends NBOView {
         break;
       }
       if (comboAtom1 != null && comboAtom2 == null) {
-        comboAtom1.setSelectedIndex(n);
+        comboAtom1.setSelectedIndex(at1);
         if (optionSelected >= 0 && optionSelected < 3)
           rBtns[optionSelected].doClick();
       } else if (comboAtom1 != null && comboAtom2 != null) {
         secondPick = !secondPick;
         if (secondPick)
-          comboAtom2.setSelectedIndex(n);
+          comboAtom2.setSelectedIndex(at1);
         else
-          comboAtom1.setSelectedIndex(n);
+          comboAtom1.setSelectedIndex(at1);
       }
       return;
     }
 
-    // bond pick
-
-    String[] tok2 = tok[1].split(" ");
-    String at1 = tok2[2];
-    String at2 = tok2[5];
     switch (keywordID) {
     case KEYWD_NBO:
     case KEYWD_NLMO:
     case KEYWD_DIPOLE:
     case KEYWD_CMO:
-      comboSearchOrb1.setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb1));
+      comboSearchOrb1.setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb1));
       break;
     case KEYWD_BEND:
-      comboSearchOrb1.setSelectedIndex(pickNHO_s(at1, at2, comboSearchOrb1));
+      comboSearchOrb1.setSelectedIndex(pickBondNHO(at1, at2, comboSearchOrb1));
       break;
     case KEYWD_NRT:
-      tok = atomnoOrBondInfo.split(",");
-      int a1 = Integer.parseInt(at1.replaceAll("[\\D]", ""));
-      int a2 = Integer.parseInt(at2.replaceAll("[\\D]", ""));
-      this.comboAtom1.setSelectedIndex(a1);
-      this.comboAtom2.setSelectedIndex(a2);
+      this.comboAtom1.setSelectedIndex(at1);
+      this.comboAtom2.setSelectedIndex(at2);
       if (optionSelected > 2 && optionSelected < 6)
         rBtns[optionSelected].doClick();
       return;
     case KEYWD_E2PERT:
     case KEYWD_STERIC:
-      tok = atomnoOrBondInfo.split(",");
-      tok2 = tok[1].split(" ");
-      String bond = tok2[2] + "-" + tok2[5];
+      String bond = at1 + "-" + at2;
       String str = comboSearchOrb1.getSelectedItem().toString()
           .replace(" ", "");
       if (str.contains(bond)) {
-        comboSearchOrb1.setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb1));
+        comboSearchOrb1.setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb1));
         return;
       }
       str = comboSearchOrb2.getSelectedItem().toString().replace(" ", "");
       if (str.contains(bond)) {
-        comboSearchOrb2.setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb2));
+        comboSearchOrb2.setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb2));
         return;
       }
       secondPick = !secondPick;
       if (secondPick)
-        comboSearchOrb2.setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb2));
+        comboSearchOrb2.setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb2));
       else
-        comboSearchOrb1.setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb1));
+        comboSearchOrb1.setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb1));
       break;
     case KEYWD_OPBAS:
     case KEYWD_BAS1BAS2:
@@ -1421,10 +1410,10 @@ class NBOSearch extends NBOView {
         secondPick = !secondPick;
         if (secondPick)
           comboSearchOrb2
-              .setSelectedIndex(pickNHO_s(at1, at2, comboSearchOrb2));
+              .setSelectedIndex(pickBondNHO(at1, at2, comboSearchOrb2));
         else
           comboSearchOrb1
-              .setSelectedIndex(pickNHO_s(at1, at2, comboSearchOrb1));
+              .setSelectedIndex(pickBondNHO(at1, at2, comboSearchOrb1));
         break;
       case BASIS_PNBO:
       case BASIS_NBO:
@@ -1434,22 +1423,22 @@ class NBOSearch extends NBOView {
         str = comboSearchOrb1.getSelectedItem().toString().replace(" ", "");
         if (str.contains(bond)) {
           comboSearchOrb1
-              .setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb1));
+              .setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb1));
           return;
         }
         str = comboSearchOrb2.getSelectedItem().toString().replace(" ", "");
         if (str.contains(bond)) {
           comboSearchOrb2
-              .setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb2));
+              .setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb2));
           return;
         }
         secondPick = !secondPick;
         if (secondPick)
           comboSearchOrb2
-              .setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb2));
+              .setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb2));
         else
           comboSearchOrb1
-              .setSelectedIndex(pickNBO_s(at1, at2, comboSearchOrb1));
+              .setSelectedIndex(pickBondNBO(at1, at2, comboSearchOrb1));
         break;
       }
     }
@@ -1463,7 +1452,7 @@ class NBOSearch extends NBOView {
    * @param cb
    * @return the orbital index, one-based
    */
-  private int pickNBO_s(String at1, String at2, JComboBox<String> cb) {
+  private int pickBondNBO(int at1, int at2, JComboBox<String> cb) {
     return selectOnOrb_s(at1 + "-" + at2, null, cb);
   }
 
@@ -1475,7 +1464,7 @@ class NBOSearch extends NBOView {
    * @param cb
    * @return the orbital index, one-based
    */
-  private int pickNHO_s(String at1, String at2, JComboBox<String> cb) {
+  private int pickBondNHO(int at1, int at2, JComboBox<String> cb) {
     return selectOnOrb_s(at1 + "(" + at2 + ")", at2 + "(" + at1 + ")", cb);
   }
 

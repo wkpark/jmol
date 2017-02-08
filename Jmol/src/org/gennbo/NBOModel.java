@@ -1138,45 +1138,43 @@ class NBOModel {
   /**
    * callback notification from Jmol
    * 
-   * @param atomno
-   *        Jmol's atom number - 1-based
+   * @param picked
+   *        [atomno1, atomno2] or [atomno1, Integer.MIN_VALUE]
    * 
    */
-  protected void notifyPick_m(String atomno) {
-    dialog.runScriptNow("measure delete;" + (resetOnAtomClick ? "select none" : ""));
+  protected void notifyPick(int[] picked) {
+    dialog.runScriptNow("measure delete;"
+        + (resetOnAtomClick ? "select none" : ""));
     if (resetOnAtomClick) {
       clearSelected(false);
     }
     resetOnAtomClick = false;
     if (boxCount == 0)
       return;
-    String[] tok = atomno.split(",");
     String selected = " " + modelEditGetSelected() + " ";
-    if (tok.length > 1) {
-      //Bond selection
-      if (boxCount == BOX_COUNT_2)
-        clearSelected(true);
-      String[] tok2 = tok[1].split(" ");
-      String at1 = tok2[2].replaceAll("[\\D]", "");
-      if (!selected.contains(" " + at1 + " "))
-        notifyPick_m(at1);
-      String at2 = tok2[5].replaceAll("[\\D]", "");
-      if (!selected.contains(" " + at2 + " "))
-        notifyPick_m(at2);
-      return;
-    }
-    boolean isSelected = (vwr.evaluateExpressionAsVariable(
-        "{*}[" + atomno + "].selected").asFloat() == 1);
-    if (isSelected) {
-      selected = PT.rep(selected, " " + atomno + " ", " ").trim();
-    } else {
-      if (PT.getTokens(selected).length >= boxCount) {
-        clearSelected(true);
-        selected = "";
+    int at1 = picked[0];
+    int at2 = picked[1];
+    if (at2 == Integer.MIN_VALUE) {
+      // atom selection
+      boolean isSelected = vwr.bsA().get(at1 - 1);
+      if (isSelected) {
+        selected = PT.rep(selected, " " + at1 + " ", " ").trim();
+      } else {
+        if (PT.getTokens(selected).length >= boxCount) {
+          clearSelected(true);
+          selected = "";
+        }
+        selected += " " + at1;
       }
-      selected += " " + atomno;
+      doSetAtomBoxesFromSelection(selected);
+    } else {
+      //Bond selection -- just break that into two atom picks
+      if (boxCount != BOX_COUNT_2)
+        return;
+      clearSelected(true);
+      notifyPick(new int[] { at1, Integer.MIN_VALUE });
+      notifyPick(new int[] { at2, Integer.MIN_VALUE });
     }
-    doSetAtomBoxesFromSelection(selected);
   }
 
   protected void doSetAtomBoxesFromSelection(String selected) {

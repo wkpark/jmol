@@ -106,6 +106,7 @@ class NBOSearch extends NBOView {
   private static final int MODE_SEARCH_LABEL       = 34;
   private static final int MODE_SEARCH_LABEL_BONDS = 44;
   private static final int MODE_SEARCH_LIST        = 54;
+  private static final int MODE_SEARCH_LIST_LABEL   = 64;
 
 
   /**
@@ -1548,39 +1549,17 @@ class NBOSearch extends NBOView {
     int mode = MODE_SEARCH_LIST;
     SB sb = getMetaHeader(false);
     String cmd;
-    int metaKey = keywordID;
     if (keywordID == KEYWD_OPBAS || keywordID == KEYWD_BAS1BAS2) {
-      cmd = "o";
-      JComboBox<String> tmpBas = ((cmd_basis.startsWith("c") && metaKey == KEYWD_BAS1BAS2) ? comboBasis2
+      cmd = "LABEL";
+      JComboBox<String> tmpBas = ((cmd_basis.startsWith("c") && keywordID == KEYWD_BAS1BAS2) ? comboBasis2
           : comboBasis1);
-      switch (tmpBas.getSelectedIndex()) {
-      case BASIS_AO:
-      case BASIS_PNAO:
-      case BASIS_NAO:
-        metaKey = 1;
-        break;
-      case BASIS_PNBO:
-      case BASIS_NBO:
-        metaKey = 2;
-        break;
-      case BASIS_PNHO:
-      case BASIS_NHO:
-        metaKey = 3;
-        break;
-      case BASIS_PNLMO:
-      case BASIS_NLMO:
-        metaKey = 5;
-        break;
-      case BASIS_MO:
-        cmd = "c";
-        metaKey = 8;
-      }
       NBOUtil.postAddGlobalI(sb, "BAS_1", 1, tmpBas);
+      mode = MODE_SEARCH_LIST_LABEL;
     } else {
       NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
+      NBOUtil.postAddGlobalI(sb, "KEYWORD", keywordID, null);
       cmd = cmd_basis.split(" ")[0];
     }
-    NBOUtil.postAddGlobalI(sb, "KEYWORD", metaKey, null);
     NBOUtil.postAddCmd(sb, cmd);
     if (keywordID == KEYWD_CMO && cmd_basis.equals("c_cmo"))
       mode = MODE_SEARCH_LIST_MO;
@@ -1607,7 +1586,7 @@ class NBOSearch extends NBOView {
       public void run() {
         processNBO(req, mode, cb);
       }
-    }, isGetValue, statusMessage, "s_cmd.txt", sb.toString());
+    }, isGetValue, statusMessage, (mode == MODE_SEARCH_LIST_LABEL ? "v_cmd.txt" : "s_cmd.txt"), sb.toString());
     dialog.nboService.postToNBO(req);
   }
 
@@ -1644,6 +1623,7 @@ class NBOSearch extends NBOView {
       if (line.contains("*"))
         showMax(line);
       break;
+    case MODE_SEARCH_LIST_LABEL:
     case MODE_SEARCH_LIST:
       list = (DefaultComboBoxModel<String>) cb.getModel();
       list.removeAllElements();

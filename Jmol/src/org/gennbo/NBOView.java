@@ -990,7 +990,7 @@ class NBOView {
 
     if (!dialog.jmolOptionNONBO) {
       dialog.logCmd("select " + comboBasis1.getSelectedItem()  + " " + (isBeta ? "beta" : dialog.isOpenShell() ? "alpha" : ""));
-      postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"), MODE_VIEW_LIST,
+      postNBO(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"), MODE_VIEW_LIST,
           list, "Getting list", null, null);
     }
     dialog.loadModelFileQueued(
@@ -1075,7 +1075,7 @@ class NBOView {
     String cmd = (oneD ? "Profile " : "Contour ") + (ind + 1);
     dialog.logCmd(cmd);
     NBOUtil.postAddCmd(sb, cmd);
-    postNBO_v(sb, MODE_VIEW_IMAGE, null, (oneD ? "Profiling.."
+    postNBO(sb, MODE_VIEW_IMAGE, null, (oneD ? "Profiling.."
         : "Contouring.."), null, null);
   }
 
@@ -1116,9 +1116,9 @@ class NBOView {
     
     // I do not understand why a LABEL command has to be given here. A bug? 
     
-    postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"), NBOService.MODE_RAW, null, "",  "jview.txt", sb.toString());
+    postNBO(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"), NBOService.MODE_RAW, null, "",  "jview.txt", sb.toString());
 
-    postNBO_v(NBOUtil.postAddCmd(new SB(), "JVIEW"), NBOService.MODE_RAW, null,
+    postNBO(NBOUtil.postAddCmd(new SB(), "JVIEW"), NBOService.MODE_RAW, null,
         "Sending Jmol orientation", null, null);
 
     //    sb = getMetaHeader(true);
@@ -1144,13 +1144,13 @@ class NBOView {
       NBOUtil.postAddCmd(sb, (oneD ? "PROFILE " : "CONTOUR ") + (i + 1));
       msg += " " + (i + 1);
       profileList += " " + (++pt);
-      postNBO_v(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
+      postNBO(sb, NBOService.MODE_RAW, null, "Sending " + msg, null, null);
     }
     dialog.logCmd(msg);
     sb = getMetaHeader(false);
     appendLineParams(sb);
     NBOUtil.postAddCmd(sb, "DRAW" + profileList);
-    postNBO_v(sb, MODE_VIEW_IMAGE, null, "Drawing...", null, null);
+    postNBO(sb, MODE_VIEW_IMAGE, null, "Drawing...", null, null);
   }
 
   protected void createImage3D() {
@@ -1162,7 +1162,7 @@ class NBOView {
       sb = getMetaHeader(true);
       appendOrbitalPhaseSign(sb, i);
       NBOUtil.postAddCmd(sb, "PROFILE " + (i + 1));
-      postNBO_v(sb, NBOService.MODE_RAW, null, "Sending profile " + (i + 1),
+      postNBO(sb, NBOService.MODE_RAW, null, "Sending profile " + (i + 1),
           null, null);
       tmp += " " + (i + 1);
       list += " " + (++pt);
@@ -1172,7 +1172,7 @@ class NBOView {
     sb = getMetaHeader(true);
     appendCameraParams(sb);
     NBOUtil.postAddCmd(sb, "VIEW" + list);
-    postNBO_v(sb, MODE_VIEW_IMAGE, null, "Raytracing...", null, jviewData);
+    postNBO(sb, MODE_VIEW_IMAGE, null, "Raytracing...", null, jviewData);
   }
 
   private void initializeImage() {
@@ -1729,7 +1729,7 @@ class NBOView {
    * @param fileData
    *        optional
    */
-  private void postNBO_v(SB sb, final int mode,
+  private void postNBO(SB sb, final int mode,
                          final DefaultListModel<String> list,
                          String statusMessage, String dataFileName,
                          String fileData) {

@@ -321,10 +321,10 @@ class NBOModel {
             return false;
           }
           loadModelFromNBO(newFile.getParent(),
-              (jobStem = getJobStem(newFile)), NBOFileHandler.getExt(newFile));
+              (jobStem = NBOUtil.getJobStem(newFile)), NBOUtil.getExt(newFile));
 
           dialog.inputFileHandler
-              .setInput(fileDir, jobStem, NBOFileHandler.getExt(newFile));
+              .setInput(fileDir, jobStem, NBOUtil.getExt(newFile));
           fileDir = newFile.getParent();
 
           return true;
@@ -718,9 +718,9 @@ class NBOModel {
         int button = myChooser.showSaveDialog(this);
         if (button == JFileChooser.APPROVE_OPTION) {
           File newFile = myChooser.getSelectedFile();
-          ext = NBOFileHandler.getExt(newFile);
+          ext = NBOUtil.getExt(newFile);
           if (PT
-              .isOneOf(NBOFileHandler.getExt(newFile), NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
+              .isOneOf(NBOUtil.getExt(newFile), NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
             if (newFile.exists()) {
               int i = JOptionPane.showConfirmDialog(null, "File " + newFile
                   + " already exists, do you want to overwrite contents?",
@@ -732,7 +732,7 @@ class NBOModel {
             dialog.inputFileHandler.setInput(folder, name, ext);
 
             fileDir = newFile.getParent();
-            saveModel(newFile.getParent(), NBOFileHandler.getJobStem(newFile),
+            saveModel(newFile.getParent(), NBOUtil.getJobStem(newFile),
                 ext);
             dialog.saveWorkingPath(fileDir);
           } else

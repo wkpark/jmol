@@ -5,10 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Map;
 
 import javajs.util.Lst;
@@ -173,7 +170,7 @@ class NBOFileHandler extends JPanel {
     if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
       return true;
     if (!useExt.equals("47")) {
-      jobStem = getJobStem(inputFile);
+      jobStem = NBOUtil.getJobStem(inputFile);
       dialog.modelPanel.loadModelFromNBO(fileDir, jobStem, useExt);
       tfName.setText(jobStem);
       tfExt.setText(useExt);
@@ -203,13 +200,13 @@ class NBOFileHandler extends JPanel {
     isOpenShell = false;
     this.inputFile = inputFile;
     if (inputFile.getName().indexOf(".") > 0)
-      jobStem = getJobStem(inputFile);
+      jobStem = NBOUtil.getJobStem(inputFile);
     if (dialog.modelOrigin == NBODialog.ORIGIN_NBO_ARCHIVE)
       clearInputFile(true);
     setInput(inputFile.getParent(), jobStem, useExt);
-    if (!getExt(inputFile).equals("47"))
+    if (!NBOUtil.getExt(inputFile).equals("47"))
       return;
-    if (fixPath(inputFile.getParent().toString()).equals(
+    if (NBOUtil.fixPath(inputFile.getParent().toString()).equals(
         dialog.nboService.getServerPath(null))) {
       JOptionPane.showMessageDialog(this,
           "Select a directory that does not contain the NBOServe executable,"
@@ -259,16 +256,6 @@ class NBOFileHandler extends JPanel {
   }
   
   /**
-   * change \ to /
-   * 
-   * @param path
-   * @return fixed path
-   */
-  static String fixPath(String path) {
-    return path.replace('\\',  '/');
-  }
-
-  /**
    * Read input parameters from .47 file
    * 
    * @param doAll read the whole thing; else just for keywords (stops at $COORD) 
@@ -280,7 +267,7 @@ class NBOFileHandler extends JPanel {
     String[] fileData = new String[] { "", "", "", "" };
     String nboKeywords = "";
     SB data = new SB();
-    if (!read47FileBuffered(inputFile, data, doAll))
+    if (!NBOUtil.read47FileBuffered(inputFile, data, doAll))
       return fileData;
     String s = PT.trim(data.toString(), "\t\r\n ");
     String[] tokens = PT.split(s, "$END");
@@ -305,62 +292,16 @@ class NBOFileHandler extends JPanel {
       params.append(s).append(sep).append("$END").append(sep);
     }
     dialog.logInfo("$NBO: " + nboKeywords, Logger.LEVEL_INFO);
-    fileData[0] = fix47File(preParams.toString());
+    fileData[0] = NBOUtil.fix47File(preParams.toString());
     fileData[1] = NBOUtil.removeNBOFileKeyword(nboKeywords, null);
     fileData[2] = postParams.toString();
     fileData[3] = nboKeywords;
     return fileData;
   }
 
-  private String fix47File(String data) {
-    return PT.rep(data, "FORMAT=PRECISE", ""); 
-    
-  }
-
-  /**
-   * Read a file reducing lines to
-   * 
-   * @param inputFile
-   * @param data
-   * @param doAll set false to only read through $NBO keyword 
-   * @return true if successful; false if not
-   */
-  private boolean read47FileBuffered(File inputFile, SB data, boolean doAll) {
-    try {
-      boolean have$NBO = false, haveNBO$END = false;
-      BufferedReader b = null;
-      b = new BufferedReader(new FileReader(inputFile));
-      String line;
-      while ((line = b.readLine()) != null && (doAll || !line.contains("$COORD"))) {
-        if (have$NBO && !haveNBO$END || !have$NBO && (have$NBO = NBOUtil.lineContainsUncommented(line, "$NBO")) == true) {
-          line = NBOUtil.removeNBOComment(line);
-          if (line.indexOf("$END") >= 0) {
-            haveNBO$END = true;
-          }
-        }
-        data.append(line + sep);
-      }
-      b.close();
-      return true;
-    } catch (IOException e) {
-    }
-    return false;
-  }
-
   public void clear() {
     tfName.setText("");
     tfExt.setText("");
-  }
-
-  //useful file manipulation methods /////////////////////////////
-
-  protected static File newNBOFile(File f, String ext) {
-    return new File(pathWithoutExtension(fixPath(f.toString())) + "." + ext);
-  }
-
-  protected static String pathWithoutExtension(String fname) {
-    int pt = fname.lastIndexOf(".");
-    return (pt < 0 ? fname : fname.substring(0, pt));
   }
 
   protected void clearInputFile(boolean andUserDir) {
@@ -375,18 +316,13 @@ class NBOFileHandler extends JPanel {
     if (andUserDir)
       for (String ext : EXT_ARRAY)
         try {
-          newNBOFile(inputFile, ext).delete();
+          NBOUtil.newNBOFile(inputFile, ext).delete();
         } catch (Exception e) {
           // ignore
         }
     inputFile = null;
     if (dialog.dialogMode == NBODialog.DIALOG_VIEW)
       dialog.viewPanel.resetView();
-  }
-
-  protected static String getJobStem(File inputFile) {
-    String fname = inputFile.getName();
-    return fname.substring(0, fname.lastIndexOf("."));
   }
 
   protected void setInput(String dir, String name, String ext) {
@@ -400,11 +336,6 @@ class NBOFileHandler extends JPanel {
       dialog.modelPanel.modelSetSaveParametersFromInput(this, dir, name, ext);
       inputFile = new File(dir + "\\" + name + "." + ext);
     }
-  }
-
-  protected static String getExt(File newFile) {
-    String fname = newFile.toString();
-    return fname.substring(fname.lastIndexOf(".") + 1);
   }
 
   protected String getFileData(String fileName) {
@@ -425,7 +356,7 @@ class NBOFileHandler extends JPanel {
   }
 
   public File newNBOFileForExt(String filenum) {
-    return newNBOFile(inputFile, filenum);
+    return NBOUtil.newNBOFile(inputFile, filenum);
   }
 
   public void copyAndSwitch47FileTo(String jobName) {

@@ -995,8 +995,8 @@ class NBOView {
     }
     dialog.loadModelFileQueued(
         f,
-        NBOFileHandler.pathWithoutExtension(f.getAbsolutePath()).equals(
-            NBOFileHandler.pathWithoutExtension(dialog.getJmolFilename())));
+        NBOUtil.pathWithoutExtension(f.getAbsolutePath()).equals(
+            NBOUtil.pathWithoutExtension(dialog.getJmolFilename())));
 
   }
 

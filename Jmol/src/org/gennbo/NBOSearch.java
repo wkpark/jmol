@@ -399,7 +399,7 @@ class NBOSearch extends NBOView {
 
     dialog.viewSettingsBox.removeAll();
     String file = vwr.getProperty("String", "filename", null).toString();
-    String ext = NBOFileHandler.getExt(new File(file));
+    String ext = NBOUtil.getExt(new File(file));
 
     if (PT.isOneOf(ext, NBOFileHandler.EXTENSIONS))
       notifyLoad();

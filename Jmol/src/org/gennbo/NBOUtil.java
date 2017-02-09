@@ -28,6 +28,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -48,23 +52,23 @@ import javajs.util.SB;
 
 public class NBOUtil {
 
-  protected static void postAddGlobalC(SB sb, String label, String val) {
+  public static void postAddGlobalC(SB sb, String label, String val) {
     sb.append("GLOBAL C_").append(label).append(" ").append(val).append(sep);  
    }
 
-  protected static void postAddGlobalI(SB sb, String label, int offset, JComboBox<String> cb) {
+  public static void postAddGlobalI(SB sb, String label, int offset, JComboBox<String> cb) {
     sb.append("GLOBAL I_").append(label).append(" ").appendI(cb == null ? offset : cb.getSelectedIndex() + offset).append(sep);  
    }
 
-  protected static void postAddGlobalT(SB sb, String key, JTextField t) {
+  public static void postAddGlobalT(SB sb, String key, JTextField t) {
     sb.append("GLOBAL ").append(key).append(" ").append(t.getText()).append(sep);
   }
 
-  protected static void postAddGlobal(SB sb, String key, String val) {
+  public static void postAddGlobal(SB sb, String key, String val) {
     sb.append("GLOBAL ").append(key).append(" ").append(val).append(sep);
   }
 
-  protected static SB postAddCmd(SB sb, String cmd) {
+  public static SB postAddCmd(SB sb, String cmd) {
     return sb.append("CMD ").append(cmd).append(sep);
   }
 
@@ -77,7 +81,7 @@ public class NBOUtil {
    *        help button, for example
    * @return Box formatted title box
    */
-  protected static Box createTitleBox(String title, Component rightSideComponent) {
+  public static Box createTitleBox(String title, Component rightSideComponent) {
     Box box = Box.createVerticalBox();
     JLabel label = new JLabel(title);
     label.setAlignmentX(0);
@@ -105,16 +109,16 @@ public class NBOUtil {
    * @param isVertical
    * @return a box
    */
-  protected static Box createBorderBox(boolean isVertical) {
+  public static Box createBorderBox(boolean isVertical) {
     Box box = isVertical ? Box.createVerticalBox() : Box.createHorizontalBox();
     box.setAlignmentX(0.0f);
     box.setBorder(BorderFactory.createLineBorder(Color.black));
     return box;
   }
 
-  protected static final String sep = System.getProperty("line.separator");
+  public static final String sep = System.getProperty("line.separator");
 
-  protected static double round(double value, int places) {
+  public static double round(double value, int places) {
     if (places < 0)
       throw new IllegalArgumentException();
     BigDecimal bd = new BigDecimal(value);
@@ -209,13 +213,77 @@ public class NBOUtil {
     return (ptComment < 0 ? line : line.substring(0, ptComment));
   }
 
+  /**
+   * Read a file reducing lines to
+   * 
+   * @param inputFile
+   * @param data
+   * @param doAll set false to only read through $NBO keyword 
+   * @return true if successful; false if not
+   */
+  public static boolean read47FileBuffered(File inputFile, SB data, boolean doAll) {
+    try {
+      boolean have$NBO = false, haveNBO$END = false;
+      BufferedReader b = null;
+      b = new BufferedReader(new FileReader(inputFile));
+      String line;
+      while ((line = b.readLine()) != null && (doAll || !line.contains("$COORD"))) {
+        if (have$NBO && !haveNBO$END || !have$NBO && (have$NBO = lineContainsUncommented(line, "$NBO")) == true) {
+          line = removeNBOComment(line);
+          if (line.indexOf("$END") >= 0) {
+            haveNBO$END = true;
+          }
+        }
+        data.append(line + NBOFileHandler.sep);
+      }
+      b.close();
+      return true;
+    } catch (IOException e) {
+    }
+    return false;
+  }
+
+  public static String getExt(File newFile) {
+    String fname = newFile.toString();
+    return fname.substring(fname.lastIndexOf(".") + 1);
+  }
+
+  public static String getJobStem(File inputFile) {
+    String fname = inputFile.getName();
+    return fname.substring(0, fname.lastIndexOf("."));
+  }
+
+  public static String pathWithoutExtension(String fname) {
+    int pt = fname.lastIndexOf(".");
+    return (pt < 0 ? fname : fname.substring(0, pt));
+  }
+
+  public static File newNBOFile(File f, String ext) {
+    return new File(pathWithoutExtension(NBOUtil.fixPath(f.toString())) + "." + ext);
+  }
+
+  public static String fix47File(String data) {
+    return PT.rep(data, "FORMAT=PRECISE", ""); 
+    
+  }
+
+  /**
+   * change \ to /
+   * 
+   * @param path
+   * @return fixed path
+   */
+  public static String fixPath(String path) {
+    return path.replace('\\',  '/');
+  }
+
 
   ///**
   //* Centers the dialog on the screen.
   //* 
   //* @param d
   //*/
-  //protected void centerDialog(JDialog d) {
+  //public void centerDialog(JDialog d) {
   // int x = getWidth() / 2 - d.getWidth() / 2 + this.getX();
   // int y = getHeight() / 2 - d.getHeight() / 2;
   // d.setLocation(x, y);
@@ -226,20 +294,20 @@ public class NBOUtil {
 
 class StyledComboBoxUI extends MetalComboBoxUI {
 
-  protected int height;
-  protected int width;
+  public int height;
+  public int width;
 
-  protected StyledComboBoxUI(int h, int w) {
+  public StyledComboBoxUI(int h, int w) {
     super();
     height = h;
     width = w;
   }
 
   @Override
-  protected ComboPopup createPopup() {
+  public ComboPopup createPopup() {
     BasicComboPopup popup = new BasicComboPopup(comboBox) {
       @Override
-      protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
+      public Rectangle computePopupBounds(int px, int py, int pw, int ph) {
         return super.computePopupBounds(px, py, Math.max(width, pw), height);
       }
     };

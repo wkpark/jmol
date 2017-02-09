@@ -158,7 +158,7 @@ class NBORun {
     panel.add(btnRun);
 
     if (dialog.inputFileHandler.tfExt.getText().equals("47"))
-      notifyLoad_r();
+      notifyLoad();
     dialog.inputFileHandler.setBrowseEnabled(true);
     return panel;
   }
@@ -424,7 +424,7 @@ class NBORun {
   //    }
   //  }
 
-  protected void notifyLoad_r() {
+  protected void notifyLoad() {
     if (vwr.ms.ac == 0)
       return;
     dialog.doSetStructure("alpha");
@@ -747,22 +747,22 @@ class NBORun {
     dialog.logCmd("RUN GenNBO FILE=" + jobName + " "
         + cleanNBOKeylist(fileData[1], false));
 
-    postNBO_r(sb, "Running GenNBO...");
+    postNBO(sb, "Running GenNBO...");
   }
 
   /**
-   * Post a request to NBOServe with a callback to processNBO_r.
+   * Post a request to NBOServe with a callback to processNBO.
    * 
    * @param sb
    *        command data
    * @param statusMessage
    */
-  private void postNBO_r(SB sb, String statusMessage) {
+  private void postNBO(SB sb, String statusMessage) {
     final NBORequest req = new NBORequest();
     req.set(new Runnable() {
       @Override
       public void run() {
-        processNBO_r(req);
+        processNBO(req);
       }
     }, true, statusMessage, "r_cmd.txt", sb.toString());
     dialog.nboService.postToNBO(req);
@@ -774,7 +774,7 @@ class NBORun {
    * @param req
    * @param mode
    */
-  protected void processNBO_r(NBORequest req) {
+  protected void processNBO(NBORequest req) {
     dialog.inputFileHandler.setInputFile(dialog.inputFileHandler.inputFile);
   }
 

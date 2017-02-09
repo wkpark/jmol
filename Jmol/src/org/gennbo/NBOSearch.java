@@ -252,7 +252,7 @@ class NBOSearch extends NBOView {
 
   private boolean needRelabel;
 
-  private void resetVariables_s() {
+  private void resetVariables() {
     optionSelected = -1;
     keywordID = 0;
     operator = 1;
@@ -402,7 +402,7 @@ class NBOSearch extends NBOView {
     String ext = NBOFileHandler.getExt(new File(file));
 
     if (PT.isOneOf(ext, NBOFileHandler.EXTENSIONS))
-      notifyLoad_s();
+      notifyLoad();
 
     return panel;
   }
@@ -423,7 +423,7 @@ class NBOSearch extends NBOView {
   }
 
   protected void buildHome() {
-    resetVariables_s();
+    resetVariables();
     resetCurrentOrbitalClicked();
     opList.removeAll();
     comboBasisOperation.setVisible(false);
@@ -1454,7 +1454,7 @@ class NBOSearch extends NBOView {
    * @return the orbital index, one-based
    */
   private int pickBondNBO(int at1, int at2, JComboBox<String> cb) {
-    return selectOnOrb_s(at1 + "-" + at2, null, cb);
+    return selectOnOrb(at1 + "-" + at2, null, cb);
   }
 
   /**
@@ -1466,7 +1466,7 @@ class NBOSearch extends NBOView {
    * @return the orbital index, one-based
    */
   private int pickBondNHO(int at1, int at2, JComboBox<String> cb) {
-    return selectOnOrb_s(at1 + "(" + at2 + ")", at2 + "(" + at1 + ")", cb);
+    return selectOnOrb(at1 + "(" + at2 + ")", at2 + "(" + at1 + ")", cb);
   }
 
   /**
@@ -1479,7 +1479,7 @@ class NBOSearch extends NBOView {
    * @param cb
    * @return an orbital index -- one-based
    */
-  protected int selectOnOrb_s(String b1, String b2, JComboBox<String> cb) {
+  protected int selectOnOrb(String b1, String b2, JComboBox<String> cb) {
     DefaultComboBoxModel<String> list = (DefaultComboBoxModel<String>) cb
         .getModel();
     int size = list.getSize();
@@ -1501,7 +1501,7 @@ class NBOSearch extends NBOView {
    * callback notification that Jmol has loaded a model while SEARCH was active
    * 
    */
-  protected void notifyLoad_s() {
+  protected void notifyLoad() {
     if (vwr.ms.ac == 0)
       return;
     dialog.runScriptNow("isosurface delete");
@@ -1567,7 +1567,7 @@ class NBOSearch extends NBOView {
   }
 
   /**
-   * Post a request to NBOServe with a callback to processNBO_s.
+   * Post a request to NBOServe with a callback to processNBO.
    * 
    * @param sb
    *        command data

@@ -1300,7 +1300,7 @@ class NBOView {
     orbitals.updateIsosurfacesInJmol(i);
   }
 
-  protected void notifyList_v(AbstractListModel<String> list) {
+  protected void notifyList(AbstractListModel<String> list) {
     if (list != null) {
       orbitals.setLayoutOrientation(JList.VERTICAL_WRAP);
       orbitals.requestFocus();

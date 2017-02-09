@@ -185,7 +185,7 @@ class NBOModel {
 
 
   protected JPanel buildModelPanel() {
-    resetVariables_m();
+    resetVariables();
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
@@ -214,7 +214,7 @@ class NBOModel {
 
   }
 
-  private void resetVariables_m() {
+  private void resetVariables() {
     actionID = 0;
     boxCount = 0;
     notFromNBO = false;
@@ -545,11 +545,11 @@ class NBOModel {
   }
 
   protected void doApply() {
-    postActionToNBO_m(actionID);
+    postActionToNBO(actionID);
   }
 
   protected void doEditValueTextField() {
-    postActionToNBO_m(actionID);
+    postActionToNBO(actionID);
   }
 
   protected void updateSelected(boolean doPost) {
@@ -618,14 +618,14 @@ class NBOModel {
       }
     }
     if (actionID == MODEL_ACTION_ALTER || actionID == MODEL_ACTION_TWIST && cnt == 4) {
-      postActionToNBO_m(MODEL_ACTION_VALUE);
+      postActionToNBO(MODEL_ACTION_VALUE);
     }
     dialog.runScriptQueued(script);
     editValueTf.setText("");
     editValueTf.setEnabled(selected.length() > 0);
     dialog.showSelected(selected);
     if (actionID == MODEL_ACTION_VALUE || doPost)
-      postActionToNBO_m(actionID);
+      postActionToNBO(actionID);
   }
 
   private final static String[][] REBOND_LISTS = 
@@ -920,7 +920,7 @@ class NBOModel {
    * @param actionID
    * 
    */
-  protected void postActionToNBO_m(int actionID) {
+  protected void postActionToNBO(int actionID) {
     SB sb = new SB();
     String selected = modelEditGetSelected();
     String cmd = MODEL_ACTIONS[actionID].toLowerCase() + " " + selected + " ";
@@ -946,7 +946,7 @@ class NBOModel {
     dialog.logCmd(cmd);
     jbApply.setEnabled(false);
     resetOnAtomClick = (actionID != MODEL_ACTION_VALUE);
-    postNBO_m(sb, actionID, (actionID == MODEL_ACTION_VALUE ? "Checking value": "Editing model"), null, null);
+    postNBO(sb, actionID, (actionID == MODEL_ACTION_VALUE ? "Checking value": "Editing model"), null, null);
   }
 
   /**
@@ -955,7 +955,7 @@ class NBOModel {
   protected void doGetSymmetry() {
     String cmd = "symmetry";
     dialog.logCmd(cmd);
-    postNBO_m(NBOUtil.postAddCmd(new SB(), cmd), MODEL_ACTION_SYMMETRY,  "Checking Symmetry", null, null);
+    postNBO(NBOUtil.postAddCmd(new SB(), cmd), MODEL_ACTION_SYMMETRY,  "Checking Symmetry", null, null);
   }
 
   /**
@@ -1016,7 +1016,7 @@ class NBOModel {
       saveFileHandler.setInput(null, "line", "mol");
       NBOUtil.postAddCmd(sb, s);
       dialog.logCmd(s);
-      postNBO_m(sb, MODE_MODEL_NEW, "model from line input...",
+      postNBO(sb, MODE_MODEL_NEW, "model from line input...",
           null, null);
     }
   }
@@ -1043,7 +1043,7 @@ class NBOModel {
     NBOUtil.postAddGlobalC(sb, "FNAME", "jmol_outfile");
     NBOUtil.postAddGlobalC(sb, "IN_EXT", "cfi");
     NBOUtil.postAddCmd(sb, "use");
-    postNBO_m(sb, (undoRedo ? MODE_MODEL_UNDO_REDO : MODE_MODEL_TO_NBO), (alsoLoadJmol ? "Loading" : "Sending") + " model to NB", "jmol_outfile.cfi", s);
+    postNBO(sb, (undoRedo ? MODE_MODEL_UNDO_REDO : MODE_MODEL_TO_NBO), (alsoLoadJmol ? "Loading" : "Sending") + " model to NB", "jmol_outfile.cfi", s);
 
   }
 
@@ -1075,7 +1075,7 @@ class NBOModel {
     NBOUtil.postAddCmd(sb, "use");
     clearSelected(false);
     dialog.logCmd("use." + ess + " " + fname + "." + ext);
-    postNBO_m(sb, MODE_MODEL_NEW, "Loading model from NBO...", null, null);
+    postNBO(sb, MODE_MODEL_NEW, "Loading model from NBO...", null, null);
 
   }
 
@@ -1101,7 +1101,7 @@ class NBOModel {
     NBOUtil.postAddGlobalC(sb, "FNAME", fname);
     NBOUtil.postAddGlobalC(sb, "OUT_EXT", ext.toLowerCase());
     NBOUtil.postAddCmd(sb, "save");
-    postNBO_m(sb, MODE_MODEL_SAVE, "Saving model...", null, null);
+    postNBO(sb, MODE_MODEL_SAVE, "Saving model...", null, null);
     dialog.logCmd("save." + ess + " " + fname);
     dialog.logValue("--Model Saved--<br>" + path + "\\" + fname + "." + ext);
   }
@@ -1198,7 +1198,7 @@ class NBOModel {
    * callback notification from Jmol
    * 
    */
-  protected void notifyLoad_m() {
+  protected void notifyLoad() {
 
     String fileContents = dialog.runScriptNow("print data({*},'cfi')");
     if (notFromNBO) {
@@ -1251,13 +1251,13 @@ class NBOModel {
    * @param fileName  optional
    * @param fileData  optional
    */
-  private void postNBO_m(SB sb, final int mode, String statusMessage, String fileName, String fileData) {
+  private void postNBO(SB sb, final int mode, String statusMessage, String fileName, String fileData) {
     final NBORequest req = new NBORequest();
     serverMode = mode;
     req.set(new Runnable() {
       @Override
       public void run() {
-        processNBO_m(mode, req);
+        processNBO(mode, req);
       }
     }, false, statusMessage, "m_cmd.txt", sb.toString(), fileName, fileData);
     dialog.nboService.postToNBO(req);
@@ -1269,7 +1269,7 @@ class NBOModel {
    * @param mode
    * @param req
    */
-  protected void processNBO_m(int mode, NBORequest req) {
+  protected void processNBO(int mode, NBORequest req) {
     String[] a = req.getReplyLines();
     if (a[0].indexOf("DATA") >= 0) {
       a[0] += " NBO";

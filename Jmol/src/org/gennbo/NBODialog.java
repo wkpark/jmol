@@ -855,16 +855,16 @@ public class NBODialog extends JDialog {
             + "wireframe 0.1;select none");
       switch (dialogMode) {
       case DIALOG_MODEL:
-        modelPanel.notifyLoad_m();
+        modelPanel.notifyLoad();
         return;
       case DIALOG_RUN:
-        runPanel.notifyLoad_r();
+        runPanel.notifyLoad();
         return;
       case DIALOG_VIEW:
         viewPanel.notifyLoad_v();
         return;
       case DIALOG_SEARCH:
-        searchPanel.notifyLoad_s();
+        searchPanel.notifyLoad();
         return;
       }
       break;

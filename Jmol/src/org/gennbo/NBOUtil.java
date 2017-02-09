@@ -141,6 +141,75 @@ public class NBOUtil {
     return new int[] { atom1 + 1, atom2 + 1};
   }
 
+  public static String addNBOKeyword(String tmp, String s) {
+    int pt;
+    if ((pt = findKeyword(tmp, s, false)) >= 0)
+      return tmp.substring(0, pt) + " " + tmp.substring(pt + 1); 
+    if (findKeyword(tmp, s, true) >= 0)
+      return tmp;
+    if (tmp.length() + s.length() - tmp.lastIndexOf(NBOUtil.sep) >= 80)
+      tmp += NBOUtil.sep + " ";
+    if (tmp.length() == 0)
+      tmp = " ";
+    tmp += s.toUpperCase() + " ";
+    return tmp;
+  }
+
+  /**
+   * check for a full keyword; all must be caps
+   * @param keywords
+   * @param s
+   * @param ifPresent true for is in the list; false for is not in the list
+   * @return point of " " or "!" PRIOR TO KEYWORD or -1 if not present
+   */
+  public static int findKeyword(String keywords, String s, boolean ifPresent) {
+    int pt;
+    if (!keywords.startsWith(" "))
+      keywords = " " + keywords + " ";
+    String prefix = (ifPresent ? " " : "_");
+    return ((pt = keywords.indexOf(prefix + s + " ")) >= 0  ? pt 
+        : (pt = keywords.indexOf(prefix + s + "=")) >= 0 ? pt : -1);
+  }
+
+  public static String removeNBOKeyword(String keywords, String name) {
+    // look for "!NAME " or "!NAME="
+    int pt = findKeyword(keywords, name, false);
+    if (pt >= 0)
+      return keywords;
+    // look for " NAME " or " NAME=" 
+    pt = findKeyword(keywords, name, true);
+    if (pt < 0)
+      return keywords;
+    // found that -- must negate
+    return keywords.substring(0, pt) + "_" + keywords.substring(pt + 1);
+  }
+
+  public static String removeNBOFileKeyword(String nboKeywords, String[] fnameRet) {
+    
+    // TODO Q: what about "FILE xxxx" ?
+    
+    String[] tokens = PT.getTokens(nboKeywords);
+    nboKeywords = "";
+    for (int i = 0; i < tokens.length; i++)
+      if (tokens[i].indexOf("=") < 0  || tokens[i].toUpperCase().indexOf("FILE=") < 0)
+        nboKeywords += " " + tokens[i].toUpperCase();
+      else if (fnameRet != null)
+        fnameRet[0] = tokens[i].substring(5);
+    return nboKeywords.trim();
+  }
+
+  public static boolean lineContainsUncommented(String line, String key) {
+    int ptComment;
+    int ptKey = line.indexOf(key);
+    return (ptKey >= 0 && ((ptComment = line.indexOf("!")) < 0 || ptComment > ptKey));
+  }
+
+  public static String removeNBOComment(String line) {
+    int ptComment = line.indexOf("!");
+    return (ptComment < 0 ? line : line.substring(0, ptComment));
+  }
+
+
   ///**
   //* Centers the dialog on the screen.
   //* 

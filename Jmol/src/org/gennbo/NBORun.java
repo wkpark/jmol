@@ -314,7 +314,8 @@ class NBORun {
     String keywords = "";
     String[] tokens = PT.getTokens(PT.rep(PT.rep(s, "$NBO", ""), "$END", "")
         .trim());
-    for (String x : tokens) {
+    for (int i = 0; i < tokens.length; i++) {
+      String x = tokens[i];
       String xuc = x.toUpperCase();
       if (xuc.indexOf("FILE=") < 0) {
         keywords += xuc + " ";
@@ -337,11 +338,11 @@ class NBORun {
     menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
     menuPanel.setBorder(BorderFactory.createLoweredBevelBorder());
     keywordButtons = new JRadioButton[RUN_KEYWORD_NAMES.length];
-    String keywords = cleanNBOKeylist(
-        dialog.inputFileHandler.read47File(false)[1], false);
+    String keywords = " " + cleanNBOKeylist(
+        dialog.inputFileHandler.read47File(false)[1], false) + " ";
     for (int i = 0; i < keywordButtons.length; i++) {
       keywordButtons[i] = new JRadioButton(RUN_KEYWORD_NAMES[i] + ": " + RUN_KEYWORD_DESC[i]);
-      if (keywords.contains(RUN_KEYWORD_NAMES[i]))
+      if (NBOUtil.findKeyword(keywords, RUN_KEYWORD_NAMES[i], true) >= 0)
         keywordButtons[i].setSelected(true);
       keywordButtons[i].setAlignmentX(0.0f);
       menuPanel.add(keywordButtons[i]);
@@ -369,24 +370,16 @@ class NBORun {
    * @return cleaned string, just CAPS, no FILE=xxxx
    */
   protected String cleanNBOKeylist(String params, boolean setJobNameTextField) {
-    String[] tokens = PT.getTokens(PT.rep(PT.clean(params), "file=", "FILE="));
-    String tmp = "";
-    boolean haveJobName = false;
     setJobNameTextField &= (tfJobName != null);
-    for (String s : tokens)
-      if (s.length() > 0)
-        if (s.contains("fILE=")) {
-          if (!haveJobName) {
-            if (setJobNameTextField)
-              tfJobName.setText(s.substring(s.indexOf("=") + 1));
-            haveJobName = true;
-          }
-        } else {
-          if (tmp.length() + s.length() - tmp.lastIndexOf(NBOUtil.sep) >= 80)
-            tmp += NBOUtil.sep + " ";
-          tmp += s.toUpperCase() + " ";
-        }
-    if (setJobNameTextField && (tfJobName.getText().equals("") || !haveJobName))
+    String[] fname = new String[1];
+    params = NBOUtil.removeNBOFileKeyword(params, fname);
+    String[] tokens = PT.getTokens(PT.clean(params));
+    String tmp = " ";
+    for (int i = 0; i < tokens.length; i++)
+      tmp = NBOUtil.addNBOKeyword(tmp, tokens[i]);
+    if (fname[0] != null && setJobNameTextField)
+      tfJobName.setText(fname[0]);
+    if (setJobNameTextField && (tfJobName.getText().equals("") || fname[0] == null))
       tfJobName.setText(dialog.inputFileHandler.jobStem);
     return tmp.trim();
   }
@@ -611,11 +604,11 @@ class NBORun {
     if (keywordButtons == null)
       return keywords;
     for (int i = 0; i < keywordButtons.length; i++) {
-      String name = RUN_KEYWORD_NAMES[i] + " ";
-      if (!keywordButtons[i].isSelected())
-        keywords = PT.rep(keywords, " " + name, " ");
-      else if (keywords.indexOf(" " + name) >= 0)
-        keywords += name;
+      String name = RUN_KEYWORD_NAMES[i];
+      if (keywordButtons[i].isSelected())
+        keywords = NBOUtil.addNBOKeyword(keywords, name);
+      else
+        keywords = NBOUtil.removeNBOKeyword(keywords, name);
     }
     return keywords;
   }
@@ -722,14 +715,13 @@ class NBORun {
       dialog.inputFileHandler.copyAndSwitch47FileTo(jobName);
     }
 
-    for (String x : PT.getTokens(requiredKeyword)) {
-      if (!newKeywords.contains(" " + x + " ")) {
-        newKeywords += x + " ";
-      }
+    String[] tokens = PT.getTokens(requiredKeyword);
+    // trick here is that you CANNOT TAKE OUT A TOKEN because it might have a keyword.
+    for (int i = 0; i < tokens.length; i++) {
+      String x = tokens[i];
+      newKeywords = NBOUtil.addNBOKeyword(newKeywords, x);
     }
-
-    if (!newKeywords.contains("PLOT"))
-      newKeywords += "PLOT";
+    newKeywords = NBOUtil.addNBOKeyword(newKeywords, "PLOT");
 
     jobName = (jobName.equals("") ? dialog.inputFileHandler.jobStem : jobName);
 

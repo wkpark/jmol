@@ -280,7 +280,7 @@ class NBOFileHandler extends JPanel {
     String[] fileData = new String[] { "", "", "", "" };
     String nboKeywords = "";
     SB data = new SB();
-    if (!readFileBuffered(inputFile, data, doAll ? null : "$COORD"))
+    if (!read47FileBuffered(inputFile, data, doAll))
       return fileData;
     String s = PT.trim(data.toString(), "\t\r\n ");
     String[] tokens = PT.split(s, "$END");
@@ -306,19 +306,10 @@ class NBOFileHandler extends JPanel {
     }
     dialog.logInfo("$NBO: " + nboKeywords, Logger.LEVEL_INFO);
     fileData[0] = fix47File(preParams.toString());
-    fileData[1] = removeFileKeyword(nboKeywords);
+    fileData[1] = NBOUtil.removeNBOFileKeyword(nboKeywords, null);
     fileData[2] = postParams.toString();
     fileData[3] = nboKeywords;
     return fileData;
-  }
-
-  private String removeFileKeyword(String nboKeywords) {
-    String[] tokens = PT.getTokens(nboKeywords.toUpperCase());
-    nboKeywords = "";
-    for (int i = tokens.length; --i >= 0;)
-      if (tokens[i].indexOf("FILE=") < 0)
-        nboKeywords += " " + tokens[i];
-    return nboKeywords.trim();
   }
 
   private String fix47File(String data) {
@@ -331,15 +322,24 @@ class NBOFileHandler extends JPanel {
    * 
    * @param inputFile
    * @param data
+   * @param doAll set false to only read through $NBO keyword 
    * @return true if successful; false if not
    */
-  private boolean readFileBuffered(File inputFile, SB data, String stop) {
+  private boolean read47FileBuffered(File inputFile, SB data, boolean doAll) {
     try {
+      boolean have$NBO = false, haveNBO$END = false;
       BufferedReader b = null;
       b = new BufferedReader(new FileReader(inputFile));
       String line;
-      while ((line = b.readLine()) != null && (stop == null || !line.contains(stop)))
+      while ((line = b.readLine()) != null && (doAll || !line.contains("$COORD"))) {
+        if (have$NBO && !haveNBO$END || !have$NBO && (have$NBO = NBOUtil.lineContainsUncommented(line, "$NBO")) == true) {
+          line = NBOUtil.removeNBOComment(line);
+          if (line.indexOf("$END") >= 0) {
+            haveNBO$END = true;
+          }
+        }
         data.append(line + sep);
+      }
       b.close();
       return true;
     } catch (IOException e) {

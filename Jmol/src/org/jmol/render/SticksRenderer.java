@@ -25,7 +25,6 @@
 
 package org.jmol.render;
 
-
 import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -57,7 +56,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
   private boolean hbondsBackbone;
   private boolean bondsBackbone;
   private boolean hbondsSolid;
-  
+
   private Atom a, b;
   private Bond bond;
   private int xA, yA, zA;
@@ -77,7 +76,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
   private final P3 p2 = new P3();
   private final BS bsForPass2 = BS.newN(64);
   private boolean isPass2;
-  
+  private double rTheta;
+
   @Override
   protected boolean render() {
     Bond[] bonds = ms.bo;
@@ -122,19 +122,23 @@ public class SticksRenderer extends FontLineShapeRenderer {
     useBananas = (vwr.getBoolean(T.multiplebondbananas) && !isPymol);
     // negative spacing is relative, depending upon atom-atom distance;
     // positive spacing is absolute, for fixed in-plane (radiusFactor > 0) or perp-plane (radiusFactor < 0)
-    multipleBondSpacing = (isPymol ? 0.15f :vwr.getFloat(T.multiplebondspacing));
+    multipleBondSpacing = (isPymol ? 0.15f : vwr
+        .getFloat(T.multiplebondspacing));
     // negative radius factor indicates perpendicular fixed double bond
-    multipleBondRadiusFactor = (isPymol ? 0.4f : vwr.getFloat(T.multiplebondradiusfactor));
-    bondsPerp = (useBananas || multipleBondSpacing > 0 && multipleBondRadiusFactor < 0);
+    multipleBondRadiusFactor = (isPymol ? 0.4f : vwr
+        .getFloat(T.multiplebondradiusfactor));
+    bondsPerp = (useBananas || multipleBondSpacing > 0
+        && multipleBondRadiusFactor < 0);
     if (useBananas)
-      multipleBondSpacing = (multipleBondSpacing < 0 ? -multipleBondSpacing * 0.4f : multipleBondSpacing);
+      multipleBondSpacing = (multipleBondSpacing < 0 ? -multipleBondSpacing * 0.4f
+          : multipleBondSpacing);
     multipleBondRadiusFactor = Math.abs(multipleBondRadiusFactor);
     if (multipleBondSpacing == 0 && isCartesian)
       multipleBondSpacing = 0.2f;
     modeMultipleBond = vwr.g.modeMultipleBond;
     showMultipleBonds = (multipleBondSpacing != 0
-        && modeMultipleBond != JC.MULTIBOND_NEVER
-        && vwr.getBoolean(T.showmultiplebonds));
+        && modeMultipleBond != JC.MULTIBOND_NEVER && vwr
+        .getBoolean(T.showmultiplebonds));
   }
 
   private boolean renderBond() {
@@ -228,6 +232,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
     case 2:
     case 3:
     case 4:
+    case 5:
+    case 6:
       break;
     case Edge.BOND_ORDER_UNSPECIFIED:
     case Edge.BOND_AROMATIC_SINGLE:
@@ -290,12 +296,65 @@ public class SticksRenderer extends FontLineShapeRenderer {
       drawDashed(xA, yA, zA, xB, yB, zB, hDashes);
       break;
     default:
-      drawBond(mask);
+      switch (bondOrder) {
+      case 4: {
+        bondOrder = 2;
+        float f = multipleBondRadiusFactor;
+        if (f == 0 && width > 1)
+          width = (int) (width * 0.5);
+        float m = multipleBondSpacing;
+        if (m < 0)
+          multipleBondSpacing = 0.30f;
+        drawBond(mask);
+        bondsPerp = !bondsPerp;
+        bondOrder = 2;
+        drawBond(mask);
+        bondsPerp = !bondsPerp;
+        multipleBondSpacing = m;
+      }
+        break;
+      case 5: {
+        bondOrder = 3;
+        float f = multipleBondRadiusFactor;
+        if (f == 0 && width > 1)
+          width = (int) (width * 0.5);
+        float m = multipleBondSpacing;
+        if (m < 0)
+          multipleBondSpacing = 0.20f;
+        drawBond(mask);
+        bondsPerp = !bondsPerp;
+        bondOrder = 2;
+        multipleBondSpacing *= 1.5f;
+        drawBond(mask);
+        bondsPerp = !bondsPerp;
+        multipleBondSpacing = m;
+      }
+        break;
+      case 6: {
+        bondOrder = 4;
+        float f = multipleBondRadiusFactor;
+        if (f == 0 && width > 1)
+          width = (int) (width * 0.5);
+        float m = multipleBondSpacing;
+        if (m < 0)
+          multipleBondSpacing = 0.15f;
+        drawBond(mask);
+        bondsPerp = !bondsPerp;
+        bondOrder = 2;
+        multipleBondSpacing *= 1.5f;
+        drawBond(mask);
+        bondsPerp = !bondsPerp;
+        multipleBondSpacing = m;
+      }
+        break;
+      default:
+        drawBond(mask);
+      }
       break;
     }
     return needTranslucent;
   }
-    
+
   private void drawBond(int dottedMask) {
     boolean isDashed = (dottedMask & 1) != 0;
     if (isCartesian && bondOrder == 1 && !isDashed) {
@@ -367,6 +426,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
       }
       p1.sub2(a, x);
       p2.sub2(b, x);
+
       while (true) {
         if (isCartesian) {
           // bypass screen rendering and just use the atoms themselves
@@ -395,8 +455,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
     mag2d = (int) Math.round(Math.sqrt(dxB + dyB));
     resetAxisCoordinates();
     if (isCartesian && bondOrder == 3) {
-      fillCylinder(colixA, colixB, endcaps, width, xAxis1, yAxis1, zA,
-          xAxis2, yAxis2, zB);
+      fillCylinder(colixA, colixB, endcaps, width, xAxis1, yAxis1, zA, xAxis2,
+          yAxis2, zB);
       stepAxisCoordinates();
       x.sub2(b, a);
       x.scale(0.05f);
@@ -404,8 +464,8 @@ public class SticksRenderer extends FontLineShapeRenderer {
       p2.add2(b, x);
       g3d.drawBond(p1, p2, colixA, colixB, endcaps, mad, -2);
       stepAxisCoordinates();
-      fillCylinder(colixA, colixB, endcaps, width, xAxis1, yAxis1, zA,
-          xAxis2, yAxis2, zB);
+      fillCylinder(colixA, colixB, endcaps, width, xAxis1, yAxis1, zA, xAxis2,
+          yAxis2, zB);
       return;
     }
     while (true) {
@@ -419,32 +479,6 @@ public class SticksRenderer extends FontLineShapeRenderer {
         break;
       stepAxisCoordinates();
     }
-  }
-
-  private M3 rot;
-  private A4 a4;
-  private void drawBanana(Atom a, Atom b, V3 x, int deg) {
-    g3d.addRenderer(T.hermitelevel);
-    vectorT.sub2(b, a);
-    if (rot == null) {
-      rot = new M3();
-      a4 = new A4();
-    }
-    a4.setVA(vectorT, (float) (deg * Math.PI / 180));
-    rot.setAA(a4);
-    pointT.setT(a);
-    pointT3.setT(b);
-    pointT2.ave(a, b);
-    rot.rotate2(x, vectorT);
-    pointT2.add(vectorT);
-    tm.transformPtScrT3(a, pointT);
-    tm.transformPtScrT3(pointT2, pointT2);
-    tm.transformPtScrT3(b, pointT3);
-    int w = Math.max(width, 1);
-    g3d.setC(colixA);
-    g3d.fillHermite(5, w, w, w, pointT, pointT, pointT2, pointT3);
-    g3d.setC(colixB);
-    g3d.fillHermite(5, w, w, w, pointT, pointT2, pointT3, pointT3);
   }
 
   private int xAxis1, yAxis1, xAxis2, yAxis2, dxStep, dyStep;
@@ -468,8 +502,10 @@ public class SticksRenderer extends FontLineShapeRenderer {
   }
 
   private void stepAxisCoordinates() {
-    xAxis1 += dxStep; yAxis1 += dyStep;
-    xAxis2 += dxStep; yAxis2 += dyStep;
+    xAxis1 += dxStep;
+    yAxis1 += dyStep;
+    xAxis2 += dxStep;
+    yAxis2 += dyStep;
   }
 
   private int getAromaticDottedBondMask() {
@@ -479,6 +515,33 @@ public class SticksRenderer extends FontLineShapeRenderer {
     int dxAC = atomC.sX - xA;
     int dyAC = atomC.sY - yA;
     return ((dx * dyAC - dy * dxAC) < 0 ? 2 : 1);
+  }
+
+  private M3 rot;
+  private A4 a4;
+
+  private void drawBanana(Atom a, Atom b, V3 x, int deg) {
+    g3d.addRenderer(T.hermitelevel);
+    vectorT.sub2(b, a);
+    if (rot == null) {
+      rot = new M3();
+      a4 = new A4();
+    }
+    a4.setVA(vectorT, (float) (deg * Math.PI / 180));
+    rot.setAA(a4);
+    pointT.setT(a);
+    pointT3.setT(b);
+    pointT2.ave(a, b);
+    rot.rotate2(x, vectorT);
+    pointT2.add(vectorT);
+    tm.transformPtScrT3(a, pointT);
+    tm.transformPtScrT3(pointT2, pointT2);
+    tm.transformPtScrT3(b, pointT3);
+    int w = Math.max(width, 1);
+    g3d.setC(colixA);
+    g3d.fillHermite(5, w, w, w, pointT, pointT, pointT2, pointT3);
+    g3d.setC(colixB);
+    g3d.fillHermite(5, w, w, w, pointT, pointT2, pointT3, pointT3);
   }
 
 }

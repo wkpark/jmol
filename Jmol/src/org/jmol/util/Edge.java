@@ -79,6 +79,8 @@ public abstract class Edge {
   public final static int BOND_COVALENT_DOUBLE = 2;
   public final static int BOND_COVALENT_TRIPLE = 3;
   public final static int BOND_COVALENT_QUADRUPLE = 4;
+  public final static int BOND_COVALENT_QUINTUPLE = 5;
+  public final static int BOND_COVALENT_sextuple  = 6;
   public final static int BOND_ORDER_UNSPECIFIED = 0x11;
   public final static int BOND_ORDER_ANY     = 0x0FFFF;
   public final static int BOND_ORDER_NULL    = 0x1FFFF;
@@ -286,6 +288,8 @@ public abstract class Edge {
     DOUBLE(BOND_COVALENT_DOUBLE,"2","double"),
     TRIPLE(BOND_COVALENT_TRIPLE,"3","triple"),
     QUADRUPLE(BOND_COVALENT_QUADRUPLE,"4","quadruple"),
+    QUINTUPLE(BOND_COVALENT_QUINTUPLE,"5","quintuple"),
+    sextuple(BOND_COVALENT_sextuple,"6","sextuple"),
     AROMATIC(BOND_AROMATIC,"1.5","aromatic"),
     STRUT(BOND_STRUT,"1","struts"),
     H_REGULAR(BOND_H_REGULAR,"1","hbond"),

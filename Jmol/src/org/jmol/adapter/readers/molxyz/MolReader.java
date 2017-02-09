@@ -48,6 +48,9 @@ import org.jmol.util.Logger;
  * 
  * load "xxx.mol" FILTER "2D"
  * 
+ * 
+ * Jmol 14.8.2 adds bond type 15 (quintuple) and 16 (sextuple)
+ * 
  */
 public class MolReader extends AtomSetCollectionReader {
 
@@ -319,7 +322,7 @@ public class MolReader extends AtomSetCollectionReader {
     }
   }
 
-  public int fixOrder(int order, int stereo) {
+  int fixOrder(int order, int stereo) {
     switch (order) {
     default:
     case 0:
@@ -348,6 +351,10 @@ public class MolReader extends AtomSetCollectionReader {
     case 8:
     case 9: // haptic
       return JmolAdapter.ORDER_PARTIAL01;
+    case 15:  // added ad hoc 
+      return JmolAdapter.ORDER_COVALENT_QUINT;
+    case 16:  // added ad hoc
+      return JmolAdapter.ORDER_COVALENT_HEX;
     }
     return order;
   }

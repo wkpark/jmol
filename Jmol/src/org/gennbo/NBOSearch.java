@@ -377,7 +377,7 @@ class NBOSearch extends NBOView {
     back.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent arg0) {
-        doSelectKeyword();
+        doBack();
       }
     });
 
@@ -443,7 +443,7 @@ class NBOSearch extends NBOView {
       btn.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent arg0) {
-          doSearchKeywordClicked(index);
+          doKeywordClicked(index);
         }
       });
       opList.add(btn, c);
@@ -467,7 +467,7 @@ class NBOSearch extends NBOView {
     back.setEnabled(false);
   }
 
-  protected void doSearchKeywordClicked(int index) {
+  protected void doKeywordClicked(int index) {
     if (dialog.nboService.isWorking()) {
       vwr.alert("Please wait for NBOServe to finish working");
       return;
@@ -512,7 +512,7 @@ class NBOSearch extends NBOView {
     }
   }
 
-  protected void doSelectKeyword() {
+  protected void doBack() {
     if (keywordID == KEYWD_NRT && comboUnit1.getModel().getSize() > 0)
       comboUnit1.setSelectedIndex(0);
     SB script = new SB();
@@ -1153,15 +1153,15 @@ class NBOSearch extends NBOView {
     }
     if (isLabel) {
       needRelabel = true;
-      postNBO_s(sb, MODE_SEARCH_LABEL, null, "Getting labels", false);
+      postNBO(sb, MODE_SEARCH_LABEL, null, "Getting labels", false);
     } else if (isLabelBonds) {
       needRelabel = true;
       dialog
           .runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select none");
-      postNBO_s(sb, MODE_SEARCH_LABEL_BONDS, null,
+      postNBO(sb, MODE_SEARCH_LABEL_BONDS, null,
           "Getting bonds list", false);
     } else {
-      postNBO_s(sb, MODE_SEARCH_VALUE, null, "Getting value...", true);
+      postNBO(sb, MODE_SEARCH_VALUE, null, "Getting value...", true);
     }
   }
 
@@ -1584,7 +1584,7 @@ class NBOSearch extends NBOView {
     NBOUtil.postAddCmd(sb, cmd);
     if (keywordID == KEYWD_CMO && cmd_basis.equals("c_cmo"))
       mode = MODE_SEARCH_LIST_MO;
-    postNBO_s(sb, mode, cb, "Getting list " + cmd, false);
+    postNBO(sb, mode, cb, "Getting list " + cmd, false);
   }
 
   /**
@@ -1599,13 +1599,13 @@ class NBOSearch extends NBOView {
    * @param statusMessage
    * @param isGetValue 
    */
-  private void postNBO_s(SB sb, final int mode, final JComboBox<String> cb,
+  private void postNBO(SB sb, final int mode, final JComboBox<String> cb,
                          String statusMessage, boolean isGetValue) {
     final NBORequest req = new NBORequest();
     req.set(new Runnable() {
       @Override
       public void run() {
-        processNBO_s(req, mode, cb);
+        processNBO(req, mode, cb);
       }
     }, isGetValue, statusMessage, "s_cmd.txt", sb.toString());
     dialog.nboService.postToNBO(req);
@@ -1628,7 +1628,7 @@ class NBOSearch extends NBOView {
    * @param mode
    * @param cb
    */
-  protected void processNBO_s(NBORequest req, int mode, JComboBox<String> cb) {
+  protected void processNBO(NBORequest req, int mode, JComboBox<String> cb) {
     String[] lines = req.getReplyLines();
     String line;
     DefaultComboBoxModel<String> list;

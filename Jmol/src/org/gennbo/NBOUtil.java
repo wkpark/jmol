@@ -277,6 +277,34 @@ public class NBOUtil {
     return path.replace('\\',  '/');
   }
 
+  /**
+   * Windows-centric elaboration of path to default to C: drive
+   * 
+   * @param folder
+   * @param fullFilePath
+   * @return
+   */
+  public static String getWindowsFolderFor(String folder, String fullFilePath) {
+    return (folder.equals("") ? new File(fullFilePath).getParent()
+        : !folder.contains(":") ? folder = "C:/" + folder : folder); 
+  }
+
+  /**
+   * if folder is not blank, create a full path name to the designated file
+   * @param folder
+   * @param name root name or root.ext
+   * @param ext ext or null if name already contains it
+   * @return full Windows path to file
+   */
+  public static String getWindowsFullNameFor(String folder, String name,
+                                             String ext) {
+    if (!folder.equals("")) {
+      if (!folder.contains(":"))
+        folder = "C:/" + folder;
+      folder = folder + "/" + (name.equals("") ? "" : name + (ext == null ? "" : "." + ext));
+    }
+    return folder;
+  }
 
   ///**
   //* Centers the dialog on the screen.

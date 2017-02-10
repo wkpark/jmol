@@ -1157,7 +1157,7 @@ public class NBODialog extends JDialog {
    * label atoms: (number lone pairs)+atomnum
    * 
    * @param type
-   *        alpha or beta
+   *        alpha or beta or null
    */
   protected void doSetStructure(String type) {
     doSearchSetResStruct(type, -1);

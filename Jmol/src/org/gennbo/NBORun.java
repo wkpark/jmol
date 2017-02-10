@@ -320,7 +320,10 @@ class NBORun {
       if (xuc.indexOf("FILE=") < 0) {
         keywords += xuc + " ";
       } else {
-        tfJobName.setText(x.substring(x.indexOf("=") + 1));
+        String jobName = x.substring(x.indexOf("=") + 1);
+        if (!dialog.inputFileHandler.checkSwitch47To(jobName))
+          return;
+        tfJobName.setText(jobName);
       }
     }
     String name = tfJobName.getText();
@@ -472,7 +475,7 @@ class NBORun {
       setLinks(links, null);
 
       Box bottom = Box.createHorizontalBox();
-      tfPath = new JTextField(d.inputFileHandler.fileDir);
+      tfPath = new JTextField(d.inputFileHandler.fullFilePath);
       bottom.add(new JLabel("  Download to: "));
       bottom.add(tfPath);
       if (ALLOW_SELECT_ALL) {
@@ -623,7 +626,7 @@ class NBORun {
   public boolean retrieveFile(String s, String path) {
     File f = null;
     if (path == null)
-      path = dialog.inputFileHandler.fileDir;
+      path = dialog.inputFileHandler.fullFilePath;
     dialog.logCmd("retrieve " + s);
 
     String name = s.substring(s.lastIndexOf("/") + 1);
@@ -687,6 +690,7 @@ class NBORun {
     //Check the plot file names match job name, warn user otherwise
     dialog.inputFileHandler.jobStem = dialog.inputFileHandler.jobStem.trim();
 
+    // check to see if there is a new job name. 
     if (requiredKeyword.length() > 0 && tfJobName != null) {
       // from another module
       tfJobName.setText(dialog.inputFileHandler.jobStem);
@@ -698,23 +702,8 @@ class NBORun {
     // Or, would it be better to ask this question immediately upon file loading so that it doesn't come up, and make it so that
     // you always MUST have these two the same?
 
-    if (!jobName.equals(dialog.inputFileHandler.jobStem)) {
-      int i = JOptionPane
-          .showConfirmDialog(
-              null,
-              "Note: Plot files are being created with name \""
-                  + jobName
-                  + "\", which does not match your file name \""
-                  + dialog.inputFileHandler.jobStem
-                  + "\"\nTo continue, we must create a new .47 file \""
-                  + jobName
-                  + ".47\" so that all files related to this job are under the same name. Continue?",
-              "Warning", JOptionPane.YES_NO_OPTION);
-      if (i != JOptionPane.YES_OPTION)
-        return;
-      dialog.inputFileHandler.copyAndSwitch47FileTo(jobName);
-    }
-
+    if (!dialog.inputFileHandler.checkSwitch47To(jobName))
+      return;
     String[] tokens = PT.getTokens(requiredKeyword);
     // trick here is that you CANNOT TAKE OUT A TOKEN because it might have a keyword.
     for (int i = 0; i < tokens.length; i++) {
@@ -764,7 +753,6 @@ class NBORun {
    * Process the reply from NBOServe for a RUN request
    * 
    * @param req
-   * @param mode
    */
   protected void processNBO(NBORequest req) {
     dialog.inputFileHandler.setInputFile(dialog.inputFileHandler.inputFile);

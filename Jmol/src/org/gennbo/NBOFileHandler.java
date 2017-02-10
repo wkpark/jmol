@@ -41,7 +41,25 @@ class NBOFileHandler extends JPanel {
   protected JTextField tfDir, tfName, tfExt;
   private JButton btnBrowse;
   
-  protected String fileDir, jobStem;
+  /**
+   * working directory for input
+   * 
+   * caution should be used here; this value in general should not 
+   * differ from tfDir except in MODEL, where the user can set that.
+   *  
+   */
+  protected String fullFilePath;
+  
+  /**
+   * file root for input
+   * 
+   * caution should be used here; this value in general should not 
+   * differ from tfName except for Model, where the user can set that.
+   *  
+   */
+  protected String jobStem;
+  
+  
   protected String useExt;
   protected NBODialog dialog;
   protected boolean canReRun;
@@ -56,11 +74,11 @@ class NBOFileHandler extends JPanel {
   protected final static int MODE_MODEL_SAVE = 5;
 
   
-  public NBOFileHandler(String name, String ext, final int mode, String useExt,
+  public NBOFileHandler(String jobName, String ext, final int mode, String useExt,
       NBODialog dialog) {
     this.dialog = dialog;
     canReRun = true;
-    fileDir = dialog.getWorkingPath();
+    fullFilePath = dialog.getWorkingPath();
     this.useExt = useExt;
     setLayout(new GridBagLayout());
     setMaximumSize(new Dimension(350, 40));
@@ -81,7 +99,7 @@ class NBOFileHandler extends JPanel {
     //        browsePressed();
     //      }
     //    });
-    tfDir.setText(fileDir);
+    tfDir.setText(fullFilePath);
     add(tfDir, c);
     c.gridx = 1;
     (tfName = new JTextField()).setPreferredSize(new Dimension(120, 20));
@@ -94,7 +112,6 @@ class NBOFileHandler extends JPanel {
     //        browsePressed();
     //      }
     //    });
-    tfName.setText(name);
     add(tfName, c);
     c.gridx = 0;
     c.gridy = 1;
@@ -128,8 +145,8 @@ class NBOFileHandler extends JPanel {
       }
     });
     add(btnBrowse, c);
-    jobStem = name;
-    setInput(fileDir, name, ext);
+    setJobStemAndTextFieldName(jobName);
+    setInput(fullFilePath, jobName, ext);
   }
 
   protected boolean doFileBrowsePressed() {
@@ -146,14 +163,9 @@ class NBOFileHandler extends JPanel {
     myChooser.setFileHidingEnabled(true);
     String folder = tfDir.getText();
     String name = tfName.getText();
-    if (!folder.equals("")) {
-      if (!folder.contains(":"))
-        folder = "C:/" + folder;
-      fileDir = folder + "/" + (name.equals("") ? " " : name);
-      if (name.length() > 0 && useExt.equals("47"))
-        fileDir += ".47";
-    }
-    myChooser.setSelectedFile(new File(fileDir));
+    if (folder.length() > 0)
+      fullFilePath = NBOUtil.getWindowsFullNameFor(folder, name.length() == 0 ? " " : name + (useExt.equals("47") ? ".47" : ""), null);
+    myChooser.setSelectedFile(new File(fullFilePath));
     int button = myChooser.showDialog(this, GT._("Select"));
     if (button == JFileChooser.APPROVE_OPTION)
       return loadSelectedFile(myChooser.getSelectedFile());
@@ -170,18 +182,21 @@ class NBOFileHandler extends JPanel {
     if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
       return true;
     if (!useExt.equals("47")) {
-      jobStem = NBOUtil.getJobStem(inputFile);
-      dialog.modelPanel.loadModelFromNBO(fileDir, jobStem, useExt);
-      tfName.setText(jobStem);
+      setJobStemAndTextFieldName(NBOUtil.getJobStem(inputFile));
+      dialog.modelPanel.loadModelFromNBO(fullFilePath, jobStem, useExt);
       tfExt.setText(useExt);
       return true;
     }
     canReRun = true;
     setInputFile(inputFile);
     dialog.runPanel.doLogJobName(jobStem);
-    fileDir = inputFile.getParent();
-    dialog.saveWorkingPath(fileDir.toString());
+    fullFilePath = inputFile.getParent();
+    dialog.saveWorkingPath(fullFilePath.toString());
     return true;
+  }
+
+  private void setJobStemAndTextFieldName(String name) {
+    tfName.setText(jobStem = name);
   }
 
   protected void clearStructureList() {
@@ -213,7 +228,7 @@ class NBOFileHandler extends JPanel {
               + "\nor select a new location for your NBOServe executable");
       return;
     }
-    fileDir = inputFile.getParent();
+    fullFilePath = inputFile.getParent();
     boolean canLoad = true;
     boolean isOK = true;
     String msg = "";
@@ -247,10 +262,10 @@ class NBOFileHandler extends JPanel {
       canLoad = false;
     }
     if (canLoad) {
-      dialog.loadOrSetBasis(new File(fileDir + "/" + jobStem + ".47"));
+      dialog.loadOrSetBasis(new File(fullFilePath + "/" + jobStem + ".47"));
     } else if (dialog.dialogMode == NBODialog.DIALOG_RUN) {
-      dialog.modelPanel.loadModelFromNBO(fileDir, jobStem, useExt);
-      tfName.setText(jobStem);
+      dialog.modelPanel.loadModelFromNBO(fullFilePath, jobStem, useExt);
+      setJobStemAndTextFieldName(jobStem);
       tfExt.setText("47");
     }
   }
@@ -359,14 +374,6 @@ class NBOFileHandler extends JPanel {
     return NBOUtil.newNBOFile(inputFile, filenum);
   }
 
-  public void copyAndSwitch47FileTo(String jobName) {
-    String data = dialog.vwr.getAsciiFileOrNull(inputFile.getAbsolutePath());
-    tfName.setText(jobName);
-    setInput(tfDir.getText(), jobName, "47");
-    if (data != null)
-      this.writeToFile(inputFile.getAbsolutePath(), data);    
-  }
-
   public String[] update47File(String jobName, String keywords, boolean doMerge) {
     if (!useExt.equals("47"))
       return null;
@@ -400,9 +407,41 @@ class NBOFileHandler extends JPanel {
       isOpenShell = nboParser.isOpenShell();
     }
     Map<String, Object> map = NBOParser.getStructureMap(structureList, type, index);
-    boolean addCharge = false; // BH does not work. You cannot get charges just from 
+    boolean addCharge = !isOpenShell; // BH: does not work for open shell systems. You cannot get charges just from 
     // counting bonds.
     return (map == null ? null : NBOParser.setStructure(sb, dialog.vwr, map, addCharge));
+  }
+
+  /**
+   * Check to see if the jobName (from file= or tfJobName) and the jobStem (loaded file stem)
+   * are the same, and if not, warn the user and offer them the opportunity to bail now.
+   * In no case do we allow saving to a new .nbo file with a different name from the .47 file.
+   * 
+   * @param jobName
+   * @return true if user agrees or does not have to; false to bail
+   */
+  public boolean checkSwitch47To(String jobName) {
+    if (!jobName.equals(jobStem)) {
+      int i = JOptionPane
+          .showConfirmDialog(
+              null,
+              "Note: Plot files are being created with name \""
+                  + jobName
+                  + "\", which does not match your file name \""
+                  + jobStem
+                  + "\"\nTo continue, we must create a new .47 file \""
+                  + jobName
+                  + ".47\" so that all files related to this job are under the same name. Continue?",
+              "Warning", JOptionPane.YES_NO_OPTION);
+      if (i != JOptionPane.YES_OPTION)
+        return false;
+      String data = dialog.vwr.getAsciiFileOrNull(inputFile.getAbsolutePath());
+      setJobStemAndTextFieldName(jobName);
+      setInput(tfDir.getText(), jobName, "47");
+      if (data != null)
+        this.writeToFile(inputFile.getAbsolutePath(), data);    
+    }
+    return true;
   }
 
 

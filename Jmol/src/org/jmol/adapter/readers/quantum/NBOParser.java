@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.jmol.viewer.Viewer;
 
+import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
@@ -22,14 +23,183 @@ public class NBOParser {
     getStructures(getBlock(output, "$CHOOSE"), "CHOOSE", list);
     getStructures(getBlock(output, "$NRTSTRA"), "NRTSTRA", list);
     getStructures(getBlock(output, "$NRTSTRB"), "NRTSTRB", list);
+    getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 1), "TOPOA", list);
+    getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 2), "TOPOB", list);
     return list;
   }
   
   
+//  TOPO matrix for the leading resonance structure:
+//
+//    Atom  1   2   3
+//    ---- --- --- ---
+//  1.  O   2   2   0
+//  2.  C   2   0   2
+//  3.  O   0   2   1
+//
+//        Resonance
+//   RS   Weight(%)                  Added(Removed)
+//---------------------------------------------------------------------------
+//   1*(2)  24.76
+//   2*(2)  24.72   ( O  1),  O  3
+//   3*(2)  24.69    O  1- C  2, ( C  2- O  3), ( O  1),  O  3
+//   4*     24.61   ( O  1- C  2),  C  2- O  3
+//   5       0.23   ( O  1- C  2),  O  1- O  3, ( O  1),  C  2
+//   6       0.20    O  1- C  2,  O  1- C  2, ( C  2- O  3), ( C  2- O  3),
+//                  ( O  1), ( O  1),  O  3,  O  3
+//   7       0.17    O  1- O  3, ( C  2- O  3), ( O  1), ( O  1),  C  2,
+//                   O  3
+//   8       0.16   ( O  1- C  2), ( O  1- C  2),  C  2- O  3,  C  2- O  3,
+//                   O  1, ( O  3)
+//   9       0.12    O  1- O  3, ( C  2- O  3), ( O  1),  C  2
+//  10       0.12   ( O  1- C  2),  C  2- O  3,  O  1, ( O  3)
+//  11-20    0.22
+//---------------------------------------------------------------------------
+//         100.00   * Total *                [* = reference structure]
+//
+  
+  
+  private void getStructuresTOPO(String data, String nrtType, Lst<Object> list) {
+    if (data == null)
+      return;
+    String[] parts = PT.split(data, "Resonance");
+    if (parts.length < 2)
+      return;
+    int pt = parts[0].lastIndexOf(".");
+    int nAtoms = PT.parseInt(parts[0].substring(pt - 3, pt));
+    if (nAtoms < 0)
+      return;
+    // decode the top table
+    String[] tokens = PT.getTokens(PT.rep(PT.rep(parts[0], ".", ".1"), "Atom", "-1"));
+    float[] raw = new float[tokens.length];
+    int n = PT.parseFloatArrayInfested(tokens, raw);
+    int[][] table = new int[nAtoms][nAtoms];
+    int atom1 = -1, atom2 = 0, atom0 = 0;
+    for (int i = 0; i < n; i++) {
+      float f = raw[i];
+      if (f < 0) {
+        // start of table
+        atom1 = -1;
+        continue;
+      }
+      if (f % 1 == 0) {
+        if (atom1 == -1) {
+          // first atom in header
+          atom0 = (int) (f);
+          atom1 = -2;
+        }
+        // value or header
+        if (atom1 < 0)
+          continue;
+        table[atom1][atom2++] = (int) f;
+      } else {
+        // new row
+        atom1 = (int) (f - 1);
+        atom2 = atom0 - 1;
+      }
+    }
+//    Resonance
+//    RS   Weight(%)                  Added(Removed)
+//---------------------------------------------------------------------------
+//    1*     16.80
+//    2*     16.80   ( C  2- C  3),  C  2- C 10,  C  3- C  4, ( C  4- C  7),
+//                    C  7- C  8, ( C  8- C 10), ( C 12- C 13),  C 12- C 14,
+//                    C 13- C 15, ( C 14- C 16), ( C 15- C 21),  C 16- C 21
+
+    int[][] matrix = null;
+    // turn this listing into a numeric array. decimal points indicate new atoms
+    
+    String s = parts[1].replace('-',  ' ');
+    s = PT.rep(s, ".", ".1");
+    s = PT.rep(s, "(", " -1 ");
+    s = PT.rep(s, ")", " -2 ");
+    s = PT.rep(s, ",", " -3 ");
+    s = PT.rep(s, "\n", " -4 ");
+    tokens = PT.getTokens(s);
+    raw = new float[tokens.length];
+    n = PT.parseFloatArrayInfested(tokens, raw);
+    Map<String, Object> htData = null;
+    int dir = 1;
+    atom1 = atom2 = -1;
+    for (int i = 5, cnt = 0; i < n; i++) {
+      float f = raw[i];
+      float remain = f % 1;
+      if (remain == 0) {
+        int v = (int) f;
+       switch (v) {
+       case -1: // (
+         dir = -1;
+         atom1 = atom2 = -1;
+         continue;
+       case -2: // )
+         break;
+       case -3: // ,
+         if (atom1 < 0)
+           continue;
+         break;
+       case -4: // EOL
+         // skip next number if the one after that is a fraction. 
+         if (raw[i + 2]%1 != 0)
+           i++;
+         else if (raw[i + 3]%1 != 0) // last line may have "34-50 4.33"
+           i += 2;
+         if (atom1 < 0)
+           continue;
+         break;
+       default:
+         if (atom1 < 0) {
+           atom1 = atom2 = v - 1;
+         } else {
+           atom2 = v - 1;
+         }
+         continue;
+       }
+       matrix[atom1][atom2] += dir;
+       atom1 = atom2 = -1;
+       dir = 1;
+      } else {
+        if (matrix != null)
+          for (int j = 0; j < nAtoms; j++)
+            System.out.println(PT.toJSON(null,  matrix[j]));
+        System.out.println("-------------------");
+        list.addLast(htData = new Hashtable<String, Object>());
+        s = "" + ((int) f * 100 + (int) ((remain - 0.0999999) * 1000));
+        int len = s.length();
+        s =  (len == 2 ? "0" : "") + s.substring(0, len - 2) + "." + s.substring(len - 2);
+        htData.put("weight", s);
+        htData.put("type",  nrtType);
+        if (cnt++ == 0) {
+          htData.put("matrix", table);
+        } else {
+          matrix = new int[nAtoms][nAtoms];
+          for (int j = 0; j < nAtoms; j++)
+            for (int k = 0; k < nAtoms; k++)
+              matrix[j][k] = table[j][k];
+          htData.put("matrix", matrix);
+        }
+          
+      }
+      
+    }
+    
+    System.out.println("testing" + PT.toJSON(null,  table));
+    
+  }
+
+
   private String getBlock(String output, String key) {
     int pt = output.indexOf(key);
     int pt1 = output.indexOf("$END", pt + 1);
     return (pt < 0 || pt1 < 0 ? null : output.substring(pt + key.length(), pt1));
+  }
+
+  private String getData(String output, String start, String end, int n) {
+    int pt = 0, pt1 = 0;
+    for (int i = 0; i < n; i++) {
+      pt = output.indexOf(start, pt1 + 1);
+      pt1 = output.indexOf(end, pt + 1);
+    }
+    return (pt < 0 || pt1 < 0 ? null : output.substring(pt, pt1));
   }
 
 

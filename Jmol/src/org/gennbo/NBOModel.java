@@ -297,13 +297,7 @@ class NBOModel {
       @Override
       protected boolean doFileBrowsePressed() {
         String folder = tfDir.getText().trim();
-        String name = tfName.getText();
-        String ext = tfExt.getText();
-        if (!folder.equals("")) {
-          if (!folder.contains(":"))
-            folder = "C:/" + folder;
-          folder = folder + "/" + (name.equals("") ? "new" : name + "." + ext);
-        }
+        folder = NBOUtil.getWindowsFullNameFor(folder, tfName.getText(), tfExt.getText());
         JFileChooser myChooser = new JFileChooser();
         if (useExt.contains(";"))
           myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt
@@ -322,10 +316,9 @@ class NBOModel {
           }
           loadModelFromNBO(newFile.getParent(),
               (jobStem = NBOUtil.getJobStem(newFile)), NBOUtil.getExt(newFile));
-
           dialog.inputFileHandler
-              .setInput(fileDir, jobStem, NBOUtil.getExt(newFile));
-          fileDir = newFile.getParent();
+              .setInput(fullFilePath, jobStem, NBOUtil.getExt(newFile));
+          fullFilePath = newFile.getParent();
 
           return true;
         }
@@ -674,39 +667,34 @@ class NBOModel {
         String folder = tfDir.getText().trim();
         String name = tfName.getText().trim();
         String ext = tfExt.getText().trim();
-        if (!ext.equals("") && !folder.equals("") && !name.equals("")) {
-          File f = new File(folder + "/" + name + "." + ext);
-          if (!PT.isOneOf(ext, NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
-            dialog.alertError("Invalid output extenstion");
-            return false;
-          }
-          if (f.exists()) {
-            int i = JOptionPane.showConfirmDialog(null, "File " + f
-                + " already exists, do you want to overwrite contents?",
-                "Warning", JOptionPane.YES_NO_OPTION);
-            if (i == JOptionPane.NO_OPTION)
-              return false;
-            dialog.inputFileHandler.setInput(folder, name, ext);
-
-          }
-          saveModel(folder, name, ext);
-          dialog.saveWorkingPath(fileDir);
-          return true;
-        }
+//        if (!ext.equals("") && !folder.equals("") && !name.equals("")) {
+//          if (!PT.isOneOf(ext, NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
+//            dialog.alertError("Invalid output extenstion");
+//            return false;
+//          }
+//          if (name.length() == 0)
+//            name = "new";
+//          File f = new File(NBOUtil.getWindowsFullNameFor(folder, name, ext));
+//          if (f.exists()) {
+//            int i = JOptionPane.showConfirmDialog(null, "File " + f
+//                + " already exists, do you want to overwrite contents?",
+//                "Warning", JOptionPane.YES_NO_OPTION);
+//            if (i == JOptionPane.NO_OPTION)
+//              return false;
+//            dialog.inputFileHandler.setInput(folder, name, ext);
+//
+//          }
+//          saveModel(folder, name, ext);
+//          dialog.saveWorkingPath(fullFilePath);
+//          return true;
+//        }
         JFileChooser myChooser = new JFileChooser();
-        if (ext.equals(""))
-          useExt = NBOConfig.OUTPUT_FILE_EXTENSIONS;
-        else
-          useExt = ext;
+        useExt = (ext.equals("") ? NBOConfig.OUTPUT_FILE_EXTENSIONS : ext);
         myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt
             .split(",")));
         myChooser.setFileHidingEnabled(true);
-        String savePath = fileDir;
-        if (!folder.equals("")) {
-          if (!folder.contains(":"))
-            folder = "C:/" + folder;
-        } else
-          folder = new File(this.fileDir).getParent();
+        String savePath = fullFilePath;
+        folder = NBOUtil.getWindowsFolderFor(folder, fullFilePath);
         if (name.equals("") && jobStem != null)
           savePath = tfDir.getText()
               + "/"
@@ -719,8 +707,7 @@ class NBOModel {
         if (button == JFileChooser.APPROVE_OPTION) {
           File newFile = myChooser.getSelectedFile();
           ext = NBOUtil.getExt(newFile);
-          if (PT
-              .isOneOf(NBOUtil.getExt(newFile), NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
+          if (PT.isOneOf(ext, NBOConfig.OUTPUT_FILE_EXTENSIONS)) {
             if (newFile.exists()) {
               int i = JOptionPane.showConfirmDialog(null, "File " + newFile
                   + " already exists, do you want to overwrite contents?",
@@ -728,13 +715,10 @@ class NBOModel {
               if (i == JOptionPane.NO_OPTION)
                 return false;
             }
-
             dialog.inputFileHandler.setInput(folder, name, ext);
-
-            fileDir = newFile.getParent();
-            saveModel(newFile.getParent(), NBOUtil.getJobStem(newFile),
-                ext);
-            dialog.saveWorkingPath(fileDir);
+            fullFilePath = newFile.getParent();
+            saveModel(newFile.getParent(), NBOUtil.getJobStem(newFile), ext);
+            dialog.saveWorkingPath(fullFilePath);
           } else
             dialog.logError("Invalid extension defined");
         }

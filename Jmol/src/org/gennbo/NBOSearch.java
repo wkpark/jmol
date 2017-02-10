@@ -418,8 +418,7 @@ class NBOSearch extends NBOView {
   protected void doComboBasisOperationAction() {
     operator = comboBasisOperation.getSelectedIndex();
     if (operator > 0)
-      changeKey(getBasisOperations(comboBasisOperation.getSelectedItem()
-          .toString().trim().split(" ")[0]));
+      changeKey(getBasisOperationsOPBAS());
   }
 
   protected void buildHome() {
@@ -483,7 +482,7 @@ class NBOSearch extends NBOView {
   }
 
   protected void doSetSpin() {
-    dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
+    showLewisStructure();
     switch (keywordID) {
     case KEYWD_NBO:
     case KEYWD_BEND:
@@ -508,7 +507,7 @@ class NBOSearch extends NBOView {
       break;
     case KEYWD_OPBAS:
     case KEYWD_BAS1BAS2:
-      doSetBasis();
+      setBasisForOPBASorB1B2(0);
       break;
     }
   }
@@ -518,13 +517,17 @@ class NBOSearch extends NBOView {
       comboUnit1.setSelectedIndex(0);
     SB script = new SB();
     if (needRelabel) {
-      dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
+      showLewisStructure();
       script
           .append("measurements off;select add {*}.bonds; color bonds lightgrey; select none;");
     }
     script.append("isosurface delete; select off;refresh");
     dialog.runScriptNow(script.toString());
     buildHome();
+  }
+
+  private void showLewisStructure() {
+    dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
   }
 
   private void changeKey(final String[] s) {
@@ -579,39 +582,6 @@ class NBOSearch extends NBOView {
   protected void showMessage() {
     JOptionPane.showMessageDialog(dialog,
         "Error getting lists, an error may have occured during run");
-  }
-
-  protected void getBasisOperations2(boolean andUpdateList2) {
-    String b1 = comboBasis1.getSelectedItem().toString();
-    String b2 = comboBasis2.getSelectedItem().toString();
-    changeKey(new String[] { "Current r(ow),c(olumn) matrix element:",
-        "  (1) current <" + b1 + "(r)|" + b2 + "(c)> value",
-        "Extremal off-diagonal values for current r orbital:",
-        "  (2) max <" + b1 + "(r)|" + b2 + "(*c)> value for current r",
-        "  (3) min <" + b1 + "(r)|" + b2 + "(*c)> value for current r",
-        "Extremal off-diagonal values for current c orbital:",
-        "  (4) max <" + b1 + "(*r)|" + b2 + "(c)> value for current c",
-        "  (5) min <" + b1 + "(*r)|" + b2 + "(c)> value for current c",
-        "Extremal off-diagonal values for any (*r,*c) orbitals:",
-        "  (6) max <" + b1 + "(*r)|" + b2 + "(*c)> value for any *r,*c",
-        "  (7) min <" + b1 + "(*r)|" + b2 + "(*c)> value for any *r,*c" });
-    if (andUpdateList2) {
-      postListRequest("c", comboSearchOrb2);
-    }
-  }
-
-  private static String[] getBasisOperations(String operator) {
-    return new String[] { "Current [r(ow),c(ol)] matrix element",
-        "  (1) current <r|" + operator + "|c> value",
-        "Extremal off-diagonal values for current r orbital:",
-        "  (2) max <r|" + operator + "|*c> value for current r",
-        "  (3) min <r|" + operator + "|*c> value for current r",
-        "Extremal off-diagonal values for current c orbital:",
-        "  (4) max <*r|" + operator + "|c> value for current c",
-        "  (5) min <*r|" + operator + "|c> value for current c",
-        "Extremal off-diagonal values for any [*r,*c] orbitals:",
-        "  (6) max <*r|" + operator + "|*c> value for any *r,*c",
-        "  (7) min <*r|" + operator + "|*c> value for any *r,*c" };
   }
 
   protected void keywordClicked(int index) throws IllegalArgumentException {
@@ -706,7 +676,7 @@ class NBOSearch extends NBOView {
       dialog.runScriptNow("set bondpicking true");
       setKeyword("b1 b2 r c".split(" "), new String[] { "Basis 1:", "Basis 2:",
           "Row:", "Column:" });
-      getBasisOperations2(false);
+      getBasisOperationsB1B2();
       break;
     }
     dialog.repaint();
@@ -809,13 +779,14 @@ class NBOSearch extends NBOView {
         });
         innerListPanel.add(comboAtom2);
       } else if (key.equals("b1")) {
+        // OPBAS and B1B2
         Box b = Box.createHorizontalBox();
         b.add(comboBasis1);
         comboBasis1.setSelectedIndex(BASIS_AO);
         comboBasis1.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            doSetBasis();
+            setBasisForOPBASorB1B2(1);
           }
         });
         if (dialog.isOpenShell()) {
@@ -831,14 +802,10 @@ class NBOSearch extends NBOView {
         comboBasis2.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            getBasisOperations2(true);
+            setBasisForOPBASorB1B2(2);
           }
         });
         innerListPanel.add(comboBasis2);
-      } else if (key.equals("b12")) {
-        comboBasis1 = new JComboBox<String>(NBOView.basSet);
-        //comboBasis1.setUI(new StyledComboBoxUI(180, -1));
-        innerListPanel.add(comboBasis1);
       }
     }
     dialog.logCmd(getKeyword() + " Search Results:");
@@ -936,28 +903,53 @@ class NBOSearch extends NBOView {
     }
   }
 
-  protected void doSetBasis() {
+  /**
+   * Reload the combo boxes for OPBAS or BAS1BAS2
+   * 
+   * @param iBasis unused 
+   */
+  protected void setBasisForOPBASorB1B2(int iBasis) {
     resetCurrentOrbitalClicked();
-    switch (keywordID) {
-    case KEYWD_BAS1BAS2:
-      if (comboBasis2 == null)
-        return;
-      getBasisOperations2(false);
-      postListRequest("r", comboSearchOrb1);
-      break;
-    case KEYWD_OPBAS:
-      dialog.iAmLoading = true;
-      if (dialog.loadModelFileNow(""
-          + dialog.inputFileHandler.newNBOFileForExt(""
-              + (31 + comboBasis1.getSelectedIndex()))) == null)
-        dialog.iAmLoading = false;
-      postListRequest("r", comboSearchOrb1);
-      postListRequest("c", comboSearchOrb2);
-      break;
-    default:
-      getBasisOperations(comboBasisOperation.getSelectedItem().toString()
-          .trim().split(" ")[0]);
-    }
+    if (comboBasis2 == null)
+      return;
+    postListRequest("r", comboSearchOrb1);
+    postListRequest("c", comboSearchOrb2);
+    if (keywordID == KEYWD_OPBAS)
+      getBasisOperationsOPBAS();
+    else
+      getBasisOperationsB1B2();
+  }
+
+  private String[] getBasisOperationsOPBAS() {
+    String operator = comboBasisOperation.getSelectedItem().toString()
+        .trim().split(" ")[0];
+    return new String[] { "Current [r(ow),c(ol)] matrix element",
+        "  (1) current <r|" + operator + "|c> value",
+        "Extremal off-diagonal values for current r orbital:",
+        "  (2) max <r|" + operator + "|*c> value for current r",
+        "  (3) min <r|" + operator + "|*c> value for current r",
+        "Extremal off-diagonal values for current c orbital:",
+        "  (4) max <*r|" + operator + "|c> value for current c",
+        "  (5) min <*r|" + operator + "|c> value for current c",
+        "Extremal off-diagonal values for any [*r,*c] orbitals:",
+        "  (6) max <*r|" + operator + "|*c> value for any *r,*c",
+        "  (7) min <*r|" + operator + "|*c> value for any *r,*c" };
+  }
+
+  protected void getBasisOperationsB1B2() {
+    String b1 = comboBasis1.getSelectedItem().toString();
+    String b2 = comboBasis2.getSelectedItem().toString();
+    changeKey(new String[] { "Current r(ow),c(olumn) matrix element:",
+        "  (1) current <" + b1 + "(r)|" + b2 + "(c)> value",
+        "Extremal off-diagonal values for current r orbital:",
+        "  (2) max <" + b1 + "(r)|" + b2 + "(*c)> value for current r",
+        "  (3) min <" + b1 + "(r)|" + b2 + "(*c)> value for current r",
+        "Extremal off-diagonal values for current c orbital:",
+        "  (4) max <" + b1 + "(*r)|" + b2 + "(c)> value for current c",
+        "  (5) min <" + b1 + "(*r)|" + b2 + "(c)> value for current c",
+        "Extremal off-diagonal values for any (*r,*c) orbitals:",
+        "  (6) max <" + b1 + "(*r)|" + b2 + "(*c)> value for any *r,*c",
+        "  (7) min <" + b1 + "(*r)|" + b2 + "(*c)> value for any *r,*c" });
   }
 
   /**
@@ -1149,7 +1141,7 @@ class NBOSearch extends NBOView {
     if (needRelabel) {
       dialog
           .runScriptQueued("select add {*}.bonds; color bonds lightgrey; select none; measurements off");
-      dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
+      showLewisStructure();
       needRelabel = false;
     }
     if (isLabel) {
@@ -1507,13 +1499,14 @@ class NBOSearch extends NBOView {
     dialog.runScriptNow("isosurface delete");
 
     optionSelected = -1;
-    dialog.doSetStructure("alpha");
     if (dialog.isOpenShell()) {
       alphaSpin.setVisible(true);
       betaSpin.setVisible(true);
+      showLewisStructure();
     } else {
       alphaSpin.setVisible(false);
       betaSpin.setVisible(false);
+      dialog.doSetStructure("alpha");
     }
 
     optionBox.setVisible(true);

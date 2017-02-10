@@ -1209,12 +1209,12 @@ class NBOSearch extends NBOView {
         comboUnit1.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            dialog.doSearchSetResStruct((alphaSpin.isSelected() ? "nrtstra"
-                : "nrtstrb"), comboUnit1.getSelectedIndex());
+            dialog.doSearchSetResStruct((alphaSpin.isSelected() ? "topoa"
+                : "topob"), comboUnit1.getSelectedIndex());
           }
         });
-        dialog.doSearchSetResStruct(alphaSpin.isSelected() ? "nrtstra"
-            : "nrtstrb", 0);
+        dialog.doSearchSetResStruct(alphaSpin.isSelected() ? "topoa"
+            : "topob", 0);
       }
       break;
     case KEYWD_OPBAS:

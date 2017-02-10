@@ -409,7 +409,7 @@ class NBOFileHandler extends JPanel {
     Map<String, Object> map = NBOParser.getStructureMap(structureList, type, index);
     boolean addCharge = !isOpenShell; // BH: does not work for open shell systems. You cannot get charges just from 
     // counting bonds.
-    return (map == null ? null : NBOParser.setStructure(sb, dialog.vwr, map, addCharge));
+    return (map == null ? null : NBOParser.setJmolLewisStructure(sb, dialog.vwr, map, addCharge));
   }
 
   /**

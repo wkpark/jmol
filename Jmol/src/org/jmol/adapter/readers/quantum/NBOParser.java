@@ -3,12 +3,13 @@ package org.jmol.adapter.readers.quantum;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.viewer.Viewer;
-
-import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
+
+import org.jmol.java.BS;
+import org.jmol.modelset.Atom;
+import org.jmol.viewer.Viewer;
 
 public class NBOParser {
 
@@ -21,6 +22,7 @@ public class NBOParser {
     Lst<Object> list = new Lst<Object>();
     output = PT.rep(output,  "the $CHOOSE", "");
     getStructures(getBlock(output, "$CHOOSE"), "CHOOSE", list);
+    getStructures(getBlock(output, "$NRTSTR"), "NRTSTR", list);
     getStructures(getBlock(output, "$NRTSTRA"), "NRTSTRA", list);
     getStructures(getBlock(output, "$NRTSTRB"), "NRTSTRB", list);
     getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 1), "TOPOA", list);
@@ -29,38 +31,37 @@ public class NBOParser {
   }
   
   
-//  TOPO matrix for the leading resonance structure:
-//
-//    Atom  1   2   3
-//    ---- --- --- ---
-//  1.  O   2   2   0
-//  2.  C   2   0   2
-//  3.  O   0   2   1
-//
-//        Resonance
-//   RS   Weight(%)                  Added(Removed)
-//---------------------------------------------------------------------------
-//   1*(2)  24.76
-//   2*(2)  24.72   ( O  1),  O  3
-//   3*(2)  24.69    O  1- C  2, ( C  2- O  3), ( O  1),  O  3
-//   4*     24.61   ( O  1- C  2),  C  2- O  3
-//   5       0.23   ( O  1- C  2),  O  1- O  3, ( O  1),  C  2
-//   6       0.20    O  1- C  2,  O  1- C  2, ( C  2- O  3), ( C  2- O  3),
-//                  ( O  1), ( O  1),  O  3,  O  3
-//   7       0.17    O  1- O  3, ( C  2- O  3), ( O  1), ( O  1),  C  2,
-//                   O  3
-//   8       0.16   ( O  1- C  2), ( O  1- C  2),  C  2- O  3,  C  2- O  3,
-//                   O  1, ( O  3)
-//   9       0.12    O  1- O  3, ( C  2- O  3), ( O  1),  C  2
-//  10       0.12   ( O  1- C  2),  C  2- O  3,  O  1, ( O  3)
-//  11-20    0.22
-//---------------------------------------------------------------------------
-//         100.00   * Total *                [* = reference structure]
-//
-  
-  
+  //  TOPO matrix for the leading resonance structure:
+  //
+  //    Atom  1   2   3
+  //    ---- --- --- ---
+  //  1.  O   2   2   0
+  //  2.  C   2   0   2
+  //  3.  O   0   2   1
+  //
+  //        Resonance
+  //   RS   Weight(%)                  Added(Removed)
+  //---------------------------------------------------------------------------
+  //   1*(2)  24.76
+  //   2*(2)  24.72   ( O  1),  O  3
+  //   3*(2)  24.69    O  1- C  2, ( C  2- O  3), ( O  1),  O  3
+  //   4*     24.61   ( O  1- C  2),  C  2- O  3
+  //   5       0.23   ( O  1- C  2),  O  1- O  3, ( O  1),  C  2
+  //   6       0.20    O  1- C  2,  O  1- C  2, ( C  2- O  3), ( C  2- O  3),
+  //                  ( O  1), ( O  1),  O  3,  O  3
+  //   7       0.17    O  1- O  3, ( C  2- O  3), ( O  1), ( O  1),  C  2,
+  //                   O  3
+  //   8       0.16   ( O  1- C  2), ( O  1- C  2),  C  2- O  3,  C  2- O  3,
+  //                   O  1, ( O  3)
+  //   9       0.12    O  1- O  3, ( C  2- O  3), ( O  1),  C  2
+  //  10       0.12   ( O  1- C  2),  C  2- O  3,  O  1, ( O  3)
+  //  11-20    0.22
+  //---------------------------------------------------------------------------
+  //         100.00   * Total *                [* = reference structure]
+  //
+
   private void getStructuresTOPO(String data, String nrtType, Lst<Object> list) {
-    if (data == null)
+    if (data == null || data.length() == 0)
       return;
     String[] parts = PT.split(data, "Resonance");
     if (parts.length < 2)
@@ -70,7 +71,8 @@ public class NBOParser {
     if (nAtoms < 0)
       return;
     // decode the top table
-    String[] tokens = PT.getTokens(PT.rep(PT.rep(parts[0], ".", ".1"), "Atom", "-1"));
+    String[] tokens = PT.getTokens(PT.rep(PT.rep(parts[0], ".", ".1"), "Atom",
+        "-1"));
     float[] raw = new float[tokens.length];
     int n = PT.parseFloatArrayInfested(tokens, raw);
     int[][] table = new int[nAtoms][nAtoms];
@@ -98,18 +100,18 @@ public class NBOParser {
         atom2 = atom0 - 1;
       }
     }
-//    Resonance
-//    RS   Weight(%)                  Added(Removed)
-//---------------------------------------------------------------------------
-//    1*     16.80
-//    2*     16.80   ( C  2- C  3),  C  2- C 10,  C  3- C  4, ( C  4- C  7),
-//                    C  7- C  8, ( C  8- C 10), ( C 12- C 13),  C 12- C 14,
-//                    C 13- C 15, ( C 14- C 16), ( C 15- C 21),  C 16- C 21
+    //    Resonance
+    //    RS   Weight(%)                  Added(Removed)
+    //---------------------------------------------------------------------------
+    //    1*     16.80
+    //    2*     16.80   ( C  2- C  3),  C  2- C 10,  C  3- C  4, ( C  4- C  7),
+    //                    C  7- C  8, ( C  8- C 10), ( C 12- C 13),  C 12- C 14,
+    //                    C 13- C 15, ( C 14- C 16), ( C 15- C 21),  C 16- C 21
 
     int[][] matrix = null;
     // turn this listing into a numeric array. decimal points indicate new atoms
-    
-    String s = parts[1].replace('-',  ' ');
+
+    String s = parts[1].replace('-', ' ');
     s = PT.rep(s, ".", ".1");
     s = PT.rep(s, "(", " -1 ");
     s = PT.rep(s, ")", " -2 ");
@@ -121,69 +123,68 @@ public class NBOParser {
     Map<String, Object> htData = null;
     int dir = 1;
     atom1 = atom2 = -1;
-    for (int i = 5, cnt = 0; i < n; i++) {
+    for (int i = 5, index = 0; i < n; i++) {
       float f = raw[i];
       float remain = f % 1;
       if (remain == 0) {
         int v = (int) f;
-       switch (v) {
-       case -1: // (
-         dir = -1;
-         atom1 = atom2 = -1;
-         continue;
-       case -2: // )
-         break;
-       case -3: // ,
-         if (atom1 < 0)
-           continue;
-         break;
-       case -4: // EOL
-         // skip next number if the one after that is a fraction. 
-         if (raw[i + 2]%1 != 0)
-           i++;
-         else if (raw[i + 3]%1 != 0) // last line may have "34-50 4.33"
-           i += 2;
-         if (atom1 < 0)
-           continue;
-         break;
-       default:
-         if (atom1 < 0) {
-           atom1 = atom2 = v - 1;
-         } else {
-           atom2 = v - 1;
-         }
-         continue;
-       }
-       matrix[atom1][atom2] += dir;
-       atom1 = atom2 = -1;
-       dir = 1;
+        switch (v) {
+        case -1: // (
+          dir = -1;
+          atom1 = atom2 = -1;
+          continue;
+        case -2: // )
+          break;
+        case -3: // ,
+          if (atom1 < 0)
+            continue;
+          break;
+        case -4: // EOL
+          // skip next number if the one after that is a fraction. 
+          if (raw[i + 2] % 1 != 0)
+            i++;
+          else if (raw[i + 3] % 1 != 0) // last line may have "34-50 4.33"
+            i += 2;
+          if (atom1 < 0)
+            continue;
+          break;
+        default:
+          if (atom1 < 0) {
+            atom1 = atom2 = v - 1;
+          } else {
+            atom2 = v - 1;
+          }
+          continue;
+        }
+        matrix[atom1][atom2] += dir;
+        atom1 = atom2 = -1;
+        dir = 1;
       } else {
-        if (matrix != null)
-          for (int j = 0; j < nAtoms; j++)
-            System.out.println(PT.toJSON(null,  matrix[j]));
+        if (htData == null)
+          matrix = table;
+        System.out.println("NBOParser matrix " + nrtType + " " + index);
+        for (int j = 0; j < nAtoms; j++)
+          System.out.println(PT.toJSON(null, matrix[j]));
         System.out.println("-------------------");
+        
+        if (raw[i + 2] == -4) // blank line (all dashes)
+          break;
         list.addLast(htData = new Hashtable<String, Object>());
         s = "" + ((int) f * 100 + (int) ((remain - 0.0999999) * 1000));
         int len = s.length();
-        s =  (len == 2 ? "0" : "") + s.substring(0, len - 2) + "." + s.substring(len - 2);
+        s = (len == 2 ? "0" : "") + s.substring(0, len - 2) + "."
+            + s.substring(len - 2);
         htData.put("weight", s);
-        htData.put("type",  nrtType);
-        if (cnt++ == 0) {
-          htData.put("matrix", table);
-        } else {
-          matrix = new int[nAtoms][nAtoms];
-          for (int j = 0; j < nAtoms; j++)
-            for (int k = 0; k < nAtoms; k++)
-              matrix[j][k] = table[j][k];
-          htData.put("matrix", matrix);
-        }
-          
+        htData.put("index", Integer.valueOf(index++));
+        htData.put("type", nrtType.toLowerCase());
+        htData.put("spin", nrtType.indexOf("B") >= 0 ? "beta" : "alpha");
+        matrix = new int[nAtoms][nAtoms];
+        htData.put("matrix", matrix);
+        for (int j = 0; j < nAtoms; j++)
+          for (int k = 0; k < nAtoms; k++)
+            matrix[j][k] = table[j][k];
       }
-      
     }
-    
-    System.out.println("testing" + PT.toJSON(null,  table));
-    
   }
 
 
@@ -204,10 +205,10 @@ public class NBOParser {
 
 
   /**
-   * Reads the $NRTSTRA, $NRTSTRB, and $CHOOSE blocks. Creates a Lst of
+   * Reads the $NRTSTR $NRTSTRA, $NRTSTRB, and $CHOOSE blocks. Creates a Lst of
    * Hashtables
    * 
-   * @param output
+   * @param data
    *        NBO output block not including $END
    * 
    * @param nrtType
@@ -217,9 +218,8 @@ public class NBOParser {
    * @return number of structures found or -1 for an error
    * 
    */
-  public int getStructures(String output, String nrtType, Lst<Object> list) {
+  public int getStructures(String data, String nrtType, Lst<Object> list) {
 
-    System.out.println(output);
     //    $NRTSTRA
     //    STR        ! Wgt = 49.51%
     //      LONE 1 2 3 2 END
@@ -252,19 +252,19 @@ public class NBOParser {
     //         S 6 12 END
     //  $END
 
-    if (output == null)
+    if (data == null || data.length() == 0)
       return 0;
     int n = 0;
     try {
-      boolean ignoreSTR = (output.indexOf("ALPHA") >= 0);
-      if (!ignoreSTR && !output.contains("STR"))
-        output = "STR " + output + " END";
+      boolean ignoreSTR = (data.indexOf("ALPHA") >= 0);
+      if (!ignoreSTR && !data.contains("STR"))
+        data = "STR " + data + " END";
       nrtType = nrtType.toLowerCase();
       String spin = (nrtType.equals("nrtstrb") ? "beta" : "alpha");
       if (nrtType.equals("choose"))
         nrtType = null;
       Map<String, Object> htData = null;
-      String[] tokens = PT.getTokens(output.replace('\r', ' ').replace('\n', ' ').replace('\t', ' '));
+      String[] tokens = PT.getTokens(data.replace('\r', ' ').replace('\n', ' ').replace('\t', ' '));
       String lastType = "";
       int index = 0;
       for (int i = 0, nt = tokens.length; i < nt; i++) {
@@ -337,10 +337,10 @@ public class NBOParser {
 
   /**
    * 
-   * Find the map for a specified structure.
+   * Find the map for a specified structure, producing a structure that can be used to generate lone pairs and bonds for a Lewis structure 
    * 
    * @param structureList  a list of structural information from this class created from an NBO file
-   * @param type  nrtstra, nrtstrb, alpha, beta  -- last two are from CHOOSE
+   * @param type  topoa, topob, nrtstra, nrtstrb, alpha, beta  -- last two are from CHOOSE
    * @param index  0-based index for this type
    * @return Hashtable or null
    */
@@ -364,42 +364,53 @@ public class NBOParser {
 
   /**
    * Starting with a structure map, do what needs to be done to change the
-   * current structure to that.
+   * current Jmol structure to that in terms of bonding and formal charge.
    * 
    * @param sb
    * @param vwr
    * @param map
-   * @param addCharge   currently not working
+   * @param addFormalCharge  true for closed shell only for now
    * 
    * @return a string that can be used to optionally label the atoms
    */
   @SuppressWarnings("unchecked")
-  public static String setStructure(SB sb, Viewer vwr, Map<String, Object> map,
-                                    boolean addCharge) {
+  public static String setJmolLewisStructure(SB sb, Viewer vwr, Map<String, Object> map,
+                                    boolean addFormalCharge) {
     if (map == null)
       return null;
     Lst<Object> bonds = (Lst<Object>) map.get("bond");
     Lst<Object> lonePairs = (Lst<Object>) map.get("lone");
     Lst<Object> loneValencies = (Lst<Object>) map.get("loneValencies"); // not implemented in GenNBO
+    int[][] matrix = (int[][]) map.get("matrix");
     int[] lp = (int[]) map.get("lp");
     int[] lv = (int[]) map.get("lv");
     int[] bondCounts = (int[]) map.get("bondCounts");
     boolean needLP = (lp == null);
+    int atomCount = (matrix == null ? vwr.ms.ac : matrix[1].length);
     if (needLP) {
-      map.put("lp", lp = new int[vwr.ms.ac]);
-      map.put("lv", lv = new int[vwr.ms.ac]);
-      map.put("bondCounts", bondCounts = new int[vwr.ms.ac]);
+      map.put("lp", lp = new int[atomCount]);
+      map.put("lv", lv = new int[atomCount]);
+      map.put("bondCounts", bondCounts = new int[atomCount]);
     }
 
     vwr.ms.deleteAllBonds();
-    if (needLP && lonePairs != null)
-      for (int i = lonePairs.size(); --i >= 0;) {
-        int[] na = (int[]) lonePairs.get(i);
-        int nlp = na[0];
-        int a1 = na[1] - 1;
-        lp[a1] = nlp;
+    if (needLP) {
+      if (lonePairs != null) {
+        for (int i = lonePairs.size(); --i >= 0;) {
+          int[] na = (int[]) lonePairs.get(i);
+          int nlp = na[0];
+          int a1 = na[1] - 1;
+          lp[a1] = nlp;
+        }
+      } else if (matrix != null) {
+        for (int i = atomCount; --i >= 0;) {
+          lp[i] = matrix[i][i];
+        }
       }
-    if (bonds != null)
+
+    }
+    BS bsVis = vwr.ms.bsVisible;
+    if (bonds != null) {
       for (int i = bonds.size(); --i >= 0;) {
         int[] oab = (int[]) bonds.get(i);
         int a1 = oab[1] - 1;
@@ -411,21 +422,49 @@ public class NBOParser {
         }
         int mad = (order > 3 ? 100 : order > 2 ? 150 : 200);
         vwr.ms.bondAtoms(vwr.ms.at[a1], vwr.ms.at[a2], order, (short) mad,
-            vwr.ms.bsVisible, 0, true, true);
+            bsVis, 0, true, true);
       }
-    for (int i = vwr.ms.ac; --i >= 0;) {
-      vwr.ms.at[i].setFormalCharge(0);
-      vwr.ms.at[i].setValence(bondCounts[i]);
+    } else if (matrix != null) {
+      for (int i = 0; i < atomCount - 1; i++) {
+        int[] m = matrix[i];
+        for (int j = i + 1; j < atomCount; j++) {
+          int order = m[j];
+          if (order == 0)
+            continue;
+          int mad = (order > 3 ? 100 : order > 2 ? 150 : 200);
+          vwr.ms.bondAtoms(vwr.ms.at[i], vwr.ms.at[j], order, (short) mad,
+              bsVis, 0, true, true);
+          if (needLP) {
+            bondCounts[i] += order;
+            bondCounts[j] += order;
+          }
+        }
+      }
     }
-    // It is not entirely possible to determine charge just by how many
-    // bonds there are to an atom. But we can come close for most standard
-    // structures - NOT CO2(+), though.
-    vwr.ms.fixFormalCharges(vwr.getAllAtoms());
+    for (int i = atomCount; --i >= 0;) {
+      // It is not entirely possible to determine charge just by how many
+      // bonds there are to an atom. But we can come close for most standard
+      // structures - NOT CO2(+), though.
+      Atom a = vwr.ms.at[i];
+      a.setValence(bondCounts[i]);
+      a.setFormalCharge(0);
+      int nH = vwr.ms.getMissingHydrogenCount(a, true);
+      if (a.getElementNumber() == 6 && nH == 1) { 
+        // for carbon, we need to adjust for lone pairs.
+        // sp2 C+ will be "missing one H", but effectively we want to consider it 
+        // "one H too many", referencing to carbene (CH2) instead of methane (CH4).
+        // thus setting its charge to 1+, not 1-
+        if (bondCounts[i] == 3 && lp[i] == 0 || bondCounts[i] == 2)
+          nH -= 2; 
+      }
+      a.setFormalCharge(-nH);
+    }
     if (sb == null)
       return null;
     sb.append("select visible;label %a;");
-    for (int i = vwr.ms.ac; --i >= 0;) {
-      if (lp[i] == 0 && lv[i] == 0)
+    for (int i = atomCount; --i >= 0;) {
+      int charge = (addFormalCharge ? vwr.ms.at[i].getFormalCharge() : 0);
+      if (lp[i] == 0 && lv[i] == 0 && charge == 0)
         continue;
       sb.append("select @" + (i + 1) + ";label ");
       if (lp[i] > 0)
@@ -433,8 +472,7 @@ public class NBOParser {
       if (lv[i] > 0)
         sb.append("<sub>[" + lv[i] + "]</sub>");
       sb.append("%a");
-      if (addCharge) {
-        int charge = vwr.ms.at[i].getFormalCharge();
+      if (addFormalCharge) {
         if (charge != 0)
           sb.append("<sup>" + Math.abs(charge)
               + (charge > 0 ? "+" : charge < 0 ? "-" : "") + "</sup>");

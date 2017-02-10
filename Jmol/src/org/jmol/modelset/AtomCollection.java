@@ -1446,7 +1446,7 @@ abstract public class AtomCollection {
 
   int[] aaRet;
   
-  int getMissingHydrogenCount(Atom atom, boolean allowNegative) {
+  public int getMissingHydrogenCount(Atom atom, boolean allowNegative) {
     int targetCount = atom.getTargetValence();
     if (targetCount < 0)
       return 0;

@@ -623,9 +623,9 @@ class NBOModel {
 
   private final static String[][] REBOND_LISTS = 
     new String[][]  {  
-     { "td", "c3vi", "c4v" },            // 4
-     { "c4vo", "c4vi" },                 // 5
-     { "c3vo", "c3vi", "c5vo", "c5vi" }, // 6
+     { "td", "c3v", "c4v" },            // MX4
+     { "c4vo", "c4vi" },                 // MX5
+     { "c3vo", "c3vi", "c5vo", "c5vi" }, // MX6
   };
   
   private static String[] getRebondSymList(int val) {
@@ -1209,7 +1209,7 @@ class NBOModel {
     if (actionID == MODEL_ACTION_MUTATE) {
       doModelAction(actionID);
     } else if (actionID == MODEL_ACTION_REBOND && serverMode != MODEL_ACTION_SYMMETRY)
-      doGetSymmetry();
+      //doGetSymmetry();
     if (showSelectedOnFileLoad) {
       updateSelected(false);
       showSelectedOnFileLoad = false;

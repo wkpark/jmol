@@ -1182,7 +1182,7 @@ class NBOModel {
    * callback notification from Jmol
    * 
    */
-  protected void notifyLoad() {
+  protected void notifyFileLoaded() {
 
     String fileContents = dialog.runScriptNow("print data({*},'cfi')");
     if (notFromNBO) {
@@ -1190,8 +1190,8 @@ class NBOModel {
       loadModelToNBO(fileContents, false);
       return;
     }
-    dialog.runScriptNow(NBOConfig.JMOL_FONT_SCRIPT
-        + ";select within(model,visible);"); // NOT rotate best, because these may be symmetry designed
+    dialog.runScriptNow(NBOConfig.JMOL_FONT_SCRIPT);
+//        + ";select 1.1;"); // NOT rotate best, because these may be symmetry designed
     dialog.doSetStructure(null);
     showComponents(true);
     innerEditBox.setVisible(true);

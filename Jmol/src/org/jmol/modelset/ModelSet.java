@@ -569,6 +569,11 @@ public class ModelSet extends BondCollection {
     return (haveBioModels ? bioModelset.getAllDefaultStructures(bsAtoms,
         bsModified) : "");
   }
+  
+  public void deleteModelBonds(int modelIndex) {
+    BS bsAtoms = getModelAtomBitSetIncludingDeleted(modelIndex, false);
+    makeConnections(0, Float.MAX_VALUE, Edge.BOND_ORDER_NULL, T.delete, bsAtoms, bsAtoms, null, false, false, 0);
+  }
 
   ///// super-overloaded methods ///////
 

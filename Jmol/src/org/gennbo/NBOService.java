@@ -168,8 +168,8 @@ public class NBOService {
   byte[] buffer = new byte[1024];
   String cachedReply = "";
 
-  protected boolean destroyed;
-  
+  private NBORunnable nboRunnable;
+
   /**
    * Start the ProcessBuilder for NBOServe and listen to its stdout (Fortran LFN
    * 6, a Java BufferedInputStream). We simply look for available bytes and listen
@@ -202,7 +202,6 @@ public class NBOService {
    */
   String startProcess() {
     try {
-      destroyed = false;
       cantStartServer = true;
       if (!doConnect)
         return null;
@@ -224,54 +223,7 @@ public class NBOService {
 
       // start a listener
       
-      nboListener = new Thread(new Runnable() {
-
-        @Override
-        public void run() {
-          
-          String s;
-          
-          while (!destroyed && !Thread.currentThread().isInterrupted()) {
-            try {
-              Thread.sleep(1);
-
-              // Get and process the return, continuing if incomplete or no activity.
-
-              if ((s = getNBOMessage()) == null || !processServerReturn(s))
-                continue;
-
-              // Success!
-              
-              cachedReply = "";
-              
-              // Get the next request. Note that we leave the currentRequest on 
-              // the Queue because that indicates we are still working. 
-
-              // Note that we FIRST check for messages, as NBOServe will have an
-              // unsolicited startup message for us providing license information.
-              
-              startRequest(currentRequest = requestQueue.peek());
-
-            } catch (Throwable e1) {
-              clearQueue();
-              e1.printStackTrace();
-              dialog.setStatus(e1.getMessage());
-              continue;
-              // includes thread death
-            }
-
-          }
-          if (destroyed)
-            closeProcess(false);
-        }
-      }) {
-
-        @Override
-        public void interrupt() {
-           destroyed = true; 
-        }
-
-      };
+      nboListener = new Thread(nboRunnable = new NBORunnable());
       nboListener.setName("NBOServiceThread" + System.currentTimeMillis());
       nboListener.start();
       
@@ -292,57 +244,14 @@ public class NBOService {
   }
 
   /**
-   * Retrieve a message from NBOServe by monitoring its sysout (a
-   * BufferedInputStream for us).
-   * 
-   * @return new NBO output, or null if no activity
-   * 
-   * @throws IOException
-   * @throws InterruptedException
-   */
-  protected synchronized String getNBOMessage() throws IOException, InterruptedException {
-    
-    // 1. Check for available bytes.
-    
-    int n = (nboOut == null ? 0 : nboOut.available());
-    if (n <= 0) {
-      return null;
-    }
-    
-    // 2. Monitor every 10 ms until no further activity. 
-    
-    setReady(true);
-    int m = 0;
-    do {
-      if (destroyed)
-        return null;
-      n = m;
-      Thread.sleep(10);
-      if (nboOut == null)
-        return null;
-    } while ((m = nboOut.available()) > n);
-    while (n > buffer.length) {
-      buffer = AU.doubleLengthByte(buffer);
-    }
-    
-    // 3. Read the bytes into a single string and deliver that. 
-    //    No need for a line buffer here.
-    
-    // (The problem we were having originally is that we were using 
-    //  a BufferedReader, and it was blocking.)
-
-    // 4. Deliver standard Java format without carriage return.
-    
-    n = nboOut.read(buffer, 0, n);    
-    return cachedReply = cachedReply + PT.rep(new String(buffer, 0, n), "\r", "");
-  }
-
-  /**
    * Close the process and all channels associated with it. 
    */
   public void closeProcess(boolean andPause) {
     
-    destroyed = true;
+    if (nboRunnable != null) {
+      nboRunnable.destroyed = true;
+      andPause = true;
+    }
     if (andPause) {
       try {
         Thread.sleep(50);
@@ -466,18 +375,20 @@ public class NBOService {
    * @param request
    */
   protected void startRequest(NBORequest request) {
-    if (request == null)
+    if (request == null || nboRunnable.destroyed)
       return;
 
+    System.out.println("starting request for " + request.statusInfo + " " + request);
     if (request.timeStamp != 0) {
       System.out.println("SENDING TWICE?");
+      nboRunnable.destroyed = true;
       return;
     }
     request.timeStamp = System.currentTimeMillis();
 
     currentRequest = request;
 
-    String cmdFileName = null, data = null, list = "";
+    String cmdFileName = null, data =   null, list = "";
     for (int i = 2, n = request.fileData.length; i < n + 2; i += 2) {
 
       cmdFileName = request.fileData[i % n];
@@ -620,6 +531,98 @@ public class NBOService {
         || line.indexOf("Invalid command") >= 0;
   }
 
+  class NBORunnable implements Runnable {
+
+    protected boolean destroyed;
+
+    @Override
+    public void run() {
+
+      String s;
+
+      while (!destroyed && !Thread.currentThread().isInterrupted()) {
+        try {
+          Thread.sleep(10);
+
+          // Get and process the return, continuing if incomplete or no activity.
+
+          if (destroyed || (s = getNBOMessage()) == null || !processServerReturn(s))
+            continue;
+
+          // Success!
+
+          cachedReply = "";
+
+          // Get the next request. Note that we leave the currentRequest on 
+          // the Queue because that indicates we are still working. 
+          // Note that we FIRST check for messages, as NBOServe will have an
+          // unsolicited startup message for us providing license information.
+          if (destroyed)
+            continue;
+          currentRequest = requestQueue.peek();
+          startRequest(currentRequest);
+
+        } catch (Throwable e1) {
+          clearQueue();
+          e1.printStackTrace();
+          dialog.setStatus(e1.getMessage());
+          continue;
+          // includes thread death
+        }
+
+      }
+      if (destroyed)
+        closeProcess(false);
+    }
+    
+    /**
+     * Retrieve a message from NBOServe by monitoring its sysout (a
+     * BufferedInputStream for us).
+     * 
+     * @return new NBO output, or null if no activity
+     * 
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    protected synchronized String getNBOMessage() throws IOException, InterruptedException {
+      
+      // 1. Check for available bytes.
+      
+      int n = (nboOut == null ? 0 : nboOut.available());
+      if (n <= 0) {
+        return null;
+      }
+      
+      // 2. Monitor every 10 ms until no further activity. 
+      
+      setReady(true);
+      int m = 0;
+      do {
+        if (destroyed)
+          return null;
+        n = m;
+        Thread.sleep(10);
+        if (nboOut == null)
+          return null;
+      } while ((m = nboOut.available()) > n);
+      while (n > buffer.length) {
+        buffer = AU.doubleLengthByte(buffer);
+      }
+      
+      // 3. Read the bytes into a single string and deliver that. 
+      //    No need for a line buffer here.
+      
+      // (The problem we were having originally is that we were using 
+      //  a BufferedReader, and it was blocking.)
+
+      // 4. Deliver standard Java format without carriage return.
+      
+      n = nboOut.read(buffer, 0, n);    
+      return cachedReply = cachedReply + PT.rep(new String(buffer, 0, n), "\r", "");
+    }
+
+
+  }
 }
 
 

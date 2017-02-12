@@ -197,6 +197,7 @@ public class ScriptManager implements JmolScriptManager {
     scriptQueueRunning[pt] = true;
     queueThreads[pt] = new ScriptQueueThread(this, vwr,
         startedByCommandWatcher, pt);
+    System.out.println("script manager starting " + pt + " " + queueThreads[pt]);
     queueThreads[pt].start();
   }
 
@@ -284,11 +285,13 @@ public class ScriptManager implements JmolScriptManager {
 
   @Override
   public void queueThreadFinished(int pt) {
+    //System.out.println("queuethread " + pt + " done");
     queueThreads[pt].interrupt();
     scriptQueueRunning[pt] = false;
     queueThreads[pt] = null;
     vwr.setSyncDriver(StatusManager.SYNC_ENABLE);
     vwr.queueOnHold = false;
+    //System.out.println("queuethread " + pt + " done");
   }
 
   public void runScriptNow() {

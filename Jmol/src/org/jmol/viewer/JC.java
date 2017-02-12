@@ -179,8 +179,8 @@ public final class JC {
       //  0         1         2
       //  012345678901234567890123456789
     }
-    version = (tmpVersion != null ? tmpVersion : "(Unknown version)");
-    date = (tmpDate != null ? tmpDate : "(Unknown date)");
+    version = (tmpVersion != null ? tmpVersion : "(Unknown_version)");
+    date = (tmpDate != null ? tmpDate : "(Unknown_date)");
     // 11.9.999 --> 1109999
     int v = -1;
     try {

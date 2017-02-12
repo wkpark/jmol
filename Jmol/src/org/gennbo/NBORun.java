@@ -158,7 +158,7 @@ class NBORun {
     panel.add(btnRun);
 
     if (dialog.inputFileHandler.tfExt.getText().equals("47"))
-      notifyLoad();
+      notifyFileLoaded();
     dialog.inputFileHandler.setBrowseEnabled(true);
     return panel;
   }
@@ -420,7 +420,7 @@ class NBORun {
   //    }
   //  }
 
-  protected void notifyLoad() {
+  protected void notifyFileLoaded() {
     if (vwr.ms.ac == 0)
       return;
     dialog.doSetStructure("alpha");

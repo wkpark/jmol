@@ -40,6 +40,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -402,7 +403,7 @@ class NBOSearch extends NBOView {
     String ext = NBOUtil.getExt(new File(file));
 
     if (PT.isOneOf(ext, NBOFileHandler.EXTENSIONS))
-      notifyLoad();
+      notifyFileLoaded_s();
 
     return panel;
   }
@@ -524,10 +525,6 @@ class NBOSearch extends NBOView {
     script.append("isosurface delete; select off;refresh");
     dialog.runScriptNow(script.toString());
     buildHome();
-  }
-
-  private void showLewisStructure() {
-    dialog.doSetStructure(alphaSpin.isSelected() ? "alpha" : "beta");
   }
 
   private void changeKey(final String[] s) {
@@ -909,9 +906,9 @@ class NBOSearch extends NBOView {
    * @param iBasis unused 
    */
   protected void setBasisForOPBASorB1B2(int iBasis) {
-    resetCurrentOrbitalClicked();
-    if (comboBasis2 == null)
-      return;
+//    resetCurrentOrbitalClicked();
+//    if (comboBasis2 == null)
+//      return;
     postListRequest("r", comboSearchOrb1);
     postListRequest("c", comboSearchOrb2);
     if (keywordID == KEYWD_OPBAS)
@@ -1011,26 +1008,56 @@ class NBOSearch extends NBOView {
       labelOrb1 = "d_NBO_1";
       labelOrb2 = "a_NBO";
       orb2 = comboSearchOrb2;
-      offset2 = orb1.getModel().getSize() + 1;
+      ComboBoxModel<String> x = orb1.getModel();
+      System.out.println(x.getSize());
+      offset2 = orb1.getModel().getSize() - 1;
       break;
     case KEYWD_NRT:
       orb1 = null;
-      // only 1-6 use the first atom
-      atom1 = (op <= 6 ? comboAtom1 : null);
-      // only  4,5 and 6 use the second atom
-      atom2 = (op >= 4 && op <= 6 ? comboAtom2 : null);
+      switch (op) {
+      case 4:
+      case 5:
+      case 6:
+        atom2 = comboAtom2;
+        //$FALL-THROUGH$
+      case 1:
+      case 2:
+      case 3:
+        atom1 = comboAtom1;
+        break;
+      case 9:
+        isLabel = true;
+        break;
+      case 10:
+        isLabelBonds = true;
+        break;
+      case 7:
+      case 8:
+        doShowResonanceStructure(comboUnit1.getSelectedIndex());
+        break;
+      default:
+        break;
+      }
       unit1 = comboUnit1;
       labelUnit1 = "RES_STR";
-      // atom label is 9
-      isLabel = (op == 9);
-      // bond label is 10
-      isLabelBonds = (op == 10);
       break;
     case KEYWD_STERIC:
       labelOrb1 = "d_NBO_1";
       labelOrb2 = "d_NBO_2";
       orb2 = comboSearchOrb2;
       unit1 = comboUnit1;
+      switch (op) {
+      case 1:
+      case 2:
+      case 3:
+        break;
+      default:
+        orb1 = null;
+        //$FALL-THROUGH$
+      case 4:
+        orb2 = null;
+        break;
+      }
       break;
     case KEYWD_CMO:
       // op 7 requires only an NBO selection
@@ -1078,66 +1105,6 @@ class NBOSearch extends NBOView {
       NBOUtil.postAddGlobalI(sb, labelUnit1, 1, unit1);
     NBOUtil.postAddGlobalI(sb, "OPT_" + getKeyword(), op, null);
 
-    //
-    //    switch (searchKeywordNumber) {
-    //    case KEYWD_NPA:
-    //      sb.append("GLOBAL I_ATOM_1 " + (comboAtom1.getSelectedIndex() + 1) + sep);
-    //      sb.append("GLOBAL I_UNIT_1 " + (comboUnit1.getSelectedIndex() + 1) + sep);
-    //      sb.append("GLOBAL I_ORB_1 " + (comboSearchOrb2.getSelectedIndex()) + sep);
-    //      if (op > 10) {
-    //        isLabel = true;
-    //        op = 12;
-    //      }
-    //      break;
-    //    case KEYWD_NBO:
-    //    case KEYWD_BEND:
-    //    case KEYWD_NLMO:
-    //      sb.append("GLOBAL I_ORB_1 " + (comboSearchOrb1.getSelectedIndex()) + sep);
-    //      break;
-    //    case KEYWD_E2PERT:
-    //      sb.append("GLOBAL I_d_NBO_1 " + (comboSearchOrb1.getSelectedIndex())
-    //          + sep);
-    //      sb.append("GLOBAL I_a_NBO "
-    //          + (comboSearchOrb2.getSelectedIndex()
-    //              + comboSearchOrb1.getModel().getSize() + 1) + sep);
-    //      sb.append("GLOBAL I_UNIT_1 " + (comboUnit1.getSelectedIndex() + 1) + sep);
-    //      break;
-    //    case KEYWD_NRT:
-    //      sb.append("GLOBAL I_ATOM_1 " + (comboAtom1.getSelectedIndex() + 1) + sep);
-    //      sb.append("GLOBAL I_ATOM_2 " + (comboAtom2.getSelectedIndex() + 1) + sep);
-    //      sb.append("GLOBAL I_RES_STR " + (comboUnit1.getSelectedIndex() + 1) + sep);
-    //      isLabel = (op == 9);
-    //      isLabelBonds = (op == 10);
-    //      break;
-    //    case KEYWD_STERIC:
-    //      sb.append("GLOBAL I_d_NBO_1 " + (comboSearchOrb1.getSelectedIndex())
-    //          + sep);
-    //      sb.append("GLOBAL I_d_NBO_2 " + (comboSearchOrb2.getSelectedIndex())
-    //          + sep);
-    //      sb.append("GLOBAL I_UNIT_1 " + (comboUnit1.getSelectedIndex() + 1) + sep);
-    //      break;
-    //    case KEYWD_CMO:
-    //      sb.append("GLOBAL I_CMO " + (comboSearchOrb2.getSelectedIndex()) + sep);
-    //      sb.append("GLOBAL I_NBO " + (comboSearchOrb1.getSelectedIndex()) + sep);
-    //      break;
-    //    case KEYWD_DIPOLE:
-    //      sb.append("GLOBAL I_ORB_1 " + (comboSearchOrb1.getSelectedIndex()) + sep);
-    //      sb.append("GLOBAL I_UNIT_1 " + (comboUnit1.getSelectedIndex() + 1) + sep);
-    //      break;
-    //    case KEYWD_OPBAS:
-    //      sb.append("GLOBAL I_BAS_1 " + (comboBasis.getSelectedIndex() + 1) + sep);
-    //      sb.append("GLOBAL I_OPERATOR " + operator + sep);
-    //      sb.append("GLOBAL I_ROW " + (comboSearchOrb1.getSelectedIndex()) + sep);
-    //      sb.append("GLOBAL I_COLUMN " + (comboSearchOrb2.getSelectedIndex()) + sep);
-    //      break;
-    //    case KEYWD_BAS1BAS2:
-    //      sb.append("GLOBAL I_BAS_1 " + (comboBasis.getSelectedIndex() + 1) + sep);
-    //      sb.append("GLOBAL I_BAS_2 " + (comboBasis2.getSelectedIndex() + 1) + sep);
-    //      sb.append("GLOBAL I_ROW " + (comboSearchOrb1.getSelectedIndex()) + sep);
-    //      sb.append("GLOBAL I_COLUMN " + (comboSearchOrb2.getSelectedIndex()) + sep);
-    //      break;
-    //    }
-
     if (needRelabel) {
       dialog
           .runScriptQueued("select add {*}.bonds; color bonds lightgrey; select none; measurements off");
@@ -1146,15 +1113,15 @@ class NBOSearch extends NBOView {
     }
     if (isLabel) {
       needRelabel = true;
-      postNBO(sb, MODE_SEARCH_LABEL, null, "Getting labels", false);
+      postNBO_s(sb, MODE_SEARCH_LABEL, null, "Getting labels", false);
     } else if (isLabelBonds) {
       needRelabel = true;
       dialog
           .runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select none");
-      postNBO(sb, MODE_SEARCH_LABEL_BONDS, null,
+      postNBO_s(sb, MODE_SEARCH_LABEL_BONDS, null,
           "Getting bonds list", false);
     } else {
-      postNBO(sb, MODE_SEARCH_VALUE, null, "Getting value...", true);
+      postNBO_s(sb, MODE_SEARCH_VALUE, null, "Getting value...", true);
     }
   }
 
@@ -1209,12 +1176,10 @@ class NBOSearch extends NBOView {
         comboUnit1.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-            dialog.doSearchSetResStruct((alphaSpin.isSelected() ? "topoa"
-                : "topob"), comboUnit1.getSelectedIndex());
+            doShowResonanceStructure(comboUnit1.getSelectedIndex());
           }
         });
-        dialog.doSearchSetResStruct(alphaSpin.isSelected() ? "topoa"
-            : "topob", 0);
+        doShowResonanceStructure(0);
       }
       break;
     case KEYWD_OPBAS:
@@ -1226,6 +1191,11 @@ class NBOSearch extends NBOView {
 
       }
     }
+  }
+
+  protected void doShowResonanceStructure(int index) {
+    dialog.doSearchSetResStruct((isAlphaSpin() ? "rsa"
+        : "rsb"), index);
   }
 
   /**
@@ -1493,7 +1463,7 @@ class NBOSearch extends NBOView {
    * callback notification that Jmol has loaded a model while SEARCH was active
    * 
    */
-  protected void notifyLoad() {
+  protected void notifyFileLoaded_s() {
     if (vwr.ms.ac == 0)
       return;
     dialog.runScriptNow("isosurface delete");
@@ -1556,7 +1526,7 @@ class NBOSearch extends NBOView {
     NBOUtil.postAddCmd(sb, cmd);
     if (keywordID == KEYWD_CMO && cmd_basis.equals("c_cmo"))
       mode = MODE_SEARCH_LIST_MO;
-    postNBO(sb, mode, cb, "Getting list " + cmd, false);
+    postNBO_s(sb, mode, cb, "Getting list " + cmd, false);
   }
 
   /**
@@ -1571,7 +1541,7 @@ class NBOSearch extends NBOView {
    * @param statusMessage
    * @param isGetValue 
    */
-  private void postNBO(SB sb, final int mode, final JComboBox<String> cb,
+  private void postNBO_s(SB sb, final int mode, final JComboBox<String> cb,
                          String statusMessage, boolean isGetValue) {
     final NBORequest req = new NBORequest();
     req.set(new Runnable() {
@@ -1608,7 +1578,7 @@ class NBOSearch extends NBOView {
     case MODE_SEARCH_VALUE:
       line = lines[0];
       if (dialog.isOpenShell()) {
-        String spin = (alphaSpin.isSelected() ? "&uarr;" : "&darr;");
+        String spin = (isAlphaSpin() ? "&uarr;" : "&darr;");
         int ind = line.indexOf(')') + 1;
         line = line.substring(0, ind) + spin + line.substring(ind);
       }

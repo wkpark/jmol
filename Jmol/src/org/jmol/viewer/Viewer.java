@@ -124,7 +124,7 @@ import org.jmol.util.Rectangle;
 import org.jmol.util.TempArray;
 import org.jmol.util.Triangulator;
 import org.jmol.viewer.binding.Binding;
-
+import org.jmol.adapter.readers.quantum.NBOParser;
 /*
  * 
  * ****************************************************************
@@ -9529,6 +9529,24 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     
     if ("nbo".equalsIgnoreCase(plugin))
       startNBO("all");
+  }
+
+  private NBOParser nboParser;
+  
+  public void connectNBO(String type) {
+    if (am.cmi < 0)
+      return;
+    getNBOParser().connectNBO(this, am.cmi, type);
+  }
+
+  private NBOParser getNBOParser() {
+    return (nboParser == null ? nboParser = (NBOParser) Interface.getInterface(
+        "org.jmol.adapter.readers.quantum.NBOParser", this, "script")
+        : nboParser);
+  }
+
+  public String getNBOAtomLabel(Atom atom) {
+    return getNBOParser().getNBOAtomLabel(atom);
   }
 
 }

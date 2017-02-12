@@ -6,9 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Map;
 
-import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -20,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.jmol.adapter.readers.quantum.NBOParser;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 
@@ -64,8 +61,6 @@ class NBOFileHandler extends JPanel {
   protected NBODialog dialog;
   protected boolean canReRun;
   protected boolean isOpenShell;
-
-  private Lst<Object> structureList;
 
   protected final static int MODE_MODEL_USE = 1;
   protected final static int MODE_RUN = 2;
@@ -175,8 +170,6 @@ class NBOFileHandler extends JPanel {
   protected boolean loadSelectedFile(File selectedFile) {
     dialog.nboService.restartIfNecessary();
     inputFile = selectedFile;
-    clearStructureList();
-    isOpenShell = false;
     //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 
     //return false;
     if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
@@ -199,10 +192,6 @@ class NBOFileHandler extends JPanel {
     tfName.setText(jobStem = name);
   }
 
-  protected void clearStructureList() {
-    structureList = null;
-  }
-
   /**
    * Sets up the input file, currently only support for .47/model input file
    * types
@@ -212,7 +201,6 @@ class NBOFileHandler extends JPanel {
   protected void setInputFile(File inputFile) {
     dialog.logValue("Input file=" + inputFile);
     clearInputFile(false); // clear CURRENT input file's server directory
-    isOpenShell = false;
     this.inputFile = inputFile;
     if (inputFile.getName().indexOf(".") > 0)
       jobStem = NBOUtil.getJobStem(inputFile);
@@ -233,19 +221,13 @@ class NBOFileHandler extends JPanel {
     boolean isOK = true;
     String msg = "";
     if (dialog.dialogMode != NBODialog.DIALOG_MODEL) {
-      setStructure(null, null, -1);
-      if (structureList == null  || structureList.size() == 0) {
-        msg = "problems getting a $CHOOSE list for " + inputFile;
-        isOK = false;
-      } else {
-        for (String x : EXT_ARRAY) {
-          File f3 = newNBOFileForExt(x);
-          if (!f3.exists() || x.equals("36") && f3.length() == 0) {
-            msg = "file " + f3 + " is missing or zero length";
-            // BH: But this means all  || f3.length() == 0) {
-            isOK = false;
-            break;
-          }
+      for (String x : EXT_ARRAY) {
+        File f3 = newNBOFileForExt(x);
+        if (!f3.exists() || x.equals("36") && f3.length() == 0) {
+          msg = "file " + f3 + " is missing or zero length";
+          // BH: But this means all  || f3.length() == 0) {
+          isOK = false;
+          break;
         }
       }
     }
@@ -262,7 +244,8 @@ class NBOFileHandler extends JPanel {
       canLoad = false;
     }
     if (canLoad) {
-      dialog.loadOrSetBasis(new File(fullFilePath + "/" + jobStem + ".47"));
+      // this will trigger setViewerBasis and doSetNewBasis and a file load 
+      dialog.loadNewFile(new File(fullFilePath + "/" + jobStem + ".47"));
     } else if (dialog.dialogMode == NBODialog.DIALOG_RUN) {
       dialog.modelPanel.loadModelFromNBO(fullFilePath, jobStem, useExt);
       setJobStemAndTextFieldName(jobStem);
@@ -278,7 +261,6 @@ class NBOFileHandler extends JPanel {
    * @return [ pre-keyword params, keywords, post-keyword params ]
    */
   protected String[] read47File(boolean doAll) {
-    clearStructureList();
     String[] fileData = new String[] { "", "", "", "" };
     String nboKeywords = "";
     SB data = new SB();
@@ -390,27 +372,6 @@ class NBOFileHandler extends JPanel {
     return null;
   }
 
-
-  /**
-   * create the resonance structure list.
-   * @param sb string buffer to write Jmol scripts to if desired
-   * 
-   * @param type
-   *        nrtstra, nrtstrb, alpha, beta
-   * @param index index into list of this type
-   * @return the map for this structure
-   */
-  public String setStructure(SB sb, String type, int index) {
-    if (structureList == null) {
-      NBOParser nboParser = new NBOParser();
-      structureList = nboParser.getAllStructures(getInputFile("nbo"));
-      isOpenShell = nboParser.isOpenShell();
-    }
-    Map<String, Object> map = NBOParser.getStructureMap(structureList, type, index);
-    boolean addCharge = !isOpenShell; // BH: does not work for open shell systems. You cannot get charges just from 
-    // counting bonds.
-    return (map == null ? null : NBOParser.setJmolLewisStructure(sb, dialog.vwr, map, addCharge));
-  }
 
   /**
    * Check to see if the jobName (from file= or tfJobName) and the jobStem (loaded file stem)

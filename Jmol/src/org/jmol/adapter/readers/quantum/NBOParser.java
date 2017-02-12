@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javajs.util.Lst;
 import javajs.util.PT;
-import javajs.util.SB;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -13,23 +12,93 @@ import org.jmol.viewer.Viewer;
 
 public class NBOParser {
 
+  private Viewer vwr;
   private boolean haveBeta;
 
 
-  public Lst<Object> getAllStructures(String output) {
+  public Lst<Object> getAllStructures(String output, Lst<Object> list) {
     if (output == null)
       return null;
-    Lst<Object> list = new Lst<Object>();
-    output = PT.rep(output,  "the $CHOOSE", "");
-    getStructures(getBlock(output, "$CHOOSE"), "CHOOSE", list);
-    getStructures(getBlock(output, "$NRTSTR"), "NRTSTR", list);
-    getStructures(getBlock(output, "$NRTSTRA"), "NRTSTRA", list);
-    getStructures(getBlock(output, "$NRTSTRB"), "NRTSTRB", list);
-    getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 1), "TOPOA", list);
-    getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 2), "TOPOB", list);
+    if (list == null)
+      list = new Lst<Object>();
+//    output = PT.rep(output,  "the $CHOOSE", "");
+//    getStructures(getBlock(output, "$CHOOSE"), "CHOOSE", list);
+//    getStructures(getBlock(output, "$NRTSTR"), "NRTSTR", list);
+//    getStructures(getBlock(output, "$NRTSTRA"), "NRTSTRA", list);
+//    getStructures(getBlock(output, "$NRTSTRB"), "NRTSTRB", list);
+    getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 1), "RSA", list);
+    getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 2), "RSB", list);
     return list;
   }
   
+//NBO ALPHA  55
+//C 1(cr)   C 2(cr)   C 3(cr)   C 3(lp)   C 1- C 2  C 1- C 2  C 1- H 4 
+//C 1- H 5  C 2- C 3  C 2- H 6  C 3- H 7  C 3- H 8  C 1- C 2* C 1- C 2*
+//C 1- H 4* C 1- H 5* C 2- C 3* C 2- H 6* C 3- H 7* C 3- H 8* C 1(ry)  
+//C 1(ry)   C 1(ry)   C 1(ry)   C 1(ry)   C 1(ry)   C 1(ry)   C 1(ry)  
+//C 1(ry)   C 1(ry)   C 2(ry)   C 2(ry)   C 2(ry)   C 2(ry)   C 2(ry)  
+//C 2(ry)   C 2(ry)   C 2(ry)   C 2(ry)   C 2(ry)   C 3(ry)   C 3(ry)  
+//C 3(ry)   C 3(ry)   C 3(ry)   C 3(ry)   C 3(ry)   C 3(ry)   C 3(ry)  
+//C 3(ry)   H 4(ry)   H 5(ry)   H 6(ry)   H 7(ry)   H 8(ry)  
+
+  /**
+   * Use the .46 file NBO alpha/beta labels to identify bonds, lone pairs, and lone valences.
+   * 
+   * @param tokens
+   * @param type
+   * @param structures
+   */
+  @SuppressWarnings("unchecked")
+  public static void getStructures46(String[] tokens, String type,
+                                     Lst<Object> structures, int nAtoms) {
+    if (tokens == null)
+      return;
+    Map<String, Object> htData = new Hashtable<String, Object>();
+    structures.addLast(htData);
+    int[][] matrix = new int[nAtoms][nAtoms];
+    htData.put("matrix", matrix);
+    htData.put("type", type); // alpha or beta
+    htData.put("spin", type);
+    htData.put("index", Integer.valueOf(0));
+    for (int n = tokens.length, i = 0; i < n; i++) {
+      String org = tokens[i];
+      if (org.contains("(ry)"))
+        break;
+      if (org.contains("*") || org.contains("(cr)"))
+        continue;
+      // lone pair or lone valence
+      boolean isLP = org.endsWith("(lp)");
+      if (isLP || org.endsWith("(lv)")) {
+        int ia = getAtomIndex(org.substring(0, org.length() - 4));
+        matrix[ia][ia]+= (isLP ? 1 : 10);
+        continue;
+      }
+      // bond
+      String[] names = PT.split(org, "-");
+      if (names.length == 3) {
+        // three-center bond -- ignored?
+        System.out.println("NBOParser 3-center bonnd " + org + " ignored for Kekule structure");
+        continue;
+      }
+      int ia = getAtomIndex(names[0]);
+      int ib = getAtomIndex(names[1]);
+      matrix[ia][ib]++;
+      
+    }
+    dumpMatrix(type, 0, matrix);
+  }
+
+  private static int getAtomIndex(String xx99) {
+    for (int n = xx99.length(), i = n, val = 0, pow = 1, ch = 0; --i >= 0;) {
+      if ((ch = xx99.charAt(i)) < 48 || ch > 57)
+        return val - 1;
+      val += (ch - 48) * pow;
+      pow *= 10;
+    }
+    return 0;
+  }
+
+
   
   //  TOPO matrix for the leading resonance structure:
   //
@@ -162,10 +231,7 @@ public class NBOParser {
       } else {
         if (htData == null)
           matrix = table;
-        System.out.println("NBOParser matrix " + nrtType + " " + index);
-        for (int j = 0; j < nAtoms; j++)
-          System.out.println(PT.toJSON(null, matrix[j]));
-        System.out.println("-------------------");
+        dumpMatrix(nrtType, index, matrix);
         
         if (raw[i + 2] == -4) // blank line (all dashes)
           break;
@@ -185,6 +251,14 @@ public class NBOParser {
             matrix[j][k] = table[j][k];
       }
     }
+  }
+
+
+  private static void dumpMatrix(String nrtType, int index, int[][] matrix) {
+    System.out.println("NBOParser matrix " + nrtType + " " + index);
+    for (int j = 0, nAtoms = matrix.length; j < nAtoms; j++)
+      System.out.println(PT.toJSON(null, matrix[j]));
+    System.out.println("-------------------");
   }
 
 
@@ -288,7 +362,7 @@ public class NBOParser {
           htData.put("spin", spin = tok.toLowerCase());
           if (spin.equals("beta"))
             haveBeta = true;
-          htData.put("type", nrtType == null ? spin : nrtType);
+          htData.put("type", nrtType == null ? "choose" + spin.substring(0, 1) : nrtType);
           n++;
           break;
         case 5:
@@ -335,6 +409,11 @@ public class NBOParser {
   }
 
 
+
+  public boolean isOpenShell() {
+    return haveBeta;
+  }
+
   /**
    * 
    * Find the map for a specified structure, producing a structure that can be used to generate lone pairs and bonds for a Lewis structure 
@@ -361,68 +440,131 @@ public class NBOParser {
     return null;
   }
 
-
+  /**
+   * 
+   * @param vwr
+   * @param modelIndex
+   * @param type
+   *        one of alpha|beta|choosea|chooseb|nrtstr_n|nrtstra_n|topo_n|topoa_n|
+   *        topob_n
+   * @return true if successful
+   */
+  @SuppressWarnings("unchecked")
+  public boolean connectNBO(Viewer vwr, int modelIndex, String type) {
+    try {
+      if (type == null)
+        type = "alpha";
+      type = type.toLowerCase();
+      if (type.length() == 0 || type.equals("46"))
+        type = "alpha";
+      Map<String, Object> map = vwr.ms.getModelAuxiliaryInfo(modelIndex);
+      haveBeta = map.containsKey("isOpenShell");
+      Lst<Object> list = (Lst<Object>) map.get("nboStructures");
+      if (list == null || list.size() == 0)
+        return false;
+      type = type.toLowerCase();
+      int index = type.indexOf("_");
+      if (index > 0) {
+        if (list.size() == 2) {
+          String fname = (String) map.get("fileName");
+          if (fname != null && !fname.endsWith(".nbo")) {
+            fname = fname.substring(0, fname.lastIndexOf(".")) + ".nbo";
+            getAllStructures(vwr.getAsciiFileOrNull(fname), list);
+          }
+        }
+        String[] tokens = PT.split(type, "_");
+        index = PT.parseInt(tokens[1]) - 1;
+        type = tokens[0];
+        
+      } else {
+        index = 0;
+      }
+      Map<String, Object> structureMap = getStructureMap(list, type, index);
+      this.vwr = vwr;
+      if (structureMap == null
+          || !setJmolLewisStructure(structureMap, modelIndex, index + 1)) {
+        map.remove("nboStructure");
+        return false;
+      }
+      map.put("nboStructure", structureMap);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+  
   /**
    * Starting with a structure map, do what needs to be done to change the
    * current Jmol structure to that in terms of bonding and formal charge.
    * 
-   * @param sb
-   * @param vwr
-   * @param map
-   * @param addFormalCharge  true for closed shell only for now
+   * Three map configurations are supported:
    * 
-   * @return a string that can be used to optionally label the atoms
+   * bond/lone/3c data from $CHOOSE or $NRTSTR, $NRTSTRA, or $NRTSTRB matrix
+   * from TOPO map of atom names from the .46 file NBO alpha/beta lists
+   * 
+   * @param structureMap
+   * 
+   * @param modelIndex
+   * 
+   * 
+   * 
+   * @return true if successful
    */
   @SuppressWarnings("unchecked")
-  public static String setJmolLewisStructure(SB sb, Viewer vwr, Map<String, Object> map,
-                                    boolean addFormalCharge) {
-    if (map == null)
-      return null;
-    Lst<Object> bonds = (Lst<Object>) map.get("bond");
-    Lst<Object> lonePairs = (Lst<Object>) map.get("lone");
-    Lst<Object> loneValencies = (Lst<Object>) map.get("loneValencies"); // not implemented in GenNBO
-    int[][] matrix = (int[][]) map.get("matrix");
-    int[] lp = (int[]) map.get("lp");
-    int[] lv = (int[]) map.get("lv");
-    int[] bondCounts = (int[]) map.get("bondCounts");
-    boolean needLP = (lp == null);
-    int atomCount = (matrix == null ? vwr.ms.ac : matrix[1].length);
+  private boolean setJmolLewisStructure(Map<String, Object> structureMap,
+                                       int modelIndex, int resNo) {
+    if (structureMap == null || modelIndex < 0)
+      return false;
+    String type = (String) structureMap.get("type");
+    System.out.println("creating structure " + modelIndex + " " + type);
+    Lst<Object> bonds = (Lst<Object>) structureMap.get("bond");
+    Lst<Object> lonePairs = (Lst<Object>) structureMap.get("lone");
+    int[][] matrix = (int[][]) structureMap.get("matrix");
+    int[] lplv = (int[]) structureMap.get("lplv");
+    int[] bondCounts = (int[]) structureMap.get("bondCounts");
+    boolean needLP = (lplv == null);
+    BS bsAtoms = vwr.ms.getModelAtomBitSetIncludingDeleted(modelIndex, false);
+    int atomCount = bsAtoms.cardinality();
+    int iatom0 = bsAtoms.nextSetBit(0);
+    if (matrix != null && atomCount != matrix.length)
+      return false;
+    if (matrix != null)
+      dumpMatrix(type, resNo, matrix);
     if (needLP) {
-      map.put("lp", lp = new int[atomCount]);
-      map.put("lv", lv = new int[atomCount]);
-      map.put("bondCounts", bondCounts = new int[atomCount]);
+      structureMap.put("lplv", lplv = new int[atomCount]);
+      structureMap.put("bondCounts", bondCounts = new int[atomCount]);
     }
-
-    vwr.ms.deleteAllBonds();
     if (needLP) {
       if (lonePairs != null) {
         for (int i = lonePairs.size(); --i >= 0;) {
           int[] na = (int[]) lonePairs.get(i);
           int nlp = na[0];
           int a1 = na[1] - 1;
-          lp[a1] = nlp;
+          lplv[a1] = nlp;
         }
       } else if (matrix != null) {
         for (int i = atomCount; --i >= 0;) {
-          lp[i] = matrix[i][i];
+          lplv[i] = matrix[i][i];
         }
       }
-
     }
-    BS bsVis = vwr.ms.bsVisible;
+
+    // create bonds
+    vwr.ms.deleteModelBonds(modelIndex);
+    int mad = vwr.ms.getDefaultMadFromOrder(1);
     if (bonds != null) {
       for (int i = bonds.size(); --i >= 0;) {
         int[] oab = (int[]) bonds.get(i);
-        int a1 = oab[1] - 1;
-        int a2 = oab[2] - 1;
+        int a1 = iatom0 + oab[1] - 1;
+        int a2 = iatom0 + oab[2] - 1;
         int order = oab[0];
         if (needLP) {
           bondCounts[a1] += order;
           bondCounts[a2] += order;
         }
-        int mad = (order > 3 ? 100 : order > 2 ? 150 : 200);
         vwr.ms.bondAtoms(vwr.ms.at[a1], vwr.ms.at[a2], order, (short) mad,
-            bsVis, 0, true, true);
+            bsAtoms, 0, true, true);
       }
     } else if (matrix != null) {
       for (int i = 0; i < atomCount - 1; i++) {
@@ -431,9 +573,9 @@ public class NBOParser {
           int order = m[j];
           if (order == 0)
             continue;
-          int mad = (order > 3 ? 100 : order > 2 ? 150 : 200);
-          vwr.ms.bondAtoms(vwr.ms.at[i], vwr.ms.at[j], order, (short) mad,
-              bsVis, 0, true, true);
+          System.out.println("adding bond " + vwr.ms.at[i + iatom0] + " " + vwr.ms.at[j + iatom0]);
+          vwr.ms.bondAtoms(vwr.ms.at[i + iatom0], vwr.ms.at[j + iatom0], order, (short) mad,
+              null, 0, false, true);
           if (needLP) {
             bondCounts[i] += order;
             bondCounts[j] += order;
@@ -441,51 +583,58 @@ public class NBOParser {
         }
       }
     }
-    for (int i = atomCount; --i >= 0;) {
+    for (int i = 0, ia = bsAtoms.nextSetBit(0); ia >= 0; ia = bsAtoms
+        .nextSetBit(ia + 1), i++) {
       // It is not entirely possible to determine charge just by how many
       // bonds there are to an atom. But we can come close for most standard
       // structures - NOT CO2(+), though.
-      Atom a = vwr.ms.at[i];
+      Atom a = vwr.ms.at[ia];
       a.setValence(bondCounts[i]);
       a.setFormalCharge(0);
       int nH = vwr.ms.getMissingHydrogenCount(a, true);
-      if (a.getElementNumber() == 6 && nH == 1) { 
+      if (a.getElementNumber() == 6 && nH == 1) {
         // for carbon, we need to adjust for lone pairs.
         // sp2 C+ will be "missing one H", but effectively we want to consider it 
         // "one H too many", referencing to carbene (CH2) instead of methane (CH4).
         // thus setting its charge to 1+, not 1-
-        if (bondCounts[i] == 3 && lp[i] == 0 || bondCounts[i] == 2)
-          nH -= 2; 
+        if (bondCounts[i] == 3 && lplv[i] % 10 == 0 || bondCounts[i] == 2)
+          nH -= 2;
       }
       a.setFormalCharge(-nH);
     }
-    if (sb == null)
-      return null;
-    sb.append("select visible;label %a;");
-    for (int i = atomCount; --i >= 0;) {
-      int charge = (addFormalCharge ? vwr.ms.at[i].getFormalCharge() : 0);
-      if (lp[i] == 0 && lv[i] == 0 && charge == 0)
-        continue;
-      sb.append("select @" + (i + 1) + ";label ");
-      if (lp[i] > 0)
-        sb.append("<sup>(" + lp[i] + ")</sup>");
-      if (lv[i] > 0)
-        sb.append("<sub>[" + lv[i] + "]</sub>");
-      sb.append("%a");
-      if (addFormalCharge) {
-        if (charge != 0)
-          sb.append("<sup>" + Math.abs(charge)
-              + (charge > 0 ? "+" : charge < 0 ? "-" : "") + "</sup>");
-      }
-      sb.append(";");
+    return true;
+  }
+
+
+  /**
+   * get the 
+   * @param a
+   * @return label including (lp), (lv), and (if not open-spin) formal charge
+   */
+  @SuppressWarnings("unchecked")
+  public String getNBOAtomLabel(Atom a) {
+    String name = a.getAtomName();
+    int modelIndex = a.getModelIndex();
+    Map<String, Object> structureMap = (Map<String, Object>) vwr.ms.getModelAuxiliaryInfo(modelIndex).get("nboStructure");
+    if (vwr == null || structureMap == null)
+      return name;
+    int[] lplv = (int[]) structureMap.get("lplv");
+    int i = a.i - vwr.ms.am[modelIndex].firstAtomIndex;
+    boolean addFormalCharge = !haveBeta;
+    int charge = (addFormalCharge ? vwr.ms.at[i].getFormalCharge() : 0);
+    if (lplv[i] == 0 && charge == 0)
+      return name;
+    if (lplv[i] % 10 > 0)
+      name = "<sup>(" + (lplv[i] % 10) + ")</sup>" + name;
+    if (lplv[i] >= 10)
+      name = "<sub>[" + (lplv[i] / 10) + "]</sub>" + name;
+    if (addFormalCharge) {
+      if (charge != 0)
+        name += "<sup>" + Math.abs(charge)
+            + (charge > 0 ? "+" : charge < 0 ? "-" : "") + "</sup>";
     }
-    return sb.toString();
+    return name;
   }
-
-
-  public boolean isOpenShell() {
-    return haveBeta;
-  }
-
-
+  
+  
 }

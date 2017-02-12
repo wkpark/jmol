@@ -24,20 +24,19 @@
 
 package org.jmol.adapter.readers.quantum;
 
+import java.io.BufferedReader;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javajs.util.AU;
+import javajs.util.Lst;
+import javajs.util.PT;
+import javajs.util.Rdr;
+import javajs.util.SB;
+
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.quantum.QS;
 import org.jmol.util.Logger;
-
-import java.io.BufferedReader;
-
-import javajs.util.AU;
-import javajs.util.PT;
-import javajs.util.Rdr;
-import javajs.util.Lst;
-import javajs.util.SB;
-
-import java.util.Hashtable;
-import java.util.Map;
 
 
 /**
@@ -163,6 +162,8 @@ public class GenNBOReader extends MOReader {
   @Override
   protected void finalizeSubclassReader() throws Exception {
     appendLoadNote("NBO type " + nboType);
+    if (isOpenShell)
+      asc.setCurrentModelInfo("isOpenShell", Boolean.TRUE);
     finalizeReaderASCR();
   }
   
@@ -217,6 +218,8 @@ public class GenNBOReader extends MOReader {
 
   }
 
+  private String topoType = "A";
+  
   @Override
   protected boolean checkLine() throws Exception {
     // for .nbo only
@@ -242,9 +245,18 @@ public class GenNBOReader extends MOReader {
     if (line.indexOf("$NRTSTRA") >= 0) {
       getStructures("NRTSTRA");
       return true;
-    }
+    } 
     if (line.indexOf("$NRTSTRB") >= 0) {
       getStructures("NRTSTRB");
+      return true;
+    } 
+    if (line.indexOf("$NRTSTR") >= 0) {
+        getStructures("NRTSTR");
+        return true;
+    }
+    if (line.indexOf(" TOPO ") >= 0) {
+      getStructures("TOPO" + topoType);
+      topoType = "B";
       return true;
     }
     if (line.indexOf("$CHOOSE") >= 0) {
@@ -257,21 +269,24 @@ public class GenNBOReader extends MOReader {
   private int nStructures = 0;
   NBOParser nboParser;
   
-  @SuppressWarnings("unchecked")
   private void getStructures(String type) throws Exception {
     if (nboParser == null)
       nboParser = new NBOParser();
     
-    Lst<Object> structures = (Lst<Object>) asc.getAtomSetAuxiliaryInfo(asc.iSet).get("nboStructures");
-    if (structures == null) 
-      asc.setCurrentModelInfo("nboStructures", structures = new Lst<Object>());
+    Lst<Object> structures = getStructureList();
     SB sb = new SB();
     while (!rd().trim().equals("$END"))
       sb.append(line).append("\n");
     nStructures = nboParser.getStructures(sb.toString(), type, structures);
     appendLoadNote(nStructures + " NBO " + type + " resonance structures");
-    if (moData != null)
-      moData.put("nboStructures", structures);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Lst<Object> getStructureList() {
+    Lst<Object> structures = (Lst<Object>) asc.getAtomSetAuxiliaryInfo(asc.iSet).get("nboStructures");
+    if (structures  == null) 
+      asc.setCurrentModelInfo("nboStructures", structures = new Lst<Object>());
+    return structures;
   }
 
   private String getFileData(String ext) throws Exception {
@@ -607,6 +622,10 @@ public class GenNBOReader extends MOReader {
       moData.put("firstBeta", Integer.valueOf(nAOs));
       qs.setNboLabels( map.get("beta_" + type), nAOs, orbitals, nOrbitals0 + nAOs, nboType);
     }
+    Lst<Object> structures = getStructureList();
+    NBOParser.getStructures46(map.get("NBO"), "alpha", structures, asc.ac);
+    NBOParser.getStructures46(map.get("beta_NBO"), "beta", structures, asc.ac);
+    
   }
 
 }

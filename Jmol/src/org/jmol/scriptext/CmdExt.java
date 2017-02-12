@@ -1673,9 +1673,15 @@ public class CmdExt extends ScriptExt {
         vwr.rebondState(eval.isStateScript);
       return;
     }
-
+    
+    if (tokAt(1) == T.nbo) {
+      if (!chk)
+        vwr.connectNBO(e.optParameterAsString(2));
+      return;      
+    }
     for (int i = index; i < slen; ++i) {
       switch (getToken(i).tok) {
+        
       case T.on:
       case T.off:
         checkLength(2);

@@ -202,7 +202,9 @@ public class NBODialog extends JDialog {
   /**
    * configuration information source
    */
-  protected NBOConfig config;  
+  protected NBOConfig config;
+
+  private boolean isOpenShell;  
   
 
   /**
@@ -304,7 +306,8 @@ public class NBODialog extends JDialog {
     case DIALOG_VIEW:
       centerPanel.setLeftComponent(modulePanel = viewPanel.buildViewPanel());
       icon = new JLabel(nboPlugin.getIcon("nboview_logo"));
-      setThis(viewButton);
+      if (NBOConfig.nboView)
+        setThis(viewButton);
       break;
     case DIALOG_SEARCH:
       centerPanel.setLeftComponent(modulePanel = searchPanel.buildSearchPanel());
@@ -851,20 +854,21 @@ public class NBODialog extends JDialog {
 
       iAmLoading = false;
       if (NBOConfig.nboView)
-        runScriptNow("select add visible.bonds;color bonds lightgrey;"
+        runScriptNow("select 1.1;color bonds lightgrey;"
             + "wireframe 0.1;select none");
+      isOpenShell = vwr.ms.getModelAuxiliaryInfo(0).containsKey("isOpenShell");
       switch (dialogMode) {
       case DIALOG_MODEL:
-        modelPanel.notifyLoad();
+        modelPanel.notifyFileLoaded();
         return;
       case DIALOG_RUN:
-        runPanel.notifyLoad();
+        runPanel.notifyFileLoaded();
         return;
       case DIALOG_VIEW:
-        viewPanel.notifyLoad_v();
+        viewPanel.notifyFileLoaded_v();
         return;
       case DIALOG_SEARCH:
-        searchPanel.notifyLoad();
+        searchPanel.notifyFileLoaded_s();
         return;
       }
       break;
@@ -892,7 +896,7 @@ public class NBODialog extends JDialog {
   protected void updatePanelSettings() {
     switch (dialogMode) {
     case DIALOG_VIEW:
-      viewPanel.doSetNewBasis(false);
+      viewPanel.doSetNewBasis(false, false);
       break;
     }
   }
@@ -902,11 +906,12 @@ public class NBODialog extends JDialog {
    * 
    * @param file
    */
-  void loadOrSetBasis(File file) {
+  void loadNewFile(File file) {
     viewPanel.isNewModel = true;
     switch (dialogMode) {
     case DIALOG_VIEW:
-      viewPanel.setViewerBasis();
+      // switch to desired file. 
+      viewPanel.loadNewFileIfAble();
       break;
     default:
       loadModelFileQueued(file, false);
@@ -1168,44 +1173,35 @@ public class NBODialog extends JDialog {
    * selected
    * 
    * @param type
-   *        one of nrtstra, nrtstrb, alpha, beta
+   *        one of rsa, rsb, alpha, beta, or null
    * @param rsNum
    *        - index of RS in Combo Box
    */
   protected void doSearchSetResStruct(String type, int rsNum) {
-    if (!NBOConfig.showAtNum) {
-      runScriptNow("measurements off;isosurface off;select visible;label off; select none;refresh");
-      return;
+    if (!isOpenShell() && type.equals("beta")) {
+      type = "alpha";
+      System.out.println("??");
     }
-    //    boolean atomsOnly = (type == null);
-    if (type == null) {
-      type = rsTypeLast;
-    } else {
-      rsTypeLast = type;
-    }
-    SB sb = new SB();
-    sb.append("measurements off;isosurface off;select visible;label %a;");
-    String color = (NBOConfig.nboView) ? "black" : "gray";
-    sb.append("select visible;color labels white;"
-        + "select visible & _H;color labels " + color + ";"
-        + "set labeloffset 0 0 {visible}; select none;refresh;");
+    String script = "measurements off;isosurface off;select 1.1;"
+        + "select 1.1;color labels white;"
+        + "select 1.1 & _H;color labels "
+        + ((NBOConfig.nboView) ? "black" : "gray") + ";"
+        + "set labeloffset 0 0 {1.1}; select none;"
+        + ";select 1.1;connect nbo " + type + (rsNum >= 0 ? "_" + (rsNum + 1) : "")
+        + (NBOConfig.showAtNum ? "; label %[nbo];" : "off");
+    if (NBOConfig.nboView)
+      script += "select 1.1;color bonds lightgrey;" + "wireframe 0.1;";
+    script += NBOConfig.JMOL_FONT_SCRIPT;
+    runScriptQueued(script);
 
-    String s = inputFileHandler.setStructure(sb, type, rsNum);
-    if (s == null) {
-      runScriptNow(sb.toString());
-      return;
-    }
-    //sb.append(s);    
-    if (NBOConfig.nboView) {
-      sb.append("select add {*}.bonds;color bonds lightgrey;"
-          + "wireframe 0.1;");
-    }
-    sb.append(NBOConfig.JMOL_FONT_SCRIPT);
-    runScriptQueued(sb.toString());
   }
+  
+  
+  
 
+  
   protected boolean isOpenShell() {
-    return inputFileHandler.isOpenShell;
+    return isOpenShell;
   }
 
   synchronized protected String runScriptNow(String script) {

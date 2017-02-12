@@ -84,7 +84,7 @@ public class NBOService {
   
   private boolean isReady;
 
-  private void setReady(boolean tf) {
+  protected void setReady(boolean tf) {
     System.out.println("isready = " + tf);
     isReady = tf;
   }
@@ -245,6 +245,7 @@ public class NBOService {
 
   /**
    * Close the process and all channels associated with it. 
+   * @param andPause 
    */
   public void closeProcess(boolean andPause) {
     

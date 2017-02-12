@@ -282,7 +282,7 @@ public class NBOUtil {
    * 
    * @param folder
    * @param fullFilePath
-   * @return
+   * @return full file path, using "C:/" for the default.
    */
   public static String getWindowsFolderFor(String folder, String fullFilePath) {
     return (folder.equals("") ? new File(fullFilePath).getParent()

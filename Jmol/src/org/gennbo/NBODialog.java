@@ -45,7 +45,6 @@ import java.util.Map;
 
 import javajs.swing.SwingConstants;
 import javajs.util.PT;
-import javajs.util.SB;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -165,11 +164,11 @@ public class NBODialog extends JDialog {
 
   // private/protected variables
 
-  /**
-   * Tracks the last resonance structure type (nrtstra, nrtstrb, alpha, beta);
-   * reset to “alpha” by openPanel()
-   */
-  private String rsTypeLast = "alpha";
+//  /**
+//   * Tracks the last resonance structure type (nrtstra, nrtstrb, alpha, beta);
+//   * reset to “alpha” by openPanel()
+//   */
+//  private String rsTypeLast = "alpha";
 
   /**
    * String value of what is showing in the session dialog -- persistent
@@ -814,10 +813,10 @@ public class NBODialog extends JDialog {
         modelPanel.notifyPick(picked);
         return;
       case DIALOG_VIEW:
-        viewPanel.notifyPick(picked);
+        viewPanel.notifyPick_v(picked);
         return;
       case DIALOG_SEARCH:
-        searchPanel.notifyPick(picked);
+        searchPanel.notifyPick_s(picked);
         return;
       }
       break;
@@ -1023,7 +1022,7 @@ public class NBODialog extends JDialog {
   }
 
   protected void resetVariables_c() {
-    rsTypeLast = "alpha";
+//    rsTypeLast = "alpha";
   }
 
   protected void alertRequiresNBOServe() {

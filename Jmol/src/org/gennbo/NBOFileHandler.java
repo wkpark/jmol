@@ -356,7 +356,7 @@ class NBOFileHandler extends JPanel {
     return NBOUtil.newNBOFile(inputFile, filenum);
   }
 
-  public String[] update47File(String jobName, String keywords, boolean doMerge) {
+  public String[] update47File(String jobName, String keywords) {
     if (!useExt.equals("47"))
       return null;
     String[] fileData = read47File(true);

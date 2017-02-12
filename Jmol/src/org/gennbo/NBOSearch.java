@@ -1277,7 +1277,7 @@ class NBOSearch extends NBOView {
    *        [atomno1, atomno2] or [atomno1, Integer.MIN_VALUE]
    * 
    */
-  protected void notifyPick(int[] picked) {
+  protected void notifyPick_s(int[] picked) {
     dialog.runScriptNow("isosurface delete");
     int at1 = picked[0];
     int at2 = picked[1];

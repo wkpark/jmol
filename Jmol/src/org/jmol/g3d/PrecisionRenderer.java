@@ -62,6 +62,23 @@ public class PrecisionRenderer {
   }
 
   
+  protected void setRastABFloat(float xa, float za, float xb, float zb) {
+    float zdif = (zb - za);
+    float xdif = (xb - xa);
+    if (zdif == 0 || xdif == 0) {
+      a = Float.MIN_VALUE;
+      b = za;
+      return;
+    }
+    if (isOrthographic) {
+      a = zdif / xdif;
+      b = za - a * xa;
+    } else {
+      a = xdif * za * (zb / zdif);
+      b = (xb * zb - xa * za) / zdif;
+    }
+  }
+
   protected void setRastAB(int xa, int za, int xb, int zb) {
     float zdif = (zb - za);
     float xdif = (xb - xa);

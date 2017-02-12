@@ -45,6 +45,7 @@ package org.jmol.g3d;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.util.P3;
 import javajs.util.P3i;
 
 import org.jmol.java.BS;
@@ -330,7 +331,122 @@ final class LineRenderer extends PrecisionRenderer {
     }
   }
 
-  void plotLineDeltaABits(int[] shades1, int[] shades2, int shadeIndex, P3i ptA,
+  void plotLineDeltaABitsFloat(int[] shades1, int[] shades2, int shadeIndex, P3 ptA,
+                          P3 ptB, int screenMask, boolean clipped) {
+    // from cylinder -- cartoonRockets - somewhat higher precision, because
+    // particularly for draw, we can have very short distances.
+    int x = Math.round(ptA.x);
+    int y = Math.round(ptA.y);
+    int z = Math.round(ptA.z);
+    int bx = Math.round(ptB.x);
+    int by = Math.round(ptB.y);
+    int bz = Math.round(ptB.z);
+    int dx = bx - x;
+    int dy = by - y;
+
+    x1t = x;
+    x2t = bx;
+    y1t = y;
+    y2t = by;
+    z1t = z;
+    z2t = bz;
+    if (clipped && getTrimmedLineImpl() == VISIBILITY_OFFSCREEN)
+      return;
+    // special shading for rockets; somewhat slower than above;
+    int[] zbuf = g3d.zbuf;
+    int width = g3d.width;
+    int runIndex = 0;
+    int rise = Integer.MAX_VALUE;
+    int run = 1;
+    int shadeIndexUp = (shadeIndex < Shader.SHADE_INDEX_LAST ? shadeIndex + 1
+        : shadeIndex);
+    int shadeIndexDn = (shadeIndex > 0 ? shadeIndex - 1 : shadeIndex);
+    int argb1 = shades1[shadeIndex];
+    int argb1Up = shades1[shadeIndexUp];
+    int argb1Dn = shades1[shadeIndexDn];
+    int argb2 = shades2[shadeIndex];
+    int argb2Up = shades2[shadeIndexUp];
+    int argb2Dn = shades2[shadeIndexDn];
+    int offset = y * width + x;
+    int offsetMax = g3d.bufferSize;
+    int i0, iMid, i1, i2, iIncrement, xIncrement, yOffsetIncrement;
+    if (lineTypeX) {
+      i0 = x;
+      i1 = x1t;
+      i2 = x2t;
+      iMid = x + dx / 2;
+      iIncrement = (dx >= 0 ? 1 : -1);
+      xIncrement = iIncrement;
+      yOffsetIncrement = (dy >= 0 ? width : -width);
+      setRastABFloat(ptA.x, ptA.z, ptB.x, ptB.z);
+    } else {
+      i0 = y;
+      i1 = y1t;
+      i2 = y2t;
+      iMid = y + dy / 2;
+      iIncrement = (dy >= 0 ? 1 : -1);
+      xIncrement = (dy >= 0 ? width : -width);
+      yOffsetIncrement = (dx >= 0 ? 1 : -1);
+      setRastABFloat(ptA.y, ptA.z, ptB.y, ptB.z);
+    }
+    float zCurrent = z;
+    int argb = argb1;
+    int argbUp = argb1Up;
+    int argbDn = argb1Dn;
+    boolean isInWindow = false;
+    Pixelator p = g3d.pixel;
+    if (screenMask != 0) {
+      p = g3d.setScreened((screenMask & 1) == 1);
+      g3d.currentShadeIndex = 0;
+    }
+    // "x" is not necessarily the x-axis.
+
+    //  x----x1t-----------x2t---x2
+    //  ------------xMid-----------
+    //0-|------------------>-----------w
+
+    // or
+
+    //  x2---x2t-----------x1t----x
+    //  ------------xMid-----------    
+    //0-------<-------------------|----w
+
+    for (int i = i0, iBits = i0;; i += iIncrement, iBits += iIncrement) {
+      if (i == i1)
+        isInWindow = true;
+      if (i == iMid) {
+        argb = argb2;
+        if (argb == 0)
+          return;
+        argbUp = argb2Up;
+        argbDn = argb2Dn;
+        if (screenMask % 3 != 0) {
+          p = g3d.setScreened((screenMask & 2) == 2);
+          g3d.currentShadeIndex = 0;
+        }
+      }
+      if (argb != 0 && isInWindow && offset >= 0 && offset < offsetMax
+          && runIndex < rise) {
+        zCurrent = getZCurrent(a, b, i);
+        if (zCurrent < zbuf[offset]) {
+          int rand8 = shader.nextRandom8Bit();
+          p.addPixel(offset, (int) zCurrent, rand8 < 85 ? argbDn
+              : (rand8 > 170 ? argbUp : argb));
+        }
+      }
+      if (i == i2)
+        break;
+      runIndex = (runIndex + 1) % run;
+      offset += xIncrement;
+      while (iBits < 0)
+        iBits += nBits;
+      if (lineBits.get(iBits % nBits)) {
+        offset += yOffsetIncrement;
+      }
+    }
+  }
+
+  void plotLineDeltaABitsInt(int[] shades1, int[] shades2, int shadeIndex, P3i ptA,
                           P3i ptB, int screenMask, boolean clipped) {
     // from cylinder -- cartoonRockets
     int x = ptA.x;

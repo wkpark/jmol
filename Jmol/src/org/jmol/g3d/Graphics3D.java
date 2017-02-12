@@ -1385,9 +1385,17 @@ final public class Graphics3D extends GData implements JmolRendererInterface {
                                P3 screenB) {
     // dipole cross, cartoonRockets, draw line
     if (diameter <= ht3 && screenA.z != 1 && screenB.z != 1) {
-      setScreeni(screenA, sA);
-      setScreeni(screenB, sB);
-      cylinder3d.renderBits(colixCurrent, colixCurrent, 0, endcaps, diameter, sA, sB);
+      if (diameter == 0 || diameter == 1) {
+        setScreeni(screenA, sA);
+        setScreeni(screenB, sB);
+        line3d.plotLineBits(getColorArgbOrGray(colixCurrent),
+            getColorArgbOrGray(colixCurrent), sA, sB, 0, 0, false);
+        return;
+      }
+      // in the case of DRAW, we need precision cylinders, because some are
+      // really very flat disks with almost no difference between screenA and screenB.
+      cylinder3d.renderBitsFloat(colixCurrent, colixCurrent, 0, endcaps,
+          diameter, screenA, screenB);
     }
   }
 

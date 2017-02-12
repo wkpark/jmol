@@ -25,6 +25,7 @@
 package org.jmol.g3d;
 
 import javajs.util.AU;
+import javajs.util.P3;
 import javajs.util.P3i;
 
 import org.jmol.util.GData;
@@ -166,8 +167,123 @@ class CylinderRenderer {
       renderSphericalEndcaps();
   }
 
-  private P3i ptA0 = new P3i();
-  private P3i ptB0 = new P3i();
+  
+  private P3 ptA0, ptB0;
+  
+  void renderBitsFloat(short colixA, short colixB, int screen, byte endcaps, int diameter, P3 ptA, P3 ptB) {
+    Graphics3D g = this.g3d;
+// checked already
+//    if (diameter == 0 || diameter == 1) {
+//      line3d.plotLineBits(g.getColorArgbOrGray(colixA), g.getColorArgbOrGray(colixB), ptA, ptB);
+//      return;
+//    }
+    if (ptA0 == null) {
+      ptA0 = new P3();
+      ptB0 = new P3();
+    }
+    ptA0.setT(ptA);
+    // dipole cross, cartoonRockets, draw mesh nofill or width = -1
+    // oops -- problem here if diameter < 0 is that we may have already clipped it!
+    int r = diameter / 2 + 1;
+    int ixA = Math.round(ptA.x);
+    int iyA = Math.round(ptA.y);
+    int izA = Math.round(ptA.z);
+    int ixB = Math.round(ptB.x);
+    int iyB = Math.round(ptB.y);
+    int izB = Math.round(ptB.z);
+    int codeMinA = g.clipCode3(ixA - r, iyA - r, izA - r);
+    int codeMaxA = g.clipCode3(ixA + r, iyA + r, izA + r);
+    int codeMinB = g.clipCode3(ixB - r, iyB - r, izB - r);
+    int codeMaxB = g.clipCode3(ixB + r, iyB + r, izB + r);
+    //all bits 0 --> no clipping
+    int c = (codeMinA | codeMaxA | codeMinB | codeMaxB);
+    //any two bits same in all cases --> fully clipped
+    clipped = (c != 0);
+    //any two bits same in all cases --> fully clipped
+    if (c == -1 || (codeMinA & codeMaxB & codeMaxA & codeMinB) != 0)
+      return;
+    dxBf = ptB.x - ptA.x;
+    dyBf = ptB.y - ptA.y;
+    dzBf = ptB.z - ptA.z;
+    if (diameter > 0) {
+      this.diameter = diameter;
+      this.xAf = ptA.x;
+      this.yAf = ptA.y;
+      this.zAf = ptA.z;
+    }
+    boolean drawBackside = (screen == 0 && (clipped 
+        || endcaps == GData.ENDCAPS_FLAT || endcaps == GData.ENDCAPS_NONE));
+    this.xA = (int) xAf;
+    this.yA = (int) yAf;
+    this.zA = (int) zAf;
+    this.dxB = (int) dxBf;
+    this.dyB = (int) dyBf;
+    this.dzB = (int) dzBf;
+
+    this.shadesA = g.getShades(this.colixA = colixA);
+    this.shadesB = g.getShades(this.colixB = colixB);
+    this.endcaps = endcaps;
+    calcArgbEndcap(true, true);
+    int[][] xyzf = xyzfRaster;
+    if (diameter > 0)
+      generateBaseEllipsePrecisely(false);
+    if (endcaps == GData.ENDCAPS_FLAT)
+      renderFlatEndcap(true, true, xyzf);
+    line3d.setLineBits(dxBf, dyBf);
+    g.setZMargin(5);
+    Pixelator p = g.pixel;
+    int width = g.width;
+    int[] zbuf = g.zbuf;
+    int[] xr = xyzf[0];
+    int[] yr = xyzf[1];
+    int[] zr = xyzf[2];
+    int[] fr = xyzf[3];
+    for (int i = rasterCount; --i >= 0;) {
+      int fpz = fr[i] >> (8);
+      int fpzBack = fpz >> 1;
+      int x = xr[i];
+      int y = yr[i];
+      int z = zr[i];
+      if (endCapHidden && argbEndcap != 0) {
+        if (clipped) {
+          g.plotPixelClippedArgb(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
+              - z - 1, width, zbuf, p);
+          g.plotPixelClippedArgb(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
+              + z - 1, width, zbuf, p);
+        } else {
+          g.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
+              - z - 1, width, zbuf, p);
+          g.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
+              + z - 1, width, zbuf, p);
+        }
+      }
+      ptA0.set(xA + x, yA + y, zA - z);
+      ptB0.setT(ptA0);
+      ptB0.x += dxB;
+      ptB0.y += dyB;
+      ptB0.z += dzB;
+      line3d.plotLineDeltaABitsFloat(shadesA, shadesB, fpz, ptA0, ptB0, screen, clipped); 
+      if (drawBackside) {
+        ptA0.set(xA - x, yA - y, zA + z);
+        ptB0.setT(ptA0);
+        ptB0.x += dxB;
+        ptB0.y += dyB;
+        ptB0.z += dzB;
+        line3d.plotLineDeltaABitsFloat(shadesA, shadesB, fpzBack, ptA0, ptB0, screen, clipped); 
+      }
+    }
+    g.setZMargin(0);
+    if (endcaps == GData.ENDCAPS_SPHERICAL)
+      renderSphericalEndcaps();
+    this.xAf += dxBf;
+    this.yAf += dyBf;
+    this.zAf += dzBf;
+  }
+
+  
+  
+  private P3i ptA0i = new P3i();
+  private P3i ptB0i = new P3i();
   
   void renderBits(short colixA, short colixB, int screen, byte endcaps, int diameter, P3i ptA, P3i ptB) {
     Graphics3D g = this.g3d;
@@ -175,7 +291,7 @@ class CylinderRenderer {
       line3d.plotLineBits(g.getColorArgbOrGray(colixA), g.getColorArgbOrGray(colixB), ptA, ptB, 0, 0, false);
       return;
     }
-    ptA0.setT(ptA);
+    ptA0i.setT(ptA);
     // dipole cross, cartoonRockets, draw mesh nofill or width = -1
     // oops -- problem here if diameter < 0 is that we may have already clipped it!
     int r = diameter / 2 + 1;
@@ -251,19 +367,19 @@ class CylinderRenderer {
               + z - 1, width, zbuf, p);
         }
       }
-      ptA0.set(xA + x, yA + y, zA - z);
-      ptB0.setT(ptA0);
-      ptB0.x += dxB;
-      ptB0.y += dyB;
-      ptB0.z += dzB;
-      line3d.plotLineDeltaABits(shadesA, shadesB, fpz, ptA0, ptB0, screen, clipped); 
+      ptA0i.set(xA + x, yA + y, zA - z);
+      ptB0i.setT(ptA0i);
+      ptB0i.x += dxB;
+      ptB0i.y += dyB;
+      ptB0i.z += dzB;
+      line3d.plotLineDeltaABitsInt(shadesA, shadesB, fpz, ptA0i, ptB0i, screen, clipped); 
       if (drawBackside) {
-        ptA0.set(xA - x, yA - y, zA + z);
-        ptB0.setT(ptA0);
-        ptB0.x += dxB;
-        ptB0.y += dyB;
-        ptB0.z += dzB;
-        line3d.plotLineDeltaABits(shadesA, shadesB, fpzBack, ptA0, ptB0, screen, clipped); 
+        ptA0i.set(xA - x, yA - y, zA + z);
+        ptB0i.setT(ptA0i);
+        ptB0i.x += dxB;
+        ptB0i.y += dyB;
+        ptB0i.z += dzB;
+        line3d.plotLineDeltaABitsInt(shadesA, shadesB, fpzBack, ptA0i, ptB0i, screen, clipped); 
       }
     }
     g.setZMargin(0);

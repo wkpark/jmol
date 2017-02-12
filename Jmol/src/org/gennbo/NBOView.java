@@ -1055,10 +1055,10 @@ class NBOView {
   private void appendCameraParams(SB sb) {
     // TODO -- camera fields will mess up view
     for (int i = 0; i < camFields.length; i++)
-      if (testingView || !camFields[i].getText().equals(camVal[i])) {
-        camVal[i] = camFields[i].getText();
+//      if (testingView || !camFields[i].getText().equals(camVal[i])) {
+//        camVal[i] = camFields[i].getText();
         NBOUtil.postAddGlobalT(sb, "CAMERA_" + camFieldIDs[i], camFields[i]);
-      }
+//      }
     //    for (int i = 0; i < camFields.length; i++)
     //    NBOUtil.postAddGlobalT(sb,"CAMERA_" + camFieldIDs[i], camFields[i]);
   }

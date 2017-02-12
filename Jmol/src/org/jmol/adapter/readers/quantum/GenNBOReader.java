@@ -196,6 +196,8 @@ public class GenNBOReader extends MOReader {
           line = null;
         }
         fillFloatArray(line, 0, coefs);
+        if (Float.isNaN(coefs[0]))
+          System.out.println("testing gennboreader");
         line = null;
         //setMOType(mo, i);
       } else {

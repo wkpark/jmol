@@ -1057,24 +1057,26 @@ public class IsoExt extends ScriptExt {
         ((QS) Interface.getInterface("org.jmol.quantum.QS", vwr, "script"))
             .setNboLabels(nboLabels, n, orbitals, 0, type);
         data = data.substring(data.lastIndexOf("--") + 2);
+        int nao = n;
         if (data.indexOf("alpha") >= 0) {
-          if (isBeta) {
-            if (data.indexOf("beta") >= 0)
-              data = data.substring(data.indexOf("beta") + 10); // "beta  spin"
-            else
-              data = "";
-          } else {
-            data = data.substring(data.indexOf("alpha") + 10);  // "alpha spin"
-          }
+          nao = n / 2;
+          data = data.substring(data.indexOf("alpha") + 10);  // "alpha spin"
         }
         int len = data.length();
         int[] next = new int[1];
         for (int i = 0; i < n; i++) {
+          if (i == nao) {
+            // must skip "beta  spin"
+            next[0] += 12;
+          }
           Map<String, Object> mo = orbitals.get(i);
-          float[] coefs = new float[n];
+          float[] coefs = new float[nao];
           mo.put("coefficients", coefs);
-          for (int j = 0; j < n; j++)
+          for (int j = 0; j < nao; j++) {
             coefs[j] = PT.parseFloatChecked(data, len, next, false);
+            if (Float.isNaN(coefs[j]))
+              System.out.println("oops = IsoExt ");
+          }
         }
         if (type.equals("NBO")) {
           float[] occupancies = new float[n];

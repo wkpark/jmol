@@ -1105,12 +1105,12 @@ class NBOView {
   }
 
   private void appendLineParams(SB sb) {
-    // TODO: temporary only that we check on this
     for (int i = 0; i < lineFields.length; i++) {
-      if (testingView || !lineVal[i].equals(lineFields[i].getText())) {
-        lineVal[i] = lineFields[i].getText();
-        NBOUtil.postAddGlobalT(sb, "LINES_" + (char) ('a' + i), lineFields[i]);
-      }
+      NBOUtil.postAddGlobalT(sb, "LINES_" + (char) ('a' + i), lineFields[i]);
+//      if (testingView || !lineVal[i].equals(lineFields[i].getText())) {
+//        lineVal[i] = lineFields[i].getText();
+//        NBOUtil.postAddGlobalT(sb, "LINES_" + (char) ('a' + i), lineFields[i]);
+//      }
     }
   }
 

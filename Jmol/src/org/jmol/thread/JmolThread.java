@@ -102,7 +102,7 @@ abstract public class JmolThread extends Thread {
   public void run() {
     startTime = System.currentTimeMillis();
     try {
-      run1(INIT);
+      run1(INIT); 
     } catch (InterruptedException e) {
       if (Logger.debugging  && !(this instanceof HoverWatcherThread))
         oops(e);

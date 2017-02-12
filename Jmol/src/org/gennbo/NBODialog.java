@@ -1177,9 +1177,8 @@ public class NBODialog extends JDialog {
    *        - index of RS in Combo Box
    */
   protected void doSearchSetResStruct(String type, int rsNum) {
-    if (!isOpenShell() && type.equals("beta")) {
+    if (type == null || !isOpenShell() && type.equals("beta")) {
       type = "alpha";
-      System.out.println("??");
     }
     String script = "measurements off;isosurface off;select 1.1;"
         + "select 1.1;color labels white;"

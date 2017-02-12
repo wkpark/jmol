@@ -9536,12 +9536,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public void connectNBO(String type) {
     if (am.cmi < 0)
       return;
-    getNBOParser().connectNBO(this, am.cmi, type);
+    getNBOParser().connectNBO(am.cmi, type);
   }
 
   private NBOParser getNBOParser() {
-    return (nboParser == null ? nboParser = (NBOParser) Interface.getInterface(
-        "org.jmol.adapter.readers.quantum.NBOParser", this, "script")
+    return (nboParser == null ? nboParser = ((NBOParser) Interface.getInterface(
+        "org.jmol.adapter.readers.quantum.NBOParser", this, "script")).set(this)
         : nboParser);
   }
 

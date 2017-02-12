@@ -1254,32 +1254,7 @@ class NBOModel {
    * @param req
    */
   protected void processNBO(int mode, NBORequest req) {
-    String[] a = req.getReplyLines();
-    if (a[0].indexOf("DATA") >= 0) {
-      a[0] += " NBO";
-    }
-//    boolean hasModel = ();
-//    String postFix = "";
-//    String s = "";
-//    String sep = "\n";
-//    if (hasModel) {
-//      a[0] += " NBO ";
-//      boolean hasEnd = false;
-//      for (int i = 0; i < a.length; i++) {
-//        if (i == a.length - 1)
-//          sep = "";
-//        if (a[i].indexOf("END") >= 0) {
-//          hasEnd = true;
-//          s += a[i] + sep;
-//          continue;
-//        } 
-//        if (hasEnd)
-//          postFix += a[i] + sep;
-//        else
-//          s += a[i] + sep;
-//      }
-//    }
-    String s = PT.join(a, '\n', 0);
+    String s = req.getReply();
     boolean doClear = true;
     switch (mode) {
     case MODEL_ACTION_ALTER:
@@ -1328,7 +1303,7 @@ class NBOModel {
       );
       break;
     case MODEL_ACTION_VALUE:
-      String sval = a[0].trim();
+      String sval = s.trim();
       dialog.logValue(sval);
       setCurrentValue(sval);
       break;

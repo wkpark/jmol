@@ -15,23 +15,45 @@ public class NBOParser {
   private Viewer vwr;
   private boolean haveBeta;
 
+  public NBOParser() {
+    // for reflection
+  }
+  
+  public NBOParser set(Viewer vwr) {
+    this.vwr = vwr;
+    return this;
+  }
 
   public Lst<Object> getAllStructures(String output, Lst<Object> list) {
     if (output == null)
       return null;
     if (list == null)
       list = new Lst<Object>();
-//    output = PT.rep(output,  "the $CHOOSE", "");
-//    getStructures(getBlock(output, "$CHOOSE"), "CHOOSE", list);
-//    getStructures(getBlock(output, "$NRTSTR"), "NRTSTR", list);
-//    getStructures(getBlock(output, "$NRTSTRA"), "NRTSTRA", list);
-//    getStructures(getBlock(output, "$NRTSTRB"), "NRTSTRB", list);
+    // $CHOOSE record in the .nbo file
+    output = PT.rep(output,  "the $CHOOSE", "");
+    getStructures(getBlock(output, "$CHOOSE"), "CHOOSE", list);
+    
+    
+    // NRTSTR, NTRSTRA, NTRSTRB in the .nbo file
+    getStructures(getBlock(output, "$NRTSTR"), "NRTSTR", list);
+    getStructures(getBlock(output, "$NRTSTRA"), "NRTSTRA", list);
+    getStructures(getBlock(output, "$NRTSTRB"), "NRTSTRB", list);
+    
+    
+    // TOPO section in the alpha or beta sections of the .nbo file
     getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 1), "RSA", list);
     getStructuresTOPO(getData(output, "TOPO matrix", "* Total *", 2), "RSB", list);
     return list;
   }
   
-//NBO ALPHA  55
+  private String getBlock(String output, String key) {
+    int pt = output.indexOf(key);
+    int pt1 = output.indexOf("$END", pt + 1);
+    return (pt < 0 || pt1 < 0 ? null : output.substring(pt + key.length(), pt1));
+  }
+  
+
+  //NBO ALPHA  55
 //C 1(cr)   C 2(cr)   C 3(cr)   C 3(lp)   C 1- C 2  C 1- C 2  C 1- H 4 
 //C 1- H 5  C 2- C 3  C 2- H 6  C 3- H 7  C 3- H 8  C 1- C 2* C 1- C 2*
 //C 1- H 4* C 1- H 5* C 2- C 3* C 2- H 6* C 3- H 7* C 3- H 8* C 1(ry)  
@@ -47,8 +69,8 @@ public class NBOParser {
    * @param tokens
    * @param type
    * @param structures
+   * @param nAtoms 
    */
-  @SuppressWarnings("unchecked")
   public static void getStructures46(String[] tokens, String type,
                                      Lst<Object> structures, int nAtoms) {
     if (tokens == null)
@@ -262,12 +284,6 @@ public class NBOParser {
   }
 
 
-  private String getBlock(String output, String key) {
-    int pt = output.indexOf(key);
-    int pt1 = output.indexOf("$END", pt + 1);
-    return (pt < 0 || pt1 < 0 ? null : output.substring(pt + key.length(), pt1));
-  }
-
   private String getData(String output, String start, String end, int n) {
     int pt = 0, pt1 = 0;
     for (int i = 0; i < n; i++) {
@@ -442,7 +458,6 @@ public class NBOParser {
 
   /**
    * 
-   * @param vwr
    * @param modelIndex
    * @param type
    *        one of alpha|beta|choosea|chooseb|nrtstr_n|nrtstra_n|topo_n|topoa_n|
@@ -450,7 +465,7 @@ public class NBOParser {
    * @return true if successful
    */
   @SuppressWarnings("unchecked")
-  public boolean connectNBO(Viewer vwr, int modelIndex, String type) {
+  public boolean connectNBO(int modelIndex, String type) {
     try {
       if (type == null)
         type = "alpha";
@@ -480,7 +495,6 @@ public class NBOParser {
         index = 0;
       }
       Map<String, Object> structureMap = getStructureMap(list, type, index);
-      this.vwr = vwr;
       if (structureMap == null
           || !setJmolLewisStructure(structureMap, modelIndex, index + 1)) {
         map.remove("nboStructure");
@@ -506,8 +520,7 @@ public class NBOParser {
    * @param structureMap
    * 
    * @param modelIndex
-   * 
-   * 
+   * @param resNo 
    * 
    * @return true if successful
    */

@@ -312,6 +312,7 @@ public class GlobalSettings {
     //setParamB("navigateSurface", navigateSurface);
     setB("navigationPeriodic", navigationPeriodic);
     setF("navigationSpeed", navigationSpeed);
+    setB("nboCharges", nboCharges);
     setO("nmrPredictFormat", nmrPredictFormat);
     setO("nmrUrlFormat", nmrUrlFormat);
     setB("partialDots", partialDots);
@@ -533,7 +534,8 @@ public class GlobalSettings {
   float multipleBondSpacing = -1; // 0.35?
   float multipleBondRadiusFactor = 0; // 0.75?
   boolean multipleBondBananas = false;
-
+  boolean nboCharges = true;
+  
   //secondary structure + Rasmol
 
   boolean cartoonBaseEdges = false;

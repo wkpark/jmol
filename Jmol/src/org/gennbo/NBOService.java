@@ -33,7 +33,6 @@ import java.util.Queue;
 import javajs.util.AU;
 import javajs.util.PT;
 
-import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -85,7 +84,7 @@ public class NBOService {
   private boolean isReady;
 
   protected void setReady(boolean tf) {
-    System.out.println("isready = " + tf);
+    //System.out.println("isready = " + tf);
     isReady = tf;
   }
   /**
@@ -389,13 +388,12 @@ public class NBOService {
 
     currentRequest = request;
 
-    String cmdFileName = null, data =   null, list = "";
+    String cmdFileName = null, data = null;
     for (int i = 2, n = request.fileData.length; i < n + 2; i += 2) {
 
       cmdFileName = request.fileData[i % n];
       data = request.fileData[(i + 1) % n];
       if (cmdFileName != null) {
-        list += " " + cmdFileName;
         dialog.inputFileHandler.writeToFile(getServerPath(cmdFileName), data);
         System.out.println("saved file " + cmdFileName + "\n" + data + "\n");
       }
@@ -404,10 +402,6 @@ public class NBOService {
     String cmd = "<" + cmdFileName + ">";
 
     System.out.println("sending " + cmd);
-
-    if (vwr.getBoolean(T.testflag2))
-      vwr.alert("files " + list + " have been generated; ready to send " + cmd
-          + "\n\n" + data);
 
     if (nboIn == null)
       restart();
@@ -428,9 +422,8 @@ public class NBOService {
 
     // Check for the worst
 
-    System.out.println(s);
-
     if (s.indexOf("FORTRAN STOP") >= 0) {
+      System.out.println(s);
       dialog.alertError("NBOServe has stopped working - restarting");
       currentRequest = null;
       clearQueue();
@@ -459,6 +452,7 @@ public class NBOService {
     try { // with finally clause to remove request from queue
 
       if (currentRequest == null) {
+        System.out.println(s);
         //    *start*
         //    NBOServe v. 27-Jan-2017
         //    *end*
@@ -471,6 +465,7 @@ public class NBOService {
       }
 
       if ((pt = s.indexOf("***errmess***")) >= 0) {
+        System.out.println(s);
         try {
           s = PT.split(s, "\n")[2]; 
           logServerLine(s.substring(s.indexOf("\n") + 1), Logger.LEVEL_ERROR);
@@ -491,13 +486,14 @@ public class NBOService {
       s = s.substring(pt + 8); // includes \n
       pt = s.indexOf("*end*");
       if (pt < 0) {
-        System.out.println("bad start/end packet from NBOServe: " + s);
+        System.out.println("...listening...");
+        //System.out.println("bad start/end packet from NBOServe: !!!!!!!>>" + s + "<<!!!!!!!");
         removeRequest = false;
         return false;
       }
 
       // standard expectation
-
+      System.out.println(s);
       currentRequest.sendReply(s.substring(0, pt));
       return true;
     } finally {

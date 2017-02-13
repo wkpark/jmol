@@ -61,7 +61,7 @@ class NBOConfig  {
   protected static final String NBO_WEB_SITE = "http://nbo6.chem.wisc.edu";
   protected static final String ARCHIVE_DIR = NBO_WEB_SITE + "/jmol_nborxiv/";
 
-  protected static final String DEFAULT_SCRIPT = "zap;set antialiasdisplay;set fontscaling;" +
+  protected static final String DEFAULT_SCRIPT = "zap;set nbocharges false;set antialiasdisplay;set fontscaling;" +
   		"set bondpicking true;set multipleBondSpacing -0.2; set multipleBondRadiusFactor 0.6;" +
   		"set zoomlarge false;select none;";
 

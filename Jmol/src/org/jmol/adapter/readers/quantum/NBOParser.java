@@ -8,6 +8,7 @@ import javajs.util.PT;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
+import org.jmol.script.T;
 import org.jmol.viewer.Viewer;
 
 public class NBOParser {
@@ -201,20 +202,23 @@ public class NBOParser {
 
     int[][] matrix = null;
     // turn this listing into a numeric array. decimal points indicate new atoms
-
-    String s = parts[1].replace('-', ' ');
+    tokens = parts[1].split("\n");
+    String s = "";
+    for (int i = 3; i < tokens.length; i++)
+      if (tokens[i].indexOf("--") < 0)
+        s += tokens[i].substring(10) + "\n";    
+    s = s.replace('-', ' ');
     s = PT.rep(s, ".", ".1");
     s = PT.rep(s, "(", " -1 ");
     s = PT.rep(s, ")", " -2 ");
     s = PT.rep(s, ",", " -3 ");
-    s = PT.rep(s, "\n", " -4 ");
     tokens = PT.getTokens(s);
     raw = new float[tokens.length];
     n = PT.parseFloatArrayInfested(tokens, raw);
     Map<String, Object> htData = null;
     int dir = 1;
     atom1 = atom2 = -1;
-    for (int i = 5, index = 0; i < n; i++) {
+    for (int i = 0, index = 0; i < n; i++) {
       float f = raw[i];
       float remain = f % 1;
       if (remain == 0) {
@@ -227,15 +231,6 @@ public class NBOParser {
         case -2: // )
           break;
         case -3: // ,
-          if (atom1 < 0)
-            continue;
-          break;
-        case -4: // EOL
-          // skip next number if the one after that is a fraction. 
-          if (raw[i + 2] % 1 != 0)
-            i++;
-          else if (raw[i + 3] % 1 != 0) // last line may have "34-50 4.33"
-            i += 2;
           if (atom1 < 0)
             continue;
           break;
@@ -255,7 +250,7 @@ public class NBOParser {
           matrix = table;
         dumpMatrix(nrtType, index, matrix);
         
-        if (raw[i + 2] == -4) // blank line (all dashes)
+        if (raw[i + 2] == 0) 
           break;
         list.addLast(htData = new Hashtable<String, Object>());
         s = "" + ((int) f * 100 + (int) ((remain - 0.0999999) * 1000));
@@ -633,14 +628,14 @@ public class NBOParser {
       return name;
     int[] lplv = (int[]) structureMap.get("lplv");
     int i = a.i - vwr.ms.am[modelIndex].firstAtomIndex;
-    boolean addFormalCharge = !haveBeta;
+    boolean addFormalCharge = vwr.getBoolean(T.nbocharges);
     int charge = (addFormalCharge ? vwr.ms.at[i].getFormalCharge() : 0);
     if (lplv[i] == 0 && charge == 0)
       return name;
     if (lplv[i] % 10 > 0)
       name = "<sup>(" + (lplv[i] % 10) + ")</sup>" + name;
     if (lplv[i] >= 10)
-      name = "<sub>[" + (lplv[i] / 10) + "]</sub>" + name;
+      name = "*" + name;//"<sup>*</sup>" + name;
     if (addFormalCharge) {
       if (charge != 0)
         name += "<sup>" + Math.abs(charge)

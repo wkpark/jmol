@@ -589,7 +589,6 @@ class NBORun {
           setVisible(true);
           return;
         }
-        dispose();
       }
     }
 

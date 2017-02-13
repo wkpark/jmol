@@ -157,7 +157,6 @@ class NBOView {
   protected JComboBox<String> comboBasis1;
   protected JRadioButton alphaSpin, betaSpin;
   protected boolean isNewModel = true;
-  private boolean testingView; // set for debugVerbose and this adds all LINE and CAMERA globals
 
   // used by SEARCH; cleared by openPanel() using 
 
@@ -166,6 +165,21 @@ class NBOView {
 
   //NBOServe view settings
   private String[] plVal, vecVal, lineVal;
+  
+  /**
+   * reset the arrays of values that will be sent to NBOServe to their default
+   * values.
+   * 
+   */
+  protected void setDefaultParameterArrays() {
+    plVal = new String[] { "1", "2", "3", "0.5", "0.0", "0.0", "0.0", "-3.0",
+        "3.0", "-3.0", "3.0", "25" };
+    vecVal = new String[] { "1", "2", "0.5", "-2.0", "2.0", "-1.0", "1.0",
+        "100" };
+    lineVal = new String[] { "0.03", "0.05", "4", "0.05", "0.05", "0.1", "0.1" };
+  }
+
+
   private final JTextField[] vectorFields = new JTextField[8];
   private final JTextField[] planeFields = new JTextField[12];
   private final JTextField[] camFields = new JTextField[53];
@@ -1053,14 +1067,9 @@ class NBOView {
    * @param sb
    */
   private void appendCameraParams(SB sb) {
-    // TODO -- camera fields will mess up view
-    for (int i = 0; i < camFields.length; i++)
-//      if (testingView || !camFields[i].getText().equals(camVal[i])) {
-//        camVal[i] = camFields[i].getText();
-        NBOUtil.postAddGlobalT(sb, "CAMERA_" + camFieldIDs[i], camFields[i]);
-//      }
-    //    for (int i = 0; i < camFields.length; i++)
-    //    NBOUtil.postAddGlobalT(sb,"CAMERA_" + camFieldIDs[i], camFields[i]);
+    int n = camFields.length;
+    for (int i = 0; i < n; i++)
+      NBOUtil.postAddGlobalT(sb, "CAMERA_" + camFieldIDs[i], camFields[i]);
   }
 
   /**
@@ -1105,23 +1114,18 @@ class NBOView {
   }
 
   private void appendLineParams(SB sb) {
-    for (int i = 0; i < lineFields.length; i++) {
-      NBOUtil.postAddGlobalT(sb, "LINES_" + (char) ('a' + i), lineFields[i]);
-//      if (testingView || !lineVal[i].equals(lineFields[i].getText())) {
-//        lineVal[i] = lineFields[i].getText();
-//        NBOUtil.postAddGlobalT(sb, "LINES_" + (char) ('a' + i), lineFields[i]);
-//      }
-    }
+    for (int i = 0; i < lineFields.length; i++)
+      NBOUtil.postAddGlobal(sb, "LINES_" + (char) ('a' + i), lineVal[i] = lineFields[i].getText());
   }
 
   private void appendVectorParams(SB sb) {
     for (int i = 0; i < vectorFields.length; i++)
-      NBOUtil.postAddGlobalT(sb, "VECTOR_" + (char) ('a' + i), vectorFields[i]);
+      NBOUtil.postAddGlobal(sb, "VECTOR_" + (char) ('a' + i), vecVal[i] = vectorFields[i].getText());
   }
 
   private void appendPlaneParams(SB sb) {
     for (int i = 0; i < planeFields.length; i++)
-      NBOUtil.postAddGlobalT(sb, "PLANE_" + (char) ('a' + i), planeFields[i]);
+       NBOUtil.postAddGlobal(sb, "PLANE_" + (char) ('a' + i), plVal[i] = planeFields[i].getText());
   }
 
   private void setJmolView(boolean is2D) {
@@ -1195,14 +1199,16 @@ class NBOView {
     }
     dialog.logCmd(tmp);
     String jviewData = sb.toString();
-    sb = getMetaHeader(true);
+    // BH: It turns out it is CRITICAL that if you send camera parameters, you MUST NOT SEND basis information.
+    // (no idea why!)
+    sb = getMetaHeader(false);
     appendCameraParams(sb);
     NBOUtil.postAddCmd(sb, "VIEW" + list);
     postNBO_v(sb, MODE_VIEW_IMAGE, -1, null, "Raytracing...", null, jviewData);
   }
 
   private void initializeImage() {
-    testingView = NBOConfig.debugVerbose;
+    //testingView = NBOConfig.debugVerbose;
     dialog.runScriptNow("image close");
     dialog.nboService.restart();
     setDefaultParameterArrays();
@@ -1460,20 +1466,7 @@ class NBOView {
     clearLabelSet();
   }
 
-  /**
-   * reset the arrays of values that will be sent to NBOServe to their default
-   * values.
-   * 
-   */
-  protected void setDefaultParameterArrays() {
-    plVal = new String[] { "1", "2", "3", "0.5", "0.0", "0.0", "0.0", "-3.0",
-        "3.0", "-3.0", "3.0", "25" };
-    vecVal = new String[] { "1", "2", "0.5", "-2.0", "2.0", "-1.0", "1.0",
-        "100" };
-    lineVal = new String[] { "0.03", "0.05", "4", "0.05", "0.05", "0.1", "0.1" };
-  }
-
-  class OrbitalList extends JList<String> implements ListSelectionListener,
+   class OrbitalList extends JList<String> implements ListSelectionListener,
       MouseListener, KeyListener {
 
     protected BS bsOn = new BS();

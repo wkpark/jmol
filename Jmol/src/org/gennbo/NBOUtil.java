@@ -148,7 +148,7 @@ public class NBOUtil {
   public static String addNBOKeyword(String tmp, String s) {
     int pt;
     if ((pt = findKeyword(tmp, s, false)) >= 0)
-      return tmp.substring(0, pt) + " " + tmp.substring(pt + 1); 
+      return tmp.substring(0, pt) + tmp.substring(pt + 1); 
     if (findKeyword(tmp, s, true) >= 0)
       return tmp;
     if (tmp.length() + s.length() - tmp.lastIndexOf(NBOUtil.sep) >= 80)
@@ -164,19 +164,21 @@ public class NBOUtil {
    * @param keywords
    * @param s
    * @param ifPresent true for is in the list; false for is not in the list
-   * @return point of " " or "!" PRIOR TO KEYWORD or -1 if not present
+   * @return point of " " or KEYWORD_NEGATE PRIOR TO KEYWORD or -1 if not present
    */
   public static int findKeyword(String keywords, String s, boolean ifPresent) {
     int pt;
     if (!keywords.startsWith(" "))
       keywords = " " + keywords + " ";
-    String prefix = (ifPresent ? " " : "_");
+    String prefix = (ifPresent ? " " : KEYWORD_IGNORE);
     return ((pt = keywords.indexOf(prefix + s + " ")) >= 0  ? pt 
         : (pt = keywords.indexOf(prefix + s + "=")) >= 0 ? pt : -1);
   }
 
+  private static String KEYWORD_IGNORE = "_";
+  
   public static String removeNBOKeyword(String keywords, String name) {
-    // look for "!NAME " or "!NAME="
+    // look for "_NAME " or "_NAME="
     int pt = findKeyword(keywords, name, false);
     if (pt >= 0)
       return keywords;
@@ -185,7 +187,7 @@ public class NBOUtil {
     if (pt < 0)
       return keywords;
     // found that -- must negate
-    return keywords.substring(0, pt) + "_" + keywords.substring(pt + 1);
+    return keywords.substring(0, pt) + " " + KEYWORD_IGNORE + keywords.substring(pt + 1);
   }
 
   public static String removeNBOFileKeyword(String nboKeywords, String[] fnameRet) {

@@ -1019,7 +1019,7 @@ class NBOView {
     if (dialog.jmolOptionNONBO) 
       return f;
     postNBO_v(NBOUtil.postAddCmd(getMetaHeader(true), "LABEL"),
-       MODE_VIEW_LIST, ibasis, list, "Getting list", null, null);
+       MODE_VIEW_LIST, getIbasKey(ibasis, isBeta), list, "Getting list", null, null);
     return null;
   }
 

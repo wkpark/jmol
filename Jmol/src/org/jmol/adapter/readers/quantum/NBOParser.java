@@ -480,7 +480,7 @@ public class NBOParser {
       type = type.toLowerCase();
       int index = type.indexOf("_");
       if (index > 0) {
-        if (list.size() == 2) {
+        if (list.size() <= 2) {
           String fname = (String) map.get("fileName");
           if (fname != null && !fname.endsWith(".nbo")) {
             fname = fname.substring(0, fname.lastIndexOf(".")) + ".nbo";
@@ -497,7 +497,7 @@ public class NBOParser {
       Map<String, Object> structureMap = getStructureMap(list, type, index);
       if (structureMap == null
           || !setJmolLewisStructure(structureMap, modelIndex, index + 1)) {
-        map.remove("nboStructure");
+//        map.remove("nboStructure");
         return false;
       }
       map.put("nboStructure", structureMap);

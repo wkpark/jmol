@@ -493,7 +493,7 @@ public class NBOService {
       }
 
       // standard expectation
-      System.out.println(s);
+      System.out.println("*start*\n" + s);
       currentRequest.sendReply(s.substring(0, pt));
       return true;
     } finally {

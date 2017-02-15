@@ -52,6 +52,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import org.jmol.modelset.Atom;
+
 class NBOSearch extends NBOView {
 
   protected NBOSearch(NBODialog dialog) {
@@ -104,10 +106,10 @@ class NBOSearch extends NBOView {
   
   private static final int MODE_SEARCH_VALUE       = 14;
   private static final int MODE_SEARCH_LIST_MO     = 24;
-  private static final int MODE_SEARCH_LABEL       = 34;
-  private static final int MODE_SEARCH_LABEL_BONDS = 44;
+  private static final int MODE_SEARCH_ATOM_VALUES = 34;
+  private static final int MODE_SEARCH_BOND_VALUES = 44;
   private static final int MODE_SEARCH_LIST        = 54;
-  private static final int MODE_SEARCH_LIST_LABEL   = 64;
+  private static final int MODE_SEARCH_LIST_LABEL  = 64;
 
 
   /**
@@ -977,7 +979,7 @@ class NBOSearch extends NBOView {
 
     final SB sb = getMetaHeader(false);
     NBOUtil.postAddGlobalI(sb, "KEYWORD", keywordID, null);
-    boolean isLabel = false;
+    boolean isLabelAtom = false;
     boolean isLabelBonds = false;
 
     // generally an offset is 1 because meta commands are 1-based, 
@@ -991,7 +993,7 @@ class NBOSearch extends NBOView {
         // only 6-10 use orbital 1
         orb1 = null;
         if (op > 10) {
-          isLabel = true;
+          isLabelAtom = true;
           op = 12;
         } else if (op <= 3) {
           // ops 1-3 use atom1
@@ -1026,7 +1028,7 @@ class NBOSearch extends NBOView {
         atom1 = comboAtom1;
         break;
       case 9:
-        isLabel = true;
+        isLabelAtom = true;
         break;
       case 10:
         isLabelBonds = true;
@@ -1111,14 +1113,14 @@ class NBOSearch extends NBOView {
       showLewisStructure();
       needRelabel = false;
     }
-    if (isLabel) {
+    if (isLabelAtom) {
       needRelabel = true;
-      postNBO_s(sb, MODE_SEARCH_LABEL, null, "Getting labels", false);
+      postNBO_s(sb, MODE_SEARCH_ATOM_VALUES, null, "Getting labels", false);
     } else if (isLabelBonds) {
       needRelabel = true;
       dialog
           .runScriptQueued("select add {*}.bonds; color bonds [170,170,170]; select none");
-      postNBO_s(sb, MODE_SEARCH_LABEL_BONDS, null,
+      postNBO_s(sb, MODE_SEARCH_BOND_VALUES, null,
           "Getting bonds list", false);
     } else {
       postNBO_s(sb, MODE_SEARCH_VALUE, null, "Getting value...", true);
@@ -1594,9 +1596,8 @@ class NBOSearch extends NBOView {
         list.addElement("<select an atom>");
       else if (cb == comboSearchOrb1 || cb == comboSearchOrb2)
         list.addElement("<select an orbital>");
-      for (int i = 0; i < lines.length; i++) {
+      for (int i = 0; i < lines.length; i++)
         list.addElement(lines[i]);
-      }
       processReturnedSearchList(cb);
       break;
     case MODE_SEARCH_LIST_MO:
@@ -1604,54 +1605,62 @@ class NBOSearch extends NBOView {
       for (int i = 0; i < lines.length; i++)
         list.addElement("  " + PT.rep(PT.rep(lines[i], "MO ", ""), " ", ".  "));
       break;
-    case MODE_SEARCH_LABEL_BONDS:
-    case MODE_SEARCH_LABEL:
+    case MODE_SEARCH_BOND_VALUES:
+    case MODE_SEARCH_ATOM_VALUES:
       int i0 = -1;
       for (int i = lines.length; --i >= 0 && lines[i].indexOf("END") < 0;) {
         i0 = i;
       }
-      boolean isLabel = (mode == MODE_SEARCH_LABEL);
+      SB sbLog = new SB();
       SB sb = new SB();
       for (int i = i0, pt = 1; i < lines.length; i++, pt++)
-        if (isLabel ? !processLabel(sb, lines[i], pt) : !processLabelBonds(sb,
-            lines[i]))
-          break;
-      dialog.runScriptQueued(sb.toString() + NBOConfig.JMOL_FONT_SCRIPT
-          + ";select none;");
+        if (!processSearchLabel(sbLog, sb, lines[i], pt, mode))
+           break;
+      dialog.log(sbLog.toString(), 'b');
+      dialog.runScriptQueued(sb.toString() + ";select none;");
       break;
     }
   }
 
-  protected boolean processLabel(SB sb, String line, int count) {
-    try {
-      double val = Double.parseDouble(line);
-      val = NBOUtil.round(val, 4);
-      sb.append(";select @" + (count) + ";label " + val);
-    } catch (Exception e) {
-      System.out.println("SEARCH: label processing ended!");
-      return false;
-    }
-    return true;
-  }
-
-  protected boolean processLabelBonds(SB sb, String line) {
-    try {
-      String[] toks = PT.getTokens(line);
-      if (toks.length < 3)
-        return false; // must be done
-      float order = Float.parseFloat(toks[2]);
-      if (order > 0.01) {
-
-        // measure id "m1" {C1} {C3} radius 0 "testing"
-
-        sb.append("font measures 20; measure id 'm" + toks[0] + "_" + toks[1]
-            + "' @" + toks[0] + " @" + toks[1] + " radius 0.0 \"" + toks[2]
-            + "\";");
+  private boolean processSearchLabel(SB sbLog, SB sb, String line, int count, int mode) {
+    switch (mode) {
+    case MODE_SEARCH_ATOM_VALUES:
+      float v = PT.parseFloat(line);
+      if (Float.isNaN(v)) {
+        System.out
+            .println("SEARCH: atomic value list processing ended unexpectedly!");
+        return false;
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-      return false;
+      Atom atom = vwr.ms.at[count - 1];
+      sb.append(";select @" + count + ";set fontscaling off;label "
+          + NBOUtil.round(v, 3) + ";set fontscaling on;");
+      sb.append(";font label " + (atom.getElementNumber() == 1 ? 6 : 10) + ";");
+      line = atom.getAtomName() + " " + line.trim();
+      break;
+    case MODE_SEARCH_BOND_VALUES:
+      String[] toks = PT.getTokens(line);
+      float order = Float.NaN;
+      int atom1 = 0, atom2 = 0;
+      if (toks.length == 3) {
+        atom1 = PT.parseInt(toks[0]);
+        atom2 = PT.parseInt(toks[1]);
+        order = PT.parseFloat(toks[2]);
+      }
+      if (Float.isNaN(order)) {
+        System.out
+            .println("SEARCH: bond value list processing ended unexpectedly!");
+        return false;
+      }
+      if (order < 0.01)
+        return true;
+      sb.append("font measures 20; measure id 'm" + atom1 + "_" + atom2 + "' @"
+          + atom1 + " @" + atom2 + " radius 0.0 \"" + NBOUtil.round(order, 4)
+          + "\";");
+      line = vwr.ms.at[atom1 - 1].getAtomName() + " "
+          + vwr.ms.at[atom2 - 1].getAtomName() + " " + order;
+      break;
     }
+    sbLog.append(line.trim() + "<br>");
     return true;
   }
 

@@ -459,7 +459,8 @@ public class NBOService {
         //   NBOServe v6: development version (A_000000)
         // this was unsolicited.
         if (s.indexOf("NBOServe v") >= 0) {
-          dialog.setLicense(s.substring(s.lastIndexOf("NBOServe v")));
+          s = (s.substring(s.lastIndexOf("NBOServe v")) + "\n").split("\n")[0];
+          dialog.setLicense(s);
         }
         return true;
       }

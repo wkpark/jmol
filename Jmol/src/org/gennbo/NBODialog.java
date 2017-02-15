@@ -205,6 +205,14 @@ public class NBODialog extends JDialog {
 
   private boolean isOpenShell;  
   
+  private boolean isCaretEnabled = true;
+  
+  protected void setCaretEnabled(boolean tf) {
+    isCaretEnabled = tf;
+    if (tf)
+      log("\n", 'b');
+  }
+
 
   /**
    * Creates a dialog for getting info related to output frames in nbo format.
@@ -361,7 +369,7 @@ public class NBODialog extends JDialog {
     licenseInfo.setForeground(Color.white);
     licenseInfo.setBackground(Color.black);
 
-    nboOutput();
+    createOutputDialog();
     centerPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JPanel(),
         nboOutput);
     topPanel = buildTopPanel();
@@ -682,7 +690,7 @@ public class NBODialog extends JDialog {
     centerPanel.setDividerLocation(365);
   }
 
-  private void nboOutput() {
+  private void createOutputDialog() {
     nboOutput = new JPanel(new BorderLayout());
     viewSettingsBox = new JPanel(new BorderLayout());
     viewSettingsBox.add(new JLabel("Settings"), BorderLayout.NORTH);
@@ -1057,7 +1065,7 @@ public class NBODialog extends JDialog {
   protected synchronized void log(String line, char chFormat) {
     if (dontLog(line, chFormat))
       return;
-    if (line.trim().length() >= 1) {
+    if (line.equals("\n") || line.trim().length() >= 1) {
       line = PT.rep(line.trim(), "<", "&lt;");
       line = PT.rep(line, ">", "&gt;");
       line = PT.rep(line, "&lt;br&gt;", "<br>");
@@ -1076,11 +1084,12 @@ public class NBODialog extends JDialog {
           + (nboOutputBodyText = nboOutputBodyText + line + "\n<br>")
           + "</font></html>");
     }
-    jpNBODialog.setCaretPosition(jpNBODialog.getDocument().getLength());
+    if (isCaretEnabled )
+      jpNBODialog.setCaretPosition(jpNBODialog.getDocument().getLength());
   }
 
   private boolean dontLog(String line, char chFormat) {
-    return (jpNBODialog == null || line.trim().equals("")
+    return (jpNBODialog == null
         || line.indexOf("read/unit=5/attempt to read past end") >= 0
         || line.indexOf("*end*") >= 0 || !NBOConfig.debugVerbose
         && "b|r|I".indexOf("" + chFormat) < 0);

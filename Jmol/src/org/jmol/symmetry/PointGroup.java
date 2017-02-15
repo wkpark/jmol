@@ -159,6 +159,7 @@ class PointGroup {
 
   private T3[] points;
   private int[] elements;
+  private int[] atomMap;
 
   private BS bsAtoms;
 
@@ -194,6 +195,18 @@ class PointGroup {
    * @return a PointGroup
    */
   
+  /**
+   * 
+   * @param pgLast
+   * @param center
+   * @param atomset a list of Atom or other Point3fi that implements Node
+   * @param bsAtoms
+   * @param haveVibration     if true, then all items in atomset must be Atom class 
+   * @param distanceTolerance
+   * @param linearTolerance
+   * @param localEnvOnly
+   * @return a PointGroup object, possibly the last calculated for efficiency
+   */
   static PointGroup getPointGroup(PointGroup pgLast, T3 center,
                                          T3[] atomset, BS bsAtoms,
                                          boolean haveVibration,
@@ -426,6 +439,16 @@ class PointGroup {
     elements = new int[ac];
     if (ac == 0)
       return true;
+  
+    // All Node points will be Point3fi, actually. But they might not be Atom.
+    // It's not perfect.
+    int atomIndexMax = 0;
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+      T3 p = atomset[i];
+      if (p instanceof Node)
+        atomIndexMax = Math.max(atomIndexMax, ((Point3fi) p).i);
+    }
+    atomMap = new int[atomIndexMax + 1];
     nAtoms = 0;
     boolean needCenter = (center == null);
     if (needCenter)
@@ -438,6 +461,7 @@ class PointGroup {
         int bondIndex = (localEnvOnly ? 1 : 1 + Math.max(3,
             ((Node) p).getCovalentBondCount()));
         elements[nAtoms] = ((Node) p).getElementNumber() * bondIndex;
+        atomMap[((Point3fi) p).i] = nAtoms + 1;
       } else if (p instanceof Point3fi) {
         elements[nAtoms] = Math.max(0, ((Point3fi) p).sD);
       } else {
@@ -514,7 +538,7 @@ class PointGroup {
         T3 a2 = iter.nextElement();
         if (a2 == a1)
           continue;
-        int j = ((Point3fi) a2).i;
+        int j = getPointIndex(((Point3fi) a2).i); // will be true atom index for an atom, not just in first molecule
         if (centerAtomIndex >= 0 && j == centerAtomIndex || elements[j] != e1)
           continue;
         if (pt.distanceSquared(a2) < distanceTolerance2) {
@@ -528,6 +552,10 @@ class PointGroup {
       return false;
     }
     return true;
+  }
+
+  private int getPointIndex(int j) {
+    return atomMap[j] > 0 ? atomMap[j] - 1 : j;
   }
 
   private boolean isLinear(T3[] atoms) {

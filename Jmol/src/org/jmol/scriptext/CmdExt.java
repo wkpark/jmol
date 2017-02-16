@@ -4296,7 +4296,7 @@ public class CmdExt extends ScriptExt {
         case T.chemical:
           len = 3;
           if (msg.length() > 0) {
-            msg = vwr.getChemicalInfo(msg, param2);
+            msg = vwr.getChemicalInfo(msg, param2, vwr.bsA());
             if (msg.indexOf("FileNotFound") >= 0)
               msg = "?";
           } else {

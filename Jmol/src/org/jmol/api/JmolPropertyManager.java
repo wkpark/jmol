@@ -44,5 +44,7 @@ public interface JmolPropertyManager {
 
   String getAtomData(String atomExpression, String type, boolean allTrajectories);
 
+  String fixJMEFormalCharges(BS bsAtoms, String s);
+
 
 }

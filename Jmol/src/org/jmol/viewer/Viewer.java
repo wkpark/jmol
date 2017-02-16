@@ -7838,7 +7838,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     showUrl(g.helpPath + what);
   }
 
-  public String getChemicalInfo(String smiles, String info) {
+  public String getChemicalInfo(String smiles, String info, BS bsAtoms) {
     info = info.toLowerCase();
     char type = '/';
     switch (";inchi;inchikey;stdinchi;stdinchikey;name;image;drawing;names;".indexOf(";"+info+";")) {
@@ -7878,10 +7878,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         s += "file?format=" + info;
       else
         s += PT.rep(info, " ", "%20");
-    }      
+    }
     s = getFileAsString4(s, -1, false, false, false, "file");
     if (type == 'M' && s.indexOf("\n") > 0)
       s = s.substring(0, s.indexOf("\n"));
+    else if (info.equals("jme"))
+      s = getPropertyManager().fixJMEFormalCharges(bsAtoms, s);
     return s;
   }
 
@@ -8805,7 +8807,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     SmilesMatcherInterface sm = getSmilesMatcher();
     if (JC.isSmilesCanonical(options)) {
       String smiles = sm.getSmiles(atoms, ms.ac, bsSelected, "/noAromatic/", flags);
-      return getChemicalInfo(smiles, "smiles").trim();
+      return getChemicalInfo(smiles, "smiles", null).trim();
     }
     return sm.getSmiles(atoms, ms.ac, bsSelected, bioComment, flags);
   }

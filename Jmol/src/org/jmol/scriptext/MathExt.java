@@ -1381,10 +1381,10 @@ public class MathExt {
     boolean isON = !isList && (argLast.tok == T.on);
     try {
       if (isChemical) {
-        String data = (x1.tok == T.bitset ? vwr.getOpenSmiles((BS) x1.value)
-            : SV.sValue(x1));
+        BS bsAtoms = (x1.tok == T.bitset ? (BS) x1.value : null);
+        String data = (bsAtoms == null ? SV.sValue(x1) : vwr.getOpenSmiles(bsAtoms));
         data = (data.length() == 0 ? "" : vwr.getChemicalInfo(data,
-            flags.toLowerCase())).trim();
+            flags.toLowerCase(), bsAtoms)).trim();
         if (data.startsWith("InChI"))
           data = PT.rep(PT.rep(data, "InChI=", ""), "InChIKey=", "");
         return mp.addXStr(data);

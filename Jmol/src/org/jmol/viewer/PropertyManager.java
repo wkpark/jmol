@@ -2432,5 +2432,46 @@ public class PropertyManager implements JmolPropertyManager {
     return sb.toString();
   }
 
+  /**
+   * Fix a JME string returned from NCI CIR to have the proper formal charges.
+   */
+  @Override
+  public String fixJMEFormalCharges(BS bsAtoms, String jme) {
+    if (bsAtoms == null)
+      return jme;
+    boolean haveCharges = false;
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+      if (vwr.ms.at[i].getFormalCharge() != 0) {
+        haveCharges = true;
+        break;
+      }
+    }
+    if (!haveCharges)
+      return jme;
+    String[] tokens = PT.getTokens(jme);
+    for (int pt = 2, i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms
+        .nextSetBit(i + 1)) {
+      Atom a = vwr.ms.at[i];
+      String elem = a.getElementSymbol();
+      String jmeAtom = PT.replaceAllCharacters(tokens[pt], "+-", "");
+      // look out for H still in there
+      if (elem.equals("H") && !jmeAtom.equals("H"))
+        continue;
+      // stop if we are at the bonds
+      if (PT.parseInt(jmeAtom) != Integer.MIN_VALUE)
+        break;
+      if (!elem.equals(jmeAtom)) {
+        // we tried, but this is not working
+        return jme;
+      }
+      int charge = a.getFormalCharge();
+      if (charge != 0)
+        tokens[pt] = jmeAtom + (charge > 0 ? "+" : "-")
+            + (Math.abs(charge) > 1 ? "" + Math.abs(charge) : "");
+      pt += 3;
+    }
+    return PT.join(tokens, ' ', 0);
+  }
+
 
 }

@@ -61,11 +61,11 @@ public class JsDialog extends JDialog implements PlatformDialog {
 	private Insets buttonInsets = new Insets(5, 5, 5, 5);
 	
 	private Insets panelInsets = new Insets(0, 0, 2, 2);
-	private int defaultHeight = 350;
 	protected int selectedRow = -1;
 	
 	public JsDialog(DialogManager manager, JSVDialog jsvDialog, String registryKey) {
 		super();
+		defaultHeight = 350;
   	this.manager = manager;
 		this.registryKey = registryKey;
 		optionKey = jsvDialog.optionKey;
@@ -74,11 +74,11 @@ public class JsDialog extends JDialog implements PlatformDialog {
 		if (options == null)
 			options = new Hashtable<String, Object>();
 		getContentPane().setBackground(Color.get3(230, 230, 230));
-		setFront(); 
+		toFront(); 
 	}
 	
 	public void onFocus() {
-		setFront();
+		toFront();
 		}
 		
 	@Override
@@ -86,19 +86,10 @@ public class JsDialog extends JDialog implements PlatformDialog {
 		//setBackground(tf ? Color.BLUE : Color.GRAY);
 		if (tf) {
 			//requestFocus();
-			setFront();
+			toFront();
 		}
 	}
 		
-	private void setFront() {
-		/**
-		 * @j2sNative
-		 * 
-		 * SwingController.setFront(this);
-		 * 
-		 */
-		{}
-	}
 
 	@Override
 	public Object addButton(String name, String text) {

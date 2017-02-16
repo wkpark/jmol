@@ -36,6 +36,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
+import jspecview.app.JSVApp;
 import jspecview.common.JSVersion;
 
 /**
@@ -115,12 +116,11 @@ public class AboutDialog extends JDialog {
     txt = drawMessage(message, "Arial", Font.PLAIN, 12);
     p.add(txt);
 
-    message = "Authors:\nD. Facey, K. Bryan, C. Walters\nProf. Robert J. Lancashire, Prof. Robert M. Hanson, and\n";
-    message += "volunteer developers through sourceforge.";
+    message = JSVApp.CREDITS;
     txt = drawMessage(message, "Arial", Font.BOLD, 12);
     p.add(txt);
 
-    message = "Copyright (c) 2016, Department of Chemistry\nUniversity of the West Indies, Mona Campus\nJAMAICA";
+    message = "Copyright (c) 2002-2017, Department of Chemistry\nUniversity of the West Indies, Mona Campus\nJAMAICA";
     txt = drawMessage(message, "Arial", Font.PLAIN, 12);
     p.add(txt);
 

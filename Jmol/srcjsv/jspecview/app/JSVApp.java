@@ -52,6 +52,7 @@ import jspecview.api.JSVAppInterface;
 import jspecview.api.JSVPanel;
 import jspecview.api.PanelListener;
 
+import jspecview.common.JSVersion;
 import jspecview.common.Spectrum;
 import jspecview.common.JSVFileManager;
 import jspecview.common.PanelData;
@@ -77,6 +78,8 @@ import jspecview.source.JDXSource;
  */
 
 public class JSVApp implements PanelListener, JSVAppInterface {
+
+	public static final String CREDITS = "Authors:\nProf. Robert M. Hanson,\nD. Facey, K. Bryan, C. Walters, Prof. Robert J. Lancashire and\nvolunteer developers through sourceforge.";
 
 	public JSVApp(AppletFrame appletFrame, boolean isJS) {
 		this.appletFrame = appletFrame;
@@ -555,7 +558,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	public void siValidateAndRepaint(boolean isAll) {
 		PanelData pd = vwr.pd();
 		if (pd != null)
-			pd.taintedAll = true;
+			pd.setTaintedAll();
 		appletFrame.validate();
 		repaint();
 	}
@@ -668,7 +671,8 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 
 	@Override
 	public void siExecScriptComplete(String msg, boolean isOK) {
-		vwr.showMessage(msg);
+	  if (!isOK)
+	  	vwr.showMessage(msg);
 		siValidateAndRepaint(false);
 	}
 
@@ -752,6 +756,14 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	@Override
 	public String print(String fileName) {
 		return vwr.print(fileName);
+	}
+
+	public String checkScript(String script) {
+		return vwr.checkScript(script);
+	}
+
+	public static String getAppletInfo() {
+		return "JSpecView Applet " + JSVersion.VERSION + "\n\n" + CREDITS;
 	}
 
 }

@@ -308,7 +308,9 @@ public class Spectrum extends JDXDataObject {
   private Spectrum convertedSpectrum;
 
   /**
-   * based YFactor used in View command
+   * based YFactor used in View command 
+   * 
+   * ?? BH not documented? Not used?
    * 
    */
   private double userYFactor = 1;
@@ -319,7 +321,7 @@ public class Spectrum extends JDXDataObject {
   public double getUserYFactor() {
     return userYFactor;
   }
-
+  
   public static final double MAXABS = 4; // maximum absorbance allowed
 
   public Spectrum getConvertedSpectrum() {
@@ -510,10 +512,14 @@ public class Spectrum extends JDXDataObject {
     	info.put(key, id);
     	return info;
     }
+    String keys = null;
+    if ("".equals(key)) {
+    	keys = "id specShift header";
+    }
     info.put("id", id);
     Parameters.putInfo(key, info, "specShift", Double.valueOf(specShift));
     boolean justHeader = ("header".equals(key));
-    if (!justHeader && key != null) {
+    if (!justHeader && key != null && keys == null) {
       for (int i = headerTable.size(); --i >= 0;) {
       	String[] entry = headerTable.get(i);
       	if (entry[0].equalsIgnoreCase(key) || entry[2].equalsIgnoreCase(key)) {
@@ -526,6 +532,10 @@ public class Spectrum extends JDXDataObject {
     String[][] list = getHeaderRowDataAsArray();
     for (int i = 0; i < list.length; i++) {
       String label = JDXSourceStreamTokenizer.cleanLabel(list[i][0]);
+      if (keys != null) {
+      	keys += " " + label;
+      	continue;
+      }
       if (key != null && !justHeader && !label.equals(key))
         continue;
       Object val = fixInfoValue(list[i][1]);
@@ -541,12 +551,20 @@ public class Spectrum extends JDXDataObject {
     if (head.size() > 0)
       info.put("header", head);
     if (!justHeader) {
+    	if (keys != null) {
+    	keys += "  titleLabel type isHZToPPM subSpectrumCount";
+    	}
+    	else {
+    	
       Parameters.putInfo(key, info, "titleLabel", getTitleLabel());
       Parameters.putInfo(key, info, "type", getDataType());
       Parameters.putInfo(key, info, "isHZToPPM", Boolean.valueOf(isHZtoPPM));
       Parameters.putInfo(key, info, "subSpectrumCount", Integer
           .valueOf(subSpectra == null ? 0 : subSpectra.size()));
+    	}
     }
+    if (keys != null)
+    	info.put("KEYS", keys);
     return info;
   }
 
@@ -682,10 +700,14 @@ public class Spectrum extends JDXDataObject {
 
 	GenericColor fillColor;
 
+
 	public void setFillColor(GenericColor color) {
 		fillColor = color;
 		if (convertedSpectrum != null)
 			convertedSpectrum.fillColor = color;
 	}
+
+  ImageView imageView; // 2D image view
+	
 
 }

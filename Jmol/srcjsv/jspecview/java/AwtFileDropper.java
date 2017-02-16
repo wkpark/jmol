@@ -77,7 +77,7 @@ public class AwtFileDropper implements JSVFileDropper, DropTargetListener {
 			doAppend = (ret == 1);
 		}
 		String prefix = (doAppend ? "" : "close ALL;");
-		String postfix = (doAppend ? "" : "overlay ALL");
+		String postfix = (doAppend ? "view all;overlayStacked false" : "overlay ALL");
 		String cmd = "LOAD APPEND ";
 		String fileToLoad = null;
 		if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {

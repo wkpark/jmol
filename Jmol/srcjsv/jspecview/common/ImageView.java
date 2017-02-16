@@ -202,16 +202,18 @@ class ImageView implements XYScaleConverter {
       return buf2d;
     grayFactorLast = grayFactor;
     int pt = imageWidth * imageHeight;
-    int[] buf = new int[pt];
+    int[] buf = (buf2d == null || buf2d.length != pt ? new int[pt] : buf2d);
     double totalGray = 0;
     for (int i = 0; i < nSpec; i++) {
       Coordinate[] points = subSpectra.get(i).xyCoords;
       if (points.length != xyCoords.length)
         return null;
-      double f = subSpectra.get(i).getUserYFactor();
+//      double f = subSpectra.get(i).getUserYFactor();
+//      if (f !=1)
+//      	System.out.println("???? imageveiw");
       for (int j = 0; j < xyCoords.length; j++) {
         double y = points[j].getYVal();
-        int gray = 255 - Coordinate.intoRange((int) ((y* f - minZ) * grayFactor), 0, 255); 
+        int gray = 255 - Coordinate.intoRange((int) ((y/* * f*/ - minZ) * grayFactor), 0, 255); 
         buf[--pt] = gray;
         totalGray += gray;
       }
@@ -229,6 +231,7 @@ class ImageView implements XYScaleConverter {
   	//double maxGray = 0.20;
   	int i = 0;
   	boolean isLow = false;
+  	
   	while (((isLow = (averageGray < DEFAULT_MIN_GRAY)) || averageGray > DEFAULT_MAX_GRAY) && i++ < 10) {
       view.scaleSpectrum(-2, isLow ? 2 : 0.5);
       set(view.getScale());
@@ -285,7 +288,7 @@ class ImageView implements XYScaleConverter {
 	@Override
 	public double toY(int yPixel) {
 		int isub = toSubspectrumIndex(yPixel);
-    return maxY + (minY - maxY) * isub / (imageWidth - 1);
+    return maxY + (minY - maxY) * isub / (imageHeight - 1);
 	}
 
   @Override

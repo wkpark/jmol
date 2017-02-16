@@ -222,7 +222,7 @@ public class JSVApplet implements JSVAppletInterface,
 	 */
 	@Override
 	public String getAppletInfo() {
-		return "JSpecView Applet " + JSVersion.VERSION;
+		return JSVApp.getAppletInfo();
 	}
 
 	// /////////////// JSpecView JavaScript calls ///////////////////
@@ -643,6 +643,14 @@ public class JSVApplet implements JSVAppletInterface,
 	@Override
 	public void setScreenDimension(int width, int height) {
 		app.vwr.setScreenDimension(width, height);		
+	}
+	
+	@Override
+	public String checkScript(String script) {
+		String s = app.checkScript(script);
+		if (s != null)
+			System.out.println(s);
+		return s;
 	}
 
 }

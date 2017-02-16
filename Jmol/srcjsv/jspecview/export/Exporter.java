@@ -164,33 +164,7 @@ public class Exporter implements ExportInterface {
 			GenericFileInterface file = viewer.fileHelper.getFile(name, jsvp, true);
 			if (file == null)
 				return null;
-			if (viewer.isJS) {
-				String fname = file.getName();
-				boolean isPNG = type.equals(ExportType.PNG);				
-				String s = (isPNG ? "png" : "jpeg");
-				/**
-				 * this will probably be png even if jpeg is requested
-				 * 
-				 * @j2sNative
-				 * 
-				 *            s = viewer.display.toDataURL(s);
-				 *	if (!isPNG && s.contains("/png"))
-				 *		fname = fname.split('.jp')[0] + ".png";
-				 * 
-				 */
-				{
-				}
-				try {
-					out = viewer.getOutputChannel(fname, true);
-					byte[] data = Base64.decodeBase64(s);
-					out.write(data, 0, data.length);
-					out.closeChannel();
-					return "OK " + out.getByteCount() + " bytes";
-				} catch (Exception e) {
-					return e.toString();
-				}
-			}
-			return jsvp.saveImage(type.toLowerCase(), file);
+			return jsvp.saveImage(type.toLowerCase(), file, out);
 		case PDF:
 			return printPDF(viewer, "PDF", asBase64);
 		case SOURCE:
@@ -251,8 +225,9 @@ public class Exporter implements ExportInterface {
 		}
 		String s = null;
 		try {
-			OC out = (isJob ? null : viewer.getOutputChannel(isBase64 ? null
-					: pdfFileName, true));
+			OC out = (isJob ? null : 
+				isBase64 ? new OC().setParams(null,  ";base64,", false, null)
+						: viewer.getOutputChannel(pdfFileName, true));
 			String printJobTitle = pd.getPrintJobTitle(true);
 			if (pl.showTitle) {
 				printJobTitle = jsvp.getInput("Title?", "Title for Printing",
@@ -261,8 +236,7 @@ public class Exporter implements ExportInterface {
 					return null;
 			}
 			jsvp.printPanel(pl, out, printJobTitle);
-			s = (isBase64 ? Base64.getBase64(out.toByteArray()).toString() : out
-					.toString());
+			s = out.toString();
 		} catch (Exception e) {
 			jsvp.showMessage(e.toString(), "File Error");
 		}

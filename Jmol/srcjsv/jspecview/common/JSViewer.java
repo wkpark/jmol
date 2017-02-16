@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -194,6 +195,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 	}
 
 	public boolean runScriptNow(String script) {
+		System.out.println(checkScript(script));
 		scriptLevelCount++;
 		if (script == null)
 			script = "";
@@ -213,7 +215,8 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		int nErrorsLeft = 10;
 		ScriptTokenizer commandTokens = new ScriptTokenizer(script, true);
 		String msg = null;
-		while (commandTokens != null && commandTokens.hasMoreTokens() && nErrorsLeft > 0 && isOK) {
+		while (commandTokens != null && commandTokens.hasMoreTokens()
+				&& nErrorsLeft > 0 && isOK) {
 			String token = commandTokens.nextToken();
 			// now split the key/value pair
 
@@ -223,7 +226,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 				continue;
 			ScriptToken st = ScriptToken.getScriptToken(key);
 			String value = ScriptToken.getValue(st, eachParam, token);
-			//System.out.println("KEY-> " + key + " VALUE-> " + value + " : " + st);
+			// System.out.println("KEY-> " + key + " VALUE-> " + value + " : " + st);
 			try {
 				switch (st) {
 				case UNKNOWN:
@@ -265,8 +268,10 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 					Map<String, Object> info = (selectedPanel == null ? null
 							: getPropertyAsJavaObject(value));
 					if (info != null)
-						selectedPanel
-								.showMessage(PT.toJSON(null, info), value);
+						selectedPanel.showMessage(PT.toJSON(null, info), value);
+					break;
+				case HELP:
+					execHelp(value);
 					break;
 				case HIDDEN:
 					si.siExecHidden(Parameters.isTrue(value));
@@ -292,9 +297,11 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 					if (value.length() == 0) {
 						if (defaultLoadScript != null)
 							runScriptNow(defaultLoadScript);
-					  break;
+						break;
 					}
-					load(value, (defaultLoadScript == null ? "" : defaultLoadScript + ";") + commandTokens.getRemainingScript());
+					execLoad(value,
+							(defaultLoadScript == null ? "" : defaultLoadScript + ";")
+									+ commandTokens.getRemainingScript());
 					msg = (selectedPanel == null ? null : si.siLoaded(value));
 					commandTokens = null;
 					break;
@@ -396,25 +403,9 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 						msg = execWrite(null);
 						break;
 					case SETPEAK:
-						// setpeak NONE Double.NaN, Double.MAX_VALUE
-						// shiftx NONE Double.MAX_VALUE, Double.NaN
-						// setpeak x.x Double.NaN, value
-						// setx x.x Double.MIN_VALUE, value
-						// shiftx x.x value, Double.NaN
-						// setpeak ? Double.NaN, Double.MIN_VALUE
-						pd().shiftSpectrum(
-								Double.NaN,
-								value.equalsIgnoreCase("NONE") ? Double.MAX_VALUE : value
-										.equalsIgnoreCase("?") ? Double.MIN_VALUE : Double
-										.parseDouble(value));
-						break;
 					case SETX:
-						pd().shiftSpectrum(Double.MIN_VALUE, Double.parseDouble(value));
-						break;
 					case SHIFTX:
-						pd().shiftSpectrum(
-								value.equalsIgnoreCase("NONE") ? Double.MAX_VALUE : Double
-										.parseDouble(value), Double.NaN);
+						execShiftSpectrum(st, token);
 						break;
 					case SHOWERRORS:
 						show("errors");
@@ -470,6 +461,46 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		return isOK;
 	}
 
+
+	private void execShiftSpectrum(ScriptToken st, String script) {
+		Lst<String> tokens = ScriptToken.getTokens(script);
+		double xOld = Double.NaN;
+		double xNew = Double.NaN;
+		switch (tokens.size()) {
+		case 2:
+			String value = tokens.get(1);
+			if (value.equals(""))
+				value = "?";
+			xNew = value.equalsIgnoreCase("NONE") ? Double.MAX_VALUE : value
+					.equalsIgnoreCase("?") ? Double.NaN : Double.parseDouble(value);
+			break;
+		case 3:
+			xOld = Double.parseDouble(tokens.get(1));
+			xNew = Double.parseDouble(tokens.get(2));
+			break;
+		default:
+			Double.parseDouble(""); // throw an exception
+		}
+		int mode = 0;
+		switch (st) {
+		case SETPEAK:
+			mode = GraphSet.SHIFT_PEAK;
+			break;
+		case SETX:
+			mode = GraphSet.SHIFT_SETX;
+			break;
+		case SHIFTX:
+			mode = GraphSet.SHIFT_X;
+			if (Double.isNaN(xNew))
+				Double.parseDouble(""); // throw an exception -- SHIFT by itself not
+																// allowed
+			break;
+		default:
+			return;
+		}
+		pd().shiftSpectrum(mode, xOld, xNew);
+	}
+
 	private void execClose(String value) {
 		boolean fromScript = (!value.startsWith("!"));
 		if (!fromScript)
@@ -485,7 +516,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 
 	private void execPeak(String value) {
 		try {
-			Lst<String> tokens = ScriptToken.getTokens(value);
+			Lst<String> tokens = ScriptToken.getTokens(PT.rep(value, "#", "INDEX="));
 			value = " type=\"" + tokens.get(0).toUpperCase() + "\" _match=\""
 					+ PT.trimQuotes(tokens.get(1).toUpperCase()) + "\"";
 			if (tokens.size() > 2 && tokens.get(2).equalsIgnoreCase("all"))
@@ -504,25 +535,29 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 				pd().getPeakListing(null, b);
 		} else {
 			Lst<String> tokens = ScriptToken.getTokens(value);
-			for (int i = tokens.size(); --i >= 0;) {
-				String token = tokens.get(i);
-				int pt = token.indexOf("=");
-				if (pt <= 0)
-					continue;
-				String key = token.substring(0, pt);
-				value = token.substring(pt + 1);
-				try {
+			double threshold = p.peakListThreshold;
+			String interp = p.peakListInterpolation;
+			try {
+				for (int i = tokens.size(); --i >= 0;) {
+					String token = tokens.get(i);
+					int pt = token.indexOf("=");
+					if (pt <= 0)
+						continue;
+					String key = token.substring(0, pt);
+					value = token.substring(pt + 1);
 					if (key.startsWith("thr")) {
-						p.peakListThreshold = Double.valueOf(value).doubleValue();
+						threshold = Double.valueOf(value).doubleValue();
 					} else if (key.startsWith("int")) {
-						p.peakListInterpolation = (value.equalsIgnoreCase("none") ? "NONE"
+					  interp = (value.equalsIgnoreCase("none") ? "NONE"
 								: "parabolic");
 					}
-					if (!isClosed())
-						pd().getPeakListing(p, Boolean.TRUE);
-				} catch (Exception e) {
-					// ignore
 				}
+				p.peakListThreshold = threshold;
+				p.peakListInterpolation = interp;
+				if (!isClosed())
+					pd().getPeakListing(p, Boolean.TRUE);
+			} catch (Exception e) {
+				// ignore
 			}
 		}
 	}
@@ -984,7 +1019,8 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		}
 		if ("".equals(key))
 			key = null;
-
+		if ("NAMES".equalsIgnoreCase(key) || "KEYS".equalsIgnoreCase(key))
+			key = "";
 		Map<String, Object> map0 = pd().getInfo(true, key);
 		if (!isAll && map0 != null)
 			return map0;
@@ -1267,7 +1303,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		} else {
 			splitSpectra();
 		}
-		pd().taintedAll = true;
+		pd().setTaintedAll();
 		if (!isView)
 			si.siUpdateRecentMenus(filePath);
 		return FILE_OPEN_OK;
@@ -1328,7 +1364,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 			si.siSetSelectedPanel(PanelNode.getLastFileFirstNode(panelNodes));
 	}
 
-	public void load(String value, String script) {
+	public void execLoad(String value, String script) {
 		@SuppressWarnings("unused")
 		Object applet = html5Applet;
 		/**
@@ -1387,9 +1423,10 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 			close("all");
 		}
 		filename = PT.trimQuotes(filename);
-		if (filename.startsWith("$")) {
+		boolean isSimulation = filename.startsWith("$");
+		if (isSimulation) {
 			if (!filename.startsWith("$H1") && !filename.startsWith("$C13"))
-				filename = "$H1/" + filename.substring(3);
+				filename = "$H1/" + filename.substring(1);
 			filename = JSVFileManager.SIMULATION_PROTOCOL + filename.substring(1);
 		}
 		int firstSpec = (pt + 1 < tokens.size() ? Integer.valueOf(tokens.get(++pt))
@@ -1398,11 +1435,22 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 				.intValue() : firstSpec);
 		si.siOpenDataOrFile(null, null, null, filename, firstSpec, lastSpec,
 				isAppend, script, id);
+		if (isSimulation) {
+			close("views");
+			execView("*", true);
+		}
 	}
 
 	public void combineSpectra(String name) {
 		JDXSource source = currentSource;
 		Lst<Spectrum> specs = source.getSpectra();
+		boolean haveSimulation  = false;
+		for (int i = specs.size(); --i >= 0;) 
+			if (specs.get(i).isSimulation) {
+				haveSimulation = true;
+				break;
+			}
+				
 		JSVPanel jsvp = si.siGetNewJSVPanel2(specs);
 		jsvp.setTitle(source.getTitle());
 		if (jsvp.getTitle().equals("")) {
@@ -1417,6 +1465,8 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		if (autoShowLegend && pd().getNumberOfGraphSets() == 1)
 			node.setLegend(getDialog(AType.OverlayLegend, null));
 		si.siSetMenuEnables(node, false);
+		if (haveSimulation)
+			pd().splitStack(true);
 	}
 
 	public void closeSource(JDXSource source) {
@@ -1428,7 +1478,8 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		while (enume.hasMoreElements()) {
 			JSVTreeNode node = enume.nextElement();
 			if (fileName == null
-					|| node.getPanelNode().source.getFilePath().equals(fileName)) {
+					|| node.getPanelNode().source.matchesFilePath(fileName)) {
+				Logger.info("Closing " + node.getPanelNode().source.getFilePath());
 				for (Enumeration<JSVTreeNode> e = node.children(); e.hasMoreElements();) {
 					JSVTreeNode childNode = e.nextElement();
 					toDelete.addLast(childNode);
@@ -1466,7 +1517,8 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		}
 		fileCount = max;
 		System.gc();
-		Logger.checkMemory();
+		if (Logger.debugging)
+			Logger.checkMemory();
 		si.siSourceClosed(source);
 	}
 
@@ -1688,7 +1740,8 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		if (ans == null)
 			return;
 		String pre = (ans.toLowerCase().startsWith("y") ? "append" : "");
-		runScript("load " + pre + " \"" + fileName + "\"");
+		String post = (pre == "" ? "" : "; view *");
+		runScript("load " + pre + " \"" + fileName + "\"" + post);
 	}
 
 	public int getHeight() {
@@ -1826,7 +1879,7 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 		try {
 			return ((ExportInterface) JSViewer
 					.getInterface("jspecview.export.Exporter")).exportTheSpectrum(this,
-					ExportType.getType(type), null, spec, 0, spec.getXYCoords().length - 1, null, false);
+					ExportType.getType(type), null, spec, 0, spec.getXYCoords().length - 1, null, type.equalsIgnoreCase("PDF"));
 		} catch (Exception e) {
 			Logger.error(e.toString());
 			return null;
@@ -1881,23 +1934,24 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 			if (url == null)
 				return;
 			recentSimulation = url;
-			load((isAppend ? "APPEND " : "") + "\"$" + simulationType + "/" + url + "\"", script);
+			url = "$" + simulationType + "/" + url;
 		} else if (isURL) {
 			url = fileHelper.getUrlFromDialog("Enter the URL of a JCAMP-DX File",
 					recentURL == null ? recentOpenURL : recentURL);
 			if (url == null)
 				return;
 			recentOpenURL = url;
-			load((isAppend ? "APPEND " : "") + "\"" + url + "\"", script);
 		} else {
 			Object[] userData = new Object[] { Boolean.valueOf(isAppend), script }; 
 			GenericFileInterface file = fileHelper.showFileOpenDialog(mainPanel,
 					userData);
 			// note that in JavaScript this will be asynchronous and file will be null.
 			if (file != null)
-				openFile(file.getFullPath(), !isAppend);
+				url = file.getFullPath();
 			// it is not necessary to run the script in Java; we are not loading asynchronously
 		}
+		if (url != null)
+			runScriptNow("load " + (isAppend ? "APPEND " : "") + "\"" + url + "\"" + (script== null ? "" : ";" + script));		
 	}
 
 	private String recentOpenURL = "http://";
@@ -2040,6 +2094,87 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 	public String getSolutionColorStr(boolean asFit) {
 		P3 pt = CU.colorPtFromInt(getSolutionColor(asFit), null);
 		return (int) pt.x + "," + (int) pt.y + "," + (int) pt.z;
+	}
+
+	public String checkCommandLineForTip(char c, String cmd, boolean oneLineOnly){
+		boolean  isHelp = (c == '\1');
+		if (!isHelp && c != '\0') {
+			if (c != '\t' && (c == '\n' || c < 32 || c > 126))
+				return null;
+			cmd += (Character.isISOControl(c) ? "" : "" + c);
+		}
+		String tip;
+		if (cmd.indexOf(";") >= 0)
+			cmd = cmd.substring(cmd.lastIndexOf(";") + 1);
+		String ret = null;
+		while (cmd.startsWith(" "))
+			cmd = cmd.substring(1);
+		if (cmd.length() == 0 && !isHelp) {
+			tip = "";
+		} else {
+			Lst<String> tokens = ScriptToken.getTokens(cmd);
+			if (tokens.size() == 0 && !isHelp)
+				return "";
+			boolean isExact = (cmd.endsWith(" ") || tokens.size() > 1 && oneLineOnly);
+			Lst<ScriptToken> list = ScriptToken.getScriptTokenList(tokens.size()== 0 ? null : tokens.get(0),
+					isExact);// || isHelp && tokens.size() > 0);
+			switch (list.size()) {
+			case 0:
+				tip = "?";
+				break;
+			case 1:
+				ScriptToken st = list.get(0);
+				tip = st.getTip();
+				try {
+					if (tip.indexOf("TRUE") >= 0)
+						tip = " (" + parameters.getBoolean(st) + ")";
+					else if (st.name().indexOf("COLOR") >= 0)
+						tip = " (" + CU.toRGBHexString(parameters.getElementColor(st))
+								+ ")";
+					else
+						tip = "";
+				} catch (Exception e) {
+					return null;
+				}
+				if (c == '\t' || isExact || !oneLineOnly) {
+					tip = st.name() + " " + st.getTip() + tip + " " + st.getDescription();
+					if (c == '\t')
+						ret = st.name() + " ";
+					break;
+				}
+				tip = st.name() + " " + tip;
+				break;
+			default:
+				tip = ScriptToken.getNameList(list);
+			}
+		}
+		if (oneLineOnly) {
+			si.writeStatus(tip);
+		} else {
+			ret = tip;
+		}
+		return ret;
+	}
+
+	public String checkScript(String script) {
+		return checkCommandLineForTip('\0', script, false);
+	}
+
+	private void execHelp(String value) {
+		String s = checkCommandLineForTip('\1', value, false);
+		if (s.indexOf(" ") < 0 && s.indexOf(",") > 0) {
+			String[] tokens = PT.split(s,  ",");
+			Arrays.sort(tokens);
+			s = "";
+			for (int i = 0; i < tokens.length; i++) {
+				ScriptToken st = ScriptToken.getScriptToken(tokens[i]);
+				s += tokens[i] + " " + st.getTip() + "\n  " + st.getDescription() + "\n\n";
+			} 				
+			getDialogManager().showMessage(null, s, "HELP " + value);
+		} else {
+			selectedPanel.showMessage(s, "Help " + value);
+		}
+		System.out.println(s);		
 	}
 
 

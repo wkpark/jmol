@@ -26,12 +26,12 @@ import jspecview.common.Annotation.AType;
 public class IntegralData extends MeasurementData {
 
 	public enum IntMode {
-	  OFF, ON, TOGGLE, AUTO, LIST, MARK, MIN, UPDATE;
+	  OFF, ON, TOGGLE, AUTO, LIST, MARK, MIN, UPDATE, CLEAR, NA;
 	  static IntMode getMode(String value) {
 	    for (IntMode mode: values())
 	      if (value.startsWith(mode.name()))
 	        return mode;
-	    return ON;
+	    return NA;
 	  }
 	}
 
@@ -139,15 +139,29 @@ public class IntegralData extends MeasurementData {
   double getYValueAt(double x) {
     return Coordinate.getYValueAt(xyCoords, x);
   }
+  
+  /**
+   * 
+   * @param x1 NaN to clear
+   * @param x2 NaN to split
+   * @return new integral region or null
+   */
 
 	public Integral addIntegralRegion(double x1, double x2) {
 		if (Double.isNaN(x1)) {
 			haveRegions = false;
 			clear();
-			return null;
+  			return null;
+  		}
+  		if (Double.isNaN(x2)) {
+  		  return splitIntegral(x1);
 		}
 		if(x1 == x2)
 			return null;
+		if (x1 < x2) {
+	    clear(x1, x2);
+	    return null;
+		}
 		double y1 = getYValueAt(x1);
 		double y2 = getYValueAt(x2);
 		haveRegions = true;
@@ -161,7 +175,18 @@ public class IntegralData extends MeasurementData {
 		return in;
 	}
 
-  private static Comparator<Measurement> c = new IntegralComparator();
+  private Integral splitIntegral(double x) {
+		int i = find(x);
+		if (i < 0)
+		  return null;
+		Integral integral = (Integral) removeItemAt(i);
+		double x0 = integral.getXVal();
+		double x2 = integral.getXVal2();
+		addIntegralRegion(x0, x);
+		return addIntegralRegion(x, x2);
+	}
+
+	private static Comparator<Measurement> c = new IntegralComparator();
 
 	@Override
 	public void setSpecShift(double dx) {
@@ -258,18 +283,18 @@ public class IntegralData extends MeasurementData {
 	}
 
 	/**
-	 * Parses integration ratios and x values from a string and returns them as
+	 * Parses x-coordinates and values from a string and returns them as
 	 * <code>IntegrationRatio</code> objects
 	 * @param spec 
 	 * 
-	 * @param value
+	 * @param key_values  "x:value,x:value,x:value..."
 	 * @return JmolList<IntegrationRatio> object representing integration ratios
 	 */
 	public static Lst<Annotation> getIntegrationRatiosFromString(
-			Spectrum spec, String value) {
+			Spectrum spec, String key_values) {
 		Lst<Annotation> ratios = new Lst<Annotation>();
 		// split input into x-value/integral-value pairs
-		StringTokenizer allParamTokens = new StringTokenizer(value, ",");
+		StringTokenizer allParamTokens = new StringTokenizer(key_values, ",");
 		while (allParamTokens.hasMoreTokens()) {
 			String token = allParamTokens.nextToken();
 			// now split the x-value/integral-value pair

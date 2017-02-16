@@ -97,23 +97,23 @@ abstract public class DialogManager {
 		}
 		String errorLog = currentSource.getErrorLog();
 		if (errorLog != null && errorLog.length() > 0)
-			showMessage(frame, errorLog, currentSource.getFilePath());
+			showMessage(frame, errorLog, fixTitle(currentSource.getFilePath()));
 		else
 			showMessageDialog(frame, "No errors found.",
 					"Error Log", INFORMATION_MESSAGE);
 	}
 
-	public void showSource(Object frame, String f) {
-		if (f == null) {
+	public void showSource(Object frame, String filePath) {
+		if (filePath == null) {
 			showMessageDialog(frame, "Please Select a Spectrum", "Select Spectrum",
 					WARNING_MESSAGE);
 			return;
 		}
 		try {
-			String s = JSVFileManager.getFileAsString(f);
+			String s = JSVFileManager.getFileAsString(filePath);
 			if (vwr.isJS)
 				s = PT.rep(s, "<", "&lt;");
-			showMessage(null, s, f);
+			showMessage(null, s, fixTitle(filePath));
 		} catch (Exception ex) {
 			showMessageDialog(frame, "File Not Found", "SHOWSOURCE", ERROR_MESSAGE);
 		}
@@ -186,6 +186,10 @@ abstract public class DialogManager {
 		if (options == null)
 			options = new Hashtable<String, Object>();
 		return options;
+	}
+
+	public static String fixTitle(String title) {
+		return (title.length() > 50 ? title.substring(0, 50) + "..." : title);
 	}
 
 }

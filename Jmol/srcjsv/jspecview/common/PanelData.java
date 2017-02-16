@@ -169,15 +169,22 @@ public class PanelData implements EventManager {
 		if (selectedOnly)
 			return currentGraphSet.getInfo(key, getCurrentSpectrumIndex());
 		Set<Entry<ScriptToken, Object>> entries = options.entrySet();
-		for (Entry<ScriptToken, Object> entry : entries)
-			Parameters.putInfo(key, info, entry.getKey().name(), entry.getValue());
-		Parameters.putInfo(key, info, "type", getSpectrumAt(0).getDataType());
-		Parameters.putInfo(key, info, "title", title);
-		Parameters.putInfo(key, info, "nSets", Integer.valueOf(graphSets.size()));
-		sets = new Lst<Map<String, Object>>();
-		for (int i = graphSets.size(); --i >= 0;)
-			sets.addLast(graphSets.get(i).getInfo(key, -1));
-		info.put("sets", sets);
+		if ("".equals(key)) {
+			String val = "type title nSets ";
+			for (Entry<ScriptToken, Object> entry : entries)
+				val += entry.getKey().name() + " ";
+			info.put("KEYS", val);
+		} else {
+			for (Entry<ScriptToken, Object> entry : entries)
+				Parameters.putInfo(key, info, entry.getKey().name(), entry.getValue());
+			Parameters.putInfo(key, info, "type", getSpectrumAt(0).getDataType());
+			Parameters.putInfo(key, info, "title", title);
+			Parameters.putInfo(key, info, "nSets", Integer.valueOf(graphSets.size()));
+		}
+			sets = new Lst<Map<String, Object>>();
+			for (int i = graphSets.size(); --i >= 0;)
+				sets.addLast(graphSets.get(i).getInfo(key, -1));
+			info.put("sets", sets);
 		return info;
 	}
 
@@ -193,7 +200,7 @@ public class PanelData implements EventManager {
 
 	@SuppressWarnings("incomplete-switch")
 	public void setBoolean(ScriptToken st, boolean isTrue) {
-		taintedAll = true;
+		setTaintedAll();
 		if (st == ScriptToken.REVERSEPLOT) {
 			currentGraphSet.setReversePlot(isTrue);
 			return;
@@ -256,7 +263,13 @@ public class PanelData implements EventManager {
 	// //// initialization - from AwtPanel
 
 	public Lst<Spectrum> spectra;
-	public boolean taintedAll = true;
+	private boolean taintedAll = true;
+	private boolean testingJavaScript; // set TRUE to see taintedAll the way it will be in JavaScript
+	
+	public void setTaintedAll() {
+		taintedAll = true;		
+	}
+
 
 	public void initOne(Spectrum spectrum) {
 		spectra = new Lst<Spectrum>();
@@ -414,7 +427,7 @@ public class PanelData implements EventManager {
 		int bottom = bottomMargin;
 		boolean isResized = (isPrinting || doReset || thisWidth != width || thisHeight != height);
 		if (isResized)
-			taintedAll = true;
+			setTaintedAll();
 		if (taintedAll)
 			g2d.fillBackground(gRear, bgcolor);
 		if (gFront != gMain) {
@@ -433,6 +446,8 @@ public class PanelData implements EventManager {
 			withCoords = getBoolean(ScriptToken.COORDINATESON);
 			titleOn = getBoolean(ScriptToken.TITLEON);
 			gridOn = getBoolean(ScriptToken.GRIDON);
+			peakTabsOn = getBoolean(ScriptToken.PEAKTABSON);
+			
 		}
 		doReset = false;
 		titleDrawn = false;
@@ -457,7 +472,10 @@ public class PanelData implements EventManager {
 		if (isPrinting) {
 			printVersion(gMain, height);
 		}
-		taintedAll = (isPrinting || gMain == gFront);
+		if (!testingJavaScript && (isPrinting || gMain == gFront))
+			setTaintedAll();
+		else
+			taintedAll = false;
 	}
 
 	/**
@@ -468,7 +486,7 @@ public class PanelData implements EventManager {
 	 */
 	public void drawCoordinates(Object g, int top, int x, int y) {
 		g2d.setGraphicsColor(g, coordinatesColor);
-		Font font = setFont(g, jsvp.getWidth(), Font.FONT_STYLE_PLAIN, 12,
+		Font font = setFont(g, jsvp.getWidth(), Font.FONT_STYLE_BOLD, 14,
 				true);
 		g2d.drawString(g, coordStr, x - font.stringWidth(coordStr), y);
 	}
@@ -580,7 +598,7 @@ public class PanelData implements EventManager {
 
 	// //// currentGraphSet methods
 
-	private void setCurrentGraphSet(GraphSet gs, int yPixel, int clickCount) {
+	private boolean setCurrentGraphSet(GraphSet gs, int yPixel) {
 		// Need to check for nSplit > 1 here because this could be a 
 		// mass spec that has been selected by clicking on a GC peak.
 		// In that case, there is no split, and we should not be changing
@@ -595,7 +613,7 @@ public class PanelData implements EventManager {
 		if (!isNewSet) {
 			isNewSet = gs.checkSpectrumClickedEvent(mouseX, mouseY, clickCount);
 			if (!isNewSet)
-				return;
+				return false;
 			currentSplitPoint = splitPoint = gs.getCurrentSpectrumIndex();
 			setSpectrum(splitPoint, true);
 		}
@@ -605,6 +623,7 @@ public class PanelData implements EventManager {
 		// or nSplit == 1 and showAllStacked and isClick and is a spectrum click)
 
 		jumpToSpectrumIndex(splitPoint, isNewSet || gs.nSplit > 1 && isNewSplitPoint);
+		return isNewSet;
 	}
 	
 	public void jumpToSpectrum(Spectrum spec) {
@@ -623,7 +642,7 @@ public class PanelData implements EventManager {
 		
 	}
 	public void splitStack(boolean doSplit) {
-		currentGraphSet.splitStack(graphSets, doSplit);
+		currentGraphSet.splitStack(doSplit);
 	}
 
 	public int getNumberOfSpectraInCurrentSet() {
@@ -631,7 +650,8 @@ public class PanelData implements EventManager {
 	}
 
 	public String getSourceID() {
-		return getSpectrumAt(0).sourceID;
+		String id = getSpectrum().sourceID;
+		return (id == null ? getSpectrumAt(0).sourceID : id);
 	}
 	
 	public int getStartingPointIndex(int index) {
@@ -669,7 +689,7 @@ public class PanelData implements EventManager {
 	}
 
 	public void setSpecForIRMode(Spectrum spec) {
-		taintedAll = true;
+		setTaintedAll();
 		Spectrum spec0 = currentGraphSet.getSpectrum();
 		currentGraphSet.setSpectrumJDX(spec);
 		for (int i = 0; i < spectra.size(); i++)
@@ -735,7 +755,7 @@ public class PanelData implements EventManager {
 	public void setZoom(double x1, double y1, double x2, double y2) {
 		currentGraphSet.setZoom(x1, y1, x2, y2);
 		doReset = true;
-		taintedAll = true;
+		setTaintedAll();
 		notifyListeners(new ZoomEvent());//x1, y1, x2, y2));
 	}
 
@@ -807,15 +827,15 @@ public class PanelData implements EventManager {
 
 	/**
 	 * shifts xyCoords for a spectrum by the specified amount
+
+	 * @param mode 
+	 * @param xOld old position or NaN
+	 * @param xNew NaN or new position
 	 * 
-	 * @param dx
-	 *          NaN to determine from x0, x1
-	 * @param x1
-	 *          NaN to query for new value
 	 * @return true if successful
 	 */
-	public boolean shiftSpectrum(double dx, double x1) {
-		return currentGraphSet.shiftSpectrum(dx, x1);
+	public boolean shiftSpectrum(int mode, double xOld, double xNew) {
+		return currentGraphSet.shiftSpectrum(mode, xOld, xNew);
 
 	}
 
@@ -935,6 +955,7 @@ public class PanelData implements EventManager {
 	private Mouse mouseState;
 	public boolean gridOn;
 	public boolean titleOn;
+	public boolean peakTabsOn;
 
 	public boolean hasFocus() {
 		return jsvp.hasFocus();
@@ -954,6 +975,7 @@ public class PanelData implements EventManager {
 		GraphSet gs = GraphSet.findGraphSet(graphSets, xPixel, yPixel);
 		if (gs == null)
 			return;
+//		setCurrentGraphSet(gs, yPixel, 0);
 		gs.mouseMovedEvent(xPixel, yPixel);
 	}
 
@@ -962,9 +984,9 @@ public class PanelData implements EventManager {
 		GraphSet gs = GraphSet.findGraphSet(graphSets, xPixel, yPixel);
 		if (gs == null)
 			return;
-		setCurrentGraphSet(gs, yPixel, 0);
+		setCurrentGraphSet(gs, yPixel);
 		clickCount = (++clickCount % 3);
-		gs.checkWidgetEvent(xPixel, yPixel, true);
+		currentGraphSet.mousePressedEvent(xPixel, yPixel, clickCount);
 	}
 
 	public void doMouseDragged(int xPixel, int yPixel) {
@@ -972,7 +994,8 @@ public class PanelData implements EventManager {
 		mouseState = Mouse.DOWN;
 		if (GraphSet.findGraphSet(graphSets, xPixel, yPixel) != currentGraphSet)
 			return;
-		currentGraphSet.checkWidgetEvent(xPixel, yPixel, false);
+		if (currentGraphSet.checkWidgetEvent(xPixel, yPixel, false))
+			setTaintedAll();
 		currentGraphSet.mouseMovedEvent(xPixel, yPixel);
 	}
 
@@ -992,8 +1015,9 @@ public class PanelData implements EventManager {
 		GraphSet gs = GraphSet.findGraphSet(graphSets, xPixel, yPixel);
 		if (gs == null)
 			return;
-		setCurrentGraphSet(gs, yPixel, clickCount);
+		setCurrentGraphSet(gs, yPixel);
 		gs.mouseClickedEvent(xPixel, yPixel, clickCount, isControlDown);
+		setTaintedAll();
 		repaint();
 	}
 
@@ -1016,7 +1040,7 @@ public class PanelData implements EventManager {
 	}
 
 	public void checkIntegral(Parameters parameters, String value) {
-		currentGraphSet.checkIntegral(parameters, value);
+		currentGraphSet.checkIntegralParams(parameters, value);
 	}
 
 	/**
@@ -1196,62 +1220,55 @@ public class PanelData implements EventManager {
 	public void setColor(ScriptToken st, GenericColor color) {
 		if (color != null)
 			options.put(st, CU.toRGBHexString(color));
+		// "return" is because these are front/back pane operations
 		switch (st) {
-		case BACKGROUNDCOLOR:
-			jsvp.setBackgroundColor(bgcolor = color);
-			taintedAll = true;
-			break;
 		case COORDINATESCOLOR:
 			coordinatesColor = color;
-			break;
-		case GRIDCOLOR:
-			gridColor = color;
-			taintedAll = true;
-			break;
+			return;
 		case HIGHLIGHTCOLOR:
 			highlightColor = color;
 			if (highlightColor.getOpacity255() == 255)
 				highlightColor.setOpacity255(150);
+			return;
+		case ZOOMBOXCOLOR:
+			zoomBoxColor = color;
+			return;
+		case ZOOMBOXCOLOR2:
+			zoomBoxColor2 = color;
+			return;
+		case BACKGROUNDCOLOR:
+			jsvp.setBackgroundColor(bgcolor = color);
+			break;
+		case GRIDCOLOR:
+			gridColor = color;
 			break;
 		case INTEGRALPLOTCOLOR:
 			integralPlotColor = color;
-			taintedAll = true;
 			break;
 		case PEAKTABCOLOR:
 			peakTabColor = color;
-			taintedAll = true;
 			break;
 		case PLOTCOLOR:
 			for (int i = graphSets.size(); --i >= 0;)
 				graphSets.get(i).setPlotColor0(color);
-			taintedAll = true;
 			break;
 		case PLOTAREACOLOR:
 			plotAreaColor = color;
-			taintedAll = true;
 			break;
 		case SCALECOLOR:
 			scaleColor = color;
-			taintedAll = true;
 			break;
 		case TITLECOLOR:
 			titleColor = color;
-			taintedAll = true;
 			break;
 		case UNITSCOLOR:
 			unitsColor = color;
-			taintedAll = true;
-			break;
-		case ZOOMBOXCOLOR:
-			zoomBoxColor = color;
-			break;
-		case ZOOMBOXCOLOR2:
-			zoomBoxColor2 = color;
 			break;
 		default:
 			Logger.warn("AwtPanel --- unrecognized color: " + st);
-			break;
+			return;
 		}
+		taintedAll = true;
 	}
 
 	public GenericColor getColor(ScriptToken whatColor) {
@@ -1440,7 +1457,7 @@ public class PanelData implements EventManager {
         }
       }
       g2d.translateScale(g, x, y, 0.1);
-      taintedAll = true;
+      setTaintedAll();
       drawGraph(g, g, g, (int) width, (int) height, addFilePath);
       isPrinting = false;
       return JSViewer.PAGE_EXISTS;
@@ -1463,6 +1480,7 @@ public class PanelData implements EventManager {
 		case Event.VK_BACK_SPACE: // Mac
 			escapeKeyPressed(code != Event.VK_ESCAPE);
 			isIntegralDrag = false;
+			setTaintedAll();
 			repaint();
 			return true;
 		}
@@ -1489,6 +1507,7 @@ public class PanelData implements EventManager {
 					notifySubSpectrumChange(dir, null);
 				} else {
 					advanceSubSpectrum(dir);
+					setTaintedAll();
 					repaint();
 				}
 				doConsume = true;
@@ -1513,6 +1532,7 @@ public class PanelData implements EventManager {
 		}
 		if (scaleFactor != 0) {
 			scaleYBy(scaleFactor);
+			setTaintedAll();
 			repaint();
 		}
 		return doConsume;
@@ -1539,12 +1559,14 @@ public class PanelData implements EventManager {
 			if (mods != Event.CTRL_MASK)
 				break;
 			previousView();
+			setTaintedAll();
 			repaint();
 			return true;
 		case 25: // ctrl-y
 			if (mods != Event.CTRL_MASK)
 				break;
 			nextView();
+			setTaintedAll();
 			repaint();
 			return true;
 		}
@@ -1564,6 +1586,7 @@ public class PanelData implements EventManager {
 			break;
 		case Event.RELEASED:
 			doMouseReleased(x, y, checkMod(buttonMods, Event.MOUSE_LEFT));
+			setTaintedAll();
 			repaint();
 			break;
 		case Event.DRAGGED:
@@ -1651,6 +1674,12 @@ public class PanelData implements EventManager {
 	public void setIRMode(IRMode mode, String type) {
 		for (int i = graphSets.size(); --i >= 0;)
 			graphSets.get(i).setIRMode(mode, type);
+	}
+
+	public void closeSpectrum() {
+		vwr.close("views");
+		vwr.close(getSourceID());
+		vwr.execView("*", true);		
 	}
 
 }

@@ -18,7 +18,8 @@ public class RepaintManager {
       return false;
     }
     repaintPending = true;
-    vwr.pd().taintedAll = true;
+    //if (vwr.pd() != null) // all closed
+    	//vwr.pd().setTaintedAll();
     @SuppressWarnings("unused")
 		Object applet = vwr.html5Applet;
     /**

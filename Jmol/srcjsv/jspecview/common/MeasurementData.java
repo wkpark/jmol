@@ -152,7 +152,16 @@ public class MeasurementData extends Lst<Measurement> implements
 				removeItemAt(i);
 			}
 		}
-
+	}
+	
+	protected int find(double x) {
+		for (int i = size(); --i >= 0;) {
+			Measurement in = get(i);
+			if (in.overlaps(x, x)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public class ViewsDialog extends JSVDialog {
     combineSelectedButton = dialog.addButton("btnCombineSelected", "Combine Selected");
     closeSelectedButton = dialog.addButton("btnCloseSelected", "Close Selected");
     dialog.addButton("btnDone", "Done");
-    dialog.setPreferredSize(500, 350);
+    dialog.setPreferredSize(800, 350);
     txt1 = dialog.addCheckBox(null, null, 0, false); // resets iRow; sets to rightPanel
     addCheckBoxes(vwr.spectraTree.getRootNode(), 0, true);
     addCheckBoxes(vwr.spectraTree.getRootNode(), 0, false);

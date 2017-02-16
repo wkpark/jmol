@@ -695,6 +695,7 @@ public class JDXReader implements JmolJDXMOLReader {
           //TODO: don't save in file??
           if (!(spectrum.dataType.toUpperCase().contains("SPECTRUM")))
             return true;
+          value = PT.replaceAllCharacters(value, ")(", "");
           StringTokenizer srt =   new StringTokenizer(value, ",");
           if (srt.countTokens() != 4)
             return true;

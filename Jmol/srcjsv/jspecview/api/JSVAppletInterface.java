@@ -41,7 +41,7 @@ public interface JSVAppletInterface {
    */
 
   /**
-   * Delivers spectrum coded as desired: XY, SQZ, PAC, DIF, DIFDUP, FIX, AML, CML
+   * Delivers spectrum coded as desired: XY, SQZ, PAC, DIF, DIFDUP, FIX, AML, CML, PDF(base64-encoded)
    * 
    * @param type
    * @param n
@@ -156,5 +156,7 @@ public interface JSVAppletInterface {
   public abstract boolean runScriptNow(String script);
   
   public abstract String print(String fileName);
+
+	public abstract String checkScript(String script);
 
 }

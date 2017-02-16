@@ -33,6 +33,13 @@ package jspecview.common;
  */
 public class Measurement extends Annotation {
   
+	public static final int PT_XY1 = 1;
+	public static final int PT_XY2 = 2;
+	public static final int PT_INT_LABEL = -5;
+	public static final int PT_ON_LINE1 = -1;
+	public static final int PT_ON_LINE2 = -2;
+	public static final int PT_ON_LINE = 0;
+	
 	private Coordinate pt2 = new Coordinate();
 	protected double value;
 

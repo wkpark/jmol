@@ -102,6 +102,7 @@ public class JsDialogManager extends DialogManager {
 		dialog.getContentPane().add(scrollPane);
 		dialog.pack();
 		dialog.setVisible(true);
+		dialog.toFront(); 
 	}
 
 	@Override
@@ -135,6 +136,7 @@ public class JsDialogManager extends DialogManager {
 		dialog.getContentPane().add(pane);
 		dialog.pack();
 		dialog.setVisible(true);
+		dialog.toFront();
 	}
 	
 	/**

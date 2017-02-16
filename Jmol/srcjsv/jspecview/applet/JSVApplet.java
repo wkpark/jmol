@@ -52,6 +52,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Map;
@@ -96,7 +98,7 @@ import jspecview.java.AwtMainPanel;
  */
 
 public class JSVApplet extends JApplet implements JSVAppletInterface,
-		AppletFrame {
+		AppletFrame, KeyListener {
 
 	protected Thread commandWatcherThread;
 
@@ -195,9 +197,9 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 	 */
 	@Override
 	public String getAppletInfo() {
-		return "JSpecView Applet " + JSVersion.VERSION;
+		return JSVApp.getAppletInfo();
 	}
-
+	
 	// /////////////// JSpecView JavaScript calls ///////////////////
 
 	/*
@@ -367,6 +369,7 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 	public void syncScript(String peakScript) {
 		app.syncScript(peakScript);
 	}
+	
 
 	/*
 	 * (non-Javadoc)
@@ -558,4 +561,37 @@ public class JSVApplet extends JApplet implements JSVAppletInterface,
 	public String print(String fileName) {
 		return app.print(fileName);
 	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		keyPressedEvent(e.getKeyCode(), e.getKeyChar());		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	protected void keyPressedEvent(int keyCode, char keyChar) {	
+//		String ret = vwr.checkCommandLineForTip(keyChar, commandInput.getText(), true);
+//		if (ret != null)
+//			commandInput.setText(ret);
+//		commandInput.requestFocusInWindow();
+}
+
+	@Override
+	public String checkScript(String script) {
+		String s = app.checkScript(script);
+		if (s != null)
+			System.out.println(s);
+		return s;
+	}
+	
 }

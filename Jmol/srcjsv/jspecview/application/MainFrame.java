@@ -41,7 +41,6 @@
 package jspecview.application;
 
 import java.awt.BorderLayout;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -58,12 +57,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
-
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import javajs.util.CU;
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;
@@ -81,33 +78,34 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.jmol.api.JSVInterface;
-import org.jmol.api.JmolSyncInterface;
-import org.jmol.util.Logger;	
-
 import jspecview.api.JSVAppInterface;
+import jspecview.api.JSVFileDropper;
 import jspecview.api.JSVPanel;
 import jspecview.api.JSVTreeNode;
 import jspecview.api.PanelListener;
-import jspecview.api.JSVFileDropper;
 import jspecview.app.JSVAppPro;
-import jspecview.common.Spectrum;
+import jspecview.common.ColorParameters;
 import jspecview.common.JSVFileManager;
-import jspecview.common.PanelNode;
 import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
-import jspecview.common.ColorParameters;
+import jspecview.common.PanelNode;
 import jspecview.common.Parameters;
 import jspecview.common.PeakPickEvent;
 import jspecview.common.ScriptToken;
+import jspecview.common.Spectrum;
 import jspecview.common.SubSpecChangeEvent;
 import jspecview.common.ZoomEvent;
 import jspecview.export.Exporter;
 import jspecview.java.AwtFileHelper;
-import jspecview.java.AwtPanel;
 import jspecview.java.AwtMainPanel;
+import jspecview.java.AwtPanel;
 import jspecview.source.JDXSource;
 
+import org.jmol.api.JSVInterface;
+import org.jmol.api.JmolSyncInterface;
+import org.jmol.util.Logger;
+
+// BH 1/14/17 moves command checking to JSViewer
 
 /**
  * The Main Class or Entry point of the JSpecView Application.
@@ -545,61 +543,12 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 
 	protected void keyPressedEvent(int keyCode, char keyChar) {
 		commandHistory.keyPressed(keyCode);	
-		checkCommandLineForTip(keyChar);
+		String ret = vwr.checkCommandLineForTip(keyChar, commandInput.getText(), true);
+		if (ret != null)
+			commandInput.setText(ret);
 		commandInput.requestFocusInWindow();
   }
 
-	protected void checkCommandLineForTip(char c) {
-		if (c != '\t' && (c == '\n' || c < 32 || c > 126))
-			return;
-		String cmd = commandInput.getText()
-				+ (Character.isISOControl(c) ? "" : "" + c);
-		String tip;
-		if (cmd.indexOf(";") >= 0)
-			cmd = cmd.substring(cmd.lastIndexOf(";") + 1);
-		while (cmd.startsWith(" "))
-			cmd = cmd.substring(1);
-		if (cmd.length() == 0) {
-			tip = "Enter a command:";
-		} else {
-			Lst<String> tokens = ScriptToken.getTokens(cmd);
-			if (tokens.size() == 0)
-				return;
-			boolean isExact = (cmd.endsWith(" ") || tokens.size() > 1);
-			Lst<ScriptToken> list = ScriptToken.getScriptTokenList(tokens.get(0),
-					isExact);
-			switch (list.size()) {
-			case 0:
-				tip = "?";
-				break;
-			case 1:
-				ScriptToken st = list.get(0);
-				tip = st.getTip();
-				try {
-					if (tip.indexOf("TRUE") >= 0)
-						tip = " (" + vwr.parameters.getBoolean(st) + ")";
-					else if (st.name().indexOf("COLOR") >= 0)
-						tip = " (" + CU.toRGBHexString(vwr.parameters.getElementColor(st))
-								+ ")";
-					else
-						tip = "";
-				} catch (Exception e) {
-					return;
-				}
-				if (c == '\t' || isExact) {
-					tip = st.name() + " " + st.getTip() + tip;
-					if (c == '\t')
-						commandInput.setText(st.name() + " ");
-					break;
-				}
-				tip = st.name() + " " + tip;
-				break;
-			default:
-				tip = ScriptToken.getNameList(list);
-			}
-		}
-		writeStatus(tip);
-	}
 
 	private void setError(boolean isError, boolean isWarningOnly) {
 		appMenu.setError(isError, isWarningOnly);
@@ -1127,4 +1076,11 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 		return  vwr.print(fileName);
 	}
 
+	@Override
+	public String checkScript(String script) {
+		String s = vwr.checkScript(script);
+		if (s != null)
+			System.out.println(s);
+		return s;
+	}
 }

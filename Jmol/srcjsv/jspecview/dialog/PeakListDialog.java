@@ -44,6 +44,7 @@ public class PeakListDialog extends JSVDialog {
 	public void addUniqueControls() {
 		txt1 = dialog.addTextField("txtThreshold", "Threshold", null, "",
 				"", true);
+		dialog.setPreferredSize(780, 350);
 		setThreshold(Double.NaN);
 		combo1 = dialog.addSelectOption("cmbInterpolation", "Interpolation", 
 				new String[] { "parabolic", "none" }, 0, true);

@@ -68,6 +68,7 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 	 * @return this
 	 */
 	public JSVDialog setParams(String title, JSViewer viewer, Spectrum spec) {
+		title = DialogManager.fixTitle(title);
 		this.title = title;
 		this.vwr = viewer;
 		this.spec = spec;

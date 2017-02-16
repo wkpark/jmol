@@ -170,4 +170,9 @@ public class JDXSource extends JDXHeader {
 		jdxSpectra.get(0).sourceID = id;
 	}
 
+	public boolean matchesFilePath(String filePath) {
+		return this.filePath.equals(filePath) 
+				|| this.filePath.replace('\\', '/').equals(filePath);
+	}
+
 }

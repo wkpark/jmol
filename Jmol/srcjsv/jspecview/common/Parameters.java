@@ -22,6 +22,7 @@ public class Parameters {
     setBoolean(ScriptToken.ENABLEZOOM, true);
     setBoolean(ScriptToken.DISPLAY2D, true);
     setBoolean(ScriptToken.COORDINATESON, true);
+    setBoolean(ScriptToken.PEAKTABSON, true);
     setBoolean(ScriptToken.GRIDON, true);
     setBoolean(ScriptToken.XSCALEON, true);
     setBoolean(ScriptToken.YSCALEON, true);
@@ -67,6 +68,7 @@ public class Parameters {
 		case DISPLAY2D:
 		case ENABLEZOOM:
 		case GRIDON:
+		case PEAKTABSON:
 		case REVERSEPLOT:
 		case TITLEON:
 		case TITLEBOLDON:

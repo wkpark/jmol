@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import javajs.api.GenericColor;
 import javajs.api.GenericFileInterface;
 import javajs.api.GenericPlatform;
+import javajs.util.OC;
 
 
 import jspecview.common.PanelData;
@@ -32,7 +33,7 @@ public interface JSVPanel extends JSVViewPanel {
 
 	int getFontFaceID(String name);
 
-  String saveImage(String type, GenericFileInterface file);
+	String saveImage(String type, GenericFileInterface file, OC out);
 
 	public void printPanel(PrintLayout pl, OutputStream os, String printJobTitle);
 

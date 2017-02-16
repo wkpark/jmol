@@ -79,7 +79,9 @@ public class PanelNode {
   public static JDXSource findSourceByNameOrId(String id, Lst<PanelNode> panelNodes) {
     for (int i = panelNodes.size(); --i >= 0;) {
       PanelNode node = panelNodes.get(i);
-      if (id.equals(node.id) || id.equalsIgnoreCase(node.source.getFilePath()))
+      if (id.equals(node.id) 
+      		|| id.equals(node.source.getSpectra().get(0).sourceID) // needed for simulated spectra 
+  				|| node.source.matchesFilePath(id)) // had "IgnoreCase" here, but for a file path??
         return node.source;
     }
     // only if that doesn't work -- check file name for exact case
@@ -137,7 +139,7 @@ public class PanelNode {
     if (filePath != null)
       for (int i = panelNodes.size(); --i >= 0;) {
       	//System.out.println("JSVPanelNode " + filePath + " " + panelNodes.get(i).source.getFilePath());
-        if (filePath.equals(panelNodes.get(i).source.getFilePath())
+        if (panelNodes.get(i).source.matchesFilePath(filePath)
         		|| filePath.equals(panelNodes.get(i).frameTitle))
           return pt;
       }

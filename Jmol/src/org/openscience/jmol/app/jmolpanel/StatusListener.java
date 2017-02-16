@@ -493,7 +493,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
   public void setJSpecView(String peaks, boolean doLoadCheck, boolean isFileLoad) {
     if (peaks.startsWith(":"))
       peaks = peaks.substring(1);
-    if (peaks.equals("NONESimulate:")) {
+    if (peaks.equals("none") || peaks.equals("NONESimulate:")) {
       if (jSpecViewFrame != null) {
         jSpecViewFrame.syncScript("close ALL");
         jSpecViewFrame.awaken(false);

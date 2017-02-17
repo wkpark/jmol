@@ -31,6 +31,7 @@ import javajs.util.PT;
 
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.java.BS;
+import org.jmol.modelset.Atom;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.Elements;
@@ -514,6 +515,69 @@ public class SmilesMatcher implements SmilesMatcherInterface {
   @Override
   public String cleanSmiles(String smiles) {
     return SmilesParser.cleanPattern(smiles);
+  }
+
+  @Override
+  public int[][] getMapForJME(String jme, Atom[] at, BS bsAtoms) {
+    SmilesSearch molecule = new SmilesSearch();
+    String[] tokens = PT.getTokens(jme);
+    int nAtoms = PT.parseInt(tokens[0]);
+    int nBonds = PT.parseInt(tokens[1]);
+    int pt = 2;
+    for (int i = 0; i < nAtoms; i++, pt += 3) {
+      String sa = tokens[pt];
+      SmilesAtom a = molecule.addAtom();
+      int ic = sa.indexOf("+");
+      int charge = 0;
+      if (ic >= 0) {
+       charge = (ic == sa.length() - 1 ? 1 : PT.parseInt(sa.substring(ic + 1)));
+      } else if ((ic = sa.indexOf("-")) >= 0) {
+        charge= PT.parseInt(sa.substring(ic));
+      }
+      a.setCharge(charge);
+      a.setSymbol(ic < 0 ? sa : sa.substring(0, ic));
+    }
+    for (int i = 0; i < nBonds; i++) {
+      int ia = PT.parseInt(tokens[pt++]) - 1;
+      int ib = PT.parseInt(tokens[pt++]) - 1;
+      int iorder = PT.parseInt(tokens[pt++]);
+      SmilesAtom a1 = molecule.patternAtoms[ia];
+      SmilesAtom a2 = molecule.patternAtoms[ib];
+      int order = Edge.BOND_COVALENT_SINGLE;
+      switch (iorder) {
+      default:
+      case 1:
+        break;
+      case 2:
+        order = Edge.BOND_COVALENT_DOUBLE;
+        break;
+      case 3:
+        order = Edge.BOND_COVALENT_TRIPLE;
+        break;        
+      }
+      new SmilesBond(a1, a2, order, false).index = i;
+      
+    }
+
+    String s = "";
+    try {
+      molecule.isSmarts = true;
+      molecule.set();
+      BS bs = BSUtil.newBitSet2(0, nAtoms);
+      s = getSmiles(molecule.patternAtoms, molecule.ac, bs, null, JC.SMILES_TYPE_SMARTS);
+      int[][] map = getCorrelationMaps(s, 
+          molecule.patternAtoms, nAtoms, bs, JC.SMILES_TYPE_SMARTS |JC.SMILES_FIRST_MATCH_ONLY);
+      int[][] map2 = getCorrelationMaps(s, 
+          at, bsAtoms.cardinality(), bsAtoms, JC.SMILES_TYPE_SMARTS |JC.SMILES_FIRST_MATCH_ONLY);
+      System.out.println(s);
+      System.out.println(jme);
+      System.out.println(PT.toJSON(null,  map));
+      System.out.println(PT.toJSON(null,  map2));
+      return new int[][] {map[0], map2[0]};
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
 }

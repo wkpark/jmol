@@ -2437,29 +2437,38 @@ public class PropertyManager implements JmolPropertyManager {
    */
   @Override
   public String fixJMEFormalCharges(BS bsAtoms, String jme) {
+    boolean haveCharges = false;
     if (bsAtoms == null)
       return jme;
-    boolean haveCharges = false;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-      if (vwr.ms.at[i].getFormalCharge() != 0) {
+      Atom a = vwr.ms.at[i];
+      if (a.getFormalCharge() != 0) {
         haveCharges = true;
         break;
       }
     }
     if (!haveCharges)
       return jme;
+    int[][] map = vwr.getSmilesMatcher().getMapForJME(jme, vwr.ms.at, bsAtoms);
+    int[] jmeMap = map[0];
+    int[] jmolMap = map[1];
     String[] tokens = PT.getTokens(jme);
-    for (int pt = 2, i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms
-        .nextSetBit(i + 1)) {
-      Atom a = vwr.ms.at[i];
-      String elem = a.getElementSymbol();
-      String jmeAtom = PT.replaceAllCharacters(tokens[pt], "+-", "");
-      // look out for H still in there
-      if (elem.equals("H") && !jmeAtom.equals("H"))
-        continue;
+    // map points only to 
+    int nAtoms = PT.parseInt(tokens[0]);
+    int[] mapjj = new int[nAtoms];
+    for (int i = jmeMap.length; --i >= 0;) {
+      mapjj[jmeMap[i]] = jmolMap[i] + 1;
+    }
+    int ipt = 0;
+    for (int pt = 2; pt < tokens.length; pt += 3) {
+      String jmeAtom = tokens[pt];
       // stop if we are at the bonds
       if (PT.parseInt(jmeAtom) != Integer.MIN_VALUE)
         break;
+      jmeAtom = PT.replaceAllCharacters(jmeAtom, "+-", "");
+      // look out for H still in there
+      Atom a = vwr.ms.at[mapjj[ipt++] - 1];
+      String elem = a.getElementSymbol();
       if (!elem.equals(jmeAtom)) {
         // we tried, but this is not working
         return jme;
@@ -2468,8 +2477,7 @@ public class PropertyManager implements JmolPropertyManager {
       if (charge != 0)
         tokens[pt] = jmeAtom + (charge > 0 ? "+" : "-")
             + (Math.abs(charge) > 1 ? "" + Math.abs(charge) : "");
-      pt += 3;
-    }
+   }
     return PT.join(tokens, ' ', 0);
   }
 

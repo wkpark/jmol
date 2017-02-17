@@ -6,6 +6,7 @@ import javajs.util.Lst;
 import javajs.util.P3;
 
 import org.jmol.java.BS;
+import org.jmol.modelset.Atom;
 import org.jmol.util.Node;
 
 public interface SmilesMatcherInterface {
@@ -52,5 +53,7 @@ public interface SmilesMatcherInterface {
                                       String bioComment, int flags) throws Exception;
 
   public abstract String cleanSmiles(String smiles);
+
+  public int[][] getMapForJME(String jme, Atom[] at, BS bsAtoms);
 
 }

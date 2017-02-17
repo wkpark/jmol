@@ -2450,6 +2450,8 @@ public class PropertyManager implements JmolPropertyManager {
     if (!haveCharges)
       return jme;
     int[][] map = vwr.getSmilesMatcher().getMapForJME(jme, vwr.ms.at, bsAtoms);
+    if (map == null)
+      return jme;
     int[] jmeMap = map[0];
     int[] jmolMap = map[1];
     String[] tokens = PT.getTokens(jme);

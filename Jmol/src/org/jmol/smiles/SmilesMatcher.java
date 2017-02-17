@@ -564,15 +564,15 @@ public class SmilesMatcher implements SmilesMatcherInterface {
       molecule.isSmarts = true;
       molecule.set();
       BS bs = BSUtil.newBitSet2(0, nAtoms);
-      s = getSmiles(molecule.patternAtoms, molecule.ac, bs, null, JC.SMILES_TYPE_SMARTS);
+      s = getSmiles(molecule.patternAtoms, molecule.ac, bs, null, JC.SMILES_TYPE_SMARTS|JC.SMILES_IGNORE_STEREOCHEMISTRY);
       int[][] map = getCorrelationMaps(s, 
-          molecule.patternAtoms, nAtoms, bs, JC.SMILES_TYPE_SMARTS |JC.SMILES_FIRST_MATCH_ONLY);
+          molecule.patternAtoms, nAtoms, bs, JC.SMILES_TYPE_SMARTS |JC.SMILES_FIRST_MATCH_ONLY|JC.SMILES_IGNORE_STEREOCHEMISTRY);
       int[][] map2 = getCorrelationMaps(s, 
-          at, bsAtoms.cardinality(), bsAtoms, JC.SMILES_TYPE_SMARTS |JC.SMILES_FIRST_MATCH_ONLY);
-      System.out.println(s);
-      System.out.println(jme);
-      System.out.println(PT.toJSON(null,  map));
-      System.out.println(PT.toJSON(null,  map2));
+          at, bsAtoms.cardinality(), bsAtoms, JC.SMILES_TYPE_SMARTS |JC.SMILES_FIRST_MATCH_ONLY|JC.SMILES_IGNORE_STEREOCHEMISTRY);
+//      System.out.println(s);
+//      System.out.println(jme);
+//      System.out.println(PT.toJSON(null,  map));
+//      System.out.println(PT.toJSON(null,  map2));
       return new int[][] {map[0], map2[0]};
     } catch (Exception e) {
       e.printStackTrace();

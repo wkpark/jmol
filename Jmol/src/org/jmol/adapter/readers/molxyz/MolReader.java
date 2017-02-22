@@ -351,6 +351,8 @@ public class MolReader extends AtomSetCollectionReader {
     case 8:
     case 9: // haptic
       return JmolAdapter.ORDER_PARTIAL01;
+    case 14:  // added ad hoc 
+      return JmolAdapter.ORDER_COVALENT_QUAD;
     case 15:  // added ad hoc 
       return JmolAdapter.ORDER_COVALENT_QUINT;
     case 16:  // added ad hoc

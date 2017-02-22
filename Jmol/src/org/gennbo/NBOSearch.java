@@ -1196,8 +1196,7 @@ class NBOSearch extends NBOView {
   }
 
   protected void doShowResonanceStructure(int index) {
-    dialog.doSearchSetResStruct((isAlphaSpin() ? "rsa"
-        : "rsb"), index);
+    dialog.doSearchSetResStruct((isAlphaSpin() ? "rsa" : "rsb"), index);
   }
 
   /**

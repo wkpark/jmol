@@ -28,9 +28,10 @@ import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
 /**
  * 
+ * Not used -- originally in a plan to create a specialized parser for magnetic structure CIF data
+ * 
  * magCIF files are recognized after class creation, so this is a subreader
  * but it turned out not to be necessary.
- * 
  * 
  * @author Bob Hanson (hansonr@stolaf.edu)
  * 

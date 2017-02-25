@@ -2,6 +2,10 @@ package org.jmol.adapter.readers.cif;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 
+/**
+ * Not used -- originally in a plan to create a specialized parser for magnetic structure CIF data
+ * 
+ */
 public interface MagCifRdrInterface {
 
   void initialize(AtomSetCollectionReader r) throws Exception;

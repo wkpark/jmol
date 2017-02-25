@@ -77,7 +77,7 @@ import javajs.util.V3;
 public class CifReader extends AtomSetCollectionReader {
 
   private static final String titleRecords = "__citation_title__publ_section_title__active_magnetic_irreps_details__";
-  private MSCifRdr modr; // Modulated Structure subreader
+  private MSCifParser modr; // Modulated Structure subreader
 //  private MagCifRdr magr;// Magnetic CIF subreader - not necessary
 
   // no need for reflection here -- the CIF reader is already
@@ -366,13 +366,13 @@ public class CifReader extends AtomSetCollectionReader {
     asc.addAtom(atom);
   }
 
-  private MSCifRdr getModulationReader() throws Exception {
+  private MSCifParser getModulationReader() throws Exception {
     return (modr == null ? initializeMSCIF() : modr);
   }
 
-  private MSCifRdr initializeMSCIF() throws Exception {
+  private MSCifParser initializeMSCIF() throws Exception {
     if (modr == null)
-      ms = modr = (MSCifRdr) getInterface("org.jmol.adapter.readers.cif.MSCifRdr");
+      ms = modr = (MSCifParser) getInterface("org.jmol.adapter.readers.cif.MSCifRdr");
     modulated = (modr.initialize(this, modDim) > 0);
     return modr;
   }

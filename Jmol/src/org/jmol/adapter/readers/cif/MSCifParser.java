@@ -29,9 +29,9 @@ import javajs.util.Matrix;
 import javajs.util.PT;
 
 
-public class MSCifRdr extends MSRdr {
+public class MSCifParser extends MSRdr {
 
-  public MSCifRdr() {
+  public MSCifParser() {
     // for reflection
   }
   

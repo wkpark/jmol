@@ -197,7 +197,7 @@ public class ScriptManager implements JmolScriptManager {
     scriptQueueRunning[pt] = true;
     queueThreads[pt] = new ScriptQueueThread(this, vwr,
         startedByCommandWatcher, pt);
-    System.out.println("script manager starting " + pt + " " + queueThreads[pt]);
+    //System.out.println("script manager starting " + pt + " " + queueThreads[pt]);
     queueThreads[pt].start();
   }
 

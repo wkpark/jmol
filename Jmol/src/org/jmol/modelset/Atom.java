@@ -1381,8 +1381,7 @@ public class Atom extends Point3fi implements Node {
     case T.coord:
       return P3.newP(this);
     case T.fracxyz:
-      return getFractionalCoordPt(!vwr.g.legacyJavaFloat, false,
-          ptTemp); // was !group.chain.model.isJmolDataFrame
+      return getFractionalCoordPt(!vwr.g.legacyJavaFloat, false, ptTemp); // was !group.chain.model.isJmolDataFrame
     case T.fuxyz:
       return getFractionalCoordPt(!vwr.g.legacyJavaFloat, false, ptTemp);
     case T.unitxyz:

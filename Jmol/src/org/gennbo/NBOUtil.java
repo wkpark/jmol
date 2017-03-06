@@ -32,8 +32,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+
+import javajs.util.PT;
+import javajs.util.SB;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -44,10 +45,6 @@ import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import javax.swing.plaf.metal.MetalComboBoxUI;
-
-
-import javajs.util.PT;
-import javajs.util.SB;
 
 
 public class NBOUtil {

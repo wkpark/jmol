@@ -29,6 +29,7 @@ import java.util.Map;
 
 import javajs.util.Lst;
 import javajs.util.M4;
+import javajs.util.MessagePackReader;
 import javajs.util.PT;
 import javajs.util.SB;
 

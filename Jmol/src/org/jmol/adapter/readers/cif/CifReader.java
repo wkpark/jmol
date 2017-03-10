@@ -372,7 +372,7 @@ public class CifReader extends AtomSetCollectionReader {
 
   private MSCifParser initializeMSCIF() throws Exception {
     if (modr == null)
-      ms = modr = (MSCifParser) getInterface("org.jmol.adapter.readers.cif.MSCifRdr");
+      ms = modr = (MSCifParser) getInterface("org.jmol.adapter.readers.cif.MSCifParser");
     modulated = (modr.initialize(this, modDim) > 0);
     return modr;
   }

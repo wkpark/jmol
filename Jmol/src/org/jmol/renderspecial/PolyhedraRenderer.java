@@ -135,7 +135,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
       }
       if (elemNos != null
           && i < elemNos.length
-          && g3d.setC(elemNos[i] < 0 ? C.BLACK : vwr.cm.setElementArgb(
+          && g3d.setC(elemNos[i] < 0 ? colix : vwr.cm.setElementArgb(
               elemNos[i], Integer.MAX_VALUE))) {
         g3d.fillSphereBits(
             (int) tm.scaleToScreen((int) v.z, (int) (p.pointScale * 1000)), v);

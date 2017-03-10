@@ -1,14 +1,9 @@
-package org.jmol.adapter.readers.cif;
+package javajs.util;
 
-import java.io.BufferedInputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.api.Interface;
-
-import javajs.api.GenericBinaryDocument;
-import javajs.util.BC;
-import javajs.util.SB;
+import javajs.api.GenericBinaryDocumentReader;
 
 /**
  * A simple MessagePack reader. See https://github.com/msgpack/msgpack/blob/master/spec.md
@@ -46,7 +41,7 @@ import javajs.util.SB;
 
 public class MessagePackReader {
 
-  private GenericBinaryDocument doc;
+  private GenericBinaryDocumentReader doc;
 
   private boolean isHomo;// homogeneous arrays -- use int[] not Integer
 
@@ -91,7 +86,7 @@ public class MessagePackReader {
   private final static int MAP16        = 0xde;
   private final static int MAP32        = 0xdf;
 
-  public MessagePackReader(GenericBinaryDocument binaryDoc, boolean isHomogeneousArrays) {
+  public MessagePackReader(GenericBinaryDocumentReader binaryDoc, boolean isHomogeneousArrays) {
     isHomo = isHomogeneousArrays;
     doc = binaryDoc;
   }
@@ -137,36 +132,22 @@ public class MessagePackReader {
         return Boolean.FALSE;
       case TRUE:
         return Boolean.TRUE;
-      case EXT8: {
-        int n = doc.readUInt8();
-        return new Object[] { Integer.valueOf(doc.readUInt8()),
-            doc.readBytes(n) };
-      }
-      case EXT16: {
-        int n = doc.readUnsignedShort();
-        return new Object[] { Integer.valueOf(doc.readUInt8()),
-            doc.readBytes(n) };
-      }
-      case EXT32: {
-        int n = doc.readInt(); // should be unsigned int
-        return new Object[] { Integer.valueOf(doc.readUInt8()),
-            doc.readBytes(n) };
-      }
+      case EXT8:
+        return getObject(doc.readUInt8());
+      case EXT16:
+        return getObject(doc.readUnsignedShort());
+      case EXT32:
+        return getObject(doc.readInt()); // should be unsigned int
       case FIXEXT1:
-        return new Object[] { Integer.valueOf(doc.readUInt8()),
-            doc.readBytes(1) };
+        return getObject(1);
       case FIXEXT2:
-        return new Object[] { Integer.valueOf(doc.readUInt8()),
-            doc.readBytes(2) };
+        return getObject(2);
       case FIXEXT4:
-        return new Object[] { Integer.valueOf(doc.readUInt8()),
-            doc.readBytes(4) };
+        return getObject(4);
       case FIXEXT8:
-        return new Object[] { Integer.valueOf(doc.readUInt8()),
-            doc.readBytes(8) };
+        return getObject(8);
       case FIXEXT16:
-        return new Object[] { Integer.valueOf(doc.readUInt8()),
-            doc.readBytes(16) };
+        return getObject(16);
       case ARRAY16:
         return getArray(doc.readUnsignedShort());
       case ARRAY32:
@@ -196,7 +177,7 @@ public class MessagePackReader {
         case UINT16:
           return Integer.valueOf(doc.readUnsignedShort());
         case UINT32:
-          return Integer.valueOf(doc.readInt()); // should be unsigned int
+          return Integer.valueOf(doc.readInt()); // technically should be UInt32
         case UINT64:
           return Long.valueOf(doc.readLong()); // should be unsigned long; incompatible with JavaScript!
         case INT8:
@@ -259,6 +240,10 @@ public class MessagePackReader {
       }
     }
     return null;
+  }
+
+  private Object getObject(int n) throws Exception {
+    return new Object[] { Integer.valueOf(doc.readUInt8()), doc.readBytes(n) };
   }
 
   private Object getArray(int n) throws Exception {

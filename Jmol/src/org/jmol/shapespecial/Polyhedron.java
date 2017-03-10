@@ -478,7 +478,6 @@ public class Polyhedron {
     if (offset != null)
       value.sub(offset);
     offset = v;
-    center.add(value);
     for (int i = vertices.length; --i >= 0;)
       vertices[i].add(value);
   }

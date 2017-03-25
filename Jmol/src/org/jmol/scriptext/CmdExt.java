@@ -3238,6 +3238,8 @@ public class CmdExt extends ScriptExt {
     P3 offset = null;
     String id = null;
     boolean ok = false;
+    int[][] faces = null;
+    P3[] points = null;
     for (int i = 1; i < slen; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -3249,7 +3251,8 @@ public class CmdExt extends ScriptExt {
         break;
       case T.point:
         propertyName = "points";
-        propertyValue = Float.valueOf(tokAt(++i) == T.off ? 0 : e.floatParameter(i));
+        propertyValue = Float.valueOf(tokAt(++i) == T.off ? 0 : e
+            .floatParameter(i));
         ok = true;
         break;
       case T.scale:
@@ -3275,6 +3278,18 @@ public class CmdExt extends ScriptExt {
         propertyName = (eval.theTok == T.off ? "off"
             : eval.theTok == T.on ? "on" : "delete");
         onOffDelete = true;
+        break;
+      case T.varray:
+        if (id == null || needsGenerating)
+          invArg();
+        needsGenerating = true;
+        faces = getIntArray2(i);
+        points = getAllPoints(eval.iToken + 1);
+        i = eval.iToken;
+        if (points[0] instanceof Atom)
+          setShapeProperty(JC.SHAPE_POLYHEDRA, "model", Integer.valueOf(((Atom) points[0]).getModelIndex()));
+       propertyName = "definedFaces";
+        propertyValue = new Object[] { faces, points };
         break;
       case T.full:
         propertyName = "full";
@@ -3312,7 +3327,8 @@ public class CmdExt extends ScriptExt {
         if (nAtomSets > 0)
           invPO();
         propertyName = (radius <= 0 ? "radius" : "radius1");
-        propertyValue = Float.valueOf(radius = (radius == 0 ? 0 : floatParameter(i)));
+        propertyValue = Float.valueOf(radius = (radius == 0 ? 0
+            : floatParameter(i)));
         needsGenerating = true;
         break;
       case T.offset:
@@ -5304,5 +5320,4 @@ public class CmdExt extends ScriptExt {
     return data;
   }
   
-
 }

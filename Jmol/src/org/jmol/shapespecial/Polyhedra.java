@@ -41,18 +41,21 @@ import javajs.util.SB;
 import javajs.util.V3;
 
 import org.jmol.api.AtomIndexIterator;
+import org.jmol.api.Interface;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
+import org.jmol.modelset.Model;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 import org.jmol.util.Logger;
+import org.jmol.util.MeshCapper;
 import org.jmol.util.Normix;
 
 public class Polyhedra extends AtomShape implements Comparator<Object[]>{
@@ -119,6 +122,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
   private float distanceRef;
   private int modelIndex;
   private boolean isAuto;
+   private int[][] explicitFaces;
 
   @SuppressWarnings("unchecked")
   @Override
@@ -144,6 +148,10 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       return;
     }
 
+    if ("definedFaces" == propertyName) {
+      setDefinedFaces((P3[]) ((Object[]) value)[1], (int[][]) ((Object[]) value)[0]);
+      return;
+    }
     if ("generate" == propertyName) {
       if (!iHaveCenterBitSet) {
         centers = bs;
@@ -399,6 +407,48 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
     }
 
     setPropAS(propertyName, value, bs);
+  }
+
+  private void setDefinedFaces(P3[] points, int[][] faces) {
+    BS bsUsed = new BS();
+    for (int i = faces.length; --i >= 0;) {
+      int[] face = faces[i];
+      for (int j = face.length; --j >= 0;)
+        bsUsed.set(face[j]);
+    }
+    BS bsNot = BSUtil.newBitSet2(0,  bsUsed.length());
+    bsNot.andNot(bsUsed);
+    int nNot = bsNot.cardinality(); 
+    if (nNot > 0) {
+      int np = points.length;
+      int[] mapOldToNew = new int[np];
+      int[] mapNewToOld = new int[np];
+      int n = 0;
+      for (int i = 0; i < np; i++)
+        if (!bsNot.get(i)) {
+          mapNewToOld[n] = i;
+          mapOldToNew[i] = n++;
+        }
+      P3[] pnew = new P3[n];
+      for (int i = 0; i < n; i++) 
+        pnew[i] = points[mapNewToOld[i]]; 
+      points = pnew;
+      for (int i = faces.length; --i >= 0;) {
+        int[] face = faces[i];
+        for (int j = face.length; --j >= 0;)
+          face[j] = mapOldToNew[face[j]];
+      }
+    }
+    int n = nPoints = points.length;
+    center = new P3();
+    otherAtoms = new P3[n + 1];
+    if (n > 0) {
+      otherAtoms[n] = center;
+      for (int i = 0; i < n; i++)
+        center.add(otherAtoms[i] = points[i]);
+      center.scale(1f / n);
+    }
+    explicitFaces = faces;
   }
 
   private void pointsPolyhedra(BS bs, float pointScale) {
@@ -831,126 +881,171 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
 
   private Polyhedron validatePolyhedron(P3 atomOrPt, int vertexCount) {
     P3[] points = otherAtoms;
+    int[][] faces = explicitFaces;
+    int[][] faceTriangles;
+    V3[] normals;
     boolean collapsed = isCollapsed;
     int triangleCount = 0;
-    int nPoints = vertexCount + 1;
-    int ni = vertexCount - 2;
-    int nj = vertexCount - 1;
-    float planarParam = (Float.isNaN(this.planarParam) ? DEFAULT_PLANAR_PARAM
-        : this.planarParam);
 
-    points[vertexCount] = atomOrPt;
-    P3 ptAve = P3.newP(atomOrPt);
-    for (int i = 0; i < vertexCount; i++)
-      ptAve.add(points[i]);
-    ptAve.scale(1f / (vertexCount + 1));
-    /*  Start by defining a face to be when all three distances
-     *  are < distanceFactor * (longest central) but if a vertex is missed, 
-     *  then expand the range. The collapsed trick is to introduce 
-     *  a "simple" atom near the center but not quite the center, 
-     *  so that our planes on either side of the facet don't overlap. 
-     *  We step out faceCenterOffset * normal from the center.
-     *  
-     *  Alan Hewat pointed out the issue of faces that CONTAIN the center --
-     *  square planar, trigonal and square pyramids, see-saw. In these cases with no
-     *  additional work, you get a brilliance effect when two faces are drawn over
-     *  each other. The solution is to identify this sort of face and, if not collapsed,
-     *  to cut them into smaller pieces and only draw them ONCE by producing a little
-     *  catalog. This uses the Point3i().toString() method.
-     *  
-     *  For these special cases, then, we define a reference point just behind the plane
-     *  
-     *  Note that this is NOT AN OPTION for ID-named polyhedra (Jmol 14.5.0 10/31/2015)
-     */
-
-    P3 ptRef = P3.newP(ptAve);
-    BS bsThroughCenter = new BS();
-    if (thisID == null)
-      for (int pt = 0, i = 0; i < ni; i++)
-        for (int j = i + 1; j < nj; j++)
-          for (int k = j + 1; k < vertexCount; k++, pt++)
-            if (isPlanar(points[i], points[j], points[k], ptRef))
-              bsThroughCenter.set(pt);
-    // this next check for distance allows for bond AND distance constraints
-    int[][] triangles = planesT;
-    P4 pTemp = new P4();
-    V3 nTemp = new V3();
-    float offset = faceCenterOffset;
-    int fmax = FACE_COUNT_MAX;
-    int vmax = MAX_VERTICES;
-    BS bsTemp = Normix.newVertexBitSet();
-    V3[] normals = normalsT;
-    Map<Integer, Object[]> htNormMap = new Hashtable<Integer, Object[]>();
-    Map<String, Object> htEdgeMap = new Hashtable<String, Object>();
     BS bsCenterPlanes = new BS();
-    Lst<int[]> lstRejected = (isFull ? new Lst<int[]>() : null);
-    Object[] edgeTest = new Object[3];
-    V3 vAC = this.vAC;
-    for (int i = 0, pt = 0; i < ni; i++)
-      for (int j = i + 1; j < nj; j++) {
-        for (int k = j + 1; k < vertexCount; k++, pt++) {
-          if (triangleCount >= fmax) {
-            Logger.error("Polyhedron error: maximum face(" + fmax
-                + ") -- reduce RADIUS");
-            return null;
-          }
-          if (nPoints >= vmax) {
-            Logger.error("Polyhedron error: maximum vertex count(" + vmax
-                + ") -- reduce RADIUS");
-            return null;
-          }
-          boolean isThroughCenter = bsThroughCenter.get(pt);
-          P3 rpt = (isThroughCenter ? randomPoint : ptAve);
-          V3 normal = new V3();
-          boolean isWindingOK = Measure.getNormalFromCenter(rpt, points[i],
-              points[j], points[k], !isThroughCenter, normal, vAC);
-          // the standard face:
-          int[] t = new int[] { isWindingOK ? i : j, isWindingOK ? j : i, k, -7 };
-          float err = checkFacet(points, vertexCount, t, triangleCount, normal, pTemp, nTemp,
-              vAC, htNormMap, htEdgeMap, planarParam, bsTemp, edgeTest);
-          if (err != 0) {
-            if (isFull && err != Float.MAX_VALUE && err < 0.5f) {
-              t[3] = (int) (err * 100);
-              lstRejected.addLast(t);
+    int[][] triangles;
+    if (faces != null) {
+      collapsed = false;
+      faceTriangles = AU.newInt2(faces.length);
+      normals = new V3[faces.length];
+      for (int i = faces.length; --i >= 0;)
+        faces[i] = fixExplicitFaceWinding(faces[i], i, points, normals);
+      triangles = ((MeshCapper) Interface.getInterface(
+          "org.jmol.util.MeshCapper", vwr, "script")).set(null)
+          .triangulateFaces(faces, points, faceTriangles);
+      triangleCount = triangles.length;
+    } else {
+
+      int nPoints = vertexCount + 1;
+      int ni = vertexCount - 2;
+      int nj = vertexCount - 1;
+      float planarParam = (Float.isNaN(this.planarParam) ? DEFAULT_PLANAR_PARAM
+          : this.planarParam);
+
+      points[vertexCount] = atomOrPt;
+      P3 ptAve = P3.newP(atomOrPt);
+      for (int i = 0; i < vertexCount; i++)
+        ptAve.add(points[i]);
+      ptAve.scale(1f / (vertexCount + 1));
+      /*  Start by defining a face to be when all three distances
+       *  are < distanceFactor * (longest central) but if a vertex is missed, 
+       *  then expand the range. The collapsed trick is to introduce 
+       *  a "simple" atom near the center but not quite the center, 
+       *  so that our planes on either side of the facet don't overlap. 
+       *  We step out faceCenterOffset * normal from the center.
+       *  
+       *  Alan Hewat pointed out the issue of faces that CONTAIN the center --
+       *  square planar, trigonal and square pyramids, see-saw. In these cases with no
+       *  additional work, you get a brilliance effect when two faces are drawn over
+       *  each other. The solution is to identify this sort of face and, if not collapsed,
+       *  to cut them into smaller pieces and only draw them ONCE by producing a little
+       *  catalog. This uses the Point3i().toString() method.
+       *  
+       *  For these special cases, then, we define a reference point just behind the plane
+       *  
+       *  Note that this is NOT AN OPTION for ID-named polyhedra (Jmol 14.5.0 10/31/2015)
+       */
+
+      P3 ptRef = P3.newP(ptAve);
+      BS bsThroughCenter = new BS();
+      if (thisID == null)
+        for (int pt = 0, i = 0; i < ni; i++)
+          for (int j = i + 1; j < nj; j++)
+            for (int k = j + 1; k < vertexCount; k++, pt++)
+              if (isPlanar(points[i], points[j], points[k], ptRef))
+                bsThroughCenter.set(pt);
+      // this next check for distance allows for bond AND distance constraints
+      triangles = planesT;
+      P4 pTemp = new P4();
+      V3 nTemp = new V3();
+      float offset = faceCenterOffset;
+      int fmax = FACE_COUNT_MAX;
+      int vmax = MAX_VERTICES;
+      BS bsTemp = Normix.newVertexBitSet();
+      normals = normalsT;
+      Map<Integer, Object[]> htNormMap = new Hashtable<Integer, Object[]>();
+      Map<String, Object> htEdgeMap = new Hashtable<String, Object>();
+      Lst<int[]> lstRejected = (isFull ? new Lst<int[]>() : null);
+      Object[] edgeTest = new Object[3];
+      V3 vAC = this.vAC;
+      for (int i = 0, pt = 0; i < ni; i++)
+        for (int j = i + 1; j < nj; j++) {
+          for (int k = j + 1; k < vertexCount; k++, pt++) {
+            if (triangleCount >= fmax) {
+              Logger.error("Polyhedron error: maximum face(" + fmax
+                  + ") -- reduce RADIUS");
+              return null;
             }
-            continue;
-          }
-          normals[triangleCount] = normal;
-          triangles[triangleCount] = t;
-          if (isThroughCenter) {
-            bsCenterPlanes.set(triangleCount++);
-          } else if (collapsed) {
-            points[nPoints] = new P3();
-            points[nPoints].scaleAdd2(offset, normal, atomOrPt);
-            ptRef.setT(points[nPoints]);
-            addFacet(i, j, k, ptRef, points, normals, triangles,
-                triangleCount++, nPoints, isWindingOK, vAC);
-            addFacet(k, i, j, ptRef, points, normals, triangles,
-                triangleCount++, nPoints, isWindingOK, vAC);
-            addFacet(j, k, i, ptRef, points, normals, triangles,
-                triangleCount++, nPoints, isWindingOK, vAC);
-            nPoints++;
-          } else {
-            triangleCount++;
+            if (nPoints >= vmax) {
+              Logger.error("Polyhedron error: maximum vertex count(" + vmax
+                  + ") -- reduce RADIUS");
+              return null;
+            }
+            boolean isThroughCenter = bsThroughCenter.get(pt);
+            P3 rpt = (isThroughCenter ? randomPoint : ptAve);
+            V3 normal = new V3();
+            boolean isWindingOK = Measure.getNormalFromCenter(rpt, points[i],
+                points[j], points[k], !isThroughCenter, normal, vAC);
+            // the standard face:
+            int[] t = new int[] { isWindingOK ? i : j, isWindingOK ? j : i, k,
+                -7 };
+            float err = checkFacet(points, vertexCount, t, triangleCount,
+                normal, pTemp, nTemp, vAC, htNormMap, htEdgeMap, planarParam,
+                bsTemp, edgeTest);
+            if (err != 0) {
+              if (isFull && err != Float.MAX_VALUE && err < 0.5f) {
+                t[3] = (int) (err * 100);
+                lstRejected.addLast(t);
+              }
+              continue;
+            }
+            normals[triangleCount] = normal;
+            triangles[triangleCount] = t;
+            if (isThroughCenter) {
+              bsCenterPlanes.set(triangleCount++);
+            } else if (collapsed) {
+              points[nPoints] = new P3();
+              points[nPoints].scaleAdd2(offset, normal, atomOrPt);
+              ptRef.setT(points[nPoints]);
+              addFacet(i, j, k, ptRef, points, normals, triangles,
+                  triangleCount++, nPoints, isWindingOK, vAC);
+              addFacet(k, i, j, ptRef, points, normals, triangles,
+                  triangleCount++, nPoints, isWindingOK, vAC);
+              addFacet(j, k, i, ptRef, points, normals, triangles,
+                  triangleCount++, nPoints, isWindingOK, vAC);
+              nPoints++;
+            } else {
+              triangleCount++;
+            }
           }
         }
+      nPoints--;
+      if (Logger.debugging) {
+        Logger.info("Polyhedron planeCount=" + triangleCount + " nPoints="
+            + nPoints);
+        for (int i = 0; i < triangleCount; i++)
+          Logger.info("Polyhedron "
+              + PT.toJSON("face[" + i + "]", triangles[i]));
       }
-    nPoints--;
-    if (Logger.debugging) {
-      Logger.info("Polyhedron planeCount=" + triangleCount + " nPoints="
-          + nPoints);
-      for (int i = 0; i < triangleCount; i++)
-        Logger.info("Polyhedron " + PT.toJSON("face[" + i + "]", triangles[i]));
+      //System.out.println(PT.toJSON(null, lstRejected));
+      faces = getFaces(triangles, triangleCount, htNormMap);
+      faceTriangles = getFaceTriangles(faces.length, htNormMap, triangleCount);
     }
-    //System.out.println(PT.toJSON(null, lstRejected));
-    int[][] faces = getFaces(triangles, triangleCount, htNormMap);
-    int[][] faceTriangles = getFaceTriangles(faces.length, htNormMap, triangleCount);
     return new Polyhedron().set(thisID, modelIndex, atomOrPt, points, nPoints,
-        vertexCount, triangles, triangleCount,
-        faces, faceTriangles, normals, bsCenterPlanes,
-        collapsed, distanceRef, pointScale);
+        vertexCount, triangles, triangleCount, faces, faceTriangles, normals,
+        bsCenterPlanes, collapsed, distanceRef, pointScale);
   }
-  
+
+  /**
+   * Check to see that the winding of the explicit face is correct. If not,
+   * correct it. Also set the normals.
+   * @param face
+   * @param ipt
+   * @param points
+   * @param normals
+   * @return correctly wound face
+   */
+  private int[] fixExplicitFaceWinding(int[] face, int ipt, P3[] points, V3[] normals) {
+    int n = face.length;
+    for (int i = 0, nlast = n - 2; i < nlast; i++) {
+      P3 a = points[face[i]];
+      P3 b = points[face[(i + 1) % n]];
+      P3 c = points[face[(i + 2) % n]];
+      if (Measure.computeAngleABC(a, b, c, true) < 178) {
+        // ignore nearly linear angles -- we only need one
+        if (!Measure.getNormalFromCenter(center, a, b, c, true, normals[ipt] = new V3(), vAC))
+          face = AU.arrayCopyRangeRevI(face, 0, -1);
+        break;
+      }
+    }
+    return face;
+  }
+
   private int[][] getFaceTriangles(int n, Map<Integer, Object[]> htNormMap, int triangleCount) {
     int[][] faceTriangles = AU.newInt2(n);
     if (triangleCount == n) {

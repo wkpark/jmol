@@ -1,8 +1,11 @@
 package org.jmol.scriptext;
 
+import javajs.util.AU;
+import javajs.util.Lst;
 import javajs.util.P3;
 
 import org.jmol.java.BS;
+import org.jmol.script.SV;
 import org.jmol.script.ScriptError;
 import org.jmol.script.ScriptEval;
 import org.jmol.script.ScriptException;
@@ -167,6 +170,49 @@ public abstract class ScriptExt {
            invArg();
        }
      }
+
+  protected int[][] getIntArray2(int i) throws ScriptException {
+    Lst<SV> list = ((SV) e.getToken(i)).getList();
+    int[][] faces = AU.newInt2(list.size());
+    for (int vi = faces.length; --vi >= 0;) {
+      Lst<SV> face = list.get(vi).getList();
+      if (face != null) {
+        faces[vi] = new int[face.size()];
+        for (int vii = faces[vi].length; --vii >= 0;)
+          faces[vi][vii] = face.get(vii).intValue;
+      }
+    }
+    return faces;
+  }
+
+  protected P3[] getAllPoints(int index) throws ScriptException {
+    P3[] points = null;
+    BS bs = null;
+    try {
+      switch (e.tokAt(index)) {
+      case T.varray:
+        points = e.getPointArray(index, -1, false);
+        break;
+      case T.bitset:
+      case T.expressionBegin:
+        bs = atomExpressionAt(index);
+        break;
+      }
+      if (points == null) {
+        if (bs == null) 
+          bs = vwr.getAllAtoms();
+        points = new P3[bs.cardinality()];
+        for (int i = bs.nextSetBit(0), pt = 0; i >= 0; i = bs.nextSetBit(i + 1))
+          points[pt++] = vwr.ms.at[i];
+      }
+    } catch (Exception e) {
+    }
+    if (points.length < 3)
+      invArg();
+    return points;
+
+  }
+
 
 
 }

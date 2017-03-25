@@ -438,7 +438,8 @@ public class IsoExt extends ScriptExt {
       case T.polyhedra:
       case T.point:
       case T.polygon:
-        boolean isPoints = (eval.theTok == T.point);
+        tok = eval.theTok;
+        boolean isPoints = (tok == T.point);
         propertyName = "polygon";
         havePoints = true;
         Lst<Object> v = new Lst<Object>();
@@ -447,29 +448,22 @@ public class IsoExt extends ScriptExt {
         P3[] points = null;
         Lst<SV> vpolygons = null;
         int[][] polygons = null;
-        if (eval.isArrayParameter(++i)) {
+        if (tok == T.polyhedra) {
+          // draw POLYHEDRA @x @y 
+          //  where x is [[0,3,4][4,5,6] ...] where numbers are atom indices
+          //  and optional y is an atom bitset or a list of points
+          int[][] faces = getIntArray2(++i);
+          points = getAllPoints(e.iToken + 1);
+          polygons = ((MeshCapper) Interface.getInterface(
+              "org.jmol.util.MeshCapper", vwr, "script")).set(null)
+              .triangulateFaces(faces, points, null);
+          nVertices = points.length;
+        } else if (eval.isArrayParameter(++i)) {
           // draw POLYGON [points]
-          // draw POLYGON @x where x is [[0,3,4][4,5,6] ...] where numbers are atom indices
           points = eval.getPointArray(i, -1, true);
-          if (points.length > 0 && points[0] == null && eval.tokAt(i) == T.varray) {
-            Lst<SV> list = vwr.evaluateExpressionAsVariable("{*}.xyz.all")
-                .getList();
-            points = new P3[list.size()];
-            for (int vi = points.length; --vi >= 0;)
-              points[vi] = SV.ptValue(list.get(vi));
-            list = ((SV) eval.getToken(i)).getList();
-            int[][] faces = AU.newInt2(list.size());
-            for (int vi = faces.length; --vi >= 0;) {
-              Lst<SV> face = list.get(vi).getList();
-              if (face != null) {
-                faces[vi] = new int[face.size()];
-                for (int vii = faces[vi].length; --vii >= 0;)
-                  faces[vi][vii] = face.get(vii).intValue;
-              }
-            }
-            polygons = ((MeshCapper) Interface.getInterface(
-                "org.jmol.util.MeshCapper", vwr, "script")).set(null)
-                .triangulateFaces(faces, points, null);
+          if (tok == T.polyhedra && points.length > 0 && points[0] == null
+              && eval.tokAt(i) == T.varray) {
+
           }
           nVertices = points.length;
         } else {

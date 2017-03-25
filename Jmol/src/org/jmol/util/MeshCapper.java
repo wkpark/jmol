@@ -111,10 +111,11 @@ public class MeshCapper {
    * @param faces
    *        array of pointers into points
    * @param vertices
-   * @param faceTriangles 
+   * @param faceTriangles optional return list by face
    * @return array of triangles [a b c mask]
    */
-  public int[][] triangulateFaces(int[][] faces, P3[] vertices, int[][] faceTriangles) {
+  public int[][] triangulateFaces(int[][] faces, P3[] vertices,
+                                  int[][] faceTriangles) {
     lstTriangles = new Lst<int[]>();
     P3[] points = new P3[10];
     for (int f = 0, n = faces.length; f < n; f++) {
@@ -127,14 +128,16 @@ public class MeshCapper {
         points[i] = vertices[face[i]];
       triangulatePolygon(points, npts);
       int n1 = lstTriangles.size();
-      int[] ft = faceTriangles[f] = new int[n1 - n0];
-      for (int i = n0; i < n1; i++) {
-        int[] t = lstTriangles.get(i);
-        ft[i - n0] = i;
-        for (int j = 3; --j >= 0;)
-          t[j] = face[t[j]];
-        t[3] = -t[3];
-      }
+        int[] ft = new int[n1 - n0];
+        if (faceTriangles != null)
+          faceTriangles[f] = ft;
+        for (int i = n0; i < n1; i++) {
+          int[] t = lstTriangles.get(i);
+          ft[i - n0] = i;
+          for (int j = 3; --j >= 0;)
+            t[j] = face[t[j]];
+          t[3] = -t[3];
+        }
     }
     int[][] triangles = AU.newInt2(lstTriangles.size());
     lstTriangles.toArray(triangles);
@@ -158,6 +161,8 @@ public class MeshCapper {
     nPoints = this.nPoints = (haveList ? nPoints : points.length);
     CapVertex v0 = null;
     for (int i = 0; i < nPoints; i++) {
+      if (points[i] == null)
+        return null;
       CapVertex v = new CapVertex(points[i], i);
       vertices.addLast(v);
       if (v0 != null) {
@@ -875,7 +880,6 @@ public class MeshCapper {
       while (ok == 0) {
         ok = 1;
         Arrays.sort(vs, this);
-        System.out.println(ok);
       }
       for (int i = n; --i >= 0;) {
         if (vs[i].x == Float.MAX_VALUE)

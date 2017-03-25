@@ -1466,6 +1466,15 @@ public class MathExt {
                 (isSmiles ? JC.SMILES_TYPE_SMILES : JC.SMILES_TYPE_SMARTS)
                     | JC.SMILES_FIRST_MATCH_ONLY);
             ret = (map.length > 0 ? vwr.ms.getDihedralMap(map[0]) : new int[0]);
+          } else if (flags.equalsIgnoreCase("map")) {
+            int[][] map = vwr.getSmilesMatcher().getCorrelationMaps(
+                sFind,
+                vwr.ms.at,
+                vwr.ms.ac,
+                bs,
+                (isSmiles ? JC.SMILES_TYPE_SMILES : JC.SMILES_TYPE_SMARTS)
+                    | JC.SMILES_MAP_UNIQUE);
+            ret = map;
           } else if (sFind.equalsIgnoreCase("crystalClass")) {
             // {*}.find("crystalClass")
             // {*}.find("crystalClass", pt)

@@ -140,9 +140,12 @@ public class SmilesSearch extends JmolMolecule {
   private SmilesBond nestedBond;
 
   private Lst<Object> vReturn;
+  private Lst<BS> uniqueList;
   private BS bsReturn = new BS();
   
   private BS bsCheck;
+
+  public boolean mapUnique;
 
   static final int addFlags(int flags, String strFlags) {
     if (strFlags.indexOf("OPEN") >= 0)
@@ -484,6 +487,7 @@ public class SmilesSearch extends JmolMolecule {
    */
   Object subsearch(SmilesSearch search, int submode) throws InvalidSmilesException {
     search.ringSets = ringSets;
+    search.mapUnique = mapUnique;
     search.targetAtoms = targetAtoms;
     search.targetAtomCount = targetAtomCount;
     search.bsSelected = bsSelected;
@@ -817,6 +821,15 @@ public class SmilesSearch extends JmolMolecule {
     bsReturn.or(bs);
 
     if (getMaps) {
+      if (mapUnique) {
+        if (uniqueList == null)
+          uniqueList = new Lst<BS>();
+        for (int j = uniqueList.size(); --j >= 0;)
+          if (uniqueList.get(j).equals(bs))
+            return true;
+        uniqueList.addLast(bs);
+      }
+
       // every map is important always -- why??
       int[] map = new int[nMatch];
       for (int j = 0, nn = 0; j < ac; j++) {

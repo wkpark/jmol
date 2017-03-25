@@ -714,6 +714,7 @@ abstract class ScriptExpr extends ScriptParam {
     iToken = 1000;
     boolean ignoreSubset = (pcStart < 0);
     boolean isInMath = false;
+    BS bs;
     int nExpress = 0;
     int ac = vwr.ms.ac;
     int ptWithin = -10;
@@ -768,8 +769,13 @@ abstract class ScriptExpr extends ScriptParam {
       case T.define:
         rpn.addXBs(getAtomBitSet(value));
         break;
-      case T.hash:
       case T.varray:
+        bs = SV.getBitSet((SV)instruction, false);
+        if (bs != null) {
+          rpn.addXBs(bs);
+          break;
+        }
+      case T.hash:
         // unit ids
         rpn.addXBs(vwr.ms.getAtoms(T.sequence, ((SV) instruction).asString()));
         break;
@@ -791,7 +797,7 @@ abstract class ScriptExpr extends ScriptParam {
       case T.string:
         String s = (String) value;
         if (s.indexOf("({") == 0) {
-          BS bs = BS.unescape(s);
+          bs = BS.unescape(s);
           if (bs != null) {
             rpn.addXBs(bs);
             break;
@@ -871,7 +877,7 @@ abstract class ScriptExpr extends ScriptParam {
           // old Chime scripts use *.C for _C
           int atomID = instruction.intValue;
           if (atomID > 0) {
-            BS bs = compareInt(T.atomid, T.opEQ, atomID);
+            bs = compareInt(T.atomid, T.opEQ, atomID);
             if (atomID == 2) // *.CA (alpha carbon only)
               bs.or(compareInt(T.element, T.opEQ, 20)); // CA.CA
             rpn.addXBs(bs);            
@@ -1046,7 +1052,7 @@ abstract class ScriptExpr extends ScriptParam {
       ret[0] = exp;
       return null;
     }
-    BS bs = (exp instanceof BS ? (BS) exp : new BS());
+    bs = (exp instanceof BS ? (BS) exp : new BS());
     isBondSet = (exp instanceof BondSet);
     if (!isBondSet
         && (bs = vwr.slm.excludeAtoms(bs, ignoreSubset)).length() > vwr.ms.ac)

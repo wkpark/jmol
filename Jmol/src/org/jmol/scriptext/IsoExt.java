@@ -310,8 +310,8 @@ public class IsoExt extends ScriptExt {
           }
         }
         String type;
-        switch(tokAt(i)) {
-        case T.scale: 
+        switch (tokAt(i)) {
+        case T.scale:
           type = "";
           break;
         case T.chemicalshift:
@@ -435,6 +435,7 @@ public class IsoExt extends ScriptExt {
           invArg();
         }
         break;
+      case T.polyhedra:
       case T.point:
       case T.polygon:
         boolean isPoints = (eval.theTok == T.point);
@@ -445,39 +446,67 @@ public class IsoExt extends ScriptExt {
         int nTriangles = 0;
         P3[] points = null;
         Lst<SV> vpolygons = null;
+        int[][] polygons = null;
         if (eval.isArrayParameter(++i)) {
-          points = eval.getPointArray(i, -1, false);
+          // draw POLYGON [points]
+          // draw POLYGON @x where x is [[0,3,4][4,5,6] ...] where numbers are atom indices
+          points = eval.getPointArray(i, -1, true);
+          if (points.length > 0 && points[0] == null && eval.tokAt(i) == T.varray) {
+            Lst<SV> list = vwr.evaluateExpressionAsVariable("{*}.xyz.all")
+                .getList();
+            points = new P3[list.size()];
+            for (int vi = points.length; --vi >= 0;)
+              points[vi] = SV.ptValue(list.get(vi));
+            list = ((SV) eval.getToken(i)).getList();
+            int[][] faces = AU.newInt2(list.size());
+            for (int vi = faces.length; --vi >= 0;) {
+              Lst<SV> face = list.get(vi).getList();
+              if (face != null) {
+                faces[vi] = new int[face.size()];
+                for (int vii = faces[vi].length; --vii >= 0;)
+                  faces[vi][vii] = face.get(vii).intValue;
+              }
+            }
+            polygons = ((MeshCapper) Interface.getInterface(
+                "org.jmol.util.MeshCapper", vwr, "script")).set(null)
+                .triangulateFaces(faces, points, null);
+          }
           nVertices = points.length;
         } else {
+          // draw POLYGON nPoints pt1 pt2 pt3...
           nVertices = Math.max(0, intParameter(i));
           points = new P3[nVertices];
           for (int j = 0; j < nVertices; j++)
             points[j] = centerParameter(++eval.iToken);
         }
         i = eval.iToken;
-        int[][] polygons = null;
         switch (tokAt(i + 1)) {
         case T.matrix3f:
         case T.matrix4f:
+          // draw POLYGON <points> [[0,1,2],[1,2,3]...]
           vpolygons = SV.newT(getToken(++i)).toArray().getList();
           nTriangles = vpolygons.size();
           break;
         case T.varray:
+          // draw POLYGON <points> [[0,1,2],[1,2,3]...]
           vpolygons = ((SV) getToken(++i)).getList();
           nTriangles = vpolygons.size();
           break;
         case T.integer:
+          // draw POLYGON <points> nTriangles
           nTriangles = intParameter(++i);
           if (nTriangles < 0)
             isPoints = true;
           break;
         default:
-          if (!isPoints && !chk)
+          // get triangles from a list of points
+          if (polygons == null && !isPoints && !chk)
             polygons = ((MeshCapper) Interface.getInterface(
                 "org.jmol.util.MeshCapper", vwr, "script")).set(null)
                 .triangulatePolygon(points, -1);
         }
         if (polygons == null && !isPoints) {
+          // read array of arrays of triangle vertex pointers
           polygons = AU.newInt2(nTriangles);
           for (int j = 0; j < nTriangles; j++) {
             float[] f = (vpolygons == null ? eval.floatParameterSet(

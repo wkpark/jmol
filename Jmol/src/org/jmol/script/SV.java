@@ -1374,11 +1374,29 @@ public class SV extends T implements JSONEncodable {
     }
   }
 
+  /**
+   * Turn an array of strings in the form of "{n,n,n:n...} or an array of
+   * integers into a bitset.
+   * 
+   * @param x
+   * @param allowNull
+   * @return bitset (or null if fails and allowNull is false)
+   */
   static BS unEscapeBitSetArray(Lst<SV> x, boolean allowNull) {
     BS bs = new BS();
-    for (int i = 0; i < x.size(); i++)
-      if (!unEscapeBitSet(x.get(i), bs))
-        return (allowNull ? null : bs);
+    for (int i = 0; i < x.size(); i++) {
+      SV v = x.get(i);
+      if (v.tok == T.integer && v.intValue >= 0) {
+        bs.set(v.intValue);
+      } else if (v.tok == T.varray) {
+        BS bs2 = unEscapeBitSetArray(v.getList(), true);
+        if (bs2 == null)
+          return (allowNull ? null : new BS());
+        bs.or(bs2);
+      } else if (!unEscapeBitSet(v, bs)) {
+        return (allowNull ? null : new BS());
+      }
+    }
     return bs;
   }
 

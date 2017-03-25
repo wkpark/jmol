@@ -132,6 +132,9 @@ public class DSSR1 extends AnnotationParser {
         name = PT.rep(name, "%20", " ");
         Logger.info("fetching " + name + "[pdb data]");
         String data = vwr.getPdbAtomData(bs, null, false, false);
+        int modelNumber = vwr.getModelNumber(vwr.ms.getModelBS(bs,false).nextSetBit(0));
+        String s =   "          " + modelNumber;
+        data = "MODEL" + s.substring(s.length() - 9) + "\n" + data + "ENDMDL\n";  
         data = vwr.getFileAsString3(name + data, false, null);
         Map<String, Object> x = vwr.parseJSON(data);
         if (x != null) {

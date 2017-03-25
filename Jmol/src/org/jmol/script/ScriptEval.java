@@ -2319,8 +2319,9 @@ public class ScriptEval extends ScriptExpr {
     case T.quit: // quit this only if it isn't the first command
       if (chk)
         break;
-      if (pc > 0 && theToken.tok == T.exit)
+      if (pc > 0 && theToken.tok == T.exit && !vwr.autoExit) {
         vwr.clearScriptQueue();
+      }
       executionStopped = (pc > 0 || !vwr.g.useScriptQueue);
       break;
     case T.exitjmol:

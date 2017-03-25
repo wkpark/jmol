@@ -482,6 +482,7 @@ public class SmilesMatcher implements SmilesMatcherInterface {
           search.bsAromatic = bsAromatic;
         search.setRingData(null, null, is3D || doTestAromatic);
         search.exitFirstMatch = ((flags & JC.SMILES_FIRST_MATCH_ONLY) == JC.SMILES_FIRST_MATCH_ONLY);
+        search.mapUnique = ((flags & JC.SMILES_MAP_UNIQUE) == JC.SMILES_MAP_UNIQUE);
       }
       switch (mode) {
       case MODE_BITSET:

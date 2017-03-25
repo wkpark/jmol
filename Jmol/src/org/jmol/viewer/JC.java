@@ -1113,6 +1113,9 @@ public final class JC {
 
   public final static int SMILES_INVERT_STEREOCHEMISTRY     = 0x040; //SmilesParser -> SmilesSearch
 
+  public static final int SMILES_MAP_UNIQUE                 = 0x080; //SmilesMatcher return only unique mappings 
+
+
   /**
    * AROMATIC_DEFINED draws all aromatic bonds from connection definitions
    * It is deprecated, because a=a will set it by itself. 

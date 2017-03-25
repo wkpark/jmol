@@ -34,12 +34,12 @@ Release Note: When releasing stable version, remove "-beta"
   <property file="${dist.dir}/Jmol.properties" prefix="Jmol.properties" />
   <property name="version" value="${Jmol.properties.Jmol.___JmolVersion}" />
   <propertyregex property="version"
-  			  override = "true"
-	          input="${version}"
-  			  regexp='"'
-	          replace=""
-  		      global="true"
-	          />
+	  override = "true"
+	  input="${version}"
+	  regexp='(")([^"]+)(")'
+  	  select="\2"
+      global="true"
+  />
   <echo message="version=${version}" />
 
 	<loadresource property="versionMajorMinor">

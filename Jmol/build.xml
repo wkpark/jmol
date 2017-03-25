@@ -1281,7 +1281,7 @@ all support for previous versions removed
                   includes="jmol-${version}/**" />
       <tarfileset dir="build/dist"
                   mode="755"
-                  includes="*/jmol,*/jmol.sh" />
+    	    includes="jmol-${version}/jmol,jmol-${version}/jmol.sh" />
     </tar>
 
     <!-- then build source distribution -->

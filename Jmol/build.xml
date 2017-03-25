@@ -13,7 +13,6 @@ from Jmol and, though separate projects, provide the files in Jmol for final dis
 Required checkouts include:
 
 svn+ssh://svn.code.sf.net/p/smol/code, Trunk:trunk
-svn+ssh://svn.code.sf.net/p/jsmol/code, Trunk:trunk
 svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecView
 svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecViewLib
 
@@ -90,8 +89,8 @@ when the Jmol or JSpecView code is modified, is as follows:
   <propertyregex property="version"
   			  override = "true"
 	          input="${version}"
-  			  regexp='"'
-	          replace=""
+  			  regexp='(")([^"]+)(")'
+	          select="\2"
   		      global="true"
 	          />
   <echo message="version=${version}" />

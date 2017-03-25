@@ -448,25 +448,38 @@ public class IsoExt extends ScriptExt {
         P3[] points = null;
         Lst<SV> vpolygons = null;
         int[][] polygons = null;
+        if (eval.isArrayParameter(++i)) {
+          // draw POLYGON [points]
+          points = eval.getPointArray(i, -1, true);
+          if (points.length > 0 && points[0] == null) {
+            int[][] faces;
+            if (tok == T.polyhedra) {
+              faces = getIntArray2(i);
+            } else {
+              faces = AU.newInt2(1);
+              faces[0] = eval.expandFloatArray(eval.floatParameterSet(i, -1, Integer.MAX_VALUE), -1);
+            }
+            points = getAllPoints(e.iToken + 1);
+            try {
+            polygons = ((MeshCapper) Interface.getInterface(
+                "org.jmol.util.MeshCapper", vwr, "script")).set(null)
+                .triangulateFaces(faces, points, null);
+            } catch (Throwable e) {
+              invArg();
+            }
+          }
+          nVertices = points.length;
+        } 
+
         if (tok == T.polyhedra) {
           // draw POLYHEDRA @x @y 
           //  where x is [[0,3,4][4,5,6] ...] where numbers are atom indices
           //  and optional y is an atom bitset or a list of points
-          int[][] faces = getIntArray2(++i);
-          points = getAllPoints(e.iToken + 1);
-          polygons = ((MeshCapper) Interface.getInterface(
-              "org.jmol.util.MeshCapper", vwr, "script")).set(null)
-              .triangulateFaces(faces, points, null);
           nVertices = points.length;
-        } else if (eval.isArrayParameter(++i)) {
-          // draw POLYGON [points]
-          points = eval.getPointArray(i, -1, true);
-          if (tok == T.polyhedra && points.length > 0 && points[0] == null
-              && eval.tokAt(i) == T.varray) {
-
-          }
-          nVertices = points.length;
-        } else {
+        } 
+        
+        
+        if (points == null) {
           // draw POLYGON nPoints pt1 pt2 pt3...
           nVertices = Math.max(0, intParameter(i));
           points = new P3[nVertices];

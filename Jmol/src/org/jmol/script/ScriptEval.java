@@ -8587,7 +8587,7 @@ public class ScriptEval extends ScriptExpr {
    * @return int array
    * @throws ScriptException 
    */
-  private int[] expandFloatArray(float[] a, int min) throws ScriptException {
+  public int[] expandFloatArray(float[] a, int min) throws ScriptException {
     int n = a.length;
     boolean haveNeg = false;
     try {

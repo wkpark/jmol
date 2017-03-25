@@ -176,11 +176,11 @@ public abstract class ScriptExt {
     int[][] faces = AU.newInt2(list.size());
     for (int vi = faces.length; --vi >= 0;) {
       Lst<SV> face = list.get(vi).getList();
-      if (face != null) {
-        faces[vi] = new int[face.size()];
-        for (int vii = faces[vi].length; --vii >= 0;)
-          faces[vi][vii] = face.get(vii).intValue;
-      }
+      if (face == null)
+        invArg();
+      faces[vi] = new int[face.size()];
+      for (int vii = faces[vi].length; --vii >= 0;)
+        faces[vi][vii] = face.get(vii).intValue;
     }
     return faces;
   }

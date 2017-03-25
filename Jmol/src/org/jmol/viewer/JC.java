@@ -66,7 +66,7 @@ public final class JC {
     "cod", "http://www.crystallography.net/cod/cif/%c1/%c2%c3/%c4%c5/%FILE.cif",
     "nmr", "http://www.nmrdb.org/new_predictor?POST?molfile=",
     "nmrdb", "http://www.nmrdb.org/service/predictor?POST?molfile=",
-    "nmrdb13", "http://www.nmrdb.org/service/jsmol13c?POST?molfile=",
+    "nmrdb13", "http://www.nmrdb.o  rg/service/jsmol13c?POST?molfile=",
     //"pdb", "http://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/%c2%c3/pdb%file.ent.gz", // new Jmol 14.5.0 10/28/2015
     "magndata", "http://webbdcrista1.ehu.es/magndata/mcif/%FILE.mcif",
     "mmtf", "https://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
@@ -126,6 +126,7 @@ public final class JC {
   public final static String copyright = "(C) 2015 Jmol Development";
   
   public final static String version;
+  public static String majorVersion;
   public final static String date;
   public final static int versionInt;
 
@@ -150,8 +151,11 @@ public final class JC {
         bis = new BufferedInputStream(is);
         Properties props = new Properties();
         props.load(bis);
-        tmpVersion = PT.trimQuotes(props.getProperty("Jmol.___JmolVersion",
-            tmpVersion));
+        String s = props.getProperty("Jmol.___JmolVersion",
+            tmpVersion);
+        if (s != null && s.lastIndexOf("\"") > 0)
+          s = s.substring(0, s.lastIndexOf("\"") + 1);
+        tmpVersion = PT.trimQuotes(s);
         tmpDate = PT.trimQuotes(props.getProperty("Jmol.___JmolDate", tmpDate));
       } catch (Exception e) {
         // Nothing to do
@@ -180,11 +184,13 @@ public final class JC {
       //  012345678901234567890123456789
     }
     version = (tmpVersion != null ? tmpVersion : "(Unknown_version)");
+    majorVersion = (tmpVersion != null ? tmpVersion : "(Unknown_version)");
     date = (tmpDate != null ? tmpDate : "(Unknown_date)");
     // 11.9.999 --> 1109999
     int v = -1;
     try {
       String s = version;
+      String major = "";
       // Major number
       int i = s.indexOf(".");
       if (i < 0) {
@@ -192,7 +198,7 @@ public final class JC {
         s = null;
       }
       if (s != null) {
-        v = 100000 * Integer.parseInt(s.substring(0, i));
+        v = 100000 * Integer.parseInt(major = s.substring(0, i));
 
         // Minor number
         s = s.substring(i + 1);
@@ -202,7 +208,10 @@ public final class JC {
           s = null;
         }
         if (s != null) {
-          v += 1000 * Integer.parseInt(s.substring(0, i));
+          String m = s.substring(0, i);
+          major += "." + m;
+          majorVersion = major;
+          v += 1000 * Integer.parseInt(m);
 
           // Revision number
           s = s.substring(i + 1);

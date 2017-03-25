@@ -4640,7 +4640,7 @@ public class ScriptEval extends ScriptExpr {
         filename = filename.substring(0, pt);
         if ((pt = filename.indexOf(".")) >= 0)
           filename = filename.substring(0, pt);
-        if (JC.PDB_ANNOTATIONS.indexOf(";" + ext + ";") >= 0) {
+        if (JC.PDB_ANNOTATIONS.indexOf(";" + ext + ";") >= 0 || ext.startsWith("dssr--")) {
           if (filename.startsWith("="))
             filename += ".cif";
           filenames = (ext.equals("all") ? new String[] { filename,

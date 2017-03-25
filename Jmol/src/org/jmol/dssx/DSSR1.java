@@ -286,6 +286,8 @@ public class DSSR1 extends AnnotationParser {
   }
 
   private NucleicMonomer setRes(Atom atom) {
+    if (atom.group.getBioPolymerLength() == 0)
+      return  null;
     NucleicMonomer m = (NucleicMonomer) atom.group;
     ((NucleicPolymer) m.bioPolymer).isDssrSet = true;
     return m;

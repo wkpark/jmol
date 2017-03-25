@@ -3980,6 +3980,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         id = name.substring(pt + 1);
         format = (pt > 6 ? name.substring(6) : "loops");
         return PT.rep(g.resolveDataBase("rna3d", id, null), "%TYPE", format);
+      } else if (name.startsWith("*dssr--")) {
+        id = name.substring(pt + 1);
+        id = g.resolveDataBase("dssr", id, null);
+        return id +"%20" + PT.rep(name.substring(5, pt), " ", "%20");
       } else if (name.startsWith("*dssr/")) {
         id = name.substring(pt + 1);
         return g.resolveDataBase("dssr", id, null);
@@ -7831,7 +7835,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (g.helpPath.indexOf("?") < 0) {
       if (what.length() > 0 && what.indexOf("?") != 0)
         what = "?search=" + PT.rep(what, " ", "%20");
-      what += (what.length() == 0 ? "?ver=" : "&ver=") + JC.version;
+      what += (what.length() == 0 ? "?ver=" : "&ver=") + JC.majorVersion;
     } else {
       what = "&" + what;
     }

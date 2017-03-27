@@ -439,7 +439,7 @@ public class GlobalSettings {
   final P3 ptDefaultLattice = new P3();
   public String defaultLoadScript = "";
   public String defaultLoadFilter = "";
-  public String defaultDropScript = "zap; load SYNC \"%FILE\";if (%ALLOWCARTOONS && _loadScript == '' && defaultLoadScript == '' && _filetype == 'Pdb') {if ({(protein or nucleic)&*/1.1} && {*/1.1}[1].groupindex != {*/1.1}[0].groupindex){select protein or nucleic;cartoons only;}if ({visible}){color structure}else{wireframe -0.1};if (!{visible}){spacefill 23%};select *}";
+  public String defaultDropScript = JC.DEFAULT_DRAG_DROP_SCRIPT;
   //    boolean _fileCaching = false;
   //    String _fileCache = "";
   boolean forceAutoBond = false;

@@ -1102,6 +1102,8 @@ public class Atom extends Point3fi implements Node {
       return group.chain.chainNo;
     case T.color:
       return group.chain.model.ms.vwr.gdata.getColorArgbOrGray(colixAtom);
+    case T.dssr:
+      return group.chain.model.ms.getAtomicDSSRData(i);
     case T.element:
     case T.elemno:
       return getElementNumber();

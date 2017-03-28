@@ -5302,12 +5302,12 @@ public class CmdExt extends ScriptExt {
                                         float min, float max)
       throws ScriptException {
 
-    Object odata = (property == null ?
-      e.getBitsetProperty(bs, tok, null, null, null, null,
+    Object odata = (property == null || tok == (T.dssr | T.allfloat) ?
+      e.getBitsetProperty(bs, tok, null, null, property, null,
           false, Integer.MAX_VALUE, false) 
           : vwr.getDataObj(property, bs, JmolDataManager.DATA_TYPE_AF));
     if (odata == null || !AU.isAF(odata))
-      return new float[bs.cardinality()];
+      return (bs == null ? null  : new float[bs.cardinality()]);
     float[] data = (float[]) odata;
     if (!Float.isNaN(min))
       for (int i = 0; i < data.length; i++)

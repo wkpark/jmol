@@ -21,6 +21,9 @@ public interface JmolAnnotationParser {
 
   String getHBonds(ModelSet ms, int modelIndex, Lst<Bond> vHBonds, boolean doReport);
 
+  void getAtomicDSSRData(ModelSet ms, int modelIndex, int[] dssrData,
+                         String dataType);
+
   String calculateDSSRStructure(Viewer vwr, BS bsAtoms);
 
   String getAnnotationInfo(Viewer vwr, SV a, String match, int type, int modelIndex);

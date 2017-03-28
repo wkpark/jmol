@@ -4052,5 +4052,24 @@ public class ModelSet extends BondCollection {
     return (asMap ? map : lst);
   }
 
+  public void calculateDssrProperty(String dataType) {
+    if (dataType == null)
+      return;
+    if (dssrData == null || dssrData.length < ac)
+      dssrData = new int[ac];
+    else
+      for (int i = 0; i < ac; i++)
+        dssrData[i] = 0;
+    for (int i = mc; --i >= 0;)
+      if (am[i].isBioModel)
+        ((BioModel) am[i]).getAtomicDSSRData(dssrData, dataType);
+  }
+
+  public int getAtomicDSSRData(int i) {
+    return (dssrData == null || dssrData.length <= i ? 0 : dssrData[i]);
+  }
+
+
+
 }
 

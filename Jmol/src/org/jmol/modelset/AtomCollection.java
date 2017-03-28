@@ -190,6 +190,7 @@ abstract public class AtomCollection {
   int[] atomSerials;
   int[] atomResnos;
   int[] atomSeqIDs;
+  int[] dssrData;
   public Vibration[] vibrations;
   public float[] occupancies;
   short[] bfactor100s;
@@ -211,6 +212,7 @@ abstract public class AtomCollection {
     atomNames = null;
     atomTypes = null;
     atomResnos = null;
+    dssrData = null;
     atomSerials = null;
     atomSeqIDs = null;
     vibrations = null;
@@ -227,6 +229,7 @@ abstract public class AtomCollection {
     atomNames = mergeModelSet.atomNames;
     atomTypes = mergeModelSet.atomTypes;
     atomResnos = mergeModelSet.atomResnos;
+    dssrData = mergeModelSet.dssrData;
     atomSerials = mergeModelSet.atomSerials;
     atomSeqIDs = mergeModelSet.atomSeqIDs;
     vibrations = mergeModelSet.vibrations;
@@ -2573,6 +2576,8 @@ abstract public class AtomCollection {
     atomSerials = (int[]) AU.deleteElements(atomSerials, firstAtomIndex,
         nAtoms);
     atomSeqIDs = (int[]) AU.deleteElements(atomSeqIDs, firstAtomIndex,
+        nAtoms);
+    dssrData = (int[]) AU.deleteElements(dssrData, firstAtomIndex,
         nAtoms);
     bfactor100s = (short[]) AU.deleteElements(bfactor100s,
         firstAtomIndex, nAtoms);

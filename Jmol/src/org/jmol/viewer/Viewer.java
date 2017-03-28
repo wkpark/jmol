@@ -2351,7 +2351,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
-  public void autoCalculate(int tokProperty) {
+  public void autoCalculate(int tokProperty, String dataType) {
     switch (tokProperty) {
     case T.surfacedistance:
       ms.getSurfaceDistanceMax();
@@ -2359,6 +2359,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case T.straightness:
       ms.calculateStraightnessAll();
       break;
+    case T.dssr:
+      ms.calculateDssrProperty(dataType);
     }
   }
 

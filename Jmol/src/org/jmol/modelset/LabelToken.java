@@ -223,7 +223,7 @@ public class LabelToken {
       if (ich != ichPercent)
         tokens[i++] = new LabelToken().set(strFormat.substring(ich, ichPercent), -1);
       LabelToken lt = tokens[i++] = new LabelToken().set(null, ichPercent);
-      vwr.autoCalculate(lt.tok);
+      vwr.autoCalculate(lt.tok, null);
       ich = setToken(vwr, strFormat, lt, cch, chAtom, htValues);
     }
     if (ich < cch)

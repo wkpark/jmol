@@ -1639,7 +1639,7 @@ public class IsoExt extends ScriptExt {
           if (!chk) {
             sbCommand.append(" " + eval.theToken.value);
             Atom[] atoms = vwr.ms.at;
-            vwr.autoCalculate(tokProperty);
+            vwr.autoCalculate(tokProperty, null);
             if (tokProperty != T.color) {
               pt = new P3();
               for (int iAtom = ac; --iAtom >= 0;)

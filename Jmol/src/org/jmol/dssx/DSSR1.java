@@ -451,4 +451,27 @@ public class DSSR1 extends AnnotationParser {
       bs.clearAll();
     }
   }
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public void getAtomicDSSRData(ModelSet ms, int modelIndex, int[] dssrData, String dataType) {
+    Map<String, Object> info = (Map<String, Object>) ms.getInfo(modelIndex, "dssr");
+    Lst<Object> list;
+    if (info == null || (list = (Lst<Object>) info.get(dataType)) == null)
+      return;
+    BS bsAtoms = ms.am[modelIndex].bsAtoms; 
+    try {
+      BS bs = new BS();
+      for (int i = list.size(); --i >= 0;) {
+        Map<String, Object> map = (Map<String, Object>) list.get(i);
+        bs.clearAll();
+        ms.getSequenceBits(map.toString(), bsAtoms, bs);
+        for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
+          dssrData[j] = i + 1;
+      }
+    } catch (Throwable e) {
+    }
+  }
+
+
 }

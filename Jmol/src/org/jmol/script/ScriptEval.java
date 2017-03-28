@@ -8287,9 +8287,11 @@ public class ScriptEval extends ScriptExpr {
             if (isPropertyExplicit
                 && T.tokAttr((tok = getToken(++index).tok), T.atomproperty)
                 && !T.tokAttr(tok, T.strproperty)) {
+              tok = getToken(index).tok;
+              String type = (tok == T.dssr ? getToken(++index).value.toString() : null);
               if (!chk) {
-                data = getCmdExt().getBitsetPropertyFloat(bsSelected, getToken(index).tok
-                    | T.allfloat, null, Float.NaN, Float.NaN);
+                data = getCmdExt().getBitsetPropertyFloat(bsSelected, tok
+                    | T.allfloat, type, Float.NaN, Float.NaN);
               }
               index++;
             } else if (!isPropertyExplicit && !isIsosurface) {
@@ -8419,7 +8421,7 @@ public class ScriptEval extends ScriptExpr {
         break;
       case T.surfacedistance:
       case T.straightness:
-        vwr.autoCalculate(tok);
+        vwr.autoCalculate(tok, null);
         break;
       case T.temperature:
         if (vwr.g.rangeSelected)

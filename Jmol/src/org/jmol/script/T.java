@@ -169,7 +169,7 @@ public class T {
    *                        x x      sum2
    *                        xx       stddev
    *                        xxx      selectedfloat  (including just the atoms selected)
-   *                       x         fullfloat (including all atoms, not just selected)
+   *                       x         allfloat (including all atoms, not just selected)
    *                       x???      [available] 
    *                       xxxx      minmaxmask (all)
    *                     xx          maximum number of parameters for function
@@ -583,6 +583,7 @@ public class T {
   public final static int strucno       = intproperty | 23;
   public final static int subsystem     = intproperty | 24;
   public final static int valence       = intproperty | 25 | settable;
+  public final static int dssr          = intproperty | 26;
 
   // float values must be multiplied by 100 prior to comparing to integer values
 
@@ -1115,8 +1116,8 @@ public class T {
   public final static int atomicorbital = misc  | 26;
   public final static int audio         = misc  | 27;
   
-  public final static int auto   = misc  | 28;
-  public final static int axis   = misc  | 30;
+  public final static int auto          = misc  | 28;
+  public final static int axis          = misc  | 30;
   public final static int babel         = misc  | 32;
   public final static int babel21       = misc  | 33; 
   public final static int back          = misc  | 34;
@@ -1158,7 +1159,6 @@ public class T {
   public final static int cylinder      = misc  | 88;
   public final static int density        = misc  | 90;
   public final static int dssp           = misc  | 91;
-  public final static int dssr           = misc  | 92;
   public final static int diameter       = misc  | 93;
   public final static int direction      = misc  | 94;
   public final static int discrete       = misc  | 96;

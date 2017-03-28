@@ -1270,7 +1270,7 @@ abstract class ScriptExpr extends ScriptParam {
     ModelSet modelSet = vwr.ms;
     Atom[] atoms = modelSet.at;
     float propertyFloat = 0;
-    vwr.autoCalculate(tokWhat);
+    vwr.autoCalculate(tokWhat, null);
     boolean isProp = (tokWhat == T.property);
     if (!isProp && ptTemp == null)
       ptTemp = new P3();
@@ -1663,7 +1663,8 @@ abstract class ScriptExpr extends ScriptParam {
       break;
     case T.straightness:
     case T.surfacedistance:
-      vwr.autoCalculate(tok);
+    case T.dssr:
+      vwr.autoCalculate(tok, (String) tokenValue);
       break;
     case T.distance:
       if (ptRef == null && planeRef == null)

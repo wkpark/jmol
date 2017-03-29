@@ -54,7 +54,8 @@ public enum PAL {
   PROPERTY("property",PAL.PALETTE_PROPERTY),
   VARIABLE("variable",PAL.PALETTE_VARIABLE),
   STRAIGHTNESS("straightness",PAL.PALETTE_STRAIGHTNESS),
-  POLYMER("polymer",PAL.PALETTE_POLYMER);
+  POLYMER("polymer",PAL.PALETTE_POLYMER),
+  NUCLEIC("nucleic",PAL.PALETTE_NUCLEIC);
 
   private String name;
   public byte id;
@@ -83,6 +84,7 @@ public enum PAL {
   public final static byte PALETTE_VARIABLE = 21 | PAL.PALETTE_VOLATILE;
   public final static byte PALETTE_STRAIGHTNESS = 22 | PAL.PALETTE_VOLATILE;
   public final static byte PALETTE_POLYMER = 23 | PAL.PALETTE_VOLATILE;
+  public final static byte PALETTE_NUCLEIC = 24;
 
   private PAL(String name, int id) {
     this.name = name;

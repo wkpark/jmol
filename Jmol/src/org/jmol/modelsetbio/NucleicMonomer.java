@@ -219,7 +219,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return getAtomFromOffsetIndex(P);
   }
 
-  Atom getC1P() {
+  public Atom getC1P() {
     return getAtomFromOffsetIndex(C1P);
   }
 
@@ -235,7 +235,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return getAtomFromOffsetIndex(N1);
   }
 
-  Atom getN3() {
+  public Atom getN3() {
     return getAtomFromOffsetIndex(N3);
   }
 
@@ -352,7 +352,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
         getAtomFromOffsetIndex(ring5OffsetIndexes[i]).setClickable(JC.VIS_CARTOON_FLAG);
   }
  
-  Atom getN0() {
+  public Atom getN0() {
     return (getAtomFromOffsetIndex(isPurine ? N9 : N1));
   }
  

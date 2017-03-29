@@ -1475,6 +1475,31 @@ public final class BioResolver implements Comparator<String[]> {
     0xFFBEA06E, // default tan UNK
   };
 
+  private final static int[] argbsNucleic = {
+    0xFFBEA06E, // default tan
+    0xFF0F820F, // green      G
+    0xFFE6E600, // yellow     C
+    0xFFE60A0A, // brightRed  A
+    0xFF145AFF, // blue       T
+    0xFF00DCDC, // cyan       U
+    0xFF00DCDC, // cyan       I
+    
+    0xFF0F820F, // green      DG
+    0xFFE6E600, // yellow     DC
+    0xFFE60A0A, // brightRed  DA
+    0xFF145AFF, // blue       DT
+    0xFF00DCDC, // cyan       DU
+    0xFF00DCDC, // cyan       DI
+    
+    0xFF0F820F, // green      +G
+    0xFFE6E600, // yellow     +C
+    0xFFE60A0A, // brightRed  +A
+    0xFF145AFF, // blue       +T
+    0xFF00DCDC, // cyan       +U
+    0xFF00DCDC, // cyan       +I
+  };
+
+
 
   /**
    * colors used for chains
@@ -1648,6 +1673,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public int[] getArgbs(int tok) {
     switch (tok) {
+    case T.nucleic:
+      return argbsNucleic;
     case T.amino:
       return argbsAmino;
     case T.shapely:

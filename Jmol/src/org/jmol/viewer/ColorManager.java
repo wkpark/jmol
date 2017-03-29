@@ -179,6 +179,14 @@ public class ColorManager {
       hi = vwr.ms.getSurfaceDistanceMax();
       return ce.getColorIndexFromPalette(
           atom.getSurfaceDistance100(), 0, hi, ColorEncoder.BWR, false);
+    case PAL.PALETTE_NUCLEIC:
+      id = atom.group.groupID;
+      if (id >= JC.GROUPID_NUCLEIC_MAX) {
+        id = 0 + Character.toUpperCase(atom.group.group1);
+        id = JC.GROUPID_AMINO_MAX + "GCATUI".indexOf(id);        
+      }
+      return ce.getColorIndexFromPalette(id,
+          0, 0, ColorEncoder.NUCLEIC, false);
     case PAL.PALETTE_AMINO:
       return ce.getColorIndexFromPalette(atom.group.groupID,
           0, 0, ColorEncoder.AMINO, false);

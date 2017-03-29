@@ -26,6 +26,7 @@
 package org.jmol.renderbio;
 
 import javajs.util.Lst;
+import javajs.util.P3;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.BasePair;
@@ -42,8 +43,10 @@ public class BackboneRenderer extends BioShapeRenderer {
   @Override
   protected void renderBioShape(BioShape bioShape) {
     boolean checkPass2 = (!isExport && !vwr.gdata.isPass2);
-    boolean showSteps = vwr.getBoolean(T.backbonesteps)
+    boolean showBlocks = vwr.getBoolean(T.backboneblocks);
+    boolean showSteps = !showBlocks && vwr.getBoolean(T.backbonesteps)
         && bioShape.bioPolymer.isNucleic();
+    float blockHeight = (showBlocks ? vwr.getFloat(T.backboneblockheight) : 0);
     isDataFrame = vwr.ms.isJmolDataFrameForModel(bioShape.modelIndex);
     int n = monomerCount;
     Atom[] atoms = ms.at;
@@ -53,7 +56,8 @@ public class BackboneRenderer extends BioShapeRenderer {
       short cA = colixes[i];
       mad = mads[i];
       int i1 = (i + 1) % n;
-      drawSegment(atomA, atoms[leadAtomIndices[i1]], cA, colixes[i1], 100, checkPass2);
+      drawSegment(atomA, atoms[leadAtomIndices[i1]], cA, colixes[i1], 100,
+          checkPass2);
       if (showSteps) {
         NucleicMonomer g = (NucleicMonomer) monomers[i];
         Lst<BasePair> bps = g.getBasePairs();
@@ -64,20 +68,56 @@ public class BackboneRenderer extends BioShapeRenderer {
               drawSegment(atomA, atoms[iAtom], cA, cA, 1000, checkPass2);
           }
         }
+      } else if (showBlocks && atomA.nBackbonesDisplayed > 0
+          && monomers[i].dssrNT != null) {
+        cA = C.getColixInherited(cA, atomA.colixAtom);
+        if (checkPass2 && !setBioColix(cA))
+          continue;
+        P3[] box = vwr.getAnnotationParser(true).getDSSRBlock(vwr, monomers[i].dssrNT, blockHeight);
+        if (scrBox == null) {
+          scrBox = new P3[8];
+          for (int j = 0; j < 8; j++)
+            scrBox[j] = new P3();
+        }
+        for (int j = 0; j < 8; j++)
+          vwr.tm.transformPt3f(box[j], scrBox[j]);      
+        for (int j = 0; j < 36;)
+          g3d.fillTriangle3f(scrBox[triangles[j++]], scrBox[triangles[j++]], scrBox[triangles[j++]], false);
+        NucleicMonomer g = (NucleicMonomer) monomers[i];
+        Atom atomB = g.getC1P();
+        Atom atomC = g.getN0();
+        if (atomB != null && atomC != null) {
+          drawSegmentAB(atomA, atomB, cA, cA, 1000);
+          drawSegmentAB(atomB, atomC, cA, cA, 1000);
+        }
       }
     }
   }
+  
+  private P3[] scrBox;
+  private final int[] triangles = new int[] {
+     1, 0, 3, 1, 3, 2, 
+     0, 4, 7, 0, 7, 3,
+     4, 5, 6, 4, 6, 7,
+     5, 1, 2, 5, 2, 6,
+     2, 3, 7, 2, 7, 6,
+     0, 1, 5, 0, 5, 4
+  };
 
   private void drawSegment(Atom atomA, Atom atomB, short colixA, short colixB,
                            float max, boolean checkPass2) {
     if (atomA.nBackbonesDisplayed == 0 || atomB.nBackbonesDisplayed == 0
         || ms.isAtomHidden(atomB.i) || !isDataFrame
-        && atomA.distanceSquared(atomB) > max)
+        && max < 1000 && atomA.distanceSquared(atomB) > max)
       return;
     colixA = C.getColixInherited(colixA, atomA.colixAtom);
     colixB = C.getColixInherited(colixB, atomB.colixAtom);
     if (checkPass2 && !setBioColix(colixA) && !setBioColix(colixB))
       return;
+    drawSegmentAB(atomA, atomB, colixA, colixB, max);
+  }
+
+  private void drawSegmentAB(Atom atomA, Atom atomB, short colixA, short colixB, float max) {
     int xA = atomA.sX, yA = atomA.sY, zA = atomA.sZ;
     int xB = atomB.sX, yB = atomB.sY, zB = atomB.sZ;
     int mad = this.mad;

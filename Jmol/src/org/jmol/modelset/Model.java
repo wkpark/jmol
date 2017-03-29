@@ -99,7 +99,7 @@ public class Model {
   public SymmetryInterface simpleCage;
   public Map<String, Object> dssrCache;
   public Orientation orientation;
-  protected Map<String, Object> auxiliaryInfo;
+  public Map<String, Object> auxiliaryInfo;
   public Properties properties;
   public SymmetryInterface biosymmetry;
   Map<String, Integer> dataFrames;

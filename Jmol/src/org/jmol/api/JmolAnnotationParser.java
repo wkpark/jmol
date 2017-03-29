@@ -3,6 +3,7 @@ package org.jmol.api;
 import java.util.Map;
 
 import javajs.util.Lst;
+import javajs.util.P3;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -43,5 +44,7 @@ public interface JmolAnnotationParser {
                                Map<String, Integer> modelMap);
 
   void setGroup1(ModelSet ms, int modelIndex);
+
+  P3[] getDSSRBlock(Viewer vwr, Map<String, Object> dssrNT, float blockHeight);
 
 }

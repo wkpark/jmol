@@ -87,6 +87,7 @@ public class Group implements Structure {
   private final static int SEQUENCE_NUMBER_SHIFT = 8;
   
   public int shapeVisibilityFlags;
+  public Map<String, Object> dssrNT;
   
   /**
    * @j2sIngore
@@ -170,7 +171,7 @@ public class Group implements Structure {
 
 
   public char getGroup1() {
-    return '?';
+    return (group1 == '\0' ? '?' : group1);
   }
   
   public int getBioPolymerLength() {

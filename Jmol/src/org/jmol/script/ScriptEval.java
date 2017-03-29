@@ -3080,6 +3080,7 @@ public class ScriptEval extends ScriptExpr {
         return;
       case T.altloc:
       case T.amino:
+      case T.nucleic:
       case T.chain:
       case T.fixedtemp:
       case T.formalcharge:

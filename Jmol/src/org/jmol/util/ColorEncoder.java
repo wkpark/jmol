@@ -64,8 +64,7 @@ import javajs.util.P3;
       argbsCpk = PAL.argbsCpk;
       argbsRoygb = JC.argbsRoygbScale;
       argbsRwb = JC.argbsRwbScale;
-      argbsAmino = null;
-      argbsShapely = null;
+      argbsAmino = argbsNucleic = argbsShapely = null;
       ihalf = JC.argbsRoygbScale.length / 3;
       this.ce = this;
     } else {
@@ -84,6 +83,7 @@ import javajs.util.P3;
   private final static String BYELEMENT_RASMOL = BYELEMENT_PREFIX + "_rasmol";
   private final static String BYRESIDUE_SHAPELY = BYRESIDUE_PREFIX + "_shapely"; 
   private final static String BYRESIDUE_AMINO = BYRESIDUE_PREFIX + "_amino"; 
+  private final static String BYRESIDUE_NUCLEIC = BYRESIDUE_PREFIX + "_nucleic"; 
   
   public final static int CUSTOM = -1;
   public final static int ROYGB = 0;
@@ -103,6 +103,7 @@ import javajs.util.P3;
   public final static int RESU = -14;
   public final static int INHERIT = 15;
   public final static int ALT = 16; // == 0
+  public final static int NUCLEIC = 17;
 
   private final static String[] colorSchemes = {
     "roygb", "bgyor", 
@@ -113,7 +114,7 @@ import javajs.util.P3;
     "user", "resu", "inherit",
     // ALT_NAMES:
     "rgb", "bgr", 
-    "jmol", "rasmol", BYRESIDUE_PREFIX 
+    "jmol", "rasmol", BYRESIDUE_PREFIX, BYRESIDUE_NUCLEIC
   };
 
   private final static int getSchemeIndex(String colorScheme) {
@@ -139,6 +140,7 @@ import javajs.util.P3;
   private int[] argbsRwb;
   private int[] argbsShapely;
   private int[] argbsAmino;
+  private int[] argbsNucleic;
   private int ihalf;
   private static int[] rasmolScale;
   public Map<String, int[]> schemes;
@@ -207,6 +209,9 @@ import javajs.util.P3;
         case RASMOL:
           getRasmolScale();
           break;
+        case NUCLEIC:
+          getNucleic();
+          break;
         case AMINO:
           getAmino();
           break;
@@ -244,6 +249,9 @@ import javajs.util.P3;
       case AMINO:
         argbsAmino = thisScale;
         break;
+      case NUCLEIC:
+        argbsNucleic = thisScale;
+        break;
       case SHAPELY:
         argbsShapely = thisScale;
         break;
@@ -257,6 +265,10 @@ import javajs.util.P3;
   
   private int[] getAmino() {
     return (argbsAmino == null ? argbsAmino = vwr.getJBR().getArgbs(T.amino) : argbsAmino);
+  }
+   
+  private int[] getNucleic() {
+    return (argbsNucleic == null ? argbsNucleic = vwr.getJBR().getArgbs(T.nucleic) : argbsNucleic);
   }
    
 
@@ -398,6 +410,8 @@ import javajs.util.P3;
       return getRasmolScale();
     case SHAPELY:
       return ce.getShapely();
+    case NUCLEIC:
+      return ce.getNucleic();
     case AMINO:
       return ce.getAmino();
     case USER:
@@ -450,6 +464,8 @@ import javajs.util.P3;
       return getRasmolScale().length;
     case SHAPELY:
       return ce.getShapely().length;
+    case NUCLEIC:
+      return ce.getNucleic().length;
     case AMINO:
       return ce.getAmino().length;
     case FRIENDLY:
@@ -498,6 +514,8 @@ import javajs.util.P3;
       return ce.getShapely()[colorIndex(val, n)];
     case AMINO:
       return ce.getAmino()[colorIndex(val, n)];
+    case NUCLEIC:
+      return ce.getNucleic()[colorIndex(val + 1 - JC.GROUPID_AMINO_MAX, n)];
     case FRIENDLY:
       return getPaletteAC()[colorIndexRepeat(val, n)];
     default:

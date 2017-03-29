@@ -30,6 +30,7 @@ import java.util.Set;
 
 import javajs.util.AU;
 import javajs.util.Lst;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -43,6 +44,7 @@ import org.jmol.modelsetbio.BioResolver;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 
@@ -904,5 +906,12 @@ public class AnnotationParser implements JmolAnnotationParser {
   @Override
   public void setGroup1(ModelSet ms, int modelIndex) {
   }
+  
+  @Override
+  public P3[] getDSSRBlock(Viewer vwr, Map<String, Object> dssrNT, float blockHeight) {
+    return null;
+  }
+
+
 
 }

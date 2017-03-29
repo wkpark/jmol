@@ -849,6 +849,7 @@ public class T {
   
   public final static int axesoffset                     = floatparam | 1;
   public final static int axesscale                      = floatparam | 2;
+  public final static int backboneblockheight             = floatparam | 3;
   public final static int bondtolerance                  = floatparam | 4;
   public final static int cameradepth                    = floatparam | 6;
   public final static int defaultdrawarrowscale          = floatparam | 8;
@@ -961,7 +962,8 @@ public class T {
   public final static int axesmolecular                  = booleanparam | 28;
   public final static int axesorientationrasmol          = booleanparam | 30;
   public final static int axesunitcell                   = booleanparam | 32;
-  public final static int axeswindow                     = booleanparam | 34;
+  public final static int axeswindow                     = booleanparam | 33;
+  public final static int backboneblocks                 = booleanparam | 34;
   public final static int backbonesteps                  = booleanparam | 35;
   public final static int bondmodeor                     = booleanparam | 36;
   public final static int bondpicking                    = booleanparam | 38;
@@ -2527,6 +2529,8 @@ public class T {
        "axesOrientationRasmol",
        "axesUnitCell",
        "axesWindow",
+       "backboneBlocks",
+       "backboneBlockHeight",
        "backboneSteps",
        "bondModeOr",
        "bondPicking",
@@ -3571,6 +3575,8 @@ public class T {
         axesorientationrasmol,              //        "axesOrientationRasmol"
         axesunitcell,                       //        "axesUnitCell"
         axeswindow,                         //        "axesWindow"
+        backboneblocks,
+        backboneblockheight,
         backbonesteps,                      //        "backboneSteps"
         bondmodeor,                         //        "bondModeOr"
         bondpicking,                        //        "bondPicking"

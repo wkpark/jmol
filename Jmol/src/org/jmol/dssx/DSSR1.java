@@ -26,8 +26,10 @@ package org.jmol.dssx;
 import java.util.Map;
 
 import javajs.util.Lst;
+import javajs.util.P3;
 import javajs.util.PT;
 
+import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -315,8 +317,8 @@ public class DSSR1 extends AnnotationParser {
     }
     System.out.println("testing DSSR1");
     BS bs = null;// (doCache ? (BS) annotationCache.get(key) : null);
-    if (bs != null)
-      return bs;
+//    if (bs != null)
+//      return bs;
     bs = new BS();
     if (doCache)
       annotationCache.put(key, bs);
@@ -442,12 +444,14 @@ public class DSSR1 extends AnnotationParser {
     for (int i = list.size(); --i >= 0;) {
       Map<String, Object> map = list.get(i);
       char ch = ((String) map.get("nt_code")).charAt(0);
-      if (!Character.isLowerCase(ch))
-        continue;
       String unit1 = (String) map.get("nt_id");
       ms.bioModelset.getAllSequenceBits(unit1, bsAtoms, bs);
-      Logger.info("" + ch + " " + unit1 + " " + bs);
-      atoms[bsAtoms.nextSetBit(0)].group.group1 = ch;
+      int pt = bs.nextSetBit(0);
+      if (pt < 0)
+        continue;
+      if (Character.isLowerCase(ch))
+        atoms[pt].group.group1 = ch;
+      atoms[pt].group.dssrNT = map;
       bs.clearAll();
     }
   }
@@ -474,4 +478,145 @@ public class DSSR1 extends AnnotationParser {
   }
 
 
+  P3[] oxyz;
+  
+  @SuppressWarnings("unchecked")
+  @Override
+  public P3[] getDSSRBlock(Viewer vwr, Map<String, Object> nt, float blockHeight) {
+    Float lastWidth;
+    P3[] box = (P3[]) nt.get("box");
+    if (box != null && (lastWidth = (Float) nt.get("blockHeight")) != null
+        && lastWidth.floatValue() == blockHeight)
+      return box;
+    Map<String, Object> frame = (Map<String, Object>) nt.get("frame");
+    if (frame == null)
+      return null;
+    nt.put("blockHeight", Float.valueOf(blockHeight));
+    if (box == null) {
+      oxyz = new P3[4];
+      for (int i = 4; --i >= 0;)
+        oxyz[i] = new P3();
+      box = new P3[8];
+      for (int i = 8; --i >= 0;)
+        box[i] = new P3();
+    }
+    getPoint(frame, "x_axis", oxyz[1]);
+    getPoint(frame, "y_axis", oxyz[2]);
+    getPoint(frame, "z_axis", oxyz[3]);
+    String nt_code = ((String) nt.get("nt_code")).toUpperCase();
+    SymmetryInterface uc = vwr.getSymTemp().getUnitCell(oxyz, false, null);
+    getPoint(frame, "origin", oxyz[0]);
+    uc.toFractional(oxyz[0], true);
+    uc.setOffsetPt(P3.new3(oxyz[0].x - 2.25f, oxyz[0].y + 5f, oxyz[0].z
+        - blockHeight / 2));
+    boolean isPurine = ("AG".indexOf(nt_code) >= 0);
+    float x = 4.5f;
+    float y = (isPurine ? -4.5f : -3f);
+    float z = blockHeight;
+    uc.toCartesian(box[0] = P3.new3(0, 0, 0), false);
+    uc.toCartesian(box[1] = P3.new3(x, 0, 0), false);
+    uc.toCartesian(box[2] = P3.new3(x, y, 0), false);
+    uc.toCartesian(box[3] = P3.new3(0, y, 0), false);
+    uc.toCartesian(box[4] = P3.new3(0, 0, z), false);
+    uc.toCartesian(box[5] = P3.new3(x, 0, z), false);
+    uc.toCartesian(box[6] = P3.new3(x, y, z), false);
+    uc.toCartesian(box[7] = P3.new3(0, y, z), false);
+    nt.put("box", box);
+    return box;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void getPoint(Map<String, Object> frame, String item, P3 pt) {
+    Lst<Float> xyz = (Lst<Float>) frame.get(item);
+    pt.x = xyz.get(0).floatValue();
+    pt.y = xyz.get(1).floatValue();
+    pt.z = xyz.get(2).floatValue();    
+  }
+
+//  "purine"  :
+//  [
+//       12 ATOMS,    12 BONDS
+//        1 N      -2.2500   5.0000   0.2500
+//        2 N      -2.2500   0.5000   0.2500
+//        3 N      -2.2500   0.5000  -0.2500
+//        4 N      -2.2500   5.0000  -0.2500
+//        5 C       2.2500   5.0000   0.2500
+//        6 C       2.2500   0.5000   0.2500
+//        7 C       2.2500   0.5000  -0.2500
+//        8 C       2.2500   5.0000  -0.2500
+//        9 C      -2.2500   5.0000   0.2500
+//       10 C      -2.2500   0.5000   0.2500
+//       11 C      -2.2500   0.5000  -0.2500
+//       12 C      -2.2500   5.0000  -0.2500
+//        1     1     2
+//        2     2     3
+//        3     3     4
+//        4     4     1
+//        5     5     6
+//        6     6     7
+//        7     7     8
+//        8     5     8
+//        9     9     5
+//       10    10     6
+//       11    11     7
+//       12    12     8
+//  ]
+//  "pyrimidine"  :
+//  [
+//       12 ATOMS,    12 BONDS
+//        1 N      -2.2500   5.0000   0.2500
+//        2 N      -2.2500   2.0000   0.2500
+//        3 N      -2.2500   2.0000  -0.2500
+//        4 N      -2.2500   5.0000  -0.2500
+//        5 C       2.2500   5.0000   0.2500
+//        6 C       2.2500   2.0000   0.2500
+//        7 C       2.2500   2.0000  -0.2500
+//        8 C       2.2500   5.0000  -0.2500
+//        9 C      -2.2500   5.0000   0.2500
+//       10 C      -2.2500   2.0000   0.2500
+//       11 C      -2.2500   2.0000  -0.2500
+//       12 C      -2.2500   5.0000  -0.2500
+//        1     1     2
+//        2     2     3
+//        3     3     4
+//        4     4     1
+//        5     5     6
+//        6     6     7
+//        7     7     8
+//        8     5     8
+//        9     9     5
+//       10    10     6
+//       11    11     7
+//       12    12     8
+//  ]
+//  "wc_pair"  :
+//  [
+//       12 ATOMS,    12 BONDS
+//        1 N      -2.2500   5.0000   0.2500
+//        2 N      -2.2500  -5.0000   0.2500
+//        3 N      -2.2500  -5.0000  -0.2500
+//        4 N      -2.2500   5.0000  -0.2500
+//        5 C       2.2500   5.0000   0.2500
+//        6 C       2.2500  -5.0000   0.2500
+//        7 C       2.2500  -5.0000  -0.2500
+//        8 C       2.2500   5.0000  -0.2500
+//        9 C      -2.2500   5.0000   0.2500
+//       10 C      -2.2500  -5.0000   0.2500
+//       11 C      -2.2500  -5.0000  -0.2500
+//       12 C      -2.2500   5.0000  -0.2500
+//        1     1     2
+//        2     2     3
+//        3     3     4
+//        4     4     1
+//        5     5     6
+//        6     6     7
+//        7     7     8
+//        8     5     8
+//        9     9     5
+//       10    10     6
+//       11    11     7
+//       12    12     8
+//  ]
+
+  
 }

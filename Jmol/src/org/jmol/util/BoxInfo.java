@@ -106,6 +106,12 @@ public class BoxInfo {
     }
   }
 
+  public void setBoundBoxFromOXYZ(P3 o, P3 vx, P3 vy, P3 vz) {
+    // TODO
+    
+  }
+
+
   // note that this box is NOT the same as for Marching Cubes
   //
   //                     Y 

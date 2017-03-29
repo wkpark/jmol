@@ -25,9 +25,12 @@
 
 package org.jmol.renderbio;
 
+import java.util.Map;
+
 import javajs.util.Lst;
 import javajs.util.P3;
 
+import org.jmol.api.SymmetryInterface;
 import org.jmol.modelset.Atom;
 import org.jmol.modelsetbio.BasePair;
 import org.jmol.modelsetbio.NucleicMonomer;
@@ -69,21 +72,49 @@ public class BackboneRenderer extends BioShapeRenderer {
           }
         }
       } else if (showBlocks && atomA.nBackbonesDisplayed > 0
-          && monomers[i].dssrNT != null) {
+          && monomers[i].isNucleicMonomer()) {
         cA = C.getColixInherited(cA, atomA.colixAtom);
         if (checkPass2 && !setBioColix(cA))
           continue;
-        P3[] box = vwr.getAnnotationParser(true).getDSSRBlock(vwr, monomers[i].dssrNT, blockHeight);
+        NucleicMonomer g = (NucleicMonomer) monomers[i];
+
         if (scrBox == null) {
           scrBox = new P3[8];
           for (int j = 0; j < 8; j++)
             scrBox[j] = new P3();
         }
+        P3[] oxyz = g.getDSSRFrame(vwr);
+        P3[] box = g.dssrBox;
+        float lastHeight = g.dssrBoxHeight;
+        boolean isPurine = g.isPurine();
+        if (box == null || lastHeight != blockHeight) {
+          g.dssrBoxHeight = blockHeight;
+          if (box == null) {
+          box = new P3[8];
+          for (int j = 8; --j >= 0;)
+            box[j] = new P3();
+          g.dssrBox = box;
+          }
+          SymmetryInterface uc = vwr.getSymTemp().getUnitCell(oxyz, false, null);
+          uc.toFractional(oxyz[0], true);
+          uc.setOffsetPt(P3.new3(oxyz[0].x - 2.25f, oxyz[0].y + 5f, oxyz[0].z
+              - blockHeight / 2));
+          float x = 4.5f;
+          float y = (isPurine ? -4.5f : -3f);
+          float z = blockHeight;
+          uc.toCartesian(box[0] = P3.new3(0, 0, 0), false);
+          uc.toCartesian(box[1] = P3.new3(x, 0, 0), false);
+          uc.toCartesian(box[2] = P3.new3(x, y, 0), false);
+          uc.toCartesian(box[3] = P3.new3(0, y, 0), false);
+          uc.toCartesian(box[4] = P3.new3(0, 0, z), false);
+          uc.toCartesian(box[5] = P3.new3(x, 0, z), false);
+          uc.toCartesian(box[6] = P3.new3(x, y, z), false);
+          uc.toCartesian(box[7] = P3.new3(0, y, z), false);
+        }
         for (int j = 0; j < 8; j++)
           vwr.tm.transformPt3f(box[j], scrBox[j]);      
         for (int j = 0; j < 36;)
           g3d.fillTriangle3f(scrBox[triangles[j++]], scrBox[triangles[j++]], scrBox[triangles[j++]], false);
-        NucleicMonomer g = (NucleicMonomer) monomers[i];
         Atom atomB = g.getC1P();
         Atom atomC = g.getN0();
         if (atomB != null && atomC != null) {

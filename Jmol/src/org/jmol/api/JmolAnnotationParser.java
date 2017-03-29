@@ -45,6 +45,6 @@ public interface JmolAnnotationParser {
 
   void setGroup1(ModelSet ms, int modelIndex);
 
-  P3[] getDSSRBlock(Viewer vwr, Map<String, Object> dssrNT, float blockHeight);
+  P3[] getDSSRFrame(Map<String, Object> dssrNT);
 
 }

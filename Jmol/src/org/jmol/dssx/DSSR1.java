@@ -29,7 +29,6 @@ import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.PT;
 
-import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
@@ -478,51 +477,20 @@ public class DSSR1 extends AnnotationParser {
   }
 
 
-  P3[] oxyz;
-  
   @SuppressWarnings("unchecked")
   @Override
-  public P3[] getDSSRBlock(Viewer vwr, Map<String, Object> nt, float blockHeight) {
-    Float lastWidth;
-    P3[] box = (P3[]) nt.get("box");
-    if (box != null && (lastWidth = (Float) nt.get("blockHeight")) != null
-        && lastWidth.floatValue() == blockHeight)
-      return box;
+  public P3[] getDSSRFrame(Map<String, Object> nt) {
     Map<String, Object> frame = (Map<String, Object>) nt.get("frame");
     if (frame == null)
       return null;
-    nt.put("blockHeight", Float.valueOf(blockHeight));
-    if (box == null) {
-      oxyz = new P3[4];
-      for (int i = 4; --i >= 0;)
-        oxyz[i] = new P3();
-      box = new P3[8];
-      for (int i = 8; --i >= 0;)
-        box[i] = new P3();
-    }
+    P3[] oxyz = new P3[4];
+    for (int i = 4; --i >= 0;)
+      oxyz[i] = new P3();
+    getPoint(frame, "origin", oxyz[0]);
     getPoint(frame, "x_axis", oxyz[1]);
     getPoint(frame, "y_axis", oxyz[2]);
     getPoint(frame, "z_axis", oxyz[3]);
-    String nt_code = ((String) nt.get("nt_code")).toUpperCase();
-    SymmetryInterface uc = vwr.getSymTemp().getUnitCell(oxyz, false, null);
-    getPoint(frame, "origin", oxyz[0]);
-    uc.toFractional(oxyz[0], true);
-    uc.setOffsetPt(P3.new3(oxyz[0].x - 2.25f, oxyz[0].y + 5f, oxyz[0].z
-        - blockHeight / 2));
-    boolean isPurine = ("AG".indexOf(nt_code) >= 0);
-    float x = 4.5f;
-    float y = (isPurine ? -4.5f : -3f);
-    float z = blockHeight;
-    uc.toCartesian(box[0] = P3.new3(0, 0, 0), false);
-    uc.toCartesian(box[1] = P3.new3(x, 0, 0), false);
-    uc.toCartesian(box[2] = P3.new3(x, y, 0), false);
-    uc.toCartesian(box[3] = P3.new3(0, y, 0), false);
-    uc.toCartesian(box[4] = P3.new3(0, 0, z), false);
-    uc.toCartesian(box[5] = P3.new3(x, 0, z), false);
-    uc.toCartesian(box[6] = P3.new3(x, y, z), false);
-    uc.toCartesian(box[7] = P3.new3(0, y, z), false);
-    nt.put("box", box);
-    return box;
+    return oxyz;
   }
 
   @SuppressWarnings("unchecked")

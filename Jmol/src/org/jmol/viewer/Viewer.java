@@ -100,6 +100,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.LabelToken;
+import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
 import org.jmol.modelset.ModelSet;
@@ -3095,7 +3096,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     setShapeProperty(JC.SHAPE_MEASURES, "pending", mp);
   }
 
-  MeasurementPending getPendingMeasurement() {
+  public MeasurementPending getPendingMeasurement() {
     return (MeasurementPending) getShapeProperty(JC.SHAPE_MEASURES, "pending");
   }
 
@@ -4845,6 +4846,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
           g.messageStyleChime) : ms.getAtomInfo(atomIndex, info, ptTemp));
     }
     setPicked(atomIndex);
+    if (atomIndex < 0) {
+      Measurement m = getPendingMeasurement();
+      if (m != null)
+        info = info.substring(0,  info.length() - 1) + ",\"" + m.getString() + "\"]"; 
+    }
     g.setO("_pickinfo", info);
     sm.setStatusAtomPicked(atomIndex, info, map);
     if (atomIndex < 0)

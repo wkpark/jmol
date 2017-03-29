@@ -908,7 +908,7 @@ public class AnnotationParser implements JmolAnnotationParser {
   }
   
   @Override
-  public P3[] getDSSRBlock(Viewer vwr, Map<String, Object> dssrNT, float blockHeight) {
+  public P3[] getDSSRFrame(Map<String, Object> dssrNT) {
     return null;
   }
 

@@ -87,8 +87,10 @@ public class Group implements Structure {
   private final static int SEQUENCE_NUMBER_SHIFT = 8;
   
   public int shapeVisibilityFlags;
+
   public Map<String, Object> dssrNT;
-  
+
+
   /**
    * @j2sIngore
    */
@@ -255,7 +257,9 @@ public class Group implements Structure {
    * @return boolean
    */
   protected boolean isPurineByID() {
-    return (isNucleic() && (JC.PURINE_MASK & (1<<(groupID - JC.GROUPID_AMINO_MAX))) != 0);
+    return (isNucleic() 
+        && ((JC.PURINE_MASK & (1<<(groupID - JC.GROUPID_AMINO_MAX))) != 0) 
+        || "AGag".indexOf(getGroup1()) >= 0);
   }
 
   /**
@@ -554,6 +558,10 @@ public class Group implements Structure {
   @Override
   public String toString() {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
+  }
+
+  public boolean isNucleicMonomer() {
+    return false;
   }
 
 }

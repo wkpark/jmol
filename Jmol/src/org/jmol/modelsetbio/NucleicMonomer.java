@@ -24,19 +24,21 @@
  */
 package org.jmol.modelsetbio;
 
+import javajs.util.A4;
+import javajs.util.Lst;
+import javajs.util.M3;
+import javajs.util.P3;
+import javajs.util.PT;
+import javajs.util.Quat;
+import javajs.util.V3;
+
 import org.jmol.c.STR;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.Group;
 import org.jmol.modelset.Chain;
-
-import javajs.util.Lst;
-import javajs.util.P3;
-import javajs.util.Quat;
-
-import javajs.util.V3;
-
+import org.jmol.modelset.Group;
 import org.jmol.viewer.JC;
+import org.jmol.viewer.Viewer;
 
 public class NucleicMonomer extends PhosphorusMonomer {
 
@@ -136,7 +138,6 @@ public class NucleicMonomer extends PhosphorusMonomer {
   
   private boolean isPurine;
   boolean isPyrimidine;
-  
   public static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstAtomIndex, int lastAtomIndex,
@@ -186,6 +187,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return this;
   }
 
+  @Override
   public boolean isNucleicMonomer() { return true; }
 
   @Override
@@ -225,6 +227,18 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   Atom getC2() {
     return getAtomFromOffsetIndex(C2);
+  }
+
+  Atom getC5() {
+    return getAtomFromOffsetIndex(C5);
+  }
+
+  Atom getC6() {
+    return getAtomFromOffsetIndex(C6);
+  }
+
+  Atom getC8() {
+    return getAtomFromOffsetIndex(C8);
   }
 
   Atom getC4P() {
@@ -560,6 +574,9 @@ public boolean isCrossLinked(Group g) {
   }
 
   private Lst<BasePair> bps;
+  public P3[] dssrBox;
+  public float dssrBoxHeight;
+  public P3[] dssrFrame;
   
   public void addBasePair(BasePair bp) {
     if (bps == null)
@@ -590,4 +607,45 @@ public boolean isCrossLinked(Group g) {
     return (g1 == null ? Character.toLowerCase(g3.charAt(g3.length() - 1)) : g1.charAt(0));
   }
 
+  public P3[] getDSSRFrame(Viewer vwr) {
+    if (dssrFrame == null) {
+      if (dssrNT == null) {
+        P3[] oxyz = dssrFrame = new P3[4];
+        for (int i = 4; --i >= 0;)
+          oxyz[i] = new P3();
+        if (isPurine()) {
+          P3 v85 = P3.newP(getC5());
+          v85.sub(getC8());
+          v85.normalize();
+          oxyz[2].setT(v85);
+          oxyz[2].scale(-1);
+          oxyz[0].scaleAdd2(4.9f, v85, getC8());
+          P3 v89 = P3.newP(getN0());
+          v89.sub(getC8());
+          oxyz[3].cross(v89, v85);
+          oxyz[3].normalize();
+        } else {
+          P3 v61 = P3.newP(getN0());
+          v61.sub(getC6());
+          P3 v65 = P3.newP(getC5());
+          v65.sub(getC6());
+          oxyz[3].cross(v61, v65);
+          oxyz[3].normalize();
+          
+          oxyz[2].setT(v61);
+          oxyz[2].normalize();
+          A4 aa = A4.new4(oxyz[3].x, oxyz[3].y, oxyz[3].z, (float) (66.6 * Math.PI/180));
+          M3 m3 = new M3();
+          m3.setAA(aa);
+          m3.rotate(oxyz[2]);
+          oxyz[0].scaleAdd2(5.1f, oxyz[2], getC6());
+          oxyz[2].scale(-1);
+        }
+        oxyz[1].cross(oxyz[2], oxyz[3]);
+      } else {
+        dssrFrame = vwr.getAnnotationParser(true).getDSSRFrame(dssrNT);
+      }          
+    }
+    return dssrFrame;
+  }
 }

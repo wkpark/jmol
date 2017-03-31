@@ -608,44 +608,42 @@ public boolean isCrossLinked(Group g) {
   }
 
   public P3[] getDSSRFrame(Viewer vwr) {
-    if (dssrFrame == null) {
-      if (dssrNT == null) {
-        P3[] oxyz = dssrFrame = new P3[4];
-        for (int i = 4; --i >= 0;)
-          oxyz[i] = new P3();
-        if (isPurine()) {
-          P3 v85 = P3.newP(getC5());
-          v85.sub(getC8());
-          v85.normalize();
-          oxyz[2].setT(v85);
-          oxyz[2].scale(-1);
-          oxyz[0].scaleAdd2(4.9f, v85, getC8());
-          P3 v89 = P3.newP(getN0());
-          v89.sub(getC8());
-          oxyz[3].cross(v89, v85);
-          oxyz[3].normalize();
-        } else {
-          P3 v61 = P3.newP(getN0());
-          v61.sub(getC6());
-          P3 v65 = P3.newP(getC5());
-          v65.sub(getC6());
-          oxyz[3].cross(v61, v65);
-          oxyz[3].normalize();
-          
-          oxyz[2].setT(v61);
-          oxyz[2].normalize();
-          A4 aa = A4.new4(oxyz[3].x, oxyz[3].y, oxyz[3].z, (float) (66.6 * Math.PI/180));
-          M3 m3 = new M3();
-          m3.setAA(aa);
-          m3.rotate(oxyz[2]);
-          oxyz[0].scaleAdd2(5.1f, oxyz[2], getC6());
-          oxyz[2].scale(-1);
-        }
-        oxyz[1].cross(oxyz[2], oxyz[3]);
-      } else {
-        dssrFrame = vwr.getAnnotationParser(true).getDSSRFrame(dssrNT);
-      }          
+    if (dssrFrame != null)
+      return dssrFrame;
+    if (dssrNT != null)
+      return dssrFrame = vwr.getAnnotationParser(true).getDSSRFrame(dssrNT);
+    P3[] oxyz = dssrFrame = new P3[4];
+    for (int i = 4; --i >= 0;)
+      oxyz[i] = new P3();
+    if (isPurine()) {
+      P3 v85 = P3.newP(getC5());
+      v85.sub(getC8());
+      v85.normalize();
+      oxyz[2].setT(v85);
+      oxyz[2].scale(-1);
+      oxyz[0].scaleAdd2(4.9f, v85, getC8());
+      P3 v89 = P3.newP(getN0());
+      v89.sub(getC8());
+      oxyz[3].cross(v89, v85);
+      oxyz[3].normalize();
+    } else {
+      P3 v61 = P3.newP(getN0());
+      v61.sub(getC6());
+      P3 v65 = P3.newP(getC5());
+      v65.sub(getC6());
+      oxyz[3].cross(v61, v65);
+      oxyz[3].normalize();
+      oxyz[2].setT(v61);
+      oxyz[2].normalize();
+      A4 aa = A4.new4(oxyz[3].x, oxyz[3].y, oxyz[3].z,
+          (float) (66.6 * Math.PI / 180));
+      M3 m3 = new M3();
+      m3.setAA(aa);
+      m3.rotate(oxyz[2]);
+      oxyz[0].scaleAdd2(5.1f, oxyz[2], getC6());
+      oxyz[2].scale(-1);
     }
+    oxyz[1].cross(oxyz[2], oxyz[3]);
     return dssrFrame;
   }
 }

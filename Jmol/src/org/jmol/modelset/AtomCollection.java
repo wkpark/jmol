@@ -1094,15 +1094,22 @@ abstract public class AtomCollection {
   }
 
   protected void taintAtom(int atomIndex, int type) {
-    if (!preserveState)
-      return;
-    if (tainted == null)
-      tainted = new BS[TAINT_MAX];
-    if (tainted[type] == null)
-      tainted[type] = BS.newN(ac);
-    tainted[type].set(atomIndex);
-    if (type  == TAINT_COORD)
-      validateBspfForModel(((ModelSet) this).am[at[atomIndex].mi].trajectoryBaseIndex, false);
+    if (preserveState) {
+      if (tainted == null)
+        tainted = new BS[TAINT_MAX];
+      if (tainted[type] == null)
+        tainted[type] = BS.newN(ac);
+      tainted[type].set(atomIndex);
+    }
+    if (type == TAINT_COORD)
+      taintModelCoord(atomIndex);
+  }
+
+  private void taintModelCoord(int atomIndex) {
+    Model m = ((ModelSet) this).am[at[atomIndex].mi];
+    validateBspfForModel(m.trajectoryBaseIndex, false);
+    if (m.isBioModel)
+      m.resetDSSR(true);
   }
 
   private void untaint(int atomIndex, int type) {
@@ -1114,19 +1121,25 @@ abstract public class AtomCollection {
   }
 
   public void setTaintedAtoms(BS bs, int type) {
-    if (!preserveState)
-      return;
-    if (bs == null) {
-      if (tainted == null)
+    if (preserveState) {
+      if (bs == null) {
+        if (tainted == null)
+          return;
+        tainted[type] = null;
         return;
-      tainted[type] = null;
-      return;
+      }
+      if (tainted == null)
+        tainted = new BS[TAINT_MAX];
+      if (tainted[type] == null)
+        tainted[type] = BS.newN(ac);
+      BSUtil.copy2(bs, tainted[type]);
     }
-    if (tainted == null)
-      tainted = new BS[TAINT_MAX];
-    if (tainted[type] == null)
-      tainted[type] = BS.newN(ac);
-    BSUtil.copy2(bs, tainted[type]);
+    if (type == TAINT_COORD) {
+      int i = bs.nextSetBit(0);
+      if (i >= 0)
+        taintModelCoord(i);
+    }
+    
   }
 
   public void unTaintAtoms(BS bs, int type) {

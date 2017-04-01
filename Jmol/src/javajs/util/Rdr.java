@@ -188,6 +188,11 @@ public class Rdr implements GenericLineReader {
     return (bytes[50] == 0 && bytes[51] == 0x50 && bytes[52] == 0x4E && bytes[53] == 0x47 && bytes[54] == 0x4A);
   }
 
+  /**
+   * Check for a ZIP input stream - starting with "PK<03><04>"
+   * @param is
+   * @return true if a ZIP stream
+   */
   public static boolean isZipS(InputStream is) {
     return isZipB(getMagic(is, 4));
   }

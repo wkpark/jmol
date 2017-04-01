@@ -900,7 +900,7 @@ public class ModelSet extends BondCollection {
     growAtomArrays(ac + pts.length);
     RadiusData rd = vwr.rd;
     short mad = getDefaultMadFromOrder(1);
-    am[modelIndex].dssrCache = null;
+    am[modelIndex].resetDSSR(false);
     for (int i = 0, n = am[modelIndex].act + 1; i < vConnections.size(); i++, n++) {
       Atom atom1 = vConnections.get(i);
       // hmm. atom1.group will not be expanded, though...
@@ -3029,7 +3029,7 @@ public class ModelSet extends BondCollection {
     for (int i = 0; i < mc; i++) {
       am[i].bsAtomsDeleted.or(bs);
       am[i].bsAtomsDeleted.and(am[i].bsAtoms);
-      am[i].dssrCache = null;
+      am[i].resetDSSR(false);
     }
     deleteBonds(bsBonds, false);
     validateBspf(false);
@@ -3547,7 +3547,7 @@ public class ModelSet extends BondCollection {
 
   public void clearCache() {
     for (int i = mc; --i >= 0;)
-      am[i].dssrCache = null;
+      am[i].resetDSSR(false);
   }
 
   public M4[] getSymMatrices(int modelIndex) {

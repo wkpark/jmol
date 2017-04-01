@@ -3,11 +3,11 @@ package org.jmol.io;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.util.Map;
-import java.util.zip.ZipInputStream;
 
 import javajs.api.GenericBinaryDocument;
 import javajs.util.DataReader;
 import javajs.util.PT;
+import javajs.util.Rdr;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolFilesReaderInterface;
@@ -99,7 +99,7 @@ public class FilesReader implements JmolFilesReaderInterface {
       return FileReader.getChangeableReader(vwr, namesAsGivenIn[i], name);
     Object t = fm.getUnzippedReaderOrStreamFromName(name, null, true,
         forceBinary, false, true, htParams);
-    if (t instanceof ZipInputStream) {
+    if (t instanceof BufferedInputStream && Rdr.isZipS((BufferedInputStream) t)) {
       if (subFileList != null)
         htParams.put("subFileList", subFileList);
       String[] zipDirectory = fm.getZipDirectory(name, true, true);

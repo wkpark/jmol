@@ -251,6 +251,18 @@ public class Model {
     return null;
   }
 
+  /**
+   * Something has changed; clear the DSSR cache and possibly remove DSSR entirely.
+   * 
+   * 
+   * @param totally set TRUE if atoms have moved so we force a new DSSR calculation.
+   */
+  public void resetDSSR(boolean totally) {
+    dssrCache = null;
+    if (totally)
+      auxiliaryInfo.remove("dssr");
+  }
+
   public void fixIndices(int modelIndex, int nAtomsDeleted, BS bsDeleted) {
     // also in BioModel
     fixIndicesM(modelIndex, nAtomsDeleted, bsDeleted);

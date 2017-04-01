@@ -83,7 +83,7 @@ public class ScriptManager implements JmolScriptManager {
     eval.setCompiler();
     return eval;
   }
- 
+
   private ScriptEval newScriptEvaluator() {
     return ((ScriptEval) Interface
         .getInterface("org.jmol.script.ScriptEval", vwr, "setOptions")).setViewer(vwr);
@@ -347,6 +347,9 @@ public class ScriptManager implements JmolScriptManager {
     historyDisabled = historyDisabled || !isQueued; // no history for scriptWait
     // 11.5.45
     vwr.setErrorMessage(null, null);
+    // 14.11.0 need to use a new eval for each Jmol.scriptWait() or else we can
+    // run into the problem when that is used in a callback that eval.aatokens is overridden
+    ScriptEval eval = (isQueued ? this.eval : newScriptEvaluator());
     boolean isOK = eval.compileScriptString(strScript, isQuiet);
     String strErrorMessage = eval.getErrorMessage();
     String strErrorMessageUntranslated = eval.getErrorMessageUntranslated();

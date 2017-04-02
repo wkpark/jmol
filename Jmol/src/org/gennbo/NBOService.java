@@ -168,6 +168,7 @@ public class NBOService {
   String cachedReply = "";
 
   private NBORunnable nboRunnable;
+  private boolean haveLicense;
 
   /**
    * Start the ProcessBuilder for NBOServe and listen to its stdout (Fortran LFN
@@ -410,13 +411,12 @@ public class NBOService {
   }
 
   //////////////////////////// Process NBO's Reply ///////////////////////////
-  
 
   /**
    * Process the return from NBOServe.
    * 
    * @param s
-   * @return  true if we are done
+   * @return true if we are done
    */
   protected boolean processServerReturn(String s) {
 
@@ -442,33 +442,19 @@ public class NBOService {
     }
 
     int pt;
-    
+
     // We don't always remove the request, because in the case of RUN, 
     // we are prone to get additional sysout message from other processes,
     // particularly gennbo.bat. These will come BEFORE the start message.
-    
+
     boolean removeRequest = true;
 
     try { // with finally clause to remove request from queue
 
-      if (currentRequest == null) {
-        System.out.println(s);
-        //    *start*
-        //    NBOServe v. 27-Jan-2017
-        //    *end*
-        //   NBOServe v6: development version (A_000000)
-        // this was unsolicited.
-        if (s.indexOf("NBOServe v") >= 0) {
-          s = (s.substring(s.lastIndexOf("NBOServe v")) + "\n").split("\n")[0];
-          dialog.setLicense(s);
-        }
-        return true;
-      }
-
       if ((pt = s.indexOf("***errmess***")) >= 0) {
         System.out.println(s);
         try {
-          s = PT.split(s, "\n")[2]; 
+          s = PT.split(s, "\n")[2];
           logServerLine(s.substring(s.indexOf("\n") + 1), Logger.LEVEL_ERROR);
         } catch (Exception e) {
           // ignore
@@ -478,10 +464,11 @@ public class NBOService {
       }
 
       if ((pt = s.lastIndexOf("*start*")) < 0) {
-        
+
         // Note that RUN can dump all kinds of things to SYSOUT prior to completion.
-        
-        logServerLine(s, (currentRequest.isMessy ? Logger.LEVEL_DEBUG : Logger.LEVEL_ERROR));
+
+        logServerLine(s, (currentRequest.isMessy ? Logger.LEVEL_DEBUG
+            : Logger.LEVEL_ERROR));
         return (removeRequest = !currentRequest.isMessy);
       }
       s = s.substring(pt + 8); // includes \n
@@ -495,7 +482,16 @@ public class NBOService {
 
       // standard expectation
       System.out.println("*start*\n" + s);
-      currentRequest.sendReply(s.substring(0, pt));
+      if (currentRequest == null) {
+        if (haveLicense) {
+          System.out.println("TRANSMISSION ERROR: UNSOLICITED!");
+        } else {
+          haveLicense = true;
+          dialog.setLicense(s);
+        }
+      } else {
+        currentRequest.sendReply(s.substring(0, pt));
+      }
       return true;
     } finally {
       if (currentRequest != null && removeRequest) {
@@ -590,19 +586,7 @@ public class NBOService {
       if (n <= 0) {
         return null;
       }
-      
-      // 2. Monitor every 10 ms until no further activity. 
-      
       setReady(true);
-      int m = 0;
-      do {
-        if (destroyed)
-          return null;
-        n = m;
-        Thread.sleep(10);
-        if (nboOut == null)
-          return null;
-      } while ((m = nboOut.available()) > n);
       while (n > buffer.length) {
         buffer = AU.doubleLengthByte(buffer);
       }

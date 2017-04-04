@@ -1661,9 +1661,12 @@ abstract class ScriptExpr extends ScriptParam {
       bsAtom = BS.newN(ac);
       tokenAtom = SV.newV(T.bitset, bsAtom);
       break;
+    case T.dssr:
+      for (int j = fout.length; --j >= 0;)
+        fout[j] = Float.NaN;
+      //$FALL-THROUGH$
     case T.straightness:
     case T.surfacedistance:
-    case T.dssr:
       vwr.autoCalculate(tok, (String) tokenValue);
       break;
     case T.distance:

@@ -190,7 +190,7 @@ abstract public class AtomCollection {
   int[] atomSerials;
   int[] atomResnos;
   int[] atomSeqIDs;
-  int[] dssrData;
+  float[] dssrData;
   public Vibration[] vibrations;
   public float[] occupancies;
   short[] bfactor100s;
@@ -2590,7 +2590,7 @@ abstract public class AtomCollection {
         nAtoms);
     atomSeqIDs = (int[]) AU.deleteElements(atomSeqIDs, firstAtomIndex,
         nAtoms);
-    dssrData = (int[]) AU.deleteElements(dssrData, firstAtomIndex,
+    dssrData = (float[]) AU.deleteElements(dssrData, firstAtomIndex,
         nAtoms);
     bfactor100s = (short[]) AU.deleteElements(bfactor100s,
         firstAtomIndex, nAtoms);

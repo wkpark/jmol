@@ -583,7 +583,6 @@ public class T {
   public final static int strucno       = intproperty | 23;
   public final static int subsystem     = intproperty | 24;
   public final static int valence       = intproperty | 25 | settable;
-  public final static int dssr          = intproperty | 26;
 
   // float values must be multiplied by 100 prior to comparing to integer values
 
@@ -615,6 +614,7 @@ public class T {
   public final static int mody            = floatproperty | 24;
   public final static int modz            = floatproperty | 25;
   public final static int modo            = floatproperty | 26;
+  public final static int dssr            = floatproperty | 27;
   public final static int vectorscale     = floatproperty | 1 | floatparam;
   public final static int atomx           = floatproperty | 1 | settable;
   public final static int atomy           = floatproperty | 2 | settable;
@@ -625,7 +625,7 @@ public class T {
   public final static int fux             = floatproperty | 7 | settable;
   public final static int fuy             = floatproperty | 8 | settable;
   public final static int fuz             = floatproperty | 9 | settable;
-  public final static int bondingradius           = floatproperty | 10 | settable;
+  public final static int bondingradius   = floatproperty | 10 | settable;
   public final static int partialcharge   = floatproperty | 11 | settable;
   public final static int temperature     = floatproperty | 12 | settable;
   public final static int vibx            = floatproperty | 18 | settable;
@@ -636,7 +636,7 @@ public class T {
   public final static int z               = floatproperty | 23 | settable;
   public final static int vanderwaals     = floatproperty | 24 | settable | setparam;
   public final static int property        = floatproperty | 25 | settable | setparam | mathproperty;
-  public final static int hydrophobicity     = floatproperty | 26 | settable | predefinedset;
+  public final static int hydrophobicity  = floatproperty | 26 | settable | predefinedset;
   public final static int selected        = floatproperty | 27 | settable | predefinedset;
   
   public final static int backbone     = floatproperty | shapeCommand | 1 | predefinedset | defaultON | settable;

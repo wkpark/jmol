@@ -457,7 +457,7 @@ public class DSSR1 extends AnnotationParser {
   
   @SuppressWarnings("unchecked")
   @Override
-  public void getAtomicDSSRData(ModelSet ms, int modelIndex, int[] dssrData, String dataType) {
+  public void getAtomicDSSRData(ModelSet ms, int modelIndex, float[] dssrData, String dataType) {
     Map<String, Object> info = (Map<String, Object>) ms.getInfo(modelIndex, "dssr");
     Lst<Object> list;
     if (info == null || (list = (Lst<Object>) info.get(dataType)) == null)
@@ -470,7 +470,7 @@ public class DSSR1 extends AnnotationParser {
         bs.clearAll();
         ms.getSequenceBits(map.toString(), bsAtoms, bs);
         for (int j = bs.nextSetBit(0); j >= 0; j = bs.nextSetBit(j + 1))
-          dssrData[j] = i + 1;
+          dssrData[j] = i;
       }
     } catch (Throwable e) {
     }

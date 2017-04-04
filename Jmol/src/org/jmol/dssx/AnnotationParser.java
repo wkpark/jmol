@@ -900,7 +900,7 @@ public class AnnotationParser implements JmolAnnotationParser {
   }
 
   @Override
-  public void getAtomicDSSRData(ModelSet ms, int modelIndex, int[] dssrData, String dataType) {
+  public void getAtomicDSSRData(ModelSet ms, int modelIndex, float[] dssrData, String dataType) {
   }
 
   @Override

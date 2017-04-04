@@ -4056,17 +4056,16 @@ public class ModelSet extends BondCollection {
     if (dataType == null)
       return;
     if (dssrData == null || dssrData.length < ac)
-      dssrData = new int[ac];
-    else
-      for (int i = 0; i < ac; i++)
-        dssrData[i] = 0;
+      dssrData = new float[ac];
+    for (int i = 0; i < ac; i++)
+      dssrData[i] = Float.NaN;
     for (int i = mc; --i >= 0;)
       if (am[i].isBioModel)
         ((BioModel) am[i]).getAtomicDSSRData(dssrData, dataType);
   }
 
-  public int getAtomicDSSRData(int i) {
-    return (dssrData == null || dssrData.length <= i ? 0 : dssrData[i]);
+  public float getAtomicDSSRData(int i) {
+    return (dssrData == null || dssrData.length <= i ? Float.NaN : dssrData[i]);
   }
 
 

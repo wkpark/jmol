@@ -22,7 +22,7 @@ public interface JmolAnnotationParser {
 
   String getHBonds(ModelSet ms, int modelIndex, Lst<Bond> vHBonds, boolean doReport);
 
-  void getAtomicDSSRData(ModelSet ms, int modelIndex, int[] dssrData,
+  void getAtomicDSSRData(ModelSet ms, int modelIndex, float[] dssrData,
                          String dataType);
 
   String calculateDSSRStructure(Viewer vwr, BS bsAtoms);

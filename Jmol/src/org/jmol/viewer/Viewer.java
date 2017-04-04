@@ -5141,7 +5141,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.autoFps;
     case T.axesorientationrasmol:
       return g.axesOrientationRasmol;
-    case T.backbonesteps:
+    case T.cartoonsteps:
       return g.backboneSteps;
     case T.cartoonblocks:
       return g.backboneBlocks;
@@ -6126,15 +6126,15 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       // 14.11.0
       g.backboneBlocks = value;
       break;
-    case T.backbonesteps:
+    case T.cartoonsteps:
       // 14.1.14
       g.backboneSteps = value;
       break;
     case T.cartoonribose:
       // 14.1.8
       g.cartoonRibose = value;
-      if (value && getBoolean(T.cartoonbaseedges))
-        setBooleanPropertyTok("cartoonBaseEdges", T.cartoonbaseedges, false);
+//      if (value && getBoolean(T.cartoonbaseedges))
+//        setBooleanPropertyTok("cartoonBaseEdges", T.cartoonbaseedges, false);
       break;
     case T.ellipsoidarrows:
       // 13.1.17 TRUE for little points on ellipsoids showing sign of 
@@ -6544,8 +6544,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       break;
     case T.cartoonbaseedges:
       g.cartoonBaseEdges = value;
-      if (value && getBoolean(T.cartoonribose))
-        setBooleanPropertyTok("cartoonRibose", T.cartoonribose, false);
+//      if (value && getBoolean(T.cartoonribose))
+//        setBooleanPropertyTok("cartoonRibose", T.cartoonribose, false);
       break;
     case T.cartoonrockets:
       g.cartoonRockets = value;

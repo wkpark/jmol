@@ -963,8 +963,8 @@ public class T {
   public final static int axesorientationrasmol          = booleanparam | 30;
   public final static int axesunitcell                   = booleanparam | 32;
   public final static int axeswindow                     = booleanparam | 33;
-  public final static int cartoonblocks                 = booleanparam | 34;
-  public final static int backbonesteps                  = booleanparam | 35;
+  public final static int cartoonblocks                  = booleanparam | 34;
+  public final static int cartoonsteps                   = booleanparam | 35;
   public final static int bondmodeor                     = booleanparam | 36;
   public final static int bondpicking                    = booleanparam | 38;
 // set mathproperty  public final static int bonds                          = booleanparam | 40;
@@ -2529,7 +2529,6 @@ public class T {
        "axesOrientationRasmol",
        "axesUnitCell",
        "axesWindow",
-       "backboneSteps",
        "bondModeOr",
        "bondPicking",
        "bonds",
@@ -2542,6 +2541,7 @@ public class T {
        "cartoonLadders",
        "cartoonRibose",
        "cartoonRockets",
+       "cartoonSteps",
        "chainCaseSensitive",
        "colorRasmol",
        "debugScript",
@@ -3575,7 +3575,6 @@ public class T {
         axesorientationrasmol,              //        "axesOrientationRasmol"
         axesunitcell,                       //        "axesUnitCell"
         axeswindow,                         //        "axesWindow"
-        backbonesteps,                      //        "backboneSteps"
         bondmodeor,                         //        "bondModeOr"
         bondpicking,                        //        "bondPicking"
         bonds,                              //        "bonds"
@@ -3588,6 +3587,7 @@ public class T {
         cartoonladders,                     //        "cartoonLadders"
         cartoonribose,                      //        "cartoonRibose"
         cartoonrockets,                     //        "cartoonRockets"
+        cartoonsteps,                       //        
         chaincasesensitive,                 //        "chainCaseSensitive"
         colorrasmol,                        //        "colorRasmol"
         debugscript,                        //        "debugScript"

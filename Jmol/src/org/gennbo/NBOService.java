@@ -467,6 +467,8 @@ public class NBOService {
 
         // Note that RUN can dump all kinds of things to SYSOUT prior to completion.
 
+        if (currentRequest == null)
+          return (removeRequest = true);
         logServerLine(s, (currentRequest.isMessy ? Logger.LEVEL_DEBUG
             : Logger.LEVEL_ERROR));
         return (removeRequest = !currentRequest.isMessy);
@@ -600,7 +602,9 @@ public class NBOService {
       // 4. Deliver standard Java format without carriage return.
       
       n = nboOut.read(buffer, 0, n);    
-      return cachedReply = cachedReply + PT.rep(new String(buffer, 0, n), "\r", "");
+      String s = PT.rep(new String(buffer, 0, n), "\r", "");
+      System.out.println(">> " + s + "<<");
+      return cachedReply = cachedReply + s;
     }
 
 

@@ -1312,7 +1312,7 @@ class NBOModel {
       String symmetry = s.substring(0, s.indexOf("\n"));
       dialog.logValue(symmetry);
       // fix issue with blank first line
-      s = PT.rep(s.substring(s.indexOf("\n") + 1), "\"\n", "\" NBO\n");
+      s = s.substring(s.indexOf("\n") + 1);
       s = "set refreshing false;load " + s + NBOConfig.JMOL_FONT_SCRIPT
           + ";set refreshing true";
       showSelectedOnFileLoad = true;

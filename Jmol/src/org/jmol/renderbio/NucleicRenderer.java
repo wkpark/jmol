@@ -28,6 +28,7 @@ import org.jmol.api.JmolRendererInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
+import org.jmol.modelsetbio.BasePair;
 import org.jmol.modelsetbio.NucleicMonomer;
 import org.jmol.script.T;
 import org.jmol.util.C;
@@ -35,6 +36,7 @@ import org.jmol.util.GData;
 import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.T3;
 
@@ -45,15 +47,15 @@ import javajs.util.T3;
  */
 public class NucleicRenderer {
 
-  private boolean renderEdges;
+  private boolean cartoonBaseEdges;
   
-  private boolean showBlocks;
+  private boolean cartoonBlocks;
   private float blockHeight;
     
     
 
-  private boolean ladderOnly;
-  private boolean renderRibose;
+  private boolean cartoonLadders;
+  private boolean cartoonRibose;
  
   public NucleicRenderer() {
     // for reflection
@@ -70,6 +72,8 @@ public class NucleicRenderer {
   private JmolRendererInterface g3d;
   private BioShapeRenderer bsr;
   private short colix;
+
+  private boolean cartoonSteps;
   
   void renderNucleic(BioShapeRenderer renderer) {
     if (this.vwr == null) {
@@ -87,12 +91,14 @@ public class NucleicRenderer {
     T3[] screens = renderer.controlPointScreens;
     T3[] pts = renderer.controlPoints;
     
-    
-    showBlocks = vwr.getBoolean(T.cartoonblocks);
-    blockHeight = (showBlocks ? vwr.getFloat(T.cartoonblockheight) : 0);
-    renderEdges = !showBlocks && vwr.getBoolean(T.cartoonbaseedges);
-    ladderOnly = !showBlocks && vwr.getBoolean(T.cartoonladders);
-    renderRibose = vwr.getBoolean(T.cartoonribose);
+    // order of checking for TRUE is:
+    // Blocks, BaseEdges, Steps, Ladders, Ribose
+    cartoonBlocks = vwr.getBoolean(T.cartoonblocks);
+    cartoonBaseEdges = vwr.getBoolean(T.cartoonbaseedges);
+    cartoonSteps = vwr.getBoolean(T.cartoonsteps);
+    cartoonLadders = vwr.getBoolean(T.cartoonladders);
+    cartoonRibose = vwr.getBoolean(T.cartoonribose);
+    blockHeight = vwr.getFloat(T.cartoonblockheight);
     boolean isTraceAlpha = vwr.getBoolean(T.tracealpha);
     BS bsVisible = bsr.bsVisible;
     for (int i = bsVisible.nextSetBit(0); i >= 0; i = bsVisible
@@ -126,17 +132,21 @@ public class NucleicRenderer {
       basePt = new P3();
       rPt[9] = new P3(); // ribose center
     }
-    if (showBlocks) {
+    if (cartoonBlocks) {
       renderBlock(nucleotide);
       return;
     }
-    if (renderEdges) {
+    if (cartoonBaseEdges) {
       renderLeontisWesthofEdges(nucleotide);
+      return;
+    }
+    if (cartoonSteps) {
+      renderSteps(nucleotide, im);
       return;
     }
     nucleotide.getBaseRing6Points(rPt);
     transformPoints(6, rPt, rScr);
-    if (!ladderOnly)
+    if (!cartoonLadders)
       renderRing6();
     P3 stepScreen;
     P3 stepPt;
@@ -148,7 +158,7 @@ public class NucleicRenderer {
 
     boolean hasRing5 = nucleotide.maybeGetBaseRing5Points(rPt5);
     if (hasRing5) {
-      if (ladderOnly) {
+      if (cartoonLadders) {
         stepScreen = rScr[2]; // N1
         stepPt = rPt[2];
       } else {
@@ -158,24 +168,24 @@ public class NucleicRenderer {
         stepPt = rPt5[3];
       }
     } else {
-      pt = (ladderOnly ? 4 : 2);
+      pt = (cartoonLadders ? 4 : 2);
       stepScreen = rScr[pt]; // N3 or N1
       stepPt = rPt[pt];
     }
     short mad = (short) (thisMad > 1 ? thisMad / 2 : thisMad);
     float r = mad / 2000f;
     int w = (int) vwr.tm.scaleToScreen((int) backboneScreen.z, mad);
-    if (ladderOnly || !renderRibose)
+    if (cartoonLadders || !cartoonRibose)
       g3d.fillCylinderScreen3I(GData.ENDCAPS_SPHERICAL, w, backboneScreen,
           stepScreen, backbonePt, stepPt, r);
-    if (ladderOnly)
+    if (cartoonLadders)
       return;
     drawEdges(rScr, rPt, 6);
     if (hasRing5)
       drawEdges(rScr5, rPt5, 5);
     else
       renderEdge(rScr, rPt, 0, 5);
-    if (renderRibose) {
+    if (cartoonRibose) {
       baseScreen.setT(stepScreen);
       basePt.setT(stepPt);
       nucleotide.getRiboseRing5Points(rPt);
@@ -195,8 +205,24 @@ public class NucleicRenderer {
     }
   }
   
-  
-  
+  private void renderSteps(NucleicMonomer g, int i) {
+      Lst<BasePair> bps = g.getBasePairs();
+      Atom atomA = g.getLeadAtom();
+      short cA = C.getColixInherited(colix, atomA.colixAtom);
+      if (bps != null) {
+        boolean checkPass2 = (!bsr.isExport && !vwr.gdata.isPass2);
+        for (int j = bps.size(); --j >= 0;) {
+          int iAtom = bps.get(j).getPartnerAtom(g);
+          if (iAtom > i) {
+            Atom atomB = vwr.ms.at[iAtom];
+            short cB = C.getColixInherited(colix, atomB.colixAtom);
+            if (!checkPass2 || bsr.setBioColix(cA) || bsr.setBioColix(cB))
+              bsr.drawSegmentAB(atomA, atomB, cA, cB, 1000);
+          }
+        }
+    }  
+  }
+
   private P3[] scrBox;
   private final int[] triangles = new int[] {
      1, 0, 3, 1, 3, 2, 

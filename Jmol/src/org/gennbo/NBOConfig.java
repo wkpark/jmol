@@ -343,7 +343,7 @@ class NBOConfig  {
   }
 
   protected void doSettingShowHalos() {
-    dialog.runScriptNow("select " + jCheckSelHalo.isSelected());
+    dialog.runScriptQueued("select " + jCheckSelHalo.isSelected());
   }
 
   protected void doSettingWireMesh() {
@@ -376,7 +376,7 @@ class NBOConfig  {
 
     if (isJmol) {
       if (!dialog.jmolOptionNONBO)
-        dialog.runScriptNow("background gray;set defaultcolors Jmol;refresh;");
+        dialog.runScriptQueued("background gray;set defaultcolors Jmol;refresh;");
     } else {
       if (jCheckWireMesh.isSelected())
         jCheckWireMesh.doClick();
@@ -387,7 +387,7 @@ class NBOConfig  {
         String atomColors = "";
         atomColors = GuiMap.getResourceString(this,
             "org/gennbo/assets/atomColors.txt");
-        dialog.runScriptNow(atomColors + ";refresh");
+        dialog.runScriptQueued(atomColors + ";refresh");
       } catch (IOException e) {
         dialog.logError("atomColors.txt not found");
       }

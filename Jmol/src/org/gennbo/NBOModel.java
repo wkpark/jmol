@@ -1016,7 +1016,7 @@ class NBOModel {
   protected void loadModelToNBO(String s, boolean undoRedo) {
     boolean alsoLoadJmol = true;
     if (s == null) {
-      s = dialog.runScriptNow(";print data({*},'cfi');");
+      s = dialog.getCFIData();
       alsoLoadJmol = false;
     }
 //    if (undoRedo)
@@ -1041,8 +1041,9 @@ class NBOModel {
   protected void loadModelFromNBO(String path, String fname, String ext) {
     if (PT.isOneOf(ext, NBOConfig.JMOL_EXTENSIONS)) {
       notFromNBO = true;
-      dialog.runScriptNow("set refreshing false"); // a bit risky
+      dialog.runScriptQueued("set refreshing false");
       dialog.loadModelFileQueued(new File(path  + "\\" + fname + "." + ext), false);
+      dialog.runScriptQueued("set refreshing true");
       return;
     }
     String ess = getEss(ext, true);
@@ -1127,7 +1128,7 @@ class NBOModel {
    * 
    */
   protected void notifyPick(int[] picked) {
-    dialog.runScriptNow("measure delete;"
+    dialog.runScriptQueued("measure delete;"
         + (resetOnAtomClick ? "select none" : ""));
     if (resetOnAtomClick) {
       clearSelected(false);
@@ -1184,13 +1185,13 @@ class NBOModel {
    */
   protected void notifyFileLoaded() {
 
-    String fileContents = dialog.runScriptNow("print data({*},'cfi')");
+    String fileContents = dialog.getCFIData();
     if (notFromNBO) {
       notFromNBO = false;
       loadModelToNBO(fileContents, false);
       return;
     }
-    dialog.runScriptNow(NBOConfig.JMOL_FONT_SCRIPT);
+    dialog.runScriptQueued(NBOConfig.JMOL_FONT_SCRIPT);
 //        + ";select 1.1;"); // NOT rotate best, because these may be symmetry designed
     dialog.doSetStructure(null);
     showComponents(true);
@@ -1214,7 +1215,7 @@ class NBOModel {
       updateSelected(false);
       showSelectedOnFileLoad = false;
     } else {
-      dialog.runScriptNow("select none; select on;refresh");
+      dialog.runScriptQueued("select none; select on;refresh");
     }
   }
   

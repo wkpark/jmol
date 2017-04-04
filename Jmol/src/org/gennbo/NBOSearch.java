@@ -525,7 +525,7 @@ class NBOSearch extends NBOView {
           .append("measurements off;select add {*}.bonds; color bonds lightgrey; select none;");
     }
     script.append("isosurface delete; select off;refresh");
-    dialog.runScriptNow(script.toString());
+    dialog.runScriptQueued(script.toString());
     buildHome();
   }
 
@@ -537,7 +537,7 @@ class NBOSearch extends NBOView {
     keyWdBtn.setText("<html><font color=black>" + getKeyword()
         + "</font></html>");
     keyWdBtn.setVisible(true);
-    dialog.runScriptNow("isosurface delete;refresh");
+    dialog.runScriptQueued("isosurface delete;refresh");
     opList.removeAll();
 
     ButtonGroup btnGroup = new ButtonGroup();
@@ -618,7 +618,7 @@ class NBOSearch extends NBOView {
       changeKey(bend);
       break;
     case KEYWD_NRT:
-      dialog.runScriptNow("set bondpicking true");
+      dialog.runScriptQueued("set bondpicking true");
       if (dialog.isOpenShell())
         setKeyword("s a a' rs".split(" "), new String[] { "Spin: ", "Atom A: ",
             "Atom A': ", "Res Struct: " });
@@ -672,7 +672,7 @@ class NBOSearch extends NBOView {
       changeKey(new String[] {});
       break;
     case KEYWD_BAS1BAS2:
-      dialog.runScriptNow("set bondpicking true");
+      dialog.runScriptQueued("set bondpicking true");
       setKeyword("b1 b2 r c".split(" "), new String[] { "Basis 1:", "Basis 2:",
           "Row:", "Column:" });
       getBasisOperationsB1B2();
@@ -687,8 +687,8 @@ class NBOSearch extends NBOView {
 
   private void load(int nn, boolean withBondPicking) {
     dialog.iAmLoading = true;
-    if (dialog.loadModelFileNow(dialog.inputFileHandler.newNBOFileForExt(""
-        + nn)
+    if (dialog.loadModelFileNow(
+        PT.esc(dialog.inputFileHandler.newNBOFileForExt("" + nn).toString().replace('\\', '/'))
         + (withBondPicking ? ";set bondpicking true" : "")) == null)
       dialog.iAmLoading = false;
   }
@@ -1279,7 +1279,7 @@ class NBOSearch extends NBOView {
    * 
    */
   protected void notifyPick_s(int[] picked) {
-    dialog.runScriptNow("isosurface delete");
+    dialog.runScriptQueued("isosurface delete");
     int at1 = picked[0];
     int at2 = picked[1];
     if (at2 == Integer.MIN_VALUE) {
@@ -1467,7 +1467,7 @@ class NBOSearch extends NBOView {
   protected void notifyFileLoaded_s() {
     if (vwr.ms.ac == 0)
       return;
-    dialog.runScriptNow("isosurface delete");
+    dialog.runScriptQueued("isosurface delete");
 
     optionSelected = -1;
     if (dialog.isOpenShell()) {

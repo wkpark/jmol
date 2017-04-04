@@ -483,7 +483,7 @@ public class NBOService {
       }
 
       // standard expectation
-      System.out.println("*start*\n" + s);
+      //System.out.println("*start*\n" + s);
       if (currentRequest == null) {
         if (haveLicense) {
           System.out.println("TRANSMISSION ERROR: UNSOLICITED!");

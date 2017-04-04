@@ -211,7 +211,7 @@ class NBOView {
     JPanel panel = new JPanel(new BorderLayout());
     viewState = VIEW_STATE_MAIN;
     ///panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    dialog.runScriptNow("set bondpicking true");
+    dialog.runScriptQueued("set bondpicking true");
 
     Box b = createViewSearchJobBox(NBOFileHandler.MODE_VIEW);
     if (!dialog.jmolOptionNONBO)
@@ -437,7 +437,7 @@ class NBOView {
    */
   protected void doViewPlane() {
     viewPlanePt = 0;
-    dialog.runScriptNow("set bondpicking false");
+    dialog.runScriptQueued("set bondpicking false");
     viewState = VIEW_STATE_PLANE;
     Box box = NBOUtil.createTitleBox(" Definiton of Plane ", null);
     final JPanel plane = new JPanel(new BorderLayout());
@@ -483,8 +483,7 @@ class NBOView {
     d.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        dialog.runScriptQueued("select off");
-        dialog.runScriptNow("set bondpicking true");
+        dialog.runScriptQueued("select off;set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -492,8 +491,7 @@ class NBOView {
       @Override
       public void actionPerformed(ActionEvent e) {
         d.dispose();
-        dialog.runScriptQueued("select off");
-        dialog.runScriptNow("set bondpicking true");
+        dialog.runScriptQueued("select off;set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -512,7 +510,7 @@ class NBOView {
    * Vector dialog
    */
   protected void doViewAxis() {
-    dialog.runScriptNow("set bondpicking false");
+    dialog.runScriptQueued("set bondpicking false");
     viewState = VIEW_STATE_VECTOR;
     viewVectorPt = 0;
     Box box = NBOUtil.createTitleBox(" Vector Definition ", null);
@@ -561,8 +559,7 @@ class NBOView {
     d.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        dialog.runScriptQueued("select off");
-        dialog.runScriptNow("set bondpicking true");
+        dialog.runScriptQueued("select off;set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -570,8 +567,7 @@ class NBOView {
       @Override
       public void actionPerformed(ActionEvent e) {
         d.dispose();
-        dialog.runScriptQueued("select off");
-        dialog.runScriptNow("set bondpicking true");
+        dialog.runScriptQueued("select off;set bondpicking true");
         viewState = VIEW_STATE_MAIN;
       }
     });
@@ -1209,7 +1205,7 @@ class NBOView {
 
   private void initializeImage() {
     //testingView = NBOConfig.debugVerbose;
-    dialog.runScriptNow("image close");
+    dialog.runScriptQueued("image close");
     dialog.nboService.restart();
     setDefaultParameterArrays();
     if (jmolView)
@@ -1227,7 +1223,7 @@ class NBOView {
    * 
    */
   protected void notifyPick_v(int[] picked) {
-    dialog.runScriptNow("isosurface delete");
+    dialog.runScriptQueued("isosurface delete");
     int at1 = picked[0];
     int at2 = picked[1];
     switch (viewState) {
@@ -1333,7 +1329,7 @@ class NBOView {
       return;
     orbitals.bsOn.clearAll();
     orbitals.bsNeg.clearAll();
-    dialog.runScriptNow("isosurface * off");
+    dialog.runScriptQueued("isosurface * off");
     orbitals.updateIsosurfacesInJmol(i);
   }
 
@@ -1826,7 +1822,7 @@ class NBOView {
       String id = "id " + PT.esc(title.toString().trim());
       String script = "image " + id + " close;image id \"\" "
           + PT.esc(f.toString().replace('\\', '/'));
-      dialog.runScriptNow(script);
+      dialog.runScriptQueued(script);
       break;
     case NBOService.MODE_RAW:
       break;

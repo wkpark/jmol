@@ -777,7 +777,7 @@ public class NBODialog extends JDialog {
   public void close() {
     if (modulePanel != null)
       inputFileHandler.clearInputFile(false);
-    runScriptNow("select off");
+    runScriptQueued("select off");
     dispose();
   }
 
@@ -861,7 +861,7 @@ public class NBODialog extends JDialog {
 
       iAmLoading = false;
       if (NBOConfig.nboView)
-        runScriptNow("select 1.1;color bonds lightgrey;"
+        runScriptQueued("select 1.1;color bonds lightgrey;"
             + "wireframe 0.1;select none");
       isOpenShell = vwr.ms.getModelAuxiliaryInfo(0).containsKey("isOpenShell");
       switch (dialogMode) {
@@ -1141,7 +1141,14 @@ public class NBODialog extends JDialog {
   }
 
   protected String loadModelFileNow(String s) {
-    return runScriptNow("load " + s.replace('\\', '/'));
+    String script = "load " + s.replace('\\', '/');
+    logInfo("!$ " + script, Logger.LEVEL_DEBUG);
+    script = script.replace('"', '\'');    
+    return PT.trim(vwr.runScript(script), "\n");
+  }
+  
+  public String getCFIData() {
+    return evaluateJmolString("data({*},'cfi')");
   }
 
   protected boolean checkEnabled() {
@@ -1210,11 +1217,6 @@ public class NBODialog extends JDialog {
   
   protected boolean isOpenShell() {
     return isOpenShell;
-  }
-
-  synchronized protected String runScriptNow(String script) {
-    logInfo("!$ " + script, Logger.LEVEL_DEBUG);
-    return PT.trim(vwr.runScript(script.replace('"', '\'')), "\n");
   }
 
   class HelpBtn extends JButton {

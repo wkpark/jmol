@@ -469,4 +469,21 @@ abstract class BioShapeRenderer extends ShapeRenderer {
           screenArrowTop, screenArrowBot);
     }
   }
+  
+  protected void drawSegmentAB(Atom atomA, Atom atomB, short colixA, short colixB, float max) {
+    int xA = atomA.sX, yA = atomA.sY, zA = atomA.sZ;
+    int xB = atomB.sX, yB = atomB.sY, zB = atomB.sZ;
+    int mad = this.mad;
+    if (max == 1000)
+      mad = mad >> 1;
+    if (mad < 0) {
+      g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+    } else {
+      int width = (int) (isExport ? mad : vwr.tm.scaleToScreen((zA + zB) / 2,
+          mad));
+      g3d.fillCylinderXYZ(colixA, colixB, GData.ENDCAPS_SPHERICAL, width, xA,
+          yA, zA, xB, yB, zB);
+    }
+  }  
+
 }

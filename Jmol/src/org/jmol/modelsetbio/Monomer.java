@@ -478,6 +478,8 @@ public abstract class Monomer extends Group {
   private float straightness = Float.NaN;
   private float mu = Float.NaN;
   private float theta = Float.NaN;
+
+  public boolean backboneBlockVis;
   
   void setGroupParameter(int tok, float f) {
     switch (tok) {

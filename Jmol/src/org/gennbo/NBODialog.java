@@ -925,8 +925,9 @@ public class NBODialog extends JDialog {
     }
   }
 
-  void setLicense(String line) {
-    licenseInfo.setText("<html><div style='text-align: center'>" + line
+  void setLicense(String data) {
+    String[] lines = PT.split(data, "\n");
+    licenseInfo.setText("<html><div style='text-align: center'>" + lines[1]
         + "</html>");
   }
 

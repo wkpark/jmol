@@ -5143,7 +5143,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.axesOrientationRasmol;
     case T.backbonesteps:
       return g.backboneSteps;
-    case T.backboneblocks:
+    case T.cartoonblocks:
       return g.backboneBlocks;
     case T.bondmodeor:
       return g.bondModeOr;
@@ -5377,7 +5377,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.vectorScale;
     case T.vibrationperiod:
       return g.vibrationPeriod;
-    case T.backboneblockheight:
+    case T.cartoonblockheight:
       // 14.11.0
       return g.backboneBlockWidth;
     }
@@ -5644,7 +5644,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   private void setFloatPropertyTok(String key, int tok, float value) {
     switch (tok) {
-    case T.backboneblockheight:
+    case T.cartoonblockheight:
       // 14.11.0
       g.backboneBlockWidth = value;
       break;
@@ -6122,7 +6122,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       // 14.1.15
       g.vectorsCentered = value;
       break;
-    case T.backboneblocks:
+    case T.cartoonblocks:
       // 14.11.0
       g.backboneBlocks = value;
       break;

@@ -1089,12 +1089,16 @@ class NBOSearch extends NBOView {
       break;
     }
 
-    boolean isOK = (orb1 == null || orb1.getSelectedIndex() > 0)
-        && (orb2 == null || orb2.getSelectedIndex() > 0)
-        && (atom1 == null || atom1.getSelectedIndex() > 0)
-        && (atom2 == null || atom2.getSelectedIndex() > 0);
-    if (!isOK)
+    JComboBox<String> cb = null;
+    boolean isOK = (
+           (atom1 == null || (cb = atom1).getSelectedIndex() > 0)
+        && (atom2 == null || (cb = atom2).getSelectedIndex() > 0)
+        && (orb1 == null || (cb = orb1).getSelectedIndex() > 0)
+        && (orb2 == null || (cb = orb2).getSelectedIndex() > 0));
+    if (!isOK) {
+      dialog.logError(cb.getItemAt(0));
       return;
+    }
     if (orb1 != null)
       NBOUtil.postAddGlobalI(sb, labelOrb1, offset1, orb1);
     if (orb2 != null)

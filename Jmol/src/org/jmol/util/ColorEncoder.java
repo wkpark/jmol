@@ -515,7 +515,7 @@ import javajs.util.P3;
     case AMINO:
       return ce.getAmino()[colorIndex(val, n)];
     case NUCLEIC:
-      return ce.getNucleic()[colorIndex(val + 1 - JC.GROUPID_AMINO_MAX, n)];
+      return ce.getNucleic()[colorIndex(val - JC.GROUPID_AMINO_MAX + 2, n)];
     case FRIENDLY:
       return getPaletteAC()[colorIndexRepeat(val, n)];
     default:

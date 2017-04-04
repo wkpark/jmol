@@ -448,7 +448,7 @@ public class DSSR1 extends AnnotationParser {
       int pt = bs.nextSetBit(0);
       if (pt < 0)
         continue;
-      if (Character.isLowerCase(ch))
+      if ("ACGTU".indexOf(ch) < 0)
         atoms[pt].group.group1 = ch;
       atoms[pt].group.dssrNT = map;
       bs.clearAll();

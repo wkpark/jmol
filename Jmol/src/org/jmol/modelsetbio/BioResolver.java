@@ -1477,6 +1477,7 @@ public final class BioResolver implements Comparator<String[]> {
 
   private final static int[] argbsNucleic = {
     0xFFBEA06E, // default tan
+    0xFFA0A0A0, // grey       P
     0xFF0F820F, // green      G
     0xFFE6E600, // yellow     C
     0xFFE60A0A, // brightRed  A

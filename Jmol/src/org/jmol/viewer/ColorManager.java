@@ -134,8 +134,8 @@ public class ColorManager {
     // we need to use the byte form here for speed
     switch (pid) {
     case PAL.PALETTE_PROPERTY:
-      return (colorData == null || atom.i >= colorData.length ? C.GRAY
-          : ce.getColorIndex(colorData[atom.i]));
+      return (colorData == null || atom.i >= colorData.length ? C.GRAY : ce
+          .getColorIndex(colorData[atom.i]));
     case PAL.PALETTE_NONE:
     case PAL.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -169,29 +169,28 @@ public class ColorManager {
         lo = 0;
         hi = 100 * 100; // scaled by 100
       }
-      return ce.getColorIndexFromPalette(
-          atom.getBfactor100(), lo, hi, ColorEncoder.BWR, false);
+      return ce.getColorIndexFromPalette(atom.getBfactor100(), lo, hi,
+          ColorEncoder.BWR, false);
     case PAL.PALETTE_STRAIGHTNESS:
       return ce.getColorIndexFromPalette(
-          atom.group.getGroupParameter(T.straightness), -1, 1, ColorEncoder.BWR,
-          false);
+          atom.group.getGroupParameter(T.straightness), -1, 1,
+          ColorEncoder.BWR, false);
     case PAL.PALETTE_SURFACE:
       hi = vwr.ms.getSurfaceDistanceMax();
-      return ce.getColorIndexFromPalette(
-          atom.getSurfaceDistance100(), 0, hi, ColorEncoder.BWR, false);
+      return ce.getColorIndexFromPalette(atom.getSurfaceDistance100(), 0, hi,
+          ColorEncoder.BWR, false);
     case PAL.PALETTE_NUCLEIC:
       id = atom.group.groupID;
-      if (id >= JC.GROUPID_NUCLEIC_MAX) {
-        id = JC.GROUPID_AMINO_MAX + "GCATUI".indexOf(Character.toUpperCase(atom.group.group1));        
-      }
-      return ce.getColorIndexFromPalette(id,
-          0, 0, ColorEncoder.NUCLEIC, false);
+      if (id >= JC.GROUPID_NUCLEIC_MAX)
+        id = JC.GROUPID_AMINO_MAX
+            + "PGCATU".indexOf(Character.toUpperCase(atom.group.group1)) - 1;
+      return ce.getColorIndexFromPalette(id, 0, 0, ColorEncoder.NUCLEIC, false);
     case PAL.PALETTE_AMINO:
-      return ce.getColorIndexFromPalette(atom.group.groupID,
-          0, 0, ColorEncoder.AMINO, false);
+      return ce.getColorIndexFromPalette(atom.group.groupID, 0, 0,
+          ColorEncoder.AMINO, false);
     case PAL.PALETTE_SHAPELY:
-      return ce.getColorIndexFromPalette(atom.group.groupID,
-          0, 0, ColorEncoder.SHAPELY, false);
+      return ce.getColorIndexFromPalette(atom.group.groupID, 0, 0,
+          ColorEncoder.SHAPELY, false);
     case PAL.PALETTE_GROUP:
       // vwr.calcSelectedGroupsCount() must be called first ...
       // before we call getSelectedGroupCountWithinChain()
@@ -199,34 +198,30 @@ public class ColorManager {
       // however, do not call it here because it will get recalculated
       // for each atom
       // therefore, we call it in Eval.colorObject();
-      return ce.getColorIndexFromPalette(
-          atom.group.selectedIndex, 0,
-          atom.group.chain.selectedGroupCount - 1, ColorEncoder.BGYOR,
-          false);
+      return ce.getColorIndexFromPalette(atom.group.selectedIndex, 0,
+          atom.group.chain.selectedGroupCount - 1, ColorEncoder.BGYOR, false);
     case PAL.PALETTE_POLYMER:
       Model m = vwr.ms.am[atom.mi];
       return ce.getColorIndexFromPalette(
-          atom.group.getBioPolymerIndexInModel(), 0, (m.isBioModel ? 
-              ((BioModel) m).getBioPolymerCount() : 0) - 1,
+          atom.group.getBioPolymerIndexInModel(), 0,
+          (m.isBioModel ? ((BioModel) m).getBioPolymerCount() : 0) - 1,
           ColorEncoder.BGYOR, false);
     case PAL.PALETTE_MONOMER:
       // vwr.calcSelectedMonomersCount() must be called first ...
-      return ce.getColorIndexFromPalette(
-          atom.group.getSelectedMonomerIndex(), 0,
-          atom.group.getSelectedMonomerCount() - 1, ColorEncoder.BGYOR,
+      return ce.getColorIndexFromPalette(atom.group.getSelectedMonomerIndex(),
+          0, atom.group.getSelectedMonomerCount() - 1, ColorEncoder.BGYOR,
           false);
     case PAL.PALETTE_MOLECULE:
       return ce.getColorIndexFromPalette(
           modelSet.getMoleculeIndex(atom.i, true), 0,
-          modelSet.getMoleculeCountInModel(atom.mi) - 1,
-          ColorEncoder.ROYGB, false);
+          modelSet.getMoleculeCountInModel(atom.mi) - 1, ColorEncoder.ROYGB,
+          false);
     case PAL.PALETTE_ALTLOC:
       //very inefficient!
       modelIndex = atom.mi;
       return ce
           .getColorIndexFromPalette(
-              modelSet.getAltLocIndexInModel(modelIndex,
-                  atom.altloc), 0,
+              modelSet.getAltLocIndexInModel(modelIndex, atom.altloc), 0,
               modelSet.getAltLocCountInModel(modelIndex), ColorEncoder.ROYGB,
               false);
     case PAL.PALETTE_INSERTION:
@@ -256,7 +251,8 @@ public class ColorManager {
       }
       chain = ((chain < 0 ? 0 : chain >= 256 ? chain - 256 : chain) & 0x1F)
           % ColorEncoder.argbsChainAtom.length;
-      argb = (atom.isHetero() ? ColorEncoder.argbsChainHetero : ColorEncoder.argbsChainAtom)[chain];
+      argb = (atom.isHetero() ? ColorEncoder.argbsChainHetero
+          : ColorEncoder.argbsChainAtom)[chain];
       break;
     }
     return (argb == 0 ? C.HOTPINK : C.getColix(argb));

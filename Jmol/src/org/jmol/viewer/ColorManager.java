@@ -182,8 +182,7 @@ public class ColorManager {
     case PAL.PALETTE_NUCLEIC:
       id = atom.group.groupID;
       if (id >= JC.GROUPID_NUCLEIC_MAX) {
-        id = 0 + Character.toUpperCase(atom.group.group1);
-        id = JC.GROUPID_AMINO_MAX + "GCATUI".indexOf(id);        
+        id = JC.GROUPID_AMINO_MAX + "GCATUI".indexOf(Character.toUpperCase(atom.group.group1));        
       }
       return ce.getColorIndexFromPalette(id,
           0, 0, ColorEncoder.NUCLEIC, false);

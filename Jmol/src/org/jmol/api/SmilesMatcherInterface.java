@@ -56,4 +56,6 @@ public interface SmilesMatcherInterface {
 
   public int[][] getMapForJME(String jme, Atom[] at, BS bsAtoms);
 
+  public int getChirality(Node atom4, Node atom3, Node atom2, Node atom1);
+
 }

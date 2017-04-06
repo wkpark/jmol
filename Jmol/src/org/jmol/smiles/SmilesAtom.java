@@ -851,5 +851,11 @@ public class SmilesAtom extends P3 implements Node {
     return Float.NaN;
   }
 
+  @Override
+  public int getNominalMass() {
+    // TODO
+    return getAtomicMass();
+  }
+
 
 }

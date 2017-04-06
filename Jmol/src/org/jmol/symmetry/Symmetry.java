@@ -765,4 +765,16 @@ public class Symmetry implements SymmetryInterface {
     return lst;
   }
 
+  @Override
+  public String getChirality(Viewer vwr, Atom atom) {
+    CIPChirality cip = getCIPChirality(vwr);
+    return cip.getChirality(atom);
+  }
+
+  CIPChirality cip;
+  
+  private CIPChirality getCIPChirality(Viewer vwr) {
+    return (cip == null ? (cip = ((CIPChirality) Interface.getInterface("org.jmol.symmetry.CIPChirality", vwr, "script"))).setViewer(vwr) : cip);
+  }
+
 }

@@ -475,7 +475,7 @@ public class Elements {
 
 
   // add as we go
-  private final static String naturalIsotopes = "1H,12C,14N,";
+  private final static String naturalIsotopes = "1H,12C,14N";
   
   public final static boolean isNaturalIsotope(String isotopeSymbol) {
     return (naturalIsotopes.indexOf(isotopeSymbol + ",") >= 0);      

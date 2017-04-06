@@ -25,6 +25,8 @@
 
 package org.jmol.modelset;
 
+import javax.annotation.processing.RoundEnvironment;
+
 import javajs.util.CU;
 import javajs.util.Lst;
 import javajs.util.PT;
@@ -1317,6 +1319,12 @@ public class Atom extends Point3fi implements Node {
     return group.chain.model.ms.getVibCoord(i, ch);
   }
 
+  @Override
+  
+  public int getNominalMass() {
+    return Math.round(getMass());
+  }
+  
   private float getMass() {
     float mass = getIsotopeNumber();
     return (mass > 0 ? mass : Elements.getAtomicMass(getElementNumber()));
@@ -1335,6 +1343,8 @@ public class Atom extends Point3fi implements Node {
       return getAtomType();
     case T.chain:
       return getChainIDStr();
+    case T.chirality:
+      return getChirality();
     case T.sequence:
       return getGroup1('?');
     case T.seqcode:
@@ -1371,6 +1381,14 @@ public class Atom extends Point3fi implements Node {
       return getSymmetryOperatorList(true);
     }
     return ""; 
+  }
+
+  /**
+   * Determine R/S chirality at this position
+   * @return "" or "R" or "S"
+   */
+  private String getChirality() {
+    return group.chain.model.ms.getChirality(this);
   }
 
   @Override

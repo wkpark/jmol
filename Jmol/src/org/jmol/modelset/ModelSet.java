@@ -4068,6 +4068,10 @@ public class ModelSet extends BondCollection {
     return (dssrData == null || dssrData.length <= i ? Float.NaN : dssrData[i]);
   }
 
+  public String getChirality(Atom atom) {
+    return Interface.getSymmetry(vwr, "ms").getChirality(vwr, atom);
+  }
+
 
 
 }

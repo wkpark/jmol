@@ -46,6 +46,7 @@ public interface Node {
   public int getValence();
   public void set(float x, float y, float z);
   public int getMoleculeNumber(boolean inModel);
+  public int getNominalMass();
 
   
   /**

@@ -218,4 +218,6 @@ public interface SymmetryInterface {
 
   void toFractionalM(M4 m);
 
+  public String getChirality(Viewer vwr, Atom atom);
+
 }

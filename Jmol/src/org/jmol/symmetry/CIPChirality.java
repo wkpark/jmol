@@ -2,18 +2,25 @@ package org.jmol.symmetry;
 
 import java.util.Arrays;
 
-import javajs.util.BS;
+import org.jmol.java.BS;
 
 import org.jmol.api.SmilesMatcherInterface;
+import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import org.jmol.util.Node;
 import org.jmol.viewer.Viewer;
 
+/**
+ * A relatively simple implementation of Cohen-Ingold-Prelog rules for assigning R/S chirality
+ * 
+ * Introduced in Jmol 14.12.0
+ * 
+ * @author Bob Hanson hansonr@stolaf.edu 
+ */
 public class CIPChirality {
 
   Viewer vwr;
-  BS bsFound;
 
   public CIPChirality() {
     // for reflection 
@@ -27,19 +34,17 @@ public class CIPChirality {
   public String getChirality(Node atom) {
     if (atom.getCovalentBondCount() != 4)
       return "";
-    bsFound = new BS();
     CIPAtom a = new CIPAtom(atom, null, false);
 
     String rs = (a.set() ? getRorS(a) : "");
     if (Logger.debugging)
       Logger.info(atom + " " + rs);
-
     return rs;
   }
 
   public String getRorS(CIPAtom a) {
     try {
-      if (!a.sortAtoms())
+      if (!a.sortFourAtoms())
         return "";
       SmilesMatcherInterface sm = vwr.getSmilesMatcher();
       switch (sm.getChirality(a.atoms[3].atom, a.atoms[2].atom,
@@ -58,46 +63,106 @@ public class CIPChirality {
   }
 
   private class CIPAtom implements Comparable<CIPAtom> {
-    String path = ";";
+
+    /**
+     * Use of Node allows us to implement this in SMILES or Jmol. 
+     * 
+     */
     Node atom;
-    boolean isDummy = true;
-    boolean isTerminal;
-    boolean isSet;
-    int isAbove;
+    
+    /**
+     * One of the two key characteristics for assigning R and S
+     */
+    int massNo;
+
+    /**
+     * One of the two key characteristics for assigning R and S
+     */
+    int elemNo;
+
     CIPAtom parent;
+
+    /**
+     * Dummy atoms have massNo and elemNo but no substituents.
+     * They are slightly lower in priority than standard atoms.
+     * 
+     */
+    boolean isDummy = true;
+    
+    /**
+     * Terminal (single-valence) atoms need not be followed further.
+     * 
+     */
+    boolean isTerminal;
+    
+    /**
+     * We only set an atom once.
+     * 
+     */
+    boolean isSet;
+    
+    /**
+     * For the main four atoms, isAbove will increment each time they "win" in a
+     * priority contest, thus leading to our desired ordering.
+     * 
+     */
+    int isAbove;
+    
+    /**
+     * It is important to keep track of the path to this atom in order
+     * to prevent infinite cycling. This is taken care of by bsPath.
+     * The last atom in the path when cyclic is a dummy atom. 
+     * 
+     */
+    BS bsPath;
+    
+    /**
+     * The substituents -- 4 for the base carbon; 3 or fewer for other atoms.
+     * 
+     */
     CIPAtom[] atoms;
+    
+    /**
+     * Number of substituent atoms.
+     */
     private int nAtoms;
 
     @Override
     public String toString() {
-      return path + " " + atom + (isDummy ? " *" : "");
+      return atom.toString() + (isDummy ? " *" : "" + " " + (isAbove + 1));
     }
 
+    /**
+     * 
+     * @param atom or null to indicate a null placeholder
+     * @param parent
+     * @param isDummy
+     */
     public CIPAtom(Node atom, CIPAtom parent, boolean isDummy) {
       if (atom == null)
-        return;
+        return; 
       this.atom = atom;
+      this.parent = parent;
       this.isTerminal = atom.getCovalentBondCount() == 1;
+      this.elemNo = atom.getElementNumber();
+      this.massNo = atom.getNominalMass();
+      this.bsPath = (parent == null ? new BS() : BSUtil.copy(parent.bsPath));
+
       int iatom = atom.getIndex();
-      if (bsFound.get(iatom)) {
+      if (bsPath.get(iatom)) {
         isDummy = true;
       } else {
-        bsFound.set(iatom);
+        bsPath.set(iatom);
         this.isDummy = isDummy;
       }
-      this.parent = parent;
-      if (parent != null)
-        path = parent.path;
-      path += getPathString();
     }
 
-    private String getPathString() {
-      String elemno = "000" + atom.getElementNumber();
-      String mass = "00" + (isDummy ? 0 : atom.getNominalMass());
-      return elemno.substring(elemno.length() - 3) + "_"
-          + mass.substring(mass.length() - 3) + ";";
-    }
-
+    /**
+     * Set the atom to have substituents.
+     * 
+     * @return true if a valid atom for consideration
+     * 
+     */
     boolean set() {
       if (isTerminal)
         return true;
@@ -146,6 +211,14 @@ public class CIPChirality {
       return !isTerminal;
     }
 
+    /**
+     * Add a new atom or return false
+     * 
+     * @param i
+     * @param other
+     * @param isDummy
+     * @return true if successful
+     */
     private boolean addAtom(int i, Node other, boolean isDummy) {
       if (i >= atoms.length)
         return false;
@@ -153,11 +226,15 @@ public class CIPChirality {
       return true;
     }
 
-    boolean sortAtoms() {
-
-      for (int i = 0; i < nAtoms; i++) {
+    /**
+     * The main loop that starts all the iteration of breakTie.
+     * 
+     * @return true if we have four distinct atoms in the end
+     */
+    boolean sortFourAtoms() {
+      for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
-        for (int j = i + 1; j < nAtoms; j++) {
+        for (int j = i + 1; j < 4; j++) {
           CIPAtom b = atoms[j];
           int score = (int) Math.signum(a.compareTo(b));
           if (Logger.debugging)
@@ -183,17 +260,26 @@ public class CIPChirality {
           }
         }
       }
-      for (int i = 0; i < nAtoms; i++)
-        atoms[i].path += ";" + atoms[i].isAbove;
-      Arrays.sort(atoms);
+      CIPAtom[] atemp = new CIPAtom[4];
+      for (int i = 0; i < 4; i++)
+        atemp[atoms[i].isAbove] = atoms[i];
+      atoms = atemp;
       if (Logger.debugging)
-        for (int i = 0; i < nAtoms; i++)
+        for (int i = 0; i < 4; i++)
           Logger.info("" + atoms[i]);
       return true;
     }
 
+    /**
+     * Break a tie at any level in the iteration between to atoms that
+     * otherwise are the same by sorting heir
+     * 
+     * @param a
+     * @param b
+     * @return -1
+     */
     private int breakTie(CIPAtom a, CIPAtom b) {
-      if (a.isDummy || !a.set() || !b.set() || a.isTerminal || a.atom == b.atom)
+      if (!a.set() || !b.set() || a.isTerminal || a.atom == b.atom)
         return 0;
       if (Logger.debugging)
         Logger.info("tie for " + a + " and " + b);
@@ -201,33 +287,60 @@ public class CIPChirality {
       Arrays.sort(b.atoms);
       // check to see if any of the three connections to a and b are different.
       for (int i = 0; i < a.nAtoms; i++) {
-        int score = (int) Math.signum(a.atoms[i].compareTo(b.atoms[i]));
+        CIPAtom ai = a.atoms[i];
+        CIPAtom bi = b.atoms[i];
+        int score = (int) Math.signum(compareAB(ai, bi));
         switch (score) {
         case -1:
         case 1:
           return score;
+        case 0:
+          break;
         }
       }
       // all are the same -- check to break tie next level
       for (int i = 0; i < a.nAtoms; i++) {
-        int score = breakTie(a.atoms[i], b.atoms[i]);
+        CIPAtom ai = a.atoms[i];
+        CIPAtom bi = b.atoms[i];
+        int score = (ai.isDummy == bi.isDummy ? breakTie(ai, bi) : ai.isDummy ? -1 : 1);
         switch (score) {
         case -1:
         case 1:
           return score;
+        case 0:
         }
       }
       // all are the same and no tie breakers
       return 0;
     }
 
+    /**
+     * used in Array.sort and sortFourAtoms
+     */
     @Override
     public int compareTo(CIPAtom a) {
-      // check to see that atoms are non-null and are different, and path is different 
-      return a.atom == null && atom == null ? 0 : a.atom == null ? -1
-          : atom == null ? 1 : a.atom == atom ? 0 : -a.path.compareTo(path);
+      
+      // check to see that atoms are non-null and are different 
+      return a.atom == atom ? 0 : a.atom == null ? -1 : atom == null ? 1
+          : a.elemNo != elemNo ? (a.elemNo < elemNo ? -1 : 1)
+          : a.massNo != massNo ? (a.massNo < massNo ? -1 : 1)
+          : a.isDummy != isDummy ? (a.isDummy ? -1 : 1) : 0;
     }
 
+  }
+
+  /**
+   * Used only in breakTie; do not check dummy
+   * 
+   * @param a
+   * @param b
+   * @return 1 if b is higher; -1 if a is higher; otherwise 0
+   */
+  static public int compareAB(CIPAtom a, CIPAtom b) {
+    // check to see that atoms are non-null and are different 
+    return b.atom == a.atom ? 0 : b.atom == null ? -1 : a.atom == null ? 1
+        : b.elemNo != a.elemNo ? (b.elemNo < a.elemNo ? -1 : 1)
+        : b.massNo != a.massNo ? (b.massNo < a.massNo ? -1 : 1) : 0;
   }
 
 }

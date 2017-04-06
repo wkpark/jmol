@@ -297,14 +297,25 @@ class NBOModel {
       @Override
       protected boolean doFileBrowsePressed() {
         String folder = tfDir.getText().trim();
-        folder = NBOUtil.getWindowsFullNameFor(folder, tfName.getText(), tfExt.getText());
+        String name = tfName.getText();
+        if (name.length() == 0)
+          name = "*";
+        String ext = tfExt.getText();
+        if (ext.length() == 0)
+          ext = "*";
+        folder = NBOUtil.getWindowsFullNameFor(folder, name, ext);
         JFileChooser myChooser = new JFileChooser();
-        if (useExt.contains(";"))
-          myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt
+        String filter = useExt;
+        if (name.equals("*") && !ext.equals("*"))
+          filter = ext;
+        if (filter.contains(";"))
+          myChooser.setFileFilter(new FileNameExtensionFilter(filter, filter
               .split(";")));
         else
-          myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt));
+          myChooser.setFileFilter(new FileNameExtensionFilter(filter, filter));
         myChooser.setFileHidingEnabled(true);
+        if (folder.endsWith("/"))
+          folder = folder + "*.*";
         if (!folder.equals(""))
           myChooser.setSelectedFile(new File(folder));
         int button = myChooser.showDialog(this, GT._("Select"));

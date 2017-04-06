@@ -356,6 +356,24 @@ class NBOFileHandler extends JPanel {
     return NBOUtil.newNBOFile(inputFile, filenum);
   }
 
+  /**
+   * Fix a file name to be [A-Z0-9_]+
+   * 
+   * @param name the name to fix, or if empty, the input file name truncated to a maximum of 10 digits
+   * @return fixed name replacing not-allowed characters with '_'
+   */
+  public String fixJobName(String name) {
+    if (name == null || (name = name.trim()).length() == 0)
+      name = jobStem;
+    for (int i = name.length(); --i >= 0;) {
+      char ch = name.charAt(i);
+      if (!Character.isLetterOrDigit(ch) && ch != '_')
+        name = name.substring(0, i) + "_" + name.substring(i + 1);
+    }
+    return name;
+  }
+
+
   public String[] update47File(String jobName, String keywords) {
     if (!useExt.equals("47"))
       return null;
@@ -404,6 +422,5 @@ class NBOFileHandler extends JPanel {
     }
     return true;
   }
-
 
 }

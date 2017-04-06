@@ -308,7 +308,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
         drawBond(mask);
         bondsPerp = !bondsPerp;
         bondOrder = 2;
-        drawBond(mask);
+        drawBond(mask >> 2);
         bondsPerp = !bondsPerp;
         multipleBondSpacing = m;
       }
@@ -325,7 +325,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
         bondsPerp = !bondsPerp;
         bondOrder = 2;
         multipleBondSpacing *= 1.5f;
-        drawBond(mask);
+        drawBond(mask >> 3);
         bondsPerp = !bondsPerp;
         multipleBondSpacing = m;
       }
@@ -342,7 +342,7 @@ public class SticksRenderer extends FontLineShapeRenderer {
         bondsPerp = !bondsPerp;
         bondOrder = 2;
         multipleBondSpacing *= 1.5f;
-        drawBond(mask);
+        drawBond(mask >> 4);
         bondsPerp = !bondsPerp;
         multipleBondSpacing = m;
       }

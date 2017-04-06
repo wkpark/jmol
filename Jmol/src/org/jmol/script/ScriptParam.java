@@ -982,14 +982,14 @@ abstract public class ScriptParam extends ScriptError {
   }
 
   /**
-   * reads standard n.m float-as-integer n*1000000 + m and returns (n % 6) << 5
+   * reads standard n.m float-as-integer n*1000000 + m and returns (n % 7) << 5
    * + (m % 0x1F)
    * 
    * @param bondOrderInteger
    * @return Bond order partial mask
    */
   public static int getPartialBondOrderFromFloatEncodedInt(int bondOrderInteger) {
-    return (((bondOrderInteger / 1000000) % 6) << 5)
+    return (((bondOrderInteger / 1000000) % 7) << 5)
         + ((bondOrderInteger % 1000000) & 0x1F);
   }
 

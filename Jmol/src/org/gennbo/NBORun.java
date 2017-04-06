@@ -326,7 +326,8 @@ class NBORun {
         tfJobName.setText(jobName);
       }
     }
-    String name = tfJobName.getText();
+    String name = tfJobName.getText().trim();
+    name = dialog.inputFileHandler.fixJobName(name);
     dialog.inputFileHandler.update47File(name, keywords);
     addNBOKeylist();
     tfJobName.setText(name);
@@ -694,8 +695,7 @@ class NBORun {
       // from another module
       tfJobName.setText(dialog.inputFileHandler.jobStem);
     }
-    String jobName = (tfJobName == null ? dialog.inputFileHandler.jobStem
-        : tfJobName.getText().trim());
+    String jobName = dialog.inputFileHandler.fixJobName(tfJobName == null ? null : tfJobName.getText().trim());
 
     // BH Q: Would it be reasonable if the NO option is chosen to put that other job name in to the jobStem field, and also copy the .47 file to that? Or use that?
     // Or, would it be better to ask this question immediately upon file loading so that it doesn't come up, and make it so that

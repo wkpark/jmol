@@ -20,6 +20,50 @@ import org.jmol.viewer.Viewer;
  */
 public class CIPChirality {
 
+  // Checked using:
+  
+  //  function checkchiral(m) {
+  //    if (m)  load @m
+  //    background label yellow
+  //    color labels black
+  //    select _C
+  //    label %[atomname]
+  //    refresh
+  //    var b = {_C}
+  //    for (var a in b) {
+  //      var c = a.chirality;
+  //      print _smilesString + " " + a + c
+  //      if (c) {
+  //         select a
+  //         c = a.atomname + " " + c
+  //         label @c
+  //      }
+  //    }
+  //    select *
+  //  }
+  //
+  //  checkchiral("$(R)-glycidol")
+  //  delay 1
+  //  checkchiral("$glucose")
+  //  delay 1
+  //  checkchiral("$(2S,3R)-2,3-oxiranediol")
+  //  delay 1
+  //  checkchiral("$(S)-2-butanol")
+  //  delay 1
+  //  checkchiral("$(R)-2-butanol")
+  //  delay 1
+  //  checkchiral("$(2S,3R)-2,3-butanediol")
+  //  delay 1
+  //  checkchiral("$(2S,3S)-2,3-butanediol")
+  //  delay 1
+  //  checkchiral("$(2R,3R)-2,3-butanediol")
+  //  delay 1
+  //  checkchiral("$(2R,3S)-2,3-butanediol")
+  //  delay 1
+  //  checkchiral("$1,4-dimethylcyclohexane") // no chirality
+  //  delay 1
+  //  checkchiral("$cholesterol") // (3S,8S,9S,10R,13R,14S,17R) and sidechain R
+  
   Viewer vwr;
 
   public CIPChirality() {
@@ -44,11 +88,12 @@ public class CIPChirality {
 
   public String getRorS(CIPAtom a) {
     try {
-      if (!a.sortFourAtoms())
+      CIPAtom[] atoms = a.sortFourAtoms();
+      if (atoms == null)
         return "";
       SmilesMatcherInterface sm = vwr.getSmilesMatcher();
-      switch (sm.getChirality(a.atoms[3].atom, a.atoms[2].atom,
-          a.atoms[1].atom, a.atoms[0].atom)) {
+      switch (sm.getChirality(atoms[3].atom, atoms[2].atom,
+          atoms[1].atom, atoms[0].atom)) {
       case 1:
         return "R";
       case 2:
@@ -231,7 +276,7 @@ public class CIPChirality {
      * 
      * @return true if we have four distinct atoms in the end
      */
-    boolean sortFourAtoms() {
+    CIPAtom[] sortFourAtoms() {
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
         for (int j = i + 1; j < 4; j++) {
@@ -255,19 +300,18 @@ public class CIPChirality {
               b.isAbove++;
               break;
             case 0:
-              return false;
+              return null;
             }
           }
         }
       }
-      CIPAtom[] atemp = new CIPAtom[4];
+      CIPAtom[] ret = new CIPAtom[4];
       for (int i = 0; i < 4; i++)
-        atemp[atoms[i].isAbove] = atoms[i];
-      atoms = atemp;
+        ret[atoms[i].isAbove] = atoms[i];
       if (Logger.debugging)
         for (int i = 0; i < 4; i++)
-          Logger.info("" + atoms[i]);
-      return true;
+          Logger.info("" + ret[i]);
+      return ret;
     }
 
     /**
@@ -299,6 +343,7 @@ public class CIPChirality {
         }
       }
       // all are the same -- check to break tie next level
+      // now isDummy counts
       for (int i = 0; i < a.nAtoms; i++) {
         CIPAtom ai = a.atoms[i];
         CIPAtom bi = b.atoms[i];
@@ -315,12 +360,10 @@ public class CIPChirality {
     }
 
     /**
-     * used in Array.sort and sortFourAtoms
+     * used in Array.sort and sortFourAtoms; includes isDummy check
      */
     @Override
     public int compareTo(CIPAtom a) {
-      
-      // check to see that atoms are non-null and are different 
       return a.atom == atom ? 0 : a.atom == null ? -1 : atom == null ? 1
           : a.elemNo != elemNo ? (a.elemNo < elemNo ? -1 : 1)
           : a.massNo != massNo ? (a.massNo < massNo ? -1 : 1)
@@ -337,7 +380,6 @@ public class CIPChirality {
    * @return 1 if b is higher; -1 if a is higher; otherwise 0
    */
   static public int compareAB(CIPAtom a, CIPAtom b) {
-    // check to see that atoms are non-null and are different 
     return b.atom == a.atom ? 0 : b.atom == null ? -1 : a.atom == null ? 1
         : b.elemNo != a.elemNo ? (b.elemNo < a.elemNo ? -1 : 1)
         : b.massNo != a.massNo ? (b.massNo < a.massNo ? -1 : 1) : 0;

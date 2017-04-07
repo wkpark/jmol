@@ -12,7 +12,7 @@ import org.jmol.util.Node;
 import org.jmol.viewer.Viewer;
 
 /**
- * A relatively simple implementation of Cohen-Ingold-Prelog rules for assigning R/S chirality
+ * A relatively simple implementation of Cahn-Ingold-Prelog rules for assigning R/S chirality
  * 
  *     [1] getChirality(Node)
  *              new CIPAtom(Node)

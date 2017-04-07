@@ -14,6 +14,31 @@ import org.jmol.viewer.Viewer;
 /**
  * A relatively simple implementation of Cohen-Ingold-Prelog rules for assigning R/S chirality
  * 
+ *     [1] getChirality(Node)
+ *              new CIPAtom(Node)
+ *              set()
+ *              return getRorS();
+ *               
+ *     [2] CIPAtom.getRorS()
+ *              sortSubstituents()
+ *              return f(SmilesMatcher().getChirality())
+ *              
+ *              
+ *     [3] sortSubstituents()
+ *             if (necessary)
+   *              breakTie(a,b)
+ *              
+ *     [4] breakTie(a,b)
+ *              a.set(), b.set()
+ *              for each substituent...
+ *                compareAB(a.atoms[i], b.atoms[i])
+ *              if (all are tied) ...
+ *                sortSubstituents(a.atoms)
+ *                sortSubstituents(b.atoms)
+ *                for each substituent...
+ *                   breakTie(a.atoms[i], b.atoms[i])
+ *               
+ * 
  * Introduced in Jmol 14.12.0
  * 
  * @author Bob Hanson hansonr@stolaf.edu 
@@ -79,14 +104,15 @@ public class CIPChirality {
     if (atom.getCovalentBondCount() != 4)
       return "";
     CIPAtom a = new CIPAtom(atom, null, false);
-
-    String rs = (a.set() ? getRorS(a) : "");
+    if (!a.set())
+      return "";
+    String rs = getRorS(a);
     if (Logger.debugging)
       Logger.info(atom + " " + rs);
     return rs;
   }
 
-  public String getRorS(CIPAtom a) {
+  private String getRorS(CIPAtom a) {
     try {
       CIPAtom[] atoms = sortSubstituents(a.atoms, false);
       if (atoms == null)

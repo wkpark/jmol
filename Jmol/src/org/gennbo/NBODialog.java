@@ -1109,6 +1109,8 @@ public class NBODialog extends JDialog {
   }
 
   protected void runScriptQueued(String script) {
+    if (script.indexOf("easure") >= 0)
+      System.out.println("TESTING NBOD");
     logInfo("_$ " + PT.rep(script, "\n", "<br>"), Logger.LEVEL_DEBUG);
     vwr.script(script);
   }

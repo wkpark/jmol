@@ -85,6 +85,7 @@ class NBOModel {
 
   private static final int MODEL_ACTION_REBOND = 9;
   private static final int MODEL_ACTION_SYMMETRY = 10;
+  private final static int MODEL_ACTION_HBOND   = 11;
 
   static final int MODE_MODEL_EDIT     = 21;
   static final int MODE_MODEL_NEW      = 31; 
@@ -98,7 +99,7 @@ class NBOModel {
   final static String[] MODEL_ACTIONS = { 
       "Alter", "Clip", "Fuse", "Link", "Mutate",
       "Switch", "Twist", "Value", "3chb", "Rebond", 
-      "Symmetry?" };
+      "Symmetry?", "H-Bonds" };
   
   private static final String[] EDIT_INFO = {
       "Edit nuclear charge, bond length, bond angle, or dihedral angle",
@@ -111,7 +112,8 @@ class NBOModel {
       "Value of nuclear charge, bond length, bond angle, and dihedral angle",
       "Create 3-center linkage between two atoms and a ligand",
       "Change bonding symmetry around transition metal",
-      "Display point-group symmetry of current model"
+      "Display point-group symmetry of current model",
+      "Show NBOPro6-derived hydrogen bonds"
       };
 
   private final static int BOX_COUNT_4 = 4, BOX_COUNT_2 = 2, BOX_COUNT_1 = 1;
@@ -164,6 +166,8 @@ class NBOModel {
    * Set to true each time a non-value option action is processed.
    */
   private boolean resetOnAtomClick;
+  private Box innerLinkOptionBox;
+  private JRadioButton radLinkBond;
   
   protected void setModelNotFromNBO() {
     notFromNBO = true;
@@ -172,6 +176,7 @@ class NBOModel {
   private void showComponents(boolean tf) {
     editHeader.setVisible(tf);
     editComponent.setVisible(tf);
+    innerLinkOptionBox.setVisible(false);
     saveHeader.setVisible(tf);
     saveComponent.setVisible(tf);
   }
@@ -381,6 +386,7 @@ class NBOModel {
     createInnerEditBox();
     rightBox.add(this.innerEditBox);
     Box lowBox = Box.createHorizontalBox();
+    
     JButton sym = new JButton(MODEL_ACTIONS[MODEL_ACTION_SYMMETRY]);
     sym.setToolTipText(EDIT_INFO[MODEL_ACTION_SYMMETRY]);
     sym.addActionListener(new ActionListener() {
@@ -401,6 +407,18 @@ class NBOModel {
       }
     });
     lowBox.add(rebond);
+    
+    JButton hbond = new JButton(MODEL_ACTIONS[MODEL_ACTION_HBOND]);
+    hbond.setToolTipText(EDIT_INFO[MODEL_ACTION_HBOND]);
+    hbond.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        doGetHBonds();
+      }
+    });
+    lowBox.add(hbond);
+
+    
     rightBox.add(lowBox);
     editBox.add(rightBox);
 
@@ -513,6 +531,16 @@ class NBOModel {
     });
     innerEditBox.add(editValueTf).setVisible(false);
 
+    innerLinkOptionBox = Box.createHorizontalBox();
+    radLinkBond = new JRadioButton("Bond");
+    JRadioButton radLinkDotted = new JRadioButton("Dotted");
+    innerLinkOptionBox.add(radLinkBond);
+    innerLinkOptionBox.add(radLinkDotted);
+    
+    ButtonGroup g = new ButtonGroup();
+    g.add(radLinkBond);
+    g.add(radLinkDotted);
+    innerEditBox.add(innerLinkOptionBox).setVisible(false);
     
     Box lowBox = Box.createHorizontalBox();
     jbClear = new JButton("Clear Selected");
@@ -533,6 +561,13 @@ class NBOModel {
     lowBox.add(jbApply).setVisible(false);
     innerEditBox.add(lowBox);
 
+  }
+
+  protected void doLinkDotted() {
+    String atomList = modelEditGetSelected();
+    String[] atoms = PT.getTokens(atomList);
+    if (atoms.length == 2)
+      processHBonds("1 " + atomList);
   }
 
   protected void doAtomNumBoxFocus(boolean isGained, int num) {
@@ -623,6 +658,9 @@ class NBOModel {
     }
     if (actionID == MODEL_ACTION_ALTER || actionID == MODEL_ACTION_TWIST && cnt == 4) {
       postActionToNBO(MODEL_ACTION_VALUE);
+    }
+    if (actionID == MODEL_ACTION_LINK) {
+      script = "";
     }
     dialog.runScriptQueued(script);
     editValueTf.setText("");
@@ -806,9 +844,11 @@ class NBOModel {
       boxCount = BOX_COUNT_1;
       setEditBox(null);
       break;
+    case MODEL_ACTION_LINK:
+      innerLinkOptionBox.setVisible(true);
+      //$FALL-THROUGH$
     case MODEL_ACTION_CLIP:
     case MODEL_ACTION_FUSE:
-    case MODEL_ACTION_LINK:
     case MODEL_ACTION_SWITCH:
     case MODEL_ACTION_3CHB:
       boxCount = BOX_COUNT_2;
@@ -891,7 +931,6 @@ class NBOModel {
    * 
    */
   protected void clearSelected(boolean andShow) {
-    System.out.println("clearing all boxes");
     for (int i = 0; i < boxCount; i++) {
       atomNumBoxes[i].setText("");
     }
@@ -916,6 +955,10 @@ class NBOModel {
    * 
    */
   protected void postActionToNBO(int actionID) {
+    if (actionID == MODEL_ACTION_LINK && !radLinkBond.isSelected()) {
+      doLinkDotted();
+      return;
+    }
     SB sb = new SB();
     String selected = modelEditGetSelected();
     String cmd = MODEL_ACTIONS[actionID].toLowerCase() + " " + selected + " ";
@@ -934,14 +977,15 @@ class NBOModel {
     }
     if (actionID == MODEL_ACTION_REBOND) {
       currentRebondSymOp = jcSymOps.getSelectedIndex();
-      cmd += jcSymOps.getSelectedItem().toString();
     }
-//    dialog.runScriptNow("save orientation o2");
+
+    //    dialog.runScriptNow("save orientation o2");
     NBOUtil.postAddCmd(sb, cmd);
     dialog.logCmd(cmd);
     jbApply.setEnabled(false);
     resetOnAtomClick = (actionID != MODEL_ACTION_VALUE);
-    postNBO(sb, actionID, (actionID == MODEL_ACTION_VALUE ? "Checking value": "Editing model"), null, null);
+    postNBO(sb, actionID, (actionID == MODEL_ACTION_VALUE ? "Checking value"
+        : "Editing model"), null, null);
   }
 
   /**
@@ -951,6 +995,15 @@ class NBOModel {
     String cmd = "symmetry";
     dialog.logCmd(cmd);
     postNBO(NBOUtil.postAddCmd(new SB(), cmd), MODEL_ACTION_SYMMETRY,  "Checking Symmetry", null, null);
+  }
+
+  /**
+   * Post a request for a point group symmetry check.
+   */
+  protected void doGetHBonds() {
+    String cmd = "hbond";
+    dialog.logCmd(cmd);
+    postNBO(NBOUtil.postAddCmd(new SB(), cmd), MODEL_ACTION_HBOND,  "Getting Hydrogen Bonds", null, null);
   }
 
   /**
@@ -967,6 +1020,10 @@ class NBOModel {
     saveFileHandler.setInput(null, "", "");
     clearSelected(false);
     if (textBox == jtNIHInput) {
+      if (model.startsWith("!")) {
+        dialog.runScriptQueued(model.substring(1));
+        return;
+      }
       dialog.modelOrigin = NBODialog.ORIGIN_NIH;
       notFromNBO = true;
       if ("$:=".indexOf(model.charAt(0)) < 0)
@@ -1220,7 +1277,7 @@ class NBOModel {
         .length() > 4);
     if (actionID == MODEL_ACTION_MUTATE) {
       doModelAction(actionID);
-    } else if (actionID == MODEL_ACTION_REBOND && serverMode != MODEL_ACTION_SYMMETRY)
+    } // else if (actionID == MODEL_ACTION_REBOND && serverMode != MODEL_ACTION_SYMMETRY)
       //doGetSymmetry();
     if (showSelectedOnFileLoad) {
       updateSelected(false);
@@ -1319,6 +1376,12 @@ class NBOModel {
       dialog.logValue(sval);
       setCurrentValue(sval);
       break;
+    case MODEL_ACTION_HBOND:
+      dialog.logValue("testing HBOND: " + s);
+      if (s.length() < 3)
+        s = "1\n1\n4";
+      processHBonds(s);
+      break;
     case MODEL_ACTION_SYMMETRY:
       // do not reorient the return in this case
       String symmetry = s.substring(0, s.indexOf("\n"));
@@ -1331,6 +1394,24 @@ class NBOModel {
       dialog.loadModelDataQueued(s);
       break;
     }
+  }
+
+  /**
+   * first number is number of bonds
+   * 
+   * @param s
+   */
+  private void processHBonds(String s) {
+    float[] atomList = PT.parseFloatArray(s);
+    if (atomList.length == 0 || atomList[0] == 0)
+      return;
+    String script = "";
+    for (int i = atomList.length%2; i < atomList.length;) {
+      script += "measure ID m" + ("" + Math.random()).substring(2) + " @"
+          + (int) atomList[i++] + " @" + (int) atomList[i++]
+          + " radius 0.1 ' '";
+    }
+    dialog.runScriptQueued(script);
   }
 
 }

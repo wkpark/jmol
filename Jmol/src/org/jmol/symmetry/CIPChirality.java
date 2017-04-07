@@ -88,7 +88,7 @@ public class CIPChirality {
 
   public String getRorS(CIPAtom a) {
     try {
-      CIPAtom[] atoms = sortFourAtoms(a.atoms, false);
+      CIPAtom[] atoms = sortSubstituents(a.atoms, false);
       if (atoms == null)
         return "";
       SmilesMatcherInterface sm = vwr.getSmilesMatcher();
@@ -108,13 +108,14 @@ public class CIPChirality {
   }
 
   /**
-   * The main loop that starts all the iteration of breakTie.
+   * Sort the substituents of an atom in preparation for comparing the set with other atoms
    * 
-   * @param atoms 
+   * @param atoms may be 3 or 4 atoms here
+   * @param allowTie 
    * 
    * @return true if we have four distinct atoms in the end
    */
-  private static CIPAtom[] sortFourAtoms(CIPAtom[] atoms, boolean allowTie) {
+  private static CIPAtom[] sortSubstituents(CIPAtom[] atoms, boolean allowTie) {
     int n = atoms.length;
     for (int i = 0; i < n; i++)
       atoms[i].isAbove = 0;
@@ -187,8 +188,8 @@ public class CIPChirality {
     // all are the same -- check to break tie next level
     // now isDummy counts
     
-    a.atoms = sortFourAtoms(a.atoms, true);
-    b.atoms = sortFourAtoms(b.atoms, true);
+    a.atoms = sortSubstituents(a.atoms, true);
+    b.atoms = sortSubstituents(b.atoms, true);
     
     for (int i = 0; i < a.nAtoms; i++) {
       CIPAtom ai = a.atoms[i];

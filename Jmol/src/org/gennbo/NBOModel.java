@@ -1238,10 +1238,10 @@ class NBOModel {
     if (selected == null)
       selected = modelEditGetSelected();
     String[] split = PT.getTokens(selected);
-    System.out.println("setting " + selected);
+    //System.out.println("setting " + selected);
     for (int i = 0; i < atomNumBoxes.length; i++) {
       atomNumBoxes[i].setText(i >= split.length ? "" : "  " + split[i]);
-      System.out.println("set  i=" + i + " " + atomNumBoxes[i].getText());
+      //System.out.println("set  i=" + i + " " + atomNumBoxes[i].getText());
     }
     updateSelected(false);
     

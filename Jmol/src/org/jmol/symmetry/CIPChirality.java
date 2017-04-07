@@ -88,7 +88,7 @@ public class CIPChirality {
 
   public String getRorS(CIPAtom a) {
     try {
-      CIPAtom[] atoms = a.sortFourAtoms();
+      CIPAtom[] atoms = sortFourAtoms(a.atoms, false);
       if (atoms == null)
         return "";
       SmilesMatcherInterface sm = vwr.getSmilesMatcher();
@@ -105,6 +105,104 @@ public class CIPChirality {
       e.printStackTrace();
       return "";
     }
+  }
+
+  /**
+   * The main loop that starts all the iteration of breakTie.
+   * 
+   * @param atoms 
+   * 
+   * @return true if we have four distinct atoms in the end
+   */
+  private static CIPAtom[] sortFourAtoms(CIPAtom[] atoms, boolean allowTie) {
+    int n = atoms.length;
+    for (int i = 0; i < n; i++)
+      atoms[i].isAbove = 0;
+    for (int i = 0; i < n; i++) {
+      CIPAtom a = atoms[i];
+      for (int j = i + 1; j < n; j++) {
+        CIPAtom b = atoms[j];
+        int score = (int) Math.signum(a.compareTo(b));
+        if (Logger.debugging)
+          Logger.info("comparing " + a + " and " + b + " = " + score);
+        switch (score) {
+        case 1:
+          a.isAbove++;
+          break;
+        case -1:
+          b.isAbove++;
+          break;
+        case 0:
+          switch (breakTie(a, b)) {
+          case 1:
+            a.isAbove++;
+            break;
+          case -1:
+            b.isAbove++;
+            break;
+          case 0:
+            if (allowTie)
+              a.isAbove++;
+            else
+              return null;
+          }
+        }
+      }
+    }
+    CIPAtom[] ret = new CIPAtom[n];
+    for (int i = 0; i < n; i++)
+      ret[atoms[i].isAbove] = atoms[i];
+    if (Logger.debugging)
+      for (int i = 0; i < n; i++)
+        Logger.info("" + ret[i]);
+    return ret;
+  }
+
+  /**
+   * Break a tie at any level in the iteration between to atoms that
+   * otherwise are the same by sorting heir
+   * 
+   * @param a
+   * @param b
+   * @return -1
+   */
+  private static int breakTie(CIPAtom a, CIPAtom b) {
+    if (!a.set() || !b.set() || a.isTerminal || a.atom == b.atom)
+      return 0;
+    if (Logger.debugging)
+      Logger.info("tie for " + a + " and " + b);
+    // check to see if any of the three connections to a and b are different.
+    for (int i = 0; i < a.nAtoms; i++) {
+      CIPAtom ai = a.atoms[i];
+      CIPAtom bi = b.atoms[i];
+      int score = (int) Math.signum(compareAB(ai, bi));
+      switch (score) {
+      case -1:
+      case 1:
+        return score;
+      case 0:
+        break;
+      }
+    }
+    // all are the same -- check to break tie next level
+    // now isDummy counts
+    
+    a.atoms = sortFourAtoms(a.atoms, true);
+    b.atoms = sortFourAtoms(b.atoms, true);
+    
+    for (int i = 0; i < a.nAtoms; i++) {
+      CIPAtom ai = a.atoms[i];
+      CIPAtom bi = b.atoms[i];
+      int score = (ai.isDummy == bi.isDummy ? breakTie(ai, bi) : ai.isDummy ? -1 : 1);
+      switch (score) {
+      case -1:
+      case 1:
+        return score;
+      case 0:
+      }
+    }
+    // all are the same and no tie breakers
+    return 0;
   }
 
   private class CIPAtom implements Comparable<CIPAtom> {
@@ -170,7 +268,7 @@ public class CIPChirality {
     /**
      * Number of substituent atoms.
      */
-    private int nAtoms;
+    int nAtoms;
 
     @Override
     public String toString() {
@@ -198,8 +296,8 @@ public class CIPChirality {
         isDummy = true;
       } else {
         bsPath.set(iatom);
-        this.isDummy = isDummy;
       }
+      this.isDummy = isDummy;
     }
 
     /**
@@ -213,6 +311,9 @@ public class CIPChirality {
         return true;
       if (isSet)
         return true;
+      isSet = true;
+      if (isDummy)
+        return false;
       atoms = new CIPAtom[parent == null ? 4 : 3];
       int nBonds = atom.getBondCount();
       Edge[] bonds = atom.getEdges();
@@ -253,6 +354,7 @@ public class CIPChirality {
       nAtoms = pt;
       for (; pt < atoms.length; pt++)
         atoms[pt] = new CIPAtom(null, null, true);
+      Arrays.sort(atoms);
       return !isTerminal;
     }
 
@@ -269,94 +371,6 @@ public class CIPChirality {
         return false;
       atoms[i] = new CIPAtom(other, this, isDummy);
       return true;
-    }
-
-    /**
-     * The main loop that starts all the iteration of breakTie.
-     * 
-     * @return true if we have four distinct atoms in the end
-     */
-    CIPAtom[] sortFourAtoms() {
-      for (int i = 0; i < 4; i++) {
-        CIPAtom a = atoms[i];
-        for (int j = i + 1; j < 4; j++) {
-          CIPAtom b = atoms[j];
-          int score = (int) Math.signum(a.compareTo(b));
-          if (Logger.debugging)
-            Logger.info("comparing " + a + " and " + b + " = " + score);
-          switch (score) {
-          case 1:
-            a.isAbove++;
-            break;
-          case -1:
-            b.isAbove++;
-            break;
-          case 0:
-            switch (breakTie(a, b)) {
-            case 1:
-              a.isAbove++;
-              break;
-            case -1:
-              b.isAbove++;
-              break;
-            case 0:
-              return null;
-            }
-          }
-        }
-      }
-      CIPAtom[] ret = new CIPAtom[4];
-      for (int i = 0; i < 4; i++)
-        ret[atoms[i].isAbove] = atoms[i];
-      if (Logger.debugging)
-        for (int i = 0; i < 4; i++)
-          Logger.info("" + ret[i]);
-      return ret;
-    }
-
-    /**
-     * Break a tie at any level in the iteration between to atoms that
-     * otherwise are the same by sorting heir
-     * 
-     * @param a
-     * @param b
-     * @return -1
-     */
-    private int breakTie(CIPAtom a, CIPAtom b) {
-      if (!a.set() || !b.set() || a.isTerminal || a.atom == b.atom)
-        return 0;
-      if (Logger.debugging)
-        Logger.info("tie for " + a + " and " + b);
-      Arrays.sort(a.atoms);
-      Arrays.sort(b.atoms);
-      // check to see if any of the three connections to a and b are different.
-      for (int i = 0; i < a.nAtoms; i++) {
-        CIPAtom ai = a.atoms[i];
-        CIPAtom bi = b.atoms[i];
-        int score = (int) Math.signum(compareAB(ai, bi));
-        switch (score) {
-        case -1:
-        case 1:
-          return score;
-        case 0:
-          break;
-        }
-      }
-      // all are the same -- check to break tie next level
-      // now isDummy counts
-      for (int i = 0; i < a.nAtoms; i++) {
-        CIPAtom ai = a.atoms[i];
-        CIPAtom bi = b.atoms[i];
-        int score = (ai.isDummy == bi.isDummy ? breakTie(ai, bi) : ai.isDummy ? -1 : 1);
-        switch (score) {
-        case -1:
-        case 1:
-          return score;
-        case 0:
-        }
-      }
-      // all are the same and no tie breakers
-      return 0;
     }
 
     /**

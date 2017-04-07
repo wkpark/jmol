@@ -1384,6 +1384,7 @@ class NBOModel {
       dialog.logValue("testing HBOND: " + s);
       if (s.length() < 3)
         s = "1\n1\n4";
+      measures = "";
       processHBonds(s);
       break;
     case MODEL_ACTION_SYMMETRY:

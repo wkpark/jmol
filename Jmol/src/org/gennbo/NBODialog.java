@@ -1158,7 +1158,7 @@ public class NBODialog extends JDialog {
         && nboService.restartIfNecessary());
   }
 
-  protected String evaluateJmolString(String expr) {
+  String evaluateJmolString(String expr) {
     return vwr.evaluateExpressionAsVariable(expr).asString();
   }
 
@@ -1274,6 +1274,5 @@ public class NBODialog extends JDialog {
       }
     }
   }
-
 
 }

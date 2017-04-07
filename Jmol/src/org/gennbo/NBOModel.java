@@ -533,7 +533,8 @@ class NBOModel {
 
     innerLinkOptionBox = Box.createHorizontalBox();
     radLinkBond = new JRadioButton("Bond");
-    JRadioButton radLinkDotted = new JRadioButton("Dotted");
+    radLinkBond.setSelected(true);
+    JRadioButton radLinkDotted = new JRadioButton("Measure");
     innerLinkOptionBox.add(radLinkBond);
     innerLinkOptionBox.add(radLinkDotted);
     
@@ -835,6 +836,9 @@ class NBOModel {
     actionID = action;
     dialog.runScriptQueued("set refreshing true; measurements delete"); // just in case
     clearSelected(true);
+    if (action != MODEL_ACTION_LINK) {
+      measures = ""; 
+    }
     switch (action) {
     case MODEL_ACTION_MUTATE:
       boxCount = BOX_COUNT_1;
@@ -1273,7 +1277,7 @@ class NBOModel {
     undo.setEnabled(undoStack.size() > 1);
     redo.setEnabled(!redoStack.isEmpty());
     // "({1})"
-    rebond.setEnabled(((String) vwr.evaluateExpression("{transitionMetal}"))
+    rebond.setEnabled(dialog.evaluateJmolString("{transitionMetal}")
         .length() > 4);
     if (actionID == MODEL_ACTION_MUTATE) {
       doModelAction(actionID);
@@ -1406,12 +1410,18 @@ class NBOModel {
     if (atomList.length == 0 || atomList[0] == 0)
       return;
     String script = "";
-    for (int i = atomList.length%2; i < atomList.length;) {
-      script += "measure ID m" + ("" + Math.random()).substring(2) + " @"
-          + (int) atomList[i++] + " @" + (int) atomList[i++]
-          + " radius 0.1 ' '";
+    for (int i = atomList.length % 2; i < atomList.length; i += 2) {
+      int a1 = (int) atomList[i];
+      int a2 = (int) atomList[i + 1];
+      String a1a2 = " @" + a1 + " @" + a2;
+      script += "measure ID m" + ("" + Math.random()).substring(2) + a1a2
+          + " radius 0.1 ' ';";
+      dialog.logValue(dialog.evaluateJmolString("@" + a1 + ".atomName + " + "'-' + @" + a2 + ".atomName + ' d='+ distance(" + a1a2 + ")"));
     }
-    dialog.runScriptQueued(script);
+    measures += script;
+    dialog.runScriptQueued(measures);
   }
+  
+  private String measures = "";
 
 }

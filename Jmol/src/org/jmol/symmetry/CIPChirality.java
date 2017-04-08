@@ -50,6 +50,47 @@ public class CIPChirality {
   // [5] return checkWinding()
   //        return 
 
+  
+  // Validation:
+  
+  //  function checkRS(m, key) {
+  //    if (m)  load @m
+  //    background label yellow
+  //    color labels black
+  ////    label %[atomname]
+  //    set labelfor {_C && chirality != ""} "%[atomname] %[chirality]"
+  //    var rs = {*}.chirality.join("")
+  //    if (_argCount == 2) {
+  //      if (key == rs) {
+  //        print m + "\t" + rs + "\tOK"
+  //      } else {
+  //        var s = m + "\t" + rs + "\t" + key + "?????"
+  //        prompt s.replace("\t"," ") 
+  //        print s
+  //      }
+  //    } else {
+  //        print m + "\t" + rs
+  //    }
+  //    refresh
+  //  }
+  //
+  //   /**
+  //
+  //  checkrs("$(R)-3-hydroxy-1,4-heptadiyne", "R")
+  //  checkRS("$(R)-glycidol", "R")
+  //  checkRS("$glucose", "RSRR")
+  //  checkRS("$(2S,3R)-2,3-oxiranediol", "SR")
+  //  checkRS("$(S)-2-butanol", "S")
+  //  checkRS("$(R)-2-butanol", "R")
+  //  checkRS("$(2S,3R)-2,3-butanediol", "SR")
+  //  checkRS("$(2S,3S)-2,3-butanediol", "SS")
+  //  checkRS("$(2R,3R)-2,3-butanediol", "RR")
+  //  checkRS("$(2R,3S)-2,3-butanediol", "RS")
+  //  checkRS("$1,4-dimethylcyclohexane", "")
+  //  checkRS("$cholesterol", "RRSSSRSR") // (3S,8S,9S,10R,13R,14S,17R) and sidechain (R)
+  //  checkRS("==ta1", "SSRSRSSRSRS") // taxol (1S,2S,3R,4S,7R,9S,10S,12R,15S) and sidechain (2R,3S)
+
+  
   static final int NO_CHIRALITY = 0;
   static final int TIED = NO_CHIRALITY;
   static final int A_WINS = 1;

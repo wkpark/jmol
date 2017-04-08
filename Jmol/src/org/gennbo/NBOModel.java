@@ -458,7 +458,7 @@ class NBOModel {
         
       });
       atomNumBoxes[i].addFocusListener(new FocusListener() {
-        @Override
+        @Override 
         public void focusGained(FocusEvent arg0) {
           doAtomNumBoxFocus(true, num);
         }
@@ -471,7 +471,7 @@ class NBOModel {
       atomNumBoxes[i].addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          doSetAtomBoxesFromSelection(null);
+          doSetAtomBoxesFromSelection(null, false);
         }
       });
     }
@@ -534,7 +534,7 @@ class NBOModel {
     innerLinkOptionBox = Box.createHorizontalBox();
     radLinkBond = new JRadioButton("Bond");
     radLinkBond.setSelected(true);
-    JRadioButton radLinkDotted = new JRadioButton("Measure");
+    JRadioButton radLinkDotted = new JRadioButton("Dotted");
     innerLinkOptionBox.add(radLinkBond);
     innerLinkOptionBox.add(radLinkDotted);
     
@@ -572,12 +572,13 @@ class NBOModel {
   }
 
   protected void doAtomNumBoxFocus(boolean isGained, int num) {
+    System.out.println("atomnumbfocus" + isGained + " " +num);
     if (!isGained) {
       int atnum = PT.parseInt(atomNumBoxes[num].getText());
       if (atnum > vwr.ms.ac || atnum < 1) {
         atomNumBoxes[num].setText("");
       } else {
-        doSetAtomBoxesFromSelection(null);
+        doSetAtomBoxesFromSelection(null, false);
       }
     } else if (num == boxCount - 1) {
       jbApply.setEnabled(modelEditGetSelected().length() > 0);
@@ -592,13 +593,14 @@ class NBOModel {
     postActionToNBO(actionID);
   }
 
-  protected void updateSelected(boolean doPost) {
+  protected void updateSelected(boolean doPost, boolean setFocus) {
     String selected = modelEditGetSelected();          
     String script = "measure delete;";
     int cnt = selected.split(" ").length;
     editValueTf.setEnabled(cnt > 0);
     editValueTf.setText("");
-    editValueTf.requestFocus();
+    if (editValueTf.isVisible())
+      editValueTf.requestFocus();
     switch (boxCount) {
     case BOX_COUNT_4:
       String desc = "";
@@ -628,7 +630,7 @@ class NBOModel {
         jbApply.setEnabled(true);
         if (editValueTf.isVisible())
           editValueTf.requestFocus();
-        else
+        else if (setFocus)
           atomNumBoxes[1].requestFocus();
       }
       break;
@@ -663,6 +665,8 @@ class NBOModel {
     if (actionID == MODEL_ACTION_LINK) {
       script = "";
     }
+    
+    
     dialog.runScriptQueued(script);
     editValueTf.setText("");
     editValueTf.setEnabled(selected.length() > 0);
@@ -838,6 +842,7 @@ class NBOModel {
     clearSelected(true);
     if (action != MODEL_ACTION_LINK) {
       measures = ""; 
+      innerLinkOptionBox.setVisible(false);
     }
     switch (action) {
     case MODEL_ACTION_MUTATE:
@@ -949,7 +954,7 @@ class NBOModel {
       jbApply.setEnabled(false);
     }
     if (andShow)
-      updateSelected(false);
+      updateSelected(false, true);
   }
 
   /**
@@ -1223,7 +1228,7 @@ class NBOModel {
         }
         selected += " " + at1;
       }
-      doSetAtomBoxesFromSelection(selected);
+      doSetAtomBoxesFromSelection(selected, true);
     } else {
       //Bond selection -- just break that into two atom picks
       if (boxCount != BOX_COUNT_2)
@@ -1234,7 +1239,7 @@ class NBOModel {
     }
   }
 
-  protected void doSetAtomBoxesFromSelection(String selected) {
+  protected void doSetAtomBoxesFromSelection(String selected, boolean setFocus) {
     if (selected == null)
       selected = modelEditGetSelected();
     String[] split = PT.getTokens(selected);
@@ -1243,7 +1248,7 @@ class NBOModel {
       atomNumBoxes[i].setText(i >= split.length ? "" : "  " + split[i]);
       //System.out.println("set  i=" + i + " " + atomNumBoxes[i].getText());
     }
-    updateSelected(false);
+    updateSelected(false, setFocus);
     
   }
 
@@ -1284,7 +1289,7 @@ class NBOModel {
     } // else if (actionID == MODEL_ACTION_REBOND && serverMode != MODEL_ACTION_SYMMETRY)
       //doGetSymmetry();
     if (showSelectedOnFileLoad) {
-      updateSelected(false);
+      updateSelected(false, true);
       showSelectedOnFileLoad = false;
     } else {
       dialog.runScriptQueued("select none; select on;refresh");

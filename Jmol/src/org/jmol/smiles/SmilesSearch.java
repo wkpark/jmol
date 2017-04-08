@@ -32,7 +32,6 @@ import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.SB;
 import javajs.util.T3;
-import javajs.util.V3;
 
 import org.jmol.java.BS;
 import org.jmol.util.BSUtil;
@@ -1864,31 +1863,7 @@ public class SmilesSearch extends JmolMolecule {
       }
     }
   }
-
-  /**
-   * calculates a normal to a plane for three points and returns a signed
-   * distance
-   * 
-   * @param pointA
-   * @param pointB
-   * @param pointC
-   * @param vNorm
-   * @param vAB
-   * @param vAC
-   * @return a signed distance
-   */
-  static float getNormalThroughPoints(Node pointA, Node pointB, Node pointC,
-                                      V3 vNorm, V3 vAB, V3 vAC) {
-    vAB.sub2((P3) pointB, (P3) pointA);
-    vAC.sub2((P3) pointC, (P3) pointA);
-    vNorm.cross(vAB, vAC);
-    vNorm.normalize();
-    // ax + by + cz + d = 0
-    // so if a point is in the plane, then N dot X = -d
-    vAB.setT((P3) pointA);
-    return -vAB.dot(vNorm);
-  }
-
+  
   Node findImplicitHydrogen(Node atom) {
 //    if (haveTopo) {
 //      SmilesAtom sAtom = (SmilesAtom) atom;

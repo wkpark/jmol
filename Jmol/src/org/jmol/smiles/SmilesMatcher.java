@@ -581,9 +581,4 @@ public class SmilesMatcher implements SmilesMatcherInterface {
     return null;
   }
 
-  @Override
-  public int getChirality(Node atom4, Node atom3, Node atom2, Node atom1) {
-    return SmilesStereo.getHandedness(atom4, atom3, atom2, atom1, new VTemp());
-  }
-
 }

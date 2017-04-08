@@ -25,13 +25,11 @@
 
 package org.jmol.modelset;
 
-import javax.annotation.processing.RoundEnvironment;
-
 import javajs.util.CU;
 import javajs.util.Lst;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
-import javajs.util.P3;
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -46,11 +44,11 @@ import org.jmol.java.BS;
 import org.jmol.modelsetbio.BioModel;
 import org.jmol.script.T;
 import org.jmol.util.C;
+import org.jmol.util.Edge;
 import org.jmol.util.Elements;
 import org.jmol.util.Node;
 import org.jmol.util.Point3fi;
 import org.jmol.util.Tensor;
-import org.jmol.util.Edge;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -72,9 +70,6 @@ public class Atom extends Point3fi implements Node {
   public final static int ATOM_INFRAME_NOTHIDDEN = ATOM_INFRAME | ATOM_NOTHIDDEN;
   public final static int ATOM_SHAPE_VIS_MASK = ~ATOM_INFRAME_NOTHIDDEN;
 
-  private final static byte VIBRATION_VECTOR_FLAG = 1;
-  private final static byte IS_HETERO_FLAG = 2;
-  private final static byte FLAG_MASK = 3;
   
   public static final int RADIUS_MAX = 16;
   public static final float RADIUS_GLOBAL = 16.1f;
@@ -86,10 +81,19 @@ public class Atom extends Point3fi implements Node {
   public Group group;
   private float userDefinedVanDerWaalRadius;
   byte valence;
-  
   private short atomicAndIsotopeNumber;
   public BS atomSymmetry;
-  private byte formalChargeAndFlags;
+
+  private byte formalChargeAndFlags; // cccc RSvh
+  
+  private final static int CHARGE_OFFSET = 4;
+  private final static int VIBRATION_VECTOR_FLAG = 1;
+  private final static int IS_HETERO_FLAG = 2;
+  private final static int CHIRALITY_OFFSET = 2;
+  private final static int CHIRALITY_R_FLAG = 1;
+  private final static int CHIRALITY_S_FLAG = 2; // 3 is "no chirality"
+  private final static int CHIRALITY_MASK = 12;
+  private final static int FLAG_MASK = 0xF;
 
   public short madAtom;
 
@@ -193,6 +197,7 @@ public class Atom extends Point3fi implements Node {
   }
 
   private void deleteBondAt(int i) {
+    setChirality(0);
     int newLength = bonds.length - 1;
     if (newLength == 0) {
       bonds = null;
@@ -352,9 +357,13 @@ public class Atom extends Point3fi implements Node {
     return (formalChargeAndFlags & VIBRATION_VECTOR_FLAG) != 0;
   }
 
+  /**
+   * 
+   * @param charge from -3 to 7  
+   */
   public void setFormalCharge(int charge) {
     formalChargeAndFlags = (byte)((formalChargeAndFlags & FLAG_MASK) 
-        | ((charge == Integer.MIN_VALUE ? 0 : charge > 7 ? 7 : charge < -3 ? -3 : charge) << 2));
+        | ((charge == Integer.MIN_VALUE ? 0 : charge > 7 ? 7 : charge < -3 ? -3 : charge) << CHARGE_OFFSET));
   }
   
   void setVibrationVector() {
@@ -363,7 +372,7 @@ public class Atom extends Point3fi implements Node {
   
   @Override
   public int getFormalCharge() {
-    return formalChargeAndFlags >> 2;
+    return formalChargeAndFlags >> CHARGE_OFFSET;
   }
 
   // a percentage value in the range 0-100
@@ -1384,11 +1393,26 @@ public class Atom extends Point3fi implements Node {
   }
 
   /**
-   * Determine R/S chirality at this position
+   * Determine R/S chirality at this position; non-H atoms only; cached in formalChargeAndFlags
+   * 
    * @return "" or "R" or "S"
    */
   private String getChirality() {
-    return group.chain.model.ms.getChirality(this);
+    int flags = (formalChargeAndFlags & CHIRALITY_MASK) >> CHIRALITY_OFFSET;
+    if (flags == 0 && atomicAndIsotopeNumber > 1) {
+      flags = group.chain.model.ms.getChirality(this);
+      formalChargeAndFlags |= ((flags == 0 ? 3 : flags) << CHIRALITY_OFFSET);
+    }
+    return (flags == CHIRALITY_R_FLAG ? "R" : flags == CHIRALITY_S_FLAG ? "S" : "");
+  }
+  
+  /**
+   * 
+   * @param c [0:unknown; 1: R; 2: S; 3: none]
+   */
+  void setChirality(int c) {
+    formalChargeAndFlags = (byte)((formalChargeAndFlags & ~CHIRALITY_MASK) 
+        | (c << CHIRALITY_OFFSET));
   }
 
   @Override

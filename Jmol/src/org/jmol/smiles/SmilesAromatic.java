@@ -27,6 +27,8 @@ package org.jmol.smiles;
 import java.util.Hashtable;
 
 import javajs.util.Lst;
+import javajs.util.Measure;
+import javajs.util.P3;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
@@ -250,9 +252,8 @@ public class SmilesAromatic {
     if (cutoff <= 0)
       cutoff = 0.01f;
 
-    V3 vTemp = new V3();
-    V3 vA = new V3();
-    V3 vB = new V3();
+    V3 vNorm = null;
+    V3 vTemp = null;
     V3 vMean = null;
     int nPoints = bs.cardinality();
     V3[] vNorms = new V3[nPoints * 2];
@@ -285,18 +286,21 @@ public class SmilesAromatic {
         }
       }
 
-      if (vMean == null)
+      if (vMean == null) {
         vMean = new V3();
+        vNorm = new V3();
+        vTemp = new V3();
+      }
 
       // check the normal for r1 - i - r2 plane
       // check the normal for r1 - iSub - r2 plane
 
       for (int k = 0, j = i; k < 2; k++) {
-        SmilesSearch.getNormalThroughPoints(atoms[r1], atoms[j], atoms[r2],
-            vTemp, vA, vB);
-        if (!addNormal(vTemp, vMean, maxDev))
+        Measure.getNormalThroughPoints((P3) atoms[r1], (P3) atoms[j], (P3) atoms[r2],
+            vNorm, vTemp);
+        if (!addNormal(vNorm, vMean, maxDev))
           return false;
-        vNorms[nNorms++] = V3.newV(vTemp);
+        vNorms[nNorms++] = V3.newV(vNorm);
         if ((j = iSub) < 0)
           break;
       }

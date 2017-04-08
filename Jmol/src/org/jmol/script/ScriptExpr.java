@@ -2502,7 +2502,7 @@ abstract class ScriptExpr extends ScriptParam {
           fixed[j] = T.tv(T.decimal, getFloatEncodedInt("" + v), v);
         } else if (v instanceof String) {
           if (!forceString && !isExpression) {
-            if ((tok != T.set || j > 1 && st[1].tok != T.echo)
+            if ((tok != T.set || j > 1 && st[1].tok != T.echo && !"labelfor".equalsIgnoreCase(st[1].value.toString()))
                 && T.tokAttr(tok, T.mathExpressionCommand)) {
               v = getParameter((String) v, T.variable, true);
             }

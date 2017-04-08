@@ -829,9 +829,9 @@ public class SmilesStereo {
     case 4: // tetrahedral, square planar
       if (atom3 == null || atom4 == null)
         return "";
-      float d = SmilesSearch.getNormalThroughPoints(atom1, atom2, atom3,
-          v.vTemp, v.vA, v.vB);
-      if (Math.abs(distanceToPlane(v.vTemp, d, (P3) atom4)) < 0.2f) {
+      float d = Measure.getNormalThroughPoints((P3) atom1, (P3) atom2, (P3) atom3,
+          v.vTemp, v.vA);
+      if (Math.abs(Measure.distanceToPlaneV(v.vTemp, d, (P3) atom4)) < 0.2f) {
         chiralClass = SQUARE_PLANAR;
         if (checkStereochemistryAll(false, atom0, chiralClass, 1, atom1, atom2,
             atom3, atom4, atom5, atom6, v))
@@ -863,7 +863,7 @@ public class SmilesStereo {
     case TETRAHEDRAL:
       return (isNot == (getHandedness(atom2, atom3, atom4, atom1, v) != order));
     case SQUARE_PLANAR:
-      getPlaneNormals(atom1, atom2, atom3, atom4, v);
+      getPlaneNormals((P3) atom1, (P3) atom2, (P3) atom3, (P3) atom4, v);
       // vNorm1 vNorm2 vNorm3 are right-hand normals for the given
       // triangles
       // 1-2-3, 2-3-4, 3-4-1
@@ -914,7 +914,7 @@ public class SmilesStereo {
           || !isDiaxial(atom0, atom0, atom2, atom4, v, -0.95f)
           || !isDiaxial(atom0, atom0, atom3, atom5, v, -0.95f))
         return false;
-      getPlaneNormals(atom2, atom3, atom4, atom5, v);
+      getPlaneNormals((P3) atom2, (P3) atom3, (P3) atom4, (P3) atom5, v);
       // check for proper order 2-3-4-5
       //                          n1n2n3
       if (v.vNorm2.dot(v.vNorm3) < 0 || v.vNorm3.dot(v.vNorm4) < 0)
@@ -948,32 +948,24 @@ public class SmilesStereo {
    * @return 1 for "@", 2 for "@@"
    */
   static int getHandedness(Node a, Node b, Node c, Node pt, VTemp v) {
-    float d = SmilesSearch.getNormalThroughPoints(a, b, c, v.vTemp, v.vA,
-        v.vB);    
+    float d = Measure.getNormalThroughPoints((P3) a, (P3) b, (P3) c, v.vTemp, v.vA);    
 //    int atat = (distanceToPlane(v.vTemp, d, (P3) pt) > 0 ? 1 : 2);
 //    System.out.println("$ draw p1 " + P3.newP((P3)a) +" color red '"+a+" [2]'");
 //    System.out.println("$ draw p2 " + P3.newP((P3)b) +"  color green '"+b+" [3]'");
 //    System.out.println("$ draw p3 " + P3.newP((P3)c) +"  color blue '"+c+" [4]'");
 //    System.out.println("$ draw p " + P3.newP((P3)a) +" " + P3.newP((P3)b) +" " + P3.newP((P3)c) +"" );
 //    System.out.println("$ draw v vector {" + P3.newP((P3)pt) +"}  " + v.vTemp+" '"+ (atat==2 ? "@@" : "@")+ pt + " [1]' color " + (atat == 2 ? "white" : "yellow"));
-    return (distanceToPlane(v.vTemp, d, (P3) pt) > 0 ? 1 : 2);
+    return (Measure.distanceToPlaneV(v.vTemp, d, (P3) pt) > 0 ? 1 : 2);
   }
 
-  private static void getPlaneNormals(Node atom1, Node atom2, Node atom3,
-                                      Node atom4, VTemp v) {
-    SmilesSearch.getNormalThroughPoints(atom1, atom2, atom3, v.vNorm2,
-        v.vTemp1, v.vTemp2);
-    SmilesSearch.getNormalThroughPoints(atom2, atom3, atom4, v.vNorm3,
-        v.vTemp1, v.vTemp2);
-    SmilesSearch.getNormalThroughPoints(atom3, atom4, atom1, v.vNorm4,
-        v.vTemp1, v.vTemp2);
-  }
-
-  static float distanceToPlane(V3 norm, float w, P3 pt) {
-    return (norm == null ? Float.NaN : (norm.x * pt.x + norm.y * pt.y + norm.z
-        * pt.z + w)
-        / (float) Math
-            .sqrt(norm.x * norm.x + norm.y * norm.y + norm.z * norm.z));
+  private static void getPlaneNormals(P3 atom1, P3 atom2, P3 atom3,
+                                      P3 atom4, VTemp v) {
+    Measure.getNormalThroughPoints(atom1, atom2, atom3, v.vNorm2,
+        v.vTemp1);
+    Measure.getNormalThroughPoints(atom2, atom3, atom4, v.vNorm3,
+        v.vTemp1);
+    Measure.getNormalThroughPoints(atom3, atom4, atom1, v.vNorm4,
+        v.vTemp1);
   }
 
   static int checkChirality(String pattern, int index, SmilesAtom newAtom)

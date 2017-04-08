@@ -2686,7 +2686,7 @@ public class ScriptEval extends ScriptExpr {
       setSize(iShape, (tok == T.halo ? -1000f : 1f));
       return;
     case T.label:
-      cmdLabel(1);
+      cmdLabel(1, null);
       return;
     case T.vector:
       cmdVector();
@@ -4134,7 +4134,7 @@ public class ScriptEval extends ScriptExpr {
     vwr.invertSelected(pt, plane, iAtom, bs);
   }
 
-  private void cmdLabel(int index) throws ScriptException {
+  private void cmdLabel(int index, BS bs) throws ScriptException {
     if (chk)
       return;
     sm.loadShape(JC.SHAPE_LABELS);
@@ -4156,7 +4156,7 @@ public class ScriptEval extends ScriptExpr {
     default:
       strLabel = paramAsStr(index);
     }
-    sm.setLabel(strLabel, vwr.bsA());
+    sm.setLabel(strLabel, bs == null ? vwr.bsA() : bs);
   }
 
   public void cmdLoad() throws ScriptException {
@@ -6718,7 +6718,7 @@ public class ScriptEval extends ScriptExpr {
       cmdHistory(2);
       return;
     case T.label:
-      cmdLabel(2);
+      cmdLabel(2, null);
       return;
     case T.unitcell:
       cmdUnitcell(2);
@@ -7100,7 +7100,7 @@ public class ScriptEval extends ScriptExpr {
       if (lckey.indexOf("label") == 0
           && PT
               .isOneOf(lckey.substring(5),
-                  ";front;group;atom;offset;offsetexact;offsetabsolute;pointer;alignment;toggle;scalereference;")) {
+                  ";front;group;atom;offset;offsetexact;offsetabsolute;pointer;alignment;toggle;scalereference;for;")) {
         if (cmdSetLabel(lckey.substring(5)))
           return;
       }
@@ -7342,6 +7342,11 @@ public class ScriptEval extends ScriptExpr {
     Object propertyValue = null;
     setShapeProperty(JC.SHAPE_LABELS, "setDefaults", vwr.slm.noneSelected);
     while (true) {
+      if (str.equals("for")) {
+        BS bs = atomExpressionAt(2);
+        cmdLabel(iToken + 1, bs);
+        return true;
+      }
       if (str.equals("scalereference")) {
         float scaleAngstromsPerPixel = floatParameter(2);
         if (scaleAngstromsPerPixel >= 5) // actually a zoom value

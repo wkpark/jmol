@@ -113,6 +113,8 @@ abstract public class AtomCollection {
 
   protected P3 averageAtomPoint;
 
+  protected boolean haveChirality;
+
   /**
    *  Binary Space Partitioning Forest
    */

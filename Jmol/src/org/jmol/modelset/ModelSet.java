@@ -940,6 +940,7 @@ public class ModelSet extends BondCollection {
     modelNames = mergeModelSet.modelNames;
     modelNumbers = mergeModelSet.modelNumbers;
     frameTitles = mergeModelSet.frameTitles;
+    haveChirality = mergeModelSet.haveChirality;
     if (msInfo != null)
       msInfo.remove("models");
     mergeAtomArrays(mergeModelSet);
@@ -4068,7 +4069,14 @@ public class ModelSet extends BondCollection {
     return (dssrData == null || dssrData.length <= i ? Float.NaN : dssrData[i]);
   }
 
-  public String getChirality(Atom atom) {
+  /**
+   * Determine the Cahn-Ingold-Prelog R/S chirality of an atom
+   * 
+   * @param atom
+   * @return [0:none, 1:R, 2:S]
+   */
+  public int getChirality(Atom atom) {
+    haveChirality = true;
     return Interface.getSymmetry(vwr, "ms").getChirality(vwr, atom);
   }
 

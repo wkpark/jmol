@@ -39,7 +39,7 @@ public class CIPChirality {
   // 
   // [4] breakTie(a,b) 
   //       for each substituent i of a and b...
-  //          compareIgnoreDummy(a.sub_i, b.sub_i) 
+  //          compareIgnoreGhost(a.sub_i, b.sub_i) 
   //          if (a winner) return A_WINS or B_WINS 
   //       a.sortSubstituents(firstAtom = false)
   //       b.sortSubstituents(firstAtom = false) 
@@ -51,29 +51,37 @@ public class CIPChirality {
   //        return 
 
   
-  // Validation:
-  
   //  function checkRS(m, key) {
-  //    if (m)  load @m
+  //    print "loading " + @m
+  //    refresh
+  //    set useMinimizationThread false
+  //    if (m)  load @m filter "2D"
+  //    if (!{_H})  calculate hydrogens
   //    background label yellow
   //    color labels black
   ////    label %[atomname]
   //    set labelfor {_C && chirality != ""} "%[atomname] %[chirality]"
   //    var rs = {*}.chirality.join("")
   //    if (_argCount == 2) {
+  //      var ref = _M.molData["chiral_atoms"].replace("\n","").replace(" ","");
+  //      if (ref) {
+  //        key = ref;
+  //        rs = {chirality != ""}.label("%i%[chirality]").join("")
+  //      }
   //      if (key == rs) {
-  //        print m + "\t" + rs + "\tOK"
+  //        print "OK\t" + m + "\t" + rs
   //      } else {
-  //        var s = m + "\t" + rs + "\t" + key + "?????"
-  //        prompt s.replace("\t"," ") 
+  //        var s = "??\t" + m + "\t" + rs + "\t" + key
+  //        refresh 
   //        print s
+  ////        prompt s.replace("\t"," ") 
   //      }
   //    } else {
   //        print m + "\t" + rs
   //    }
   //    refresh
   //  }
-  //
+  
   //   /**
   //
   //  checkrs("$(R)-3-hydroxy-1,4-heptadiyne", "R")
@@ -93,8 +101,8 @@ public class CIPChirality {
   
   static final int NO_CHIRALITY = 0;
   static final int TIED = NO_CHIRALITY;
-  static final int A_WINS = 1;
-  static final int B_WINS = -1;
+  static final int B_WINS = 1;
+  static final int A_WINS = -1;
   
   Viewer vwr;
 
@@ -160,14 +168,14 @@ public class CIPChirality {
    */
   static int breakTie(CIPAtom a, CIPAtom b) {
 
-    // If one of them is a dummy atom (from an alkene, alkyne, or ring) and the other isn't, 
-    // then the dummy is the loser.
-    if (a.isDummy != b.isDummy)
-      return (a.isDummy ? -1 : 1);
+    // If one of them is a Ghost atom (from an alkene, alkyne, or ring) and the other isn't, 
+    // then the Ghost is the loser.
+    if (a.isGhost != b.isGhost)
+      return (a.isGhost ? B_WINS : A_WINS);
 
     // If both are dummies, it's a tie.
-    if (a.isDummy && b.isDummy)
-      return TIED;
+    if (a.isGhost && b.isGhost)
+      return (a.isCyclic == b.isCyclic ? TIED : a.isCyclic ? B_WINS: A_WINS);
 
     // return NO_CHIRALITY/TIED if:
     //  a) one or the other can't be set (because it has too many connections)
@@ -181,10 +189,10 @@ public class CIPChirality {
     if (Logger.debugging)
       Logger.info("tie for " + a + " and " + b);
 
-    // Phase I -- shallow check using compareIgnoreDummy
+    // Phase I -- shallow check using compareIgnoreGhost
     //
     // Check to see if any of the three connections to a and b are different.
-    // Note that we do not consider dummy atom different from a regular atom here
+    // Note that we do not consider Ghost atom different from a regular atom here
     // because we are just looking for atom differences, not substituent differences.
     //
     // Say we have {O (O) C} and {O O H}
@@ -206,13 +214,16 @@ public class CIPChirality {
     return compareAB(a, b, false);
   }
 
-  private static int compareAB(CIPAtom a, CIPAtom b, boolean ignoreDummy) {
+  private static int compareAB(CIPAtom a, CIPAtom b, boolean ignoreGhost) {
     for (int i = 0; i < a.nAtoms; i++) {
       CIPAtom ai = a.atoms[i];
       CIPAtom bi = b.atoms[i];
-      int score = (ignoreDummy ? compareIgnoreDummy(ai, bi) : breakTie(ai, bi));
-      if (score != TIED)
+      System.out.println("compareAB " + ai + " " + bi);
+      int score = (ignoreGhost ? compareIgnoreGhost(ai, bi) : breakTie(ai, bi));
+      if (score != TIED) {
+        System.out.println((score == B_WINS ? bi + " beatsi " + ai :  ai + " beatsi " + bi ) + " " + ignoreGhost);
         return score;
+      }
     }
     return TIED;
   }
@@ -238,11 +249,17 @@ public class CIPChirality {
     CIPAtom parent;
 
     /**
-     * Dummy atoms have massNo and elemNo but no substituents. They are slightly
+     * Ghost atoms have massNo and elemNo but no substituents. They are slightly
      * lower in priority than standard atoms.
      * 
      */
-    boolean isDummy = true;
+    boolean isGhost = true;
+    
+    /**
+     * A Ghost atom that is due to being cyclic - lower priority than alkene Ghost
+     * 
+     */
+    boolean isCyclic = false;
 
     /**
      * Terminal (single-valence) atoms need not be followed further.
@@ -257,16 +274,16 @@ public class CIPChirality {
     boolean isSet;
 
     /**
-     * For the main four atoms, isAbove will increment each time they "win" in a
+     * For the main four atoms, isBelow will increment each time they "lose" in a
      * priority contest, thus leading to our desired ordering.
      * 
      */
-    int isAbove;
+    int isBelow;
 
     /**
      * It is important to keep track of the path to this atom in order to
      * prevent infinite cycling. This is taken care of by bsPath. The last atom
-     * in the path when cyclic is a dummy atom.
+     * in the path when cyclic is a Ghost atom.
      * 
      */
     BS bsPath;
@@ -285,7 +302,7 @@ public class CIPChirality {
     @Override
     public String toString() {
       return (atom == null ? "<null>" : atom.toString())
-          + (isDummy ? " *" : "" + " " + (isAbove + 1));
+          + (isGhost ? " *" : "" + " " + (isBelow + 1));
     }
 
     /**
@@ -293,9 +310,9 @@ public class CIPChirality {
      * @param atom
      *        or null to indicate a null placeholder
      * @param parent
-     * @param isDummy
+     * @param isGhost
      */
-    CIPAtom(Node atom, CIPAtom parent, boolean isDummy) {
+    CIPAtom(Node atom, CIPAtom parent, boolean isGhost) {
       if (atom == null)
         return;
       this.atom = atom;
@@ -307,11 +324,11 @@ public class CIPChirality {
 
       int iatom = atom.getIndex();
       if (bsPath.get(iatom)) {
-        isDummy = true;
+        isGhost = isCyclic = true;
       } else {
         bsPath.set(iatom);
       }
-      this.isDummy = isDummy;
+      this.isGhost = isGhost;
     }
 
     /**
@@ -376,13 +393,13 @@ public class CIPChirality {
      * 
      * @param i
      * @param other
-     * @param isDummy
+     * @param isGhost
      * @return true if successful
      */
-    private boolean addAtom(int i, Node other, boolean isDummy) {
+    private boolean addAtom(int i, Node other, boolean isGhost) {
       if (i >= atoms.length)
         return false;
-      atoms[i] = new CIPAtom(other, this, isDummy);
+      atoms[i] = new CIPAtom(other, this, isGhost);
       return true;
     }
 
@@ -396,20 +413,22 @@ public class CIPChirality {
       boolean allowTie = (parent != null);
       int n = atoms.length;
       for (int i = 0; i < n; i++)
-        atoms[i].isAbove = 0;
+        atoms[i].isBelow = 0;
       for (int i = 0; i < n; i++) {
         CIPAtom a = atoms[i];
         for (int j = i + 1; j < n; j++) {
           CIPAtom b = atoms[j];
           int score = a.compareTo(b);
           if (Logger.debugging)
-            Logger.info("comparing " + n + " " + i + " " + j + " " + a + " and " + b + " = " + score);
+            Logger.info("comparing parent=" + parent + " this=" + this + ": " + n + " " + i + " " + j + " " + a + " and " + b + " = " + score);
           switch (score) {
-          case A_WINS:
-            a.isAbove++;
-            break;
           case B_WINS:
-            b.isAbove++;
+            a.isBelow++;
+            System.out.println(b + " beatsc " + a);
+            break;
+          case A_WINS:
+            b.isBelow++;
+            System.out.println(a + " beatsc " + b);
             break;
           case TIED:
             switch (breakTie(a, b)) {
@@ -417,11 +436,13 @@ public class CIPChirality {
               if (!allowTie)
                 return false;
               //$FALL-THROUGH$
-            case A_WINS:
-              a.isAbove++;
-              break;
             case B_WINS:
-              b.isAbove++;
+              a.isBelow++;
+              System.out.println(b + " beatst " + a);
+              break;
+            case A_WINS:
+              b.isBelow++;
+              System.out.println(a + " beatst " + b);
               break;
             }
             break;
@@ -430,7 +451,7 @@ public class CIPChirality {
       }
       CIPAtom[] ret = new CIPAtom[n];
       for (int i = 0; i < n; i++)
-        ret[atoms[i].isAbove] = atoms[i];
+        ret[atoms[i].isBelow] = atoms[i];
       if (Logger.debugging)
         for (int i = 0; i < n; i++)
           Logger.info("" + ret[i]);
@@ -439,30 +460,32 @@ public class CIPChirality {
     }
 
     /**
-     * Used in Array.sort and sortSubstituents; includes check for dummy.
+     * Used in Array.sort and sortSubstituents; includes check for Ghost.
      */
     @Override
-    public int compareTo(CIPAtom a) {
-      return a.atom == atom ? 0 : a.atom == null ? -1 : atom == null ? 1
-          : a.elemNo != elemNo ? (a.elemNo < elemNo ? -1 : 1)
-              : a.massNo != massNo ? (a.massNo < massNo ? -1 : 1)
-                  : a.isDummy != isDummy ? (a.isDummy ? -1 : 1) : 0;
+    public int compareTo(CIPAtom b) {
+      return b.atom == atom ? 0 : b.atom == null ? A_WINS : atom == null ? B_WINS
+          : b.elemNo != elemNo ? (b.elemNo < elemNo ? A_WINS : B_WINS)
+              : b.massNo != massNo ? (b.massNo < massNo ? A_WINS : B_WINS)
+                  : b.isGhost != isGhost ? (b.isGhost ? A_WINS : B_WINS) 
+                      : b.isGhost ? (b.isCyclic ? A_WINS : isCyclic ? B_WINS : TIED) 
+                         : TIED;
     }
 
   }
 
   /**
-   * Used only in breakTie; do not check dummy, because this is only a shallow
+   * Used only in breakTie; do not check Ghost, because this is only a shallow
    * sort.
    * 
    * @param a
    * @param b
    * @return 1 if b is higher; -1 if a is higher; otherwise 0
    */
-  static int compareIgnoreDummy(CIPAtom a, CIPAtom b) {
-    return b.atom == a.atom ? 0 : b.atom == null ? -1 : a.atom == null ? 1
-        : b.elemNo != a.elemNo ? (b.elemNo < a.elemNo ? -1 : 1)
-            : b.massNo != a.massNo ? (b.massNo < a.massNo ? -1 : 1) : 0;
+  static int compareIgnoreGhost(CIPAtom a, CIPAtom b) {
+    return b.atom == a.atom ? 0 : b.atom == null ? A_WINS : a.atom == null ? B_WINS
+        : b.elemNo != a.elemNo ? (b.elemNo < a.elemNo ? A_WINS : B_WINS)
+            : b.massNo != a.massNo ? (b.massNo < a.massNo ? A_WINS : B_WINS) : 0;
   }
 
 }

@@ -24,6 +24,9 @@
 
 package org.jmol.adapter.readers.molxyz;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import javajs.util.PT;
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
@@ -251,9 +254,9 @@ public class MolReader extends AtomSetCollectionReader {
       }
       addMolAtom(iAtom, isotope, elementSymbol, charge, x, y, z);
     }
-    
+
     // read bonds
-    
+
     for (int i = 0; i < bc; ++i) {
       rd();
       String iAtom1, iAtom2;
@@ -270,27 +273,51 @@ public class MolReader extends AtomSetCollectionReader {
         asc.addNewBondWithOrder(iatom0 + parseIntStr(iAtom1) - 1, iatom0
             + parseIntStr(iAtom2) - 1, order);
     }
-    
+
     // read V2000 user data
+
+    Atom[] atoms = asc.atoms;
+    Map<String, String> molData = new Hashtable<String, String>();
+    boolean haveData = false;
     
-    while (rd() != null && line.indexOf("$$$$") != 0) {
-      if (line.toUpperCase().contains("_PARTIAL_CHARGES")) {
+    rd();
+    while (line != null && line.indexOf("$$$$") != 0) {
+      if (line.indexOf(">") != 0) {
+        rd();
+        continue;
+      }
+      String dataName = PT.trim(line, "> <").toLowerCase();
+      String data = "";
+      float[] fdata = null;
+      while (rd() != null && line.indexOf("$$$$") != 0
+          && line.indexOf("> <") != 0) {
+        data += line + "\n";
+        continue;
+      }
+      data = PT.trim(data, "\n");
+      Logger.info(dataName + ":" + data.replace('\n', '|'));
+      haveData = true;
+      molData.put(dataName, data);
+      if (dataName.toUpperCase().contains("_PARTIAL_CHARGES")) {
         try {
-          Atom[] atoms = asc.atoms;
+          fdata = PT.parseFloatArray(data);
           for (int i = asc.getLastAtomSetAtomIndex(), n = asc.ac; i < n; i++)
             atoms[i].partialCharge = 0;
-          for (int i = parseIntStr(rd()); --i >= 0;) {
-            String[] tokens = PT.getTokens(rd());
-            int atomIndex = parseIntStr(tokens[0]) + iatom0 - 1;
-            float partialCharge = parseFloatStr(tokens[1]);
-            if (!Float.isNaN(partialCharge))
-              atoms[atomIndex].partialCharge = partialCharge;
+          int pt = 0;
+          for (int i = (int) fdata[pt++]; --i >= 0;) {
+            int atomIndex = (int) fdata[pt++] + iatom0 - 1;
+            float partialCharge = fdata[pt++];
+            atoms[atomIndex].partialCharge = partialCharge;
           }
         } catch (Exception e) {
+          for (int i = asc.getLastAtomSetAtomIndex(), n = asc.ac; i < n; i++)
+            atoms[i].partialCharge = 0;
           return;
         }
       }
     }
+    if (haveData)
+      asc.setModelInfoForSet("molData", molData, asc.iSet);
   }
 
   public void addMolAtom(int iAtom, int isotope, String elementSymbol,

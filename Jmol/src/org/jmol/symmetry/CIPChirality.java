@@ -1,6 +1,8 @@
 package org.jmol.symmetry;
 
 import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javajs.util.Measure;
 import javajs.util.P3;
@@ -16,7 +18,7 @@ import org.jmol.viewer.Viewer;
 
 /**
  * A relatively simple implementation of Cahn-Ingold-Prelog rules for assigning
- * R/S chirality. Based on private knowledge of rules.
+ * R/S chirality. Based on IUPAC rules. (See text at the end of this document.)
  * 
  * 
  * Introduced in Jmol 14.12.0
@@ -39,7 +41,7 @@ public class CIPChirality {
   // 
   // [4] breakTie(a,b) 
   //       for each substituent i of a and b...
-  //          compareIgnoreGhost(a.sub_i, b.sub_i) 
+  //          compareIgnoreDuplicate(a.sub_i, b.sub_i) 
   //          if (a winner) return A_WINS or B_WINS 
   //       a.sortSubstituents(firstAtom = false)
   //       b.sortSubstituents(firstAtom = false) 
@@ -105,6 +107,8 @@ public class CIPChirality {
   static final int A_WINS = -1;
   
   Viewer vwr;
+  
+  Map<Integer, Integer> htPathPoints = new Hashtable<Integer, Integer>();
 
   public CIPChirality() {
     // for reflection 
@@ -168,39 +172,39 @@ public class CIPChirality {
    */
   static int breakTie(CIPAtom a, CIPAtom b) {
 
-    // If one of them is a Ghost atom (from an alkene, alkyne, or ring) and the other isn't, 
-    // then the Ghost is the loser.
-    if (a.isGhost != b.isGhost)
-      return (a.isGhost ? B_WINS : A_WINS);
-
-    // If both are dummies, it's a tie.
-    if (a.isGhost && b.isGhost)
-      return (a.isCyclic == b.isCyclic ? TIED : a.isCyclic ? B_WINS: A_WINS);
-
+    // Do a duplicate check -- if that is not a TIE we do not have to go any further.
+    
+    int score = a.checkDuplicate(b);
+    if (score != TIED)
+      return score;
+    
+    score = a.checkRule1b(b);
+    if (score != TIED)
+      return score;
+    
     // return NO_CHIRALITY/TIED if:
     //  a) one or the other can't be set (because it has too many connections)
     //  b) or one or the other is terminal (has no substituents) 
     //  c) or they are the same atom
     
-    if (!a.set() || !b.set() 
-        || a.isTerminal || b.isTerminal 
-        || a.atom == b.atom)
+    if (a.atom == b.atom || !a.set() || !b.set() 
+        || a.isTerminal || b.isTerminal
+        || a.isDuplicate && b.isDuplicate)
       return NO_CHIRALITY;
     if (Logger.debugging)
       Logger.info("tie for " + a + " and " + b);
 
-    // Phase I -- shallow check using compareIgnoreGhost
+    // Phase I -- shallow check using compareIgnoreDuplicate
     //
     // Check to see if any of the three connections to a and b are different.
-    // Note that we do not consider Ghost atom different from a regular atom here
+    // Note that we do not consider Duplicate atom different from a regular atom here
     // because we are just looking for atom differences, not substituent differences.
     //
     // Say we have {O (O) C} and {O O H}
     //
     // The rules require that we first only look at just the atoms, so OOC beats OOH.
 
-    int score = compareAB(a, b, true);
-    if (score != TIED)
+    if ((score = compareAB(a, b, true)) != TIED)
       return score;
 
     // Phase I -- deep check using breakTie
@@ -214,15 +218,15 @@ public class CIPChirality {
     return compareAB(a, b, false);
   }
 
-  private static int compareAB(CIPAtom a, CIPAtom b, boolean ignoreGhost) {
+  private static int compareAB(CIPAtom a, CIPAtom b, boolean ignoreDuplicate) {
     for (int i = 0; i < a.nAtoms; i++) {
       CIPAtom ai = a.atoms[i];
       CIPAtom bi = b.atoms[i];
-      System.out.println("compareAB " + ai + " " + bi);
-      int score = (ignoreGhost ? compareIgnoreGhost(ai, bi) : breakTie(ai, bi));
+      System.out.println("compareAB " + ai + " " + bi + " ignoreDup=" + ignoreDuplicate);
+      int score = (ignoreDuplicate ? ai.checkRules12(bi) : breakTie(ai, bi));
       if (score != TIED) {
-        System.out.println((score == B_WINS ? bi + " beatsi " + ai :  ai + " beatsi " + bi ) + " " + ignoreGhost);
-        return score;
+        System.out.println((score == B_WINS ? bi + " beatsi " + ai :  ai + " beatsi " + bi ) + " " + ignoreDuplicate);
+        return  score;
       }
     }
     return TIED;
@@ -249,18 +253,12 @@ public class CIPChirality {
     CIPAtom parent;
 
     /**
-     * Ghost atoms have massNo and elemNo but no substituents. They are slightly
+     * Duplicate atoms have massNo and elemNo but no substituents. They are slightly
      * lower in priority than standard atoms.
      * 
      */
-    boolean isGhost = true;
+    boolean isDuplicate = true;
     
-    /**
-     * A Ghost atom that is due to being cyclic - lower priority than alkene Ghost
-     * 
-     */
-    boolean isCyclic = false;
-
     /**
      * Terminal (single-valence) atoms need not be followed further.
      * 
@@ -283,10 +281,17 @@ public class CIPChirality {
     /**
      * It is important to keep track of the path to this atom in order to
      * prevent infinite cycling. This is taken care of by bsPath. The last atom
-     * in the path when cyclic is a Ghost atom.
+     * in the path when cyclic is a Duplicate atom.
      * 
      */
     BS bsPath;
+    
+    /**
+     * Distance from root for a duplicated atom.
+     * 
+     */
+    
+    int rootDistance;
 
     /**
      * The substituents -- 4 for the base carbon; 3 or fewer for other atoms.
@@ -302,7 +307,7 @@ public class CIPChirality {
     @Override
     public String toString() {
       return (atom == null ? "<null>" : atom.toString())
-          + (isGhost ? " *" : "" + " " + (isBelow + 1));
+          + (isDuplicate ? " *" : "" + " " + (isBelow + 1));
     }
 
     /**
@@ -310,9 +315,9 @@ public class CIPChirality {
      * @param atom
      *        or null to indicate a null placeholder
      * @param parent
-     * @param isGhost
+     * @param isDuplicate
      */
-    CIPAtom(Node atom, CIPAtom parent, boolean isGhost) {
+    CIPAtom(Node atom, CIPAtom parent, boolean isDuplicate) {
       if (atom == null)
         return;
       this.atom = atom;
@@ -324,11 +329,14 @@ public class CIPChirality {
 
       int iatom = atom.getIndex();
       if (bsPath.get(iatom)) {
-        isGhost = isCyclic = true;
+        isDuplicate = true;
+        this.rootDistance = htPathPoints.get(new Integer(iatom)).intValue();
       } else {
         bsPath.set(iatom);
+        this.rootDistance = (parent == null ? 1 : parent.rootDistance + 1);
+        htPathPoints.put(new Integer(iatom), new Integer(this.rootDistance));
       }
-      this.isGhost = isGhost;
+      this.isDuplicate = isDuplicate;
     }
 
     /**
@@ -342,6 +350,8 @@ public class CIPChirality {
         return true;
       isSet = true;
       atoms = new CIPAtom[parent == null ? 4 : 3];
+      if (atom == null)
+        System.out.println("HOHO");
       int nBonds = atom.getBondCount();
       Edge[] bonds = atom.getEdges();
       int pt = 0;
@@ -350,24 +360,23 @@ public class CIPChirality {
         if (!bond.isCovalent())
           continue;
         Node other = bond.getOtherAtomNode(atom);
-        if (parent != null && parent.atom == other)
-          continue;
+        boolean isParent = (parent != null && parent.atom == other);
         int order = bond.getCovalentOrder();
         switch (order) {
         case 3:
-          if (!addAtom(pt++, other, false)) {
+          if (!addAtom(pt++, other, isParent)) {
             isTerminal = true;
             return false;
           }
           //$FALL-THROUGH$
         case 2:
-          if (!addAtom(pt++, other, order != 2)) {
+          if (!addAtom(pt++, other, order != 2 || isParent)) {
             isTerminal = true;
             return false;
           }
           //$FALL-THROUGH$
         case 1:
-          if (!addAtom(pt++, other, order != 1)) {
+          if (!isParent && !addAtom(pt++, other, order != 1)) {
             isTerminal = true;
             return false;
           }
@@ -393,13 +402,14 @@ public class CIPChirality {
      * 
      * @param i
      * @param other
-     * @param isGhost
+     * @param isDuplicate
      * @return true if successful
      */
-    private boolean addAtom(int i, Node other, boolean isGhost) {
+    private boolean addAtom(int i, Node other, boolean isDuplicate) {
       if (i >= atoms.length)
         return false;
-      atoms[i] = new CIPAtom(other, this, isGhost);
+      atoms[i] = new CIPAtom(other, this, isDuplicate);
+      System.out.println(this + " adding " + i + " "+ atoms[i]);
       return true;
     }
 
@@ -454,38 +464,158 @@ public class CIPChirality {
         ret[atoms[i].isBelow] = atoms[i];
       if (Logger.debugging)
         for (int i = 0; i < n; i++)
-          Logger.info("" + ret[i]);
+          Logger.info(atom + "["+i+"]=" + ret[i]);
       atoms = ret;
       return true;
     }
 
     /**
-     * Used in Array.sort and sortSubstituents; includes check for Ghost.
+     * Used in Array.sort and sortSubstituents; includes check for Duplicate.
      */
     @Override
     public int compareTo(CIPAtom b) {
-      return b.atom == atom ? 0 : b.atom == null ? A_WINS : atom == null ? B_WINS
-          : b.elemNo != elemNo ? (b.elemNo < elemNo ? A_WINS : B_WINS)
-              : b.massNo != massNo ? (b.massNo < massNo ? A_WINS : B_WINS)
-                  : b.isGhost != isGhost ? (b.isGhost ? A_WINS : B_WINS) 
-                      : b.isGhost ? (b.isCyclic ? A_WINS : isCyclic ? B_WINS : TIED) 
-                         : TIED;
+      int score = TIED;
+      return  (score = checkRules12(b)) != TIED ? score : checkDuplicate(b); 
+    }
+
+    public int checkRules12(CIPAtom b) {
+      int score = TIED;
+      return  (score = checkRule1a(b)) != TIED ? score
+          : (score = checkRule1b(b)) != TIED ? score 
+              : checkRule2(b); 
+    }
+
+    /**
+     * Looking for same atom or phantom atom or element number
+     * 
+     * @param b
+     * @return 1 if b is higher; -1 if a is higher; otherwise 0
+     */
+    int checkRule1a(CIPAtom b) {
+      return b.atom == atom ? TIED : b.atom == null ? A_WINS : atom == null ? B_WINS
+          : b.elemNo != elemNo ? (b.elemNo < elemNo ? A_WINS : B_WINS) : TIED;
+    }
+
+
+    int checkRule1b(CIPAtom b) {
+      return !b.isDuplicate || !isDuplicate ? TIED 
+          : b.rootDistance < rootDistance ? B_WINS 
+          : b.rootDistance > rootDistance ? A_WINS     
+          : TIED;
+    }
+
+    /**
+     * Chapter 9 Rule 2.
+     * 
+     * @param b
+     * @return 1 if b is higher; -1 if a is higher; otherwise 0
+     */
+    int checkRule2(CIPAtom b) {
+      return b.massNo < massNo ? A_WINS :  b.massNo > massNo ? B_WINS : TIED;
+    }
+
+    int checkDuplicate(CIPAtom b) {
+      return b.isDuplicate == isDuplicate ? TIED : b.isDuplicate ? A_WINS : B_WINS;
     }
 
   }
 
-  /**
-   * Used only in breakTie; do not check Ghost, because this is only a shallow
-   * sort.
-   * 
-   * @param a
-   * @param b
-   * @return 1 if b is higher; -1 if a is higher; otherwise 0
-   */
-  static int compareIgnoreGhost(CIPAtom a, CIPAtom b) {
-    return b.atom == a.atom ? 0 : b.atom == null ? A_WINS : a.atom == null ? B_WINS
-        : b.elemNo != a.elemNo ? (b.elemNo < a.elemNo ? A_WINS : B_WINS)
-            : b.massNo != a.massNo ? (b.massNo < a.massNo ? A_WINS : B_WINS) : 0;
-  }
 
 }
+
+//https://www.iupac.org/fileadmin/user_upload/publications/recommendations/CompleteDraft.pdf
+//
+//P-91.1.1.2 The ‘Sequence Rules’
+//The following ‘Sequence Rules’ are used (ref. 30, 31, 32) to establish the order of precedence
+//of atoms and groups. A more encompassing set of rules, proposed by Mata, Lobo, Marshall, and
+//Johnson (ref. 34), including amendments by Custer (ref. 35), Hirschmann and Hanson (ref. 36), is
+//used in this Chapter. The rules are hierarchical, i.e., each rule must be exhaustively applied in the
+//order given until a decision is reached:
+//
+//Rule 1 (a) Higher atomic number precedes lower;
+//(b) A duplicated atom, with its predecessor node having the same label closer
+//to the root, ranks higher than a duplicated atom, with its predecessor node
+//having the same label farther from the root, which ranks higher than any
+//nonduplicated-atom-node (proposed by Custer, ref. 36)
+
+// status: Rule 1 implemented
+
+
+//Rule 2 Higher atomic mass number precedes lower;
+
+//status: Rule 1 implemented (but before 1b??)
+
+
+//Rule 3 seqcis Stereogenic units precede seqtrans stereogenic units and these
+//precede nonstereogenic units (seqcis > seqtrans > nonstereogeni).
+//(Proposed by Mata, Lobo, Marshall, and Johnson, ref. 34);
+//The domain of application of this rule is restricted to
+//geometrically diastereomorphic planar tetravalent atoms and
+//double bonds. All cases involving geometrically
+//diastereomorphic two-dimensional stereogenic units are
+//considered in Rules 4 and 5. (Proposed by Hirschmann and
+//Hanson, ref. 36).
+
+//status: Rule 3 NOT implemented
+
+
+
+
+//Rule 4 (a) Chiral stereogenic units precede pseudoasymmetric stereogenic units and
+//these precede nonstereogenic units. (Sub-rule originally proposed by
+//Prelog and Helmchen (ref. 32), but their inclusion as first sub-rule of
+//Rule 4 was proposed by Custer, ref. 35). Geometrically enantiomorphic
+//twodimensional stereogenic units precede two-dimensional
+//nonstereogenic units (Proposed by Mata, Lobo, Marshall and Johnson,
+//ref. 34).
+//(b) When two ligands have different descriptor pairs, then the one with the
+//first chosen like descriptor pairs has priority over the one with a
+//corresponding unlike descriptor pair.
+//(i) Like descriptor pairs are: ‘RR’, ‘SS’, ‘MM’, ‘PP’,
+//‘seqCis/seqCis’, ‘seqTran/sseqTrans’, ‘RseqCis’,
+//‘SseqTrans’, ‘MseqCis’, ‘PseqTrans’.
+//(ii) Unlike discriptor pairs are ‘RS’, ‘MP’, ‘RP’, ‘SM’,
+//‘seqCis/seqTrans’, ‘RseqTrans’, ‘SseqCis’, ‘PseqCis’ and
+//‘MseqTrans’. (the descriptor pairs ‘RRe’, ‘SSi’, ‘ReRe’,
+//‘SiSi’,’ReM’, ‘SiP’, ’ReSi’, ‘Rsi’, ’ReP’ and ‘MSi’ are not
+//included in this rule (proposed by Mata, Lobo, Marshall and
+//Johnson, ref. 34).
+//Methodology for pairing descriptors:
+//The descriptor assigned to geometrically enantiomorphic double
+//bonds should be associated in the digraph with the first node
+//corresponding to the atoms involved in the double bond (proposed by
+//Mata, Lobo, Marshall and Johnson, ref. 34).
+//For each atom or group the descriptor chosen at first (highest ranked
+//descriptor) is paired with all the remaining descriptors. The following
+//characteristics determine the hierarchical rank of the pairs of descriptors:
+//(i) higher rank of the second descriptor in the pair;
+//(ii) lower rank of the least common ancestor in the graph
+//(proposed by Custer, ref. 35).
+//(c) ‘r’ Precedes ‘s’ and ‘p’ precedes ‘m’ (proposed by Mata, Lobo,
+//Marshall and Johnson, ref. 34).
+//Re-inclusion of this subrule in Rule 4 was proposed by Custer (ref. 35).
+
+//status: Rule 4 NOT implemented
+
+
+//Rule 5 An atom or group with descriptor ‘R’, ‘M’ and ‘seqCis’ has priority over its
+//enantiomorph ‘S’, ‘P’ or ‘seqTrans’, ‘seqCis’ and ‘seqTrans’ (proposed by
+//Hirschmann and Hanson, ref. 36)
+
+//status: Rule 5 NOT implemented
+
+
+//These rules are based on the hierarchical order of atoms or groups properties, material and
+//topological properties for rules 1 and 2, geometrical properties for rules 3 and 4, and
+//topographical properties for rule 5. The first four properties are reflection-invariant, the fifth is
+//reflection-variant.
+//Atoms and groups of atoms are monovalent or divalent as exemplified by ‘diyl’ groups; they
+//can be acyclic or cyclic.
+//The five ‘Sequence Rules’ are applied as follows:
+//(a) each rule is applied exhaustively to all atoms or groups being compared;
+//(b) each rule is applied in accordance with a hierachical digraph (see P-91.2)
+//(c) the atom or group that is found to have precedence (priority) at the first
+//occurrence of a difference in a digraph retains this precedence (priority)
+//regardless of differences that occur later in the exploration of the digraph;
+//(d) precedence (priority) of an atom in a group established by a rule does not
+//change on application of a subsequent rule.

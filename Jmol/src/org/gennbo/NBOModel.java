@@ -298,7 +298,7 @@ class NBOModel {
 
     inputBox.add(p2);
     dialog.inputFileHandler = new NBOFileHandler("", "", NBOFileHandler.MODE_MODEL_USE, NBOConfig.INPUT_FILE_EXTENSIONS, dialog) {
-
+      
       @Override
       protected boolean doFileBrowsePressed() {
         String folder = tfDir.getText().trim();
@@ -345,6 +345,8 @@ class NBOModel {
     addFocusListeners(dialog.inputFileHandler.tfDir, jrFileIn);
     addFocusListeners(dialog.inputFileHandler.tfExt, jrFileIn);
     addFocusListeners(dialog.inputFileHandler.tfName, jrFileIn);
+    addFocusListeners(dialog.inputFileHandler.btnBrowse, jrFileIn);
+
     inputBox.add(dialog.inputFileHandler);
     inputBox.add(Box.createGlue());
     return inputBox;
@@ -1352,6 +1354,10 @@ class NBOModel {
     case MODEL_ACTION_3CHB:
     case MODE_MODEL_NEW:
     case MODE_MODEL_EDIT:
+      if (s.length() == 0) {
+        dialog.logError("Return message from NBOServe was empty.");
+        return;
+      }
       s += NBOConfig.JMOL_FONT_SCRIPT;
 // backing off from this so we can see what NBO6 does and maybe not need to do this
 //      if (mode == MODE_MODEL_EDIT)

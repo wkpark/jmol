@@ -36,7 +36,7 @@ class NBOFileHandler extends JPanel {
 
 
   protected JTextField tfDir, tfName, tfExt;
-  private JButton btnBrowse;
+  JButton btnBrowse;
   
   /**
    * working directory for input

@@ -1,0 +1,13 @@
+#1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol_3d_noH.mol
+gibberellin_2D.mol
+#Mata_fig7_II_R.mol
+#Mata_fig7_I_R.mol
+#rule3_2d.mol
+#rule_3_with_axial_chirality_8R_3d.mol
+#two_pairs_of_enantiomeric_ligands.mol
+beta-eudesmol.sdf
+beta-eudesmol_3d.sdf
+#bromo(chloro)fluoromethane_01.sdf
+#bromo(chloro)fluoromethane_02.sdf
+#bromo(chloro)fluoromethane_03.sdf
+#bromo(chloro)fluoromethane_04.sdf

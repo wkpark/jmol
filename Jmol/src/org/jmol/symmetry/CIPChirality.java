@@ -333,6 +333,8 @@ public class CIPChirality {
     int elemNo;
 
     CIPAtom parent;
+    CIPAtom grandParent;
+    CIPAtom greatGrandParent;
 
     /**
      * Duplicate atoms have massNo and elemNo but no substituents. They are slightly
@@ -411,9 +413,21 @@ public class CIPChirality {
      */
     int nAtoms;
 
+    /*
+     * second carbon of seqCis or seqTrans for Rule 3
+     */
+    
+    boolean isAlkeneAtom2;
+
     private boolean hasH1;
 
     private int id;
+
+    private boolean haveHeritage;
+
+    private boolean haveSeqType;
+
+    private boolean isSeqCIS;
 
     @Override
     public String toString() {
@@ -434,6 +448,7 @@ public class CIPChirality {
       this.id = ++ptID;
       this.atom = atom;
       this.parent = parent;
+      haveHeritage = false;
       this.isTerminal = atom.getCovalentBondCount() == 1;
       this.elemNo = atom.getElementNumber();
       this.massNo = atom.getNominalMass();
@@ -458,9 +473,11 @@ public class CIPChirality {
      * 
      */
     boolean set() {
-      if (isTerminal || isSet)
+      if (isSet)
         return true;
       isSet = true;
+      if (isTerminal || isDuplicate)
+        return true;
       atoms = new CIPAtom[parent == null ? 4 : 3];
       int nBonds = atom.getBondCount();
       Edge[] bonds = atom.getEdges();
@@ -472,6 +489,9 @@ public class CIPChirality {
         Node other = bond.getOtherAtomNode(atom);
         boolean isParent = (parent != null && parent.atom == other);
         int order = bond.getCovalentOrder();
+        if (isParent && order == 2)
+          isAlkeneAtom2 = true;
+        if (!isParent)
         switch (order) {
         case 3:
           if (!addAtom(pt++, other, isParent)) {
@@ -708,8 +728,38 @@ public class CIPChirality {
     }
 
     private int checkRule3(CIPAtom b) {
-      // TODO
-      return TIED;
+      return !checkHeritage() || !b.checkHeritage() 
+          || isSeqCIS() == b.isSeqCIS() ? TIED : isSeqCIS() ? A_WINS : B_WINS;
+    }
+    
+    private boolean isSeqCIS() {
+      if (!haveSeqType) {
+        V3 vNorm1 = new V3();
+        V3 vTemp = new V3();
+        Measure.getNormalThroughPoints((P3) atom, (P3) parent.atom, (P3) grandParent.atom, vNorm1, vTemp);
+        V3 vNorm2 = new V3();
+        Measure.getNormalThroughPoints((P3) parent.atom, (P3) grandParent.atom, (P3) greatGrandParent.atom, vNorm2, vTemp);
+        isSeqCIS = (vNorm1.dot(vNorm2) > 0); 
+        haveSeqType = true;
+      }
+      return isSeqCIS;
+    }
+
+    /**
+     * Rule 3 only
+     * 
+     * @return true if has a greatGrandParent
+     */
+    private boolean checkHeritage() {
+      if (!haveHeritage) {
+        if (parent != null && parent.isAlkeneAtom2) {
+          grandParent = (parent == null || parent.parent == null ? null
+              : parent.parent);
+          greatGrandParent = (grandParent == null ? null : grandParent.parent);
+        }
+      }
+      haveHeritage = true;
+      return greatGrandParent != null;
     }
 
     private int checkRule4(CIPAtom b) {
@@ -759,7 +809,7 @@ public class CIPChirality {
 //considered in Rules 4 and 5. (Proposed by Hirschmann and
 //Hanson, ref. 36).
 
-//status: Rule 3 NOT implemented
+//status: Rule 3 implemented
 
 
 

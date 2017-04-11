@@ -22,38 +22,61 @@ import org.jmol.viewer.Viewer;
  * 
  * 
  * Introduced in Jmol 14.12.0
+ * Validated for Rules 1 and 2 in Jmol 14.13.2
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
 public class CIPChirality {
 
-  // Pseudocode:
+  // Very rough Pseudocode:
+  // 
+  // getChirality(atom) {
+  //  if (atom.getCovalentBondCount() != 4) exit NO_CHIRALITY 
+  //  for (each Rule){  
+  //    sortSubstituents() 
+  //    if (done) exit getHandedness();
+  //  }
+  //  exit NO_CHIRALITY
+  // }
+  // 
+  // sortSubstituents() {
+  //   for (all pairs of substituents a and b) {
+  //     score = a.compareTo(b, currentRule)
+  //     if (score == TIED) 
+  //       score = breakTie(a,b)
+  // }
+  // 
+  // breakTie(a,b) { 
+  //    score = compareShallowly(a, b)
+  //    if (score != TIED) return score
+  //    a.sortSubstituents(), b.sortSubstituents()
+  //    return compareDeeply(a, b)
+  // }
+  // 
+  // compareShallowly(a, b) {
+  //    for (each substituent pairing i in a and b) {
+  //      score = applyCurrentRule(a_i, b_i)
+  //      if (score != TIED) return score
+  //    }
+  //    return TIED
+  // }
   //
-  // [1]   if !(sortSubstituents()) return NO_CHIRALITY 
-  //       return getChirality(firstAtom = true)
+  // compareDeeply(a, b) {
+  //    for (each substituent pairing i in a and b) {
+  //      score = breakTie(a_i, b_i)
+  //      if (score != TIED) return score
+  //    }
+  //    return TIED
+  // }
+  //
   // 
-  // 
-  // [3] sortSubstituents()
-  //       for all pairs of substituents i,j...
-  //          compare(i,j)
-  //          if (TIED and firstAtom) 
-  //             breakTie(i,j) or return NO_CHIRALITY
-  // 
-  // [4] breakTie(a,b) 
-  //       for each substituent i of a and b...
-  //          compareIgnoreDuplicate(a.sub_i, b.sub_i) 
-  //          if (a winner) return A_WINS or B_WINS 
-  //       a.sortSubstituents(firstAtom = false)
-  //       b.sortSubstituents(firstAtom = false) 
-  //       for each substituent...
-  //          breakTie(a.sub_i, b.sub_i) or return TIED 
-  //       return TIED
-  // 
-  // [5] return checkWinding()
-  //        return 
-
+  
   
   //  function checkRS(m, key) {
+  //    if (m.find("//")) {
+  //      key = m.split("//")[2]
+  //      m = m.split("//")[1]
+  //    }
   //    print "loading " + @m
   //    refresh
   //    set useMinimizationThread false
@@ -62,6 +85,7 @@ public class CIPChirality {
   //    background label yellow
   //    color labels black
   ////    label %[atomname]
+  //    refresh
   //    set labelfor {_C && chirality != ""} "%[atomname] %[chirality]"
   //    var rs = {*}.chirality.join("")
   //    if (_argCount == 2) {
@@ -76,15 +100,40 @@ public class CIPChirality {
   //        var s = "??\t" + m + "\t" + rs + "\t" + key
   //        refresh 
   //        print s
-  ////        prompt s.replace("\t"," ") 
+  //        prompt s.replace("\t"," ") 
   //      }
   //    } else {
   //        print m + "\t" + rs
   //    }
   //    refresh
   //  }
-  
-  //   /**
+  //
+  //  //set debug
+  //
+  //  x = load("cip/R.txt").lines
+  //  for (f in x) {
+  //    if (f.find("#") == 1) continue
+  //    checkRS("cip/R/" + f, "R")
+  //  }
+  //
+  //  x = load("cip/S.txt").lines
+  //  for (f in x) {
+  //    if (f.find("#") == 1) continue
+  //    checkRS("cip/S/" + f, "S")
+  //  }
+  //
+  //  x = load("cip/rs.txt").lines
+  //  for (f in x) {
+  //    if (f.find("#") == 1) continue
+  //    checkRS("cip/RS/" + f, "?")
+  //  }
+  //
+  //
+  //  x = load("cip/more.txt").lines
+  //  for (f in x) {
+  //    if (f.find("#") == 1) continue
+  //    checkRS("cip/" + f, "?")
+  //  }
   //
   //  checkrs("$(R)-3-hydroxy-1,4-heptadiyne", "R")
   //  checkRS("$(R)-glycidol", "R")
@@ -105,10 +154,21 @@ public class CIPChirality {
   static final int TIED = NO_CHIRALITY;
   static final int B_WINS = 1;
   static final int A_WINS = -1;
-  
+
+  static int ptID;
+
+
   Viewer vwr;
   
   Map<Integer, Integer> htPathPoints = new Hashtable<Integer, Integer>();
+
+  CIPAtom a;
+  
+  /**
+   * The current rule being applied exhaustively.
+   * 
+   */
+  int currentRule = 0;
 
   public CIPChirality() {
     // for reflection 
@@ -127,28 +187,46 @@ public class CIPChirality {
    */
   public int getChirality(Node atom) {
     int rs = NO_CHIRALITY;
-    CIPAtom a;
-    if (atom.getCovalentBondCount() != 4
-        || !(a = new CIPAtom(atom, null, false)).set())
-      return rs;
-
-    try {
-      if (a.sortSubstituents())
+    boolean isChiral = false;
+    if (atom.getCovalentBondCount() == 4
+        && (a = new CIPAtom(atom, null, false)).set()) {
+      try {
+        for (currentRule = 1; currentRule <= 5 && !isChiral; currentRule++) {
+          isChiral = false;
+          if (Logger.debugging)
+            Logger.info("-Rule " + currentRule + " CIPChirality for " + atom + "-----");
+          a.sortSubstituents();
+          isChiral = true;
+          System.out.println(">>>>");
+          for (int i = 0; i < 4; i++) {
+            System.out.println(a.atoms[i] + " " + a.atoms[i].fullPriority);
+          }
+          for (int i = 0; i < 3; i++) {
+            if (a.atoms[i].fullPriority == a.atoms[i + 1].fullPriority) {
+              isChiral = false;
+              break;
+            }
+          }
+        }
+      if (isChiral)
         rs = getHandedness(a);
-    } catch (Throwable e) {
-      System.out.println(e + " in CIPChirality");
-      if (!vwr.isJS)
-        e.printStackTrace();
+      } catch (Throwable e) {
+        System.out.println(e + " in CIPChirality");
+        if (!vwr.isJS)
+          e.printStackTrace();
+      }
+      if (Logger.debugging)
+        Logger.info(atom + " " + (rs == 1 ? "R" : rs == 2 ? "S" : ""));
     }
     if (Logger.debugging)
-      Logger.info(atom + " " + (rs == 1 ? "R" : rs == 2 ? "S" : ""));
+      Logger.debug("----------------------------------");
     return rs;
   }
 
   /**
    * determine the winding of the circuit p1--p2--p3 relative to point p4
    * 
-   * @param a 
+   * @param a
    * @return 1 for "R", 2 for "S"
    */
   static int getHandedness(CIPAtom a) {
@@ -178,10 +256,6 @@ public class CIPChirality {
     if (score != TIED)
       return score;
     
-    score = a.checkRule1b(b);
-    if (score != TIED)
-      return score;
-    
     // return NO_CHIRALITY/TIED if:
     //  a) one or the other can't be set (because it has too many connections)
     //  b) or one or the other is terminal (has no substituents) 
@@ -194,20 +268,20 @@ public class CIPChirality {
     if (Logger.debugging)
       Logger.info("tie for " + a + " and " + b);
 
-    // Phase I -- shallow check using compareIgnoreDuplicate
+    // Phase I -- shallow check only
     //
     // Check to see if any of the three connections to a and b are different.
-    // Note that we do not consider Duplicate atom different from a regular atom here
+    // Note that we do not consider duplicated atoms different from regular atoms here
     // because we are just looking for atom differences, not substituent differences.
     //
     // Say we have {O (O) C} and {O O H}
     //
     // The rules require that we first only look at just the atoms, so OOC beats OOH.
 
-    if ((score = compareAB(a, b, true)) != TIED)
+    if ((score = compareAB(a, b, false)) != TIED)
       return score;
 
-    // Phase I -- deep check using breakTie
+    // Phase II -- deep check using breakTie
     //
     // OK, so all three are nominally the same.
     // Now seriously deep-sort each list based on substituents
@@ -215,18 +289,26 @@ public class CIPChirality {
 
     a.sortSubstituents();
     b.sortSubstituents();
-    return compareAB(a, b, false);
+    return compareAB(a, b, true);
   }
 
-  private static int compareAB(CIPAtom a, CIPAtom b, boolean ignoreDuplicate) {
+  private static int compareAB(CIPAtom a, CIPAtom b, boolean goDeep) {
     for (int i = 0; i < a.nAtoms; i++) {
       CIPAtom ai = a.atoms[i];
       CIPAtom bi = b.atoms[i];
-      System.out.println("compareAB " + ai + " " + bi + " ignoreDup=" + ignoreDuplicate);
-      int score = (ignoreDuplicate ? ai.checkRules12(bi) : breakTie(ai, bi));
+      if (Logger.debugging)
+        Logger.debug("compareAB " + ai.parent + "-" + ai + " with " + bi.parent
+            + "-" + bi + " goDeep=" + goDeep);
+      int score = ai.checkPriorGroupPriority(bi);
+      if (score != TIED)
+        return score;
+      score = (goDeep ? breakTie(ai, bi) : ai.checkCurrentRule(bi));
       if (score != TIED) {
-        System.out.println((score == B_WINS ? bi + " beatsi " + ai :  ai + " beatsi " + bi ) + " " + ignoreDuplicate);
-        return  score;
+        if (Logger.debugging)
+          Logger.debug("compareAB " + (score == B_WINS ? bi + " beats " + ai : ai
+              + " beats " + bi)
+              + " " + goDeep);
+        return score;
       }
     }
     return TIED;
@@ -272,11 +354,16 @@ public class CIPChirality {
     boolean isSet;
 
     /**
-     * For the main four atoms, isBelow will increment each time they "lose" in a
-     * priority contest, thus leading to our desired ordering.
+     * priorityNumber 1(highest) to 4(lowest).
      * 
      */
-    int isBelow;
+    int priorityNumber;
+
+    /**
+     * index 0 to 3.
+     * 
+     */
+    int priorityIndex;
 
     /**
      * It is important to keep track of the path to this atom in order to
@@ -285,6 +372,26 @@ public class CIPChirality {
      * 
      */
     BS bsPath;
+    
+    /**
+     * A number that reflects a group's full priority after applying Rules 1 - 5 sequentially.
+     * 
+     * abcde where a is priority 1-4 for Rule 1, b is priority 0-4 for Rule 2, etc.
+     * where "0" indicates not evaluated because it was not necessary. (Not a tie at previous rule).   
+     * 
+     * 
+     */
+    int fullPriority;
+    
+    /**
+     * A number that reflects a group's priority prior to any comparisons within a given rule.
+     * 
+     * abcde where a is priority 1-4 for Rule 1, b is priority 0-4 for Rule 2, etc.
+     * where "0" indicates not evaluated because it was not necessary. (Not a tie at previous rule).   
+     * 
+     * 
+     */
+    int prevPriority;
     
     /**
      * Distance from root for a duplicated atom.
@@ -304,10 +411,14 @@ public class CIPChirality {
      */
     int nAtoms;
 
+    private boolean hasH1;
+
+    private int id;
+
     @Override
     public String toString() {
-      return (atom == null ? "<null>" : atom.toString())
-          + (isDuplicate ? " *" : "" + " " + (isBelow + 1));
+      return (atom == null ? "<null>" : "[" + id + " " + atom.toString())
+          + (isDuplicate ? "*" : "" + " i=" + priorityIndex + " p=" + priorityNumber) + "]";
     }
 
     /**
@@ -320,6 +431,7 @@ public class CIPChirality {
     CIPAtom(Node atom, CIPAtom parent, boolean isDuplicate) {
       if (atom == null)
         return;
+      this.id = ++ptID;
       this.atom = atom;
       this.parent = parent;
       this.isTerminal = atom.getCovalentBondCount() == 1;
@@ -350,8 +462,6 @@ public class CIPChirality {
         return true;
       isSet = true;
       atoms = new CIPAtom[parent == null ? 4 : 3];
-      if (atom == null)
-        System.out.println("HOHO");
       int nBonds = atom.getBondCount();
       Edge[] bonds = atom.getEdges();
       int pt = 0;
@@ -406,53 +516,80 @@ public class CIPChirality {
      * @return true if successful
      */
     private boolean addAtom(int i, Node other, boolean isDuplicate) {
-      if (i >= atoms.length)
+      if (i >= atoms.length) {
+        if (Logger.debugging)
+          Logger.debug(" too many bonds on " + atom);
         return false;
+      }
+      if (parent == null) {
+        // For top level, we do not allow two 1H atoms.
+        int atomIsotope = other.getAtomicAndIsotopeNumber();
+        if (atomIsotope == 1) {
+          if (hasH1) {
+            if (Logger.debugging)
+              Logger.debug(" second H atom found on " + atom);
+            return false;
+          }
+          hasH1 = true;
+        }
+      }
       atoms[i] = new CIPAtom(other, this, isDuplicate);
-      System.out.println(this + " adding " + i + " "+ atoms[i]);
+      if (Logger.debugging)
+        Logger.debug(this + " adding " + i + " " + atoms[i]);
       return true;
     }
 
     /**
-     * Deep-Sort the substituents of an atom. 
-     * Don't allow ties if this is the first atom (parent == null).
+     * Deep-Sort the substituents of an atom. Don't allow ties if this is the
+     * first atom (parent == null).
      * 
-     * @return true if this is not the first atom or if all four substituents are unique
      */
-    boolean sortSubstituents() {
-      boolean allowTie = (parent != null);
+    void sortSubstituents() {
       int n = atoms.length;
-      for (int i = 0; i < n; i++)
-        atoms[i].isBelow = 0;
+      for (int i = 0; i < n; i++) { 
+        atoms[i].priorityNumber = 1;
+        atoms[i].priorityIndex = 0;
+        atoms[i].prevPriority = 0;
+      }
       for (int i = 0; i < n; i++) {
         CIPAtom a = atoms[i];
         for (int j = i + 1; j < n; j++) {
           CIPAtom b = atoms[j];
           int score = a.compareTo(b);
           if (Logger.debugging)
-            Logger.info("comparing parent=" + parent + " this=" + this + ": " + n + " " + i + " " + j + " " + a + " and " + b + " = " + score);
+            Logger.info("comparing " + parent + "-" + this + "-" + a + "/" + b
+                + " = " + score);
           switch (score) {
           case B_WINS:
-            a.isBelow++;
-            System.out.println(b + " beatsc " + a);
+            a.priorityIndex++;
+            a.priorityNumber++;
+            if (Logger.debugging)
+              Logger.debug(b + " beats " + a);
             break;
           case A_WINS:
-            b.isBelow++;
-            System.out.println(a + " beatsc " + b);
+            b.priorityIndex++;
+            b.priorityNumber++;
+            if (Logger.debugging)
+              Logger.debug(a + " beats " + b);
             break;
           case TIED:
             switch (breakTie(a, b)) {
             case TIED:
-              if (!allowTie)
-                return false;
-              //$FALL-THROUGH$
+              a.priorityIndex++;
+              if (Logger.debugging)
+                Logger.debug(b + " ties " + a);
+              break;
             case B_WINS:
-              a.isBelow++;
-              System.out.println(b + " beatst " + a);
+              a.priorityIndex++;
+              a.priorityNumber++;
+              if (Logger.debugging)
+                Logger.debug(b + " wins in tie with " + a + "\n");
               break;
             case A_WINS:
-              b.isBelow++;
-              System.out.println(a + " beatst " + b);
+              b.priorityIndex++;
+              b.priorityNumber++;
+              if (Logger.debugging)
+                Logger.debug(a + " wins in tie with " + b + "\n");
               break;
             }
             break;
@@ -460,66 +597,132 @@ public class CIPChirality {
         }
       }
       CIPAtom[] ret = new CIPAtom[n];
-      for (int i = 0; i < n; i++)
-        ret[atoms[i].isBelow] = atoms[i];
+      for (int i = 0; i < n; i++) {
+        System.out.println("Setting full priority for " + atoms[i]);
+        atoms[i].fullPriority = atoms[i].fullPriority * 10 + atoms[i].priorityNumber; 
+        ret[atoms[i].priorityIndex] = atoms[i];
+      }
       if (Logger.debugging)
         for (int i = 0; i < n; i++)
-          Logger.info(atom + "["+i+"]=" + ret[i]);
+          Logger.info(atom + "[" + i + "]=" + ret[i]);
       atoms = ret;
-      return true;
     }
 
     /**
-     * Used in Array.sort and sortSubstituents; includes check for Duplicate.
-     */
-    @Override
-    public int compareTo(CIPAtom b) {
-      int score = TIED;
-      return  (score = checkRules12(b)) != TIED ? score : checkDuplicate(b); 
-    }
-
-    public int checkRules12(CIPAtom b) {
-      int score = TIED;
-      return  (score = checkRule1a(b)) != TIED ? score
-          : (score = checkRule1b(b)) != TIED ? score 
-              : checkRule2(b); 
-    }
-
-    /**
-     * Looking for same atom or phantom atom or element number
+     * This check is not technically one of those listed in the rules, but it 
+     * us useful when preparing to check substituents because if one of the 
+     * atoms has substituents and the other doesn't, we are done -- 
+     * there is no reason to check substituents. 
      * 
      * @param b
-     * @return 1 if b is higher; -1 if a is higher; otherwise 0
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    int checkRule1a(CIPAtom b) {
-      return b.atom == atom ? TIED : b.atom == null ? A_WINS : atom == null ? B_WINS
-          : b.elemNo != elemNo ? (b.elemNo < elemNo ? A_WINS : B_WINS) : TIED;
-    }
-
-
-    int checkRule1b(CIPAtom b) {
-      return !b.isDuplicate || !isDuplicate ? TIED 
-          : b.rootDistance < rootDistance ? B_WINS 
-          : b.rootDistance > rootDistance ? A_WINS     
-          : TIED;
-    }
-
-    /**
-     * Chapter 9 Rule 2.
-     * 
-     * @param b
-     * @return 1 if b is higher; -1 if a is higher; otherwise 0
-     */
-    int checkRule2(CIPAtom b) {
-      return b.massNo < massNo ? A_WINS :  b.massNo > massNo ? B_WINS : TIED;
-    }
-
     int checkDuplicate(CIPAtom b) {
       return b.isDuplicate == isDuplicate ? TIED : b.isDuplicate ? A_WINS : B_WINS;
     }
 
-  }
+    /**
+     * Used in Array.sort and sortSubstituents; includes a preliminary check for duplicate, 
+     * since we know that that atom will ultimately be lower priority if all other rules are tied.
+     * This is just a convenience.
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
+    @Override
+    public int compareTo(CIPAtom b) {
+      int score;
+      // fullPriority is cumulative over previous Rule applications
+      if (b.fullPriority != fullPriority)
+        return (b.fullPriority < fullPriority ? B_WINS : A_WINS);
+      return  (score = checkCurrentRule(b)) != TIED ? score : checkDuplicate(b); 
+    }
 
+    /**
+     * Check this atom "A" vs a challenger "B" against the current rule.
+     * 
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
+    public int checkCurrentRule(CIPAtom b) {
+      switch (currentRule) {
+      default:
+      case 1:
+        int score;
+        return (score = checkRule1a(b)) != TIED ? score
+            : checkRule1b(b); 
+      case 2:
+        return checkRule2(b);
+      case 3:
+        return checkRule3(b);
+      case 4:
+        return checkRule4(b);
+      case 5:
+        return checkRule5(b);
+      }
+    }
+
+    /**
+     * Check priority prior to this Rule's initiation.
+     *  
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
+    public int checkPriorGroupPriority(CIPAtom b) {
+      return (b.prevPriority == prevPriority ? TIED : b.prevPriority < prevPriority ? B_WINS : A_WINS);
+    }
+
+    /**
+     * Looking for same atom or ghost atom or element number
+     * 
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
+    int checkRule1a(CIPAtom b) {
+      return b.atom == atom ? TIED : b.atom == null ? A_WINS : atom == null ? B_WINS
+          : b.elemNo < elemNo ? A_WINS : b.elemNo > elemNo ? B_WINS : TIED;
+    }
+
+    /**
+     * Looking for root distance -- duplicated atoms only.
+     * 
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
+
+    int checkRule1b(CIPAtom b) {
+      return !b.isDuplicate || !isDuplicate ? TIED 
+          : b.rootDistance < rootDistance ? 
+              B_WINS 
+          : b.rootDistance > rootDistance ? 
+              A_WINS     
+          : TIED;
+    }
+
+    /**
+     * Chapter 9 Rule 2. atomic mass
+     * 
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
+    int checkRule2(CIPAtom b) {
+      return b.massNo < massNo ? A_WINS : b.massNo > massNo ? B_WINS : TIED;
+    }
+
+    private int checkRule3(CIPAtom b) {
+      // TODO
+      return TIED;
+    }
+
+    private int checkRule4(CIPAtom b) {
+      // TODO
+      return TIED;
+    }
+
+    private int checkRule5(CIPAtom b) {
+      // TODO
+      return TIED;
+    }
+
+  }
 
 }
 
@@ -543,7 +746,7 @@ public class CIPChirality {
 
 //Rule 2 Higher atomic mass number precedes lower;
 
-//status: Rule 1 implemented (but before 1b??)
+// status: Rule 2 implemented
 
 
 //Rule 3 seqcis Stereogenic units precede seqtrans stereogenic units and these

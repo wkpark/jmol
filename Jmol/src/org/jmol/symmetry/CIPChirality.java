@@ -155,7 +155,7 @@ public class CIPChirality {
   static final int B_WINS = 1;
   static final int A_WINS = -1;
 
-  static int ptID;
+  int ptID;
 
 
   Viewer vwr;

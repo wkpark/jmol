@@ -84,15 +84,16 @@ public class Atom extends Point3fi implements Node {
   private short atomicAndIsotopeNumber;
   public BS atomSymmetry;
 
-  private byte formalChargeAndFlags; // cccc RSvh
+  private int formalChargeAndFlags; //  cccc ---- -*RS --hv
   
-  private final static int CHARGE_OFFSET = 4;
+  private final static int CHARGE_OFFSET = 24;
   private final static int VIBRATION_VECTOR_FLAG = 1;
   private final static int IS_HETERO_FLAG = 2;
-  private final static int CHIRALITY_OFFSET = 2;
+  private final static int CHIRALITY_OFFSET = 4;
   private final static int CHIRALITY_R_FLAG = 1;
   private final static int CHIRALITY_S_FLAG = 2; // 3 is "no chirality"
-  private final static int CHIRALITY_MASK = 12;
+  private final static int CHIRALITY_PSEUDO_FLAG = 4;  // 5=r, 6=s, 7=* (undetermined)
+  private final static int CHIRALITY_MASK = 0xFF;
   private final static int FLAG_MASK = 0xF;
 
   public short madAtom;
@@ -362,8 +363,8 @@ public class Atom extends Point3fi implements Node {
    * @param charge from -3 to 7  
    */
   public void setFormalCharge(int charge) {
-    formalChargeAndFlags = (byte)((formalChargeAndFlags & FLAG_MASK) 
-        | ((charge == Integer.MIN_VALUE ? 0 : charge > 7 ? 7 : charge < -3 ? -3 : charge) << CHARGE_OFFSET));
+    formalChargeAndFlags = (formalChargeAndFlags & FLAG_MASK) 
+        | ((charge == Integer.MIN_VALUE ? 0 : charge > 7 ? 7 : charge < -3 ? -3 : charge) << CHARGE_OFFSET);
   }
   
   void setVibrationVector() {
@@ -1353,7 +1354,7 @@ public class Atom extends Point3fi implements Node {
     case T.chain:
       return getChainIDStr();
     case T.chirality:
-      return getChirality();
+      return getChirality(true);
     case T.sequence:
       return getGroup1('?');
     case T.seqcode:
@@ -1394,16 +1395,31 @@ public class Atom extends Point3fi implements Node {
 
   /**
    * Determine R/S chirality at this position; non-H atoms only; cached in formalChargeAndFlags
+   * @param doCalculate 
    * 
    * @return "" or "R" or "S"
    */
-  private String getChirality() {
+  @Override
+  public String getChirality(boolean doCalculate) {
     int flags = (formalChargeAndFlags & CHIRALITY_MASK) >> CHIRALITY_OFFSET;
-    if (flags == 0 && atomicAndIsotopeNumber > 1) {
+    if (flags == 0 && atomicAndIsotopeNumber > 1 && doCalculate) {
       flags = group.chain.model.ms.getChirality(this);
       formalChargeAndFlags |= ((flags == 0 ? 3 : flags) << CHIRALITY_OFFSET);
     }
-    return (flags == CHIRALITY_R_FLAG ? "R" : flags == CHIRALITY_S_FLAG ? "S" : "");
+    switch (flags) {
+    case CHIRALITY_R_FLAG:
+      return "R";
+    case CHIRALITY_S_FLAG:
+      return "S";
+    case CHIRALITY_PSEUDO_FLAG | CHIRALITY_R_FLAG:
+      return "(r)";
+    case CHIRALITY_PSEUDO_FLAG | CHIRALITY_S_FLAG:
+      return "(s)";
+    case CHIRALITY_PSEUDO_FLAG | CHIRALITY_S_FLAG | CHIRALITY_R_FLAG:
+      return "(*)";
+    default:
+      return "";
+    }
   }
   
   /**

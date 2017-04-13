@@ -2869,8 +2869,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public Map<String, Object> readCifData(String fileName, String type) {
-    String data = getFileAsString3(
-        (fileName == null || fileName.length() == 0 ? getCurrentFileAsString("script"): fileName), false, null);
+    String data = (fileName == null || fileName.length() == 0 ? getCurrentFileAsString("script") 
+        : getFileAsString3(fileName, false, null));
     if (data == null)
       return null;
     BufferedReader rdr = Rdr.getBR(data);

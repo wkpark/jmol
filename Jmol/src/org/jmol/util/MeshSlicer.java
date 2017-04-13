@@ -138,7 +138,9 @@ public class MeshSlicer {
       P3[] box = (P3[]) slabbingObject;
       sb.append("within ").append(Escape.eAP(box));
       P4[] faces = getBoxFacesFromCriticalPoints(box);
+      System.out.println("MeshSlicer test 4");
       for (int i = 0; i < faces.length; i++) {
+        if (i == 1 || i == 2 || i == 4)
         getIntersection(0, faces[i], null, null, null, null, null, andCap,
             false, T.plane, isGhost);
       }

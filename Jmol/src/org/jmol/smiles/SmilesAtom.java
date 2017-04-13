@@ -857,5 +857,11 @@ public class SmilesAtom extends P3 implements Node {
     return getAtomicMass();
   }
 
+  @Override
+  public String getChirality(boolean doCalculate) {
+    // TODO
+    return "";
+  }
+
 
 }

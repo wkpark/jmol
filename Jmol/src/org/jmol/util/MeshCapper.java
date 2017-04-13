@@ -87,6 +87,8 @@ public class MeshCapper {
 
   private int nPoints;
 
+  private M4 m4;
+
   /////////////// initialization //////////////////
 
   /**
@@ -314,7 +316,7 @@ public class MeshCapper {
     //Get xy plane points
     Quat q = Quat.getQuaternionFrameV(vab, vac, null, false);
     M3 m3 = q.getMatrix();
-    M4 m4 = M4.newMV(m3, vertices.get(0));
+    m4 = M4.newMV(m3, vertices.get(0));
     M4 m4inv = M4.newM4(m4).invert();
     vertices.toArray(vs);
     vertices = null;
@@ -378,9 +380,6 @@ public class MeshCapper {
       Logger.info(v.toString());
     if (v.prev == v.next)
       return q;
-
-    if (v.next == null)
-      System.out.println("OHO");
     boolean isDescending = (v.prev.region != null);
     boolean isAscending = (v.next.region != null);
 
@@ -795,8 +794,7 @@ public class MeshCapper {
    * A class to provide linked vertices for MeshCapper
    * 
    */
-  private class CapVertex extends T3 implements Cloneable,
-      Comparator<CapVertex> {
+  private class CapVertex extends T3 implements Cloneable {
 
     /**
      * external reference
@@ -825,13 +823,7 @@ public class MeshCapper {
 
     CapVertex[] region;
 
-    /**
-     * unique vertex test
-     * 
-     */
-    protected int ok = 1;
-
-//    boolean disabled;
+    boolean disabled;
 
     CapVertex(T3 p, int i) {
       ipt = i;
@@ -858,55 +850,80 @@ public class MeshCapper {
       CapVertex v0 = null;
       CapVertex v1 = null;
       int n = vs.length;
-      for (int i = n; --i >= 0;) {
+      for (int i = n; --i >= 0;)
+        System.out.println(i + "/" + n + " "  + vs[i]);
+      System.out.println("----");
+        for (int i = n; --i >= 0;) {  
         if (vs[i].next == null) {
+          System.out.println("fixing next " +  vs[i]);
           if (v0 == null) {
             v1 = vs[i];
+            System.out.println("next,v0 null; v1 is now " + v1);
           } else {
-            vs[i].link(v0);            
+            vs[i].link(v0);
+            System.out.println("next null, v0 not null;linked\n" + vs[i] + "\n" + v0);
             v0 = null;
           }
         } else if (vs[i].prev == null) {
+          System.out.println("fixing prev " +  vs[i]);
           if (v1 == null) {
             v0 = vs[i];
+            System.out.println("prev,v1 null; v0 is now " + v0);
           } else {
-            v1.link(vs[i]);            
+            v1.link(vs[i]);
+            System.out.println("prev null, v1 not null;linked\n" + v1 + "\n" + vs[i]);
             v1 = null;
           }
         }
       }
 
-      ok = 0;
-      while (ok == 0) {
-        ok = 1;
-        Arrays.sort(vs, this);
+      MeshCapperSorter sorter = new MeshCapperSorter();
+//      for (int i = 0; i < n; i++) {
+//        CapVertex v = vs[i];
+//        if (vs[i].next == null || vs[i].prev == null)
+//          System.out.println("null meshcapper");
+//      }
+//
+
+      Arrays.sort(vs, sorter);
+      int pt = n;
+
+//      int pt = 0;
+//      for (int i = 0; i < n; i++) {
+//        if (!vs[i].disabled)
+//          vs[pt++] = vs[i];
+//      }
+      if (pt > 0) {
+        for (int i = pt; --i >= 0;) {
+          CapVertex v = vs[i];
+          vs[i].qnext = vs[(i + 1) % pt];
+        }
+        vs[pt - 1].qnext = vs[0];
       }
-      for (int i = n; --i >= 0;) {
-        if (vs[i].x == Float.MAX_VALUE)
-          n = i;
-        vs[i].qnext = vs[(i + 1) % n];
-      }
-      vs[n - 1].qnext = vs[0];
       return vs[0];
     }
 
-    @Override
-    public int compare(CapVertex v1, CapVertex v2) {
-      // first HIGHEST Y to LOWEST Y, then LOWEST X to HIGHEST X
-      return (v1.y < v2.y ? 1 : v1.y > v2.y || v1.x < v2.x ? -1
-          : v1.x > v2.x ? 1 
-              : disable(v1, v2));
-    }
+    public class MeshCapperSorter implements
+    Comparator<CapVertex> {
+      
+      
+      @Override
+      public int compare(CapVertex v1, CapVertex v2) {
+        // first HIGHEST Y to LOWEST Y, then LOWEST X to HIGHEST X
+        return (v1.y < v2.y ? 1 : v1.y > v2.y || v1.x < v2.x ? -1
+            : v1.x > v2.x ? 1 
+                : 0);//disable(v1, v2));
+      }
 
-    private int disable(CapVertex v1, CapVertex v2) {
-      if (v2.x == Float.MAX_VALUE)
-        return 0; // both are disabled
-      CapVertex v = (v1.x == Float.MAX_VALUE ? v1 : v2);
-      v.x = Float.MAX_VALUE;
-      v.y = -Float.MAX_VALUE;
-      v.link(null);
-      ok = 0;
-      return (v1.x > v2.x ? 1 : -1);
+    
+    }
+    
+    int disable(CapVertex v1, CapVertex v2) {
+      if (!v1.disabled && !v2.disabled) {
+        //v2.link(null);
+        v2.disabled = true;
+      }
+      return 0;
     }
 
     /**

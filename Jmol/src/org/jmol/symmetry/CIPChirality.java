@@ -160,7 +160,7 @@ public class CIPChirality {
 
   Viewer vwr;
   
-  Map<Integer, Integer> htPathPoints = new Hashtable<Integer, Integer>();
+  Map<String, Integer> htPathPoints = new Hashtable<String, Integer>();
 
   CIPAtom a;
   
@@ -311,6 +311,7 @@ public class CIPChirality {
         return score;
       }
     }
+    System.out.println("compareAB ends in tie for " + a + " vs. " + b);
     return TIED;
   }
 
@@ -332,9 +333,12 @@ public class CIPChirality {
      */
     int elemNo;
 
+    CIPAtom root;
     CIPAtom parent;
     CIPAtom grandParent;
     CIPAtom greatGrandParent;
+    
+    int level;
 
     /**
      * Duplicate atoms have massNo and elemNo but no substituents. They are slightly
@@ -407,6 +411,8 @@ public class CIPChirality {
      * 
      */
     CIPAtom[] atoms;
+    
+//    boolean[] isSortedRule = new boolean[6];
 
     /**
      * Number of substituent atoms.
@@ -423,15 +429,17 @@ public class CIPChirality {
 
     private int id;
 
-    private boolean haveHeritage;
-
     private boolean haveSeqType;
 
     private boolean isSeqCIS;
+    
+    private String knownChirality;
+    
+    private int nPriorities;
 
     @Override
     public String toString() {
-      return (atom == null ? "<null>" : "[" + id + " " + atom.toString())
+      return (atom == null ? "<null>" : "[" + level + "." + id + " " + atom.toString() + (root ==  null ? "" : "/"+root.atom))
           + (isDuplicate ? "*" : "" + " i=" + priorityIndex + " p=" + priorityNumber) + "]";
     }
 
@@ -447,21 +455,38 @@ public class CIPChirality {
         return;
       this.id = ++ptID;
       this.atom = atom;
+      this.knownChirality = atom.getChirality(false);
       this.parent = parent;
-      haveHeritage = false;
+      if (parent != null) {
+        level = parent.level + 1;
+        grandParent = parent.parent;
+      }
+      if (level == 1)
+        root = this;
+      else if (parent != null)
+        root = parent.root;
+      if (grandParent != null)
+        greatGrandParent = grandParent.parent;
       this.isTerminal = atom.getCovalentBondCount() == 1;
       this.elemNo = atom.getElementNumber();
       this.massNo = atom.getNominalMass();
       this.bsPath = (parent == null ? new BS() : BSUtil.copy(parent.bsPath));
 
       int iatom = atom.getIndex();
-      if (bsPath.get(iatom)) {
+      if (parent == null) {
+        // original atom
+        bsPath.set(iatom);
+      } else if (atom == a.atom) {
+        // pointing to original atom (0 distance)
+      } else if (bsPath.get(iatom)) {
         isDuplicate = true;
-        this.rootDistance = htPathPoints.get(new Integer(iatom)).intValue();
+        this.rootDistance = htPathPoints.get(root.atom.toString() + atom)
+            .intValue();
       } else {
         bsPath.set(iatom);
-        this.rootDistance = (parent == null ? 1 : parent.rootDistance + 1);
-        htPathPoints.put(new Integer(iatom), new Integer(this.rootDistance));
+        this.rootDistance = parent.rootDistance + 1;
+        htPathPoints.put(root.atom.toString() + atom, new Integer(
+            this.rootDistance));
       }
       this.isDuplicate = isDuplicate;
     }
@@ -481,6 +506,7 @@ public class CIPChirality {
       atoms = new CIPAtom[parent == null ? 4 : 3];
       int nBonds = atom.getBondCount();
       Edge[] bonds = atom.getEdges();
+      System.out.println("set " + this);
       int pt = 0;
       for (int i = 0; i < nBonds; i++) {
         Edge bond = bonds[i];
@@ -491,7 +517,6 @@ public class CIPChirality {
         int order = bond.getCovalentOrder();
         if (isParent && order == 2)
           isAlkeneAtom2 = true;
-        if (!isParent)
         switch (order) {
         case 3:
           if (!addAtom(pt++, other, isParent)) {
@@ -565,7 +590,15 @@ public class CIPChirality {
      * 
      */
     void sortSubstituents() {
+      //if (isSortedRule[currentRule])
+       // return;
+      //isSortedRule[currentRule] = true;
       int n = atoms.length;
+      if (Logger.debugging) {
+        Logger.info("---sortSubstituents---" + atom);
+        for (int i = 0; i < n; i++)
+          Logger.info(currentRule + ": " + atom + "[" + i + "]=" + atoms[i]);
+      }
       for (int i = 0; i < n; i++) { 
         atoms[i].priorityNumber = 1;
         atoms[i].priorityIndex = 0;
@@ -617,14 +650,18 @@ public class CIPChirality {
         }
       }
       CIPAtom[] ret = new CIPAtom[n];
+      BS bs = new BS();
       for (int i = 0; i < n; i++) {
         System.out.println("Setting full priority for " + atoms[i]);
         atoms[i].fullPriority = atoms[i].fullPriority * 10 + atoms[i].priorityNumber; 
         ret[atoms[i].priorityIndex] = atoms[i];
+        bs.set(atoms[i].priorityNumber);
       }
-      if (Logger.debugging)
+      if (Logger.debugging) {
+        Logger.info(atom + " nPriorities = " + bs.cardinality());
         for (int i = 0; i < n; i++)
           Logger.info(atom + "[" + i + "]=" + ret[i]);
+      }
       atoms = ret;
     }
 
@@ -751,14 +788,6 @@ public class CIPChirality {
      * @return true if has a greatGrandParent
      */
     private boolean checkHeritage() {
-      if (!haveHeritage) {
-        if (parent != null && parent.isAlkeneAtom2) {
-          grandParent = (parent == null || parent.parent == null ? null
-              : parent.parent);
-          greatGrandParent = (grandParent == null ? null : grandParent.parent);
-        }
-      }
-      haveHeritage = true;
       return greatGrandParent != null;
     }
 

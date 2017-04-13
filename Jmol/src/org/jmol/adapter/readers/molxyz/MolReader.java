@@ -290,7 +290,7 @@ public class MolReader extends AtomSetCollectionReader {
       String data = "";
       float[] fdata = null;
       while (rd() != null && line.indexOf("$$$$") != 0
-          && line.indexOf("> <") != 0) {
+          && line.indexOf(">") != 0) {
         data += line + "\n";
         continue;
       }

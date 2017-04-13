@@ -181,6 +181,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   private boolean setVariables() {
     if (mesh.visibilityFlags == 0)
       return false;
+    forceShowTriangles = vwr.getBoolean(T.testflag3);
     showTriangles = forceShowTriangles || mesh.showTriangles;
     if (mesh.bsSlabGhost != null)
       g3d.setC(mesh.slabColix); // forces a second pass

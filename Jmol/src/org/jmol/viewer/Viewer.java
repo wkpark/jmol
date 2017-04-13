@@ -5199,6 +5199,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.rasmolHydrogenSetting;
     case T.isosurfacekey:
       return g.isosurfaceKey;
+    case T.jmolinjspecview:
+      return g.jmolInJSpecView;
     case T.justifymeasurements:
       return g.justifyMeasurements;
     case T.legacyautobonding:
@@ -6453,6 +6455,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case T.refreshing:
       // /11.0///
       setRefreshing(value);
+      break;
+    case T.jmolinjspecview:
+      g.jmolInJSpecView = value;
       break;
     case T.justifymeasurements:
       g.justifyMeasurements = value;

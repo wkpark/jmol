@@ -283,6 +283,7 @@ public class GlobalSettings {
     setB("isosurfaceKey", isosurfaceKey);
     setB("isosurfacePropertySmoothing", isosurfacePropertySmoothing);
     setI("isosurfacePropertySmoothingPower", isosurfacePropertySmoothingPower);
+    setB("jmolInJSpecView", jmolInJSpecView);
     setB("justifyMeasurements", justifyMeasurements);
     setB("legacyAutoBonding", legacyAutoBonding);
     setB("legacyHAddition", legacyHAddition);
@@ -467,6 +468,7 @@ public class GlobalSettings {
   boolean legacyAutoBonding = false;
   public boolean legacyHAddition = false;
   public boolean legacyJavaFloat = false; // float/double issue with crystallographic symmetry before Jmol 14.2.5
+  boolean jmolInJSpecView = true;
 
   boolean modulateOccupancy = true;
 
@@ -972,7 +974,7 @@ public class GlobalSettings {
       + ";bondingversion;contextdepthmax;debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;"
       + ";exportdrivers;exportscale"
       + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
-      + ";legacyautobonding;legacyhaddition;legacyjavafloat"
+      + ";jmolinjspecview;legacyautobonding;legacyhaddition;legacyjavafloat"
       + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
       + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
       + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;platformspeed"
@@ -1060,6 +1062,7 @@ public class GlobalSettings {
     //    if (autoLoadOrientation)
     //      appendCmd(str, "set autoLoadOrientation true");
     app(str, "set bondingVersion " + bondingVersion);
+    app(str, "set legacyAutoBonding " + legacyAutoBonding);
     app(str, "set legacyAutoBonding " + legacyAutoBonding);
     app(str, "set legacyHAddition " + legacyHAddition);
     app(str, "set legacyJavaFloat " + legacyJavaFloat);

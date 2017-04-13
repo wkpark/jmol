@@ -87,7 +87,7 @@ public class MeshCapper {
 
   private int nPoints;
 
-  private M4 m4;
+  M4 m4, m4inv;
 
   /////////////// initialization //////////////////
 
@@ -317,7 +317,7 @@ public class MeshCapper {
     Quat q = Quat.getQuaternionFrameV(vab, vac, null, false);
     M3 m3 = q.getMatrix();
     m4 = M4.newMV(m3, vertices.get(0));
-    M4 m4inv = M4.newM4(m4).invert();
+    m4inv = M4.newM4(m4).invert();
     vertices.toArray(vs);
     vertices = null;
         
@@ -331,7 +331,7 @@ public class MeshCapper {
     if (Logger.debugging)
       Logger.info("MeshCapper using " + vs.length + " vertices");
     
-    CapVertex v0 = vs[0].sort(vs);
+    CapVertex v0 = sort(vs);
     if (v0 == null) {
       Logger.error("two identical points -- aborting");
       return;
@@ -356,6 +356,104 @@ public class MeshCapper {
       Logger.info("MeshCapper created " + nTriangles + " triangles " + nRegions
         + " regions");
 
+  }
+
+  /**
+   * Generate qnext links based on scanning Y large to Y small and if Y1==Y2,
+   * then X small to large
+   * 
+   * @param vs
+   * @return null if there are two identical points (edge crossings)
+   */
+  public CapVertex sort(CapVertex[] vs) {
+    Lst<CapVertex> v0s = new Lst<CapVertex>();
+    Lst<CapVertex> v1s = new Lst<CapVertex>();
+    int n = vs.length;
+//    for (int i = n; --i >= 0;)
+//      System.out.println(vs[i]);
+//    System.out.println("#----");
+      for (int i = n; --i >= 0;) {  
+      if (vs[i].next == null) {
+        v0s.addLast(vs[i]);
+      } else if (vs[i].prev == null) {
+        v1s.addLast(vs[i]);
+      }
+    }
+    for (int i = v0s.size(); --i >= 0;) {
+      CapVertex v0 = v0s.get(i);
+      CapVertex v1 = findNearestVertex(v1s, v0);
+      if (v1 == null) {
+        System.out.println("MESHCAPPER OHOH");
+      } else {
+        v0.link(v1);
+      }
+      
+    }
+    MeshCapperSorter sorter = new MeshCapperSorter();
+//    for (int i = 0; i < n; i++) {
+//      CapVertex v = vs[i];
+//      if (vs[i].next == null || vs[i].prev == null)
+//        System.out.println("null meshcapper");
+//    }
+//
+
+    Arrays.sort(vs, sorter);
+    int pt = n;
+
+//    int pt = 0;
+//    for (int i = 0; i < n; i++) {
+//      if (!vs[i].disabled)
+//        vs[pt++] = vs[i];
+//    }
+    if (pt > 0) {
+      for (int i = pt; --i >= 0;) {
+        CapVertex v = vs[i];
+        vs[i].qnext = vs[(i + 1) % pt];
+      }
+      vs[pt - 1].qnext = vs[0];
+    }
+    return vs[0];
+  }
+
+  private CapVertex findNearestVertex(Lst<CapVertex> v1s, CapVertex v0) {
+    float min = Float.MAX_VALUE;
+    CapVertex vmin = null;
+    int imin = -1;
+    for (int i = v1s.size(); --i >= 0;) {
+      CapVertex v1 = v1s.get(i);
+      float d = v1.distanceSquared(v0);
+      if (d < min) {
+        min = d;
+        vmin = v1;
+        imin = i;
+      }
+    }
+    if (imin >= 0)
+      v1s.removeItemAt(imin);
+    return vmin;
+  }
+
+  public class MeshCapperSorter implements
+  Comparator<CapVertex> {
+    
+    
+    @Override
+    public int compare(CapVertex v1, CapVertex v2) {
+      // first HIGHEST Y to LOWEST Y, then LOWEST X to HIGHEST X
+      return (v1.y < v2.y ? 1 : v1.y > v2.y || v1.x < v2.x ? -1
+          : v1.x > v2.x ? 1 
+              : 0);//disable(v1, v2));
+    }
+
+  
+  }
+  
+  int disable(CapVertex v1, CapVertex v2) {
+    if (!v1.disabled && !v2.disabled) {
+      //v2.link(null);
+      v2.disabled = true;
+    }
+    return 0;
   }
 
   /**
@@ -824,6 +922,8 @@ public class MeshCapper {
     CapVertex[] region;
 
     boolean disabled;
+    
+    T3 cartesian;
 
     CapVertex(T3 p, int i) {
       ipt = i;
@@ -837,93 +937,6 @@ public class MeshCapper {
       } catch (Exception e) {
         return null;
       }
-    }
-
-    /**
-     * Generate qnext links based on scanning Y large to Y small and if Y1==Y2,
-     * then X small to large
-     * 
-     * @param vs
-     * @return null if there are two identical points (edge crossings)
-     */
-    public CapVertex sort(CapVertex[] vs) {
-      CapVertex v0 = null;
-      CapVertex v1 = null;
-      int n = vs.length;
-      for (int i = n; --i >= 0;)
-        System.out.println(i + "/" + n + " "  + vs[i]);
-      System.out.println("----");
-        for (int i = n; --i >= 0;) {  
-        if (vs[i].next == null) {
-          System.out.println("fixing next " +  vs[i]);
-          if (v0 == null) {
-            v1 = vs[i];
-            System.out.println("next,v0 null; v1 is now " + v1);
-          } else {
-            vs[i].link(v0);
-            System.out.println("next null, v0 not null;linked\n" + vs[i] + "\n" + v0);
-            v0 = null;
-          }
-        } else if (vs[i].prev == null) {
-          System.out.println("fixing prev " +  vs[i]);
-          if (v1 == null) {
-            v0 = vs[i];
-            System.out.println("prev,v1 null; v0 is now " + v0);
-          } else {
-            v1.link(vs[i]);
-            System.out.println("prev null, v1 not null;linked\n" + v1 + "\n" + vs[i]);
-            v1 = null;
-          }
-        }
-      }
-
-      MeshCapperSorter sorter = new MeshCapperSorter();
-//      for (int i = 0; i < n; i++) {
-//        CapVertex v = vs[i];
-//        if (vs[i].next == null || vs[i].prev == null)
-//          System.out.println("null meshcapper");
-//      }
-//
-
-      Arrays.sort(vs, sorter);
-      int pt = n;
-
-//      int pt = 0;
-//      for (int i = 0; i < n; i++) {
-//        if (!vs[i].disabled)
-//          vs[pt++] = vs[i];
-//      }
-      if (pt > 0) {
-        for (int i = pt; --i >= 0;) {
-          CapVertex v = vs[i];
-          vs[i].qnext = vs[(i + 1) % pt];
-        }
-        vs[pt - 1].qnext = vs[0];
-      }
-      return vs[0];
-    }
-
-    public class MeshCapperSorter implements
-    Comparator<CapVertex> {
-      
-      
-      @Override
-      public int compare(CapVertex v1, CapVertex v2) {
-        // first HIGHEST Y to LOWEST Y, then LOWEST X to HIGHEST X
-        return (v1.y < v2.y ? 1 : v1.y > v2.y || v1.x < v2.x ? -1
-            : v1.x > v2.x ? 1 
-                : 0);//disable(v1, v2));
-      }
-
-    
-    }
-    
-    int disable(CapVertex v1, CapVertex v2) {
-      if (!v1.disabled && !v2.disabled) {
-        //v2.link(null);
-        v2.disabled = true;
-      }
-      return 0;
     }
 
     /**
@@ -991,14 +1004,18 @@ public class MeshCapper {
 
     @Override
     public String toString() {
+      if (cartesian  == null)
+        cartesian = new P3();
+      if (m4 != null)
+        m4.rotTrans2(this, cartesian);
       return "draw p"
           + id
           + " {"
-          + x
+          + cartesian.x
           + " "
-          + y
+          + cartesian.y
           + " "
-          + z
+          + cartesian.z
           + "} # "
           + (prev == null ? "null" : prev.id)
           + (next == null ? " null" : " " + next.id)

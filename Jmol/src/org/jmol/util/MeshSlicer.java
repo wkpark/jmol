@@ -138,9 +138,7 @@ public class MeshSlicer {
       P3[] box = (P3[]) slabbingObject;
       sb.append("within ").append(Escape.eAP(box));
       P4[] faces = getBoxFacesFromCriticalPoints(box);
-      System.out.println("MeshSlicer test 4");
       for (int i = 0; i < faces.length; i++) {
-        if (i == 1 || i == 2 || i == 4)
         getIntersection(0, faces[i], null, null, null, null, null, andCap,
             false, T.plane, isGhost);
       }
@@ -281,9 +279,11 @@ public class MeshSlicer {
         if (m.vertexSource == null)
           return;
         fData = new float[m.vc];
-        for (int i = 0; i < m.vc; i++)
-          if ((fData[i] = m.vertexSource[i]) == -1)
+        for (int i = 0; i < m.vc; i++) {
+          fData[i] = m.vertexSource[i];
+          if (fData[i] == -1)
             System.out.println("meshsurface hmm");
+        }
       } else {
         fData = m.vvs;
       }

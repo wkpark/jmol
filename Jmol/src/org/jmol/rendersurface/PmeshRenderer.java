@@ -30,7 +30,6 @@ public class PmeshRenderer extends IsosurfaceRenderer {
   
   @Override
   protected boolean render() {
-    forceShowTriangles = vwr.getBoolean(T.testflag3);
     return renderIso();
   }
 

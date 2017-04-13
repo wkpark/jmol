@@ -1011,10 +1011,11 @@ public class T {
   public final static int hidenotselected                = booleanparam | 86;
   public final static int highresolution                 = booleanparam | 88;
 // see predefinedset  public final static int hydrogen                       = booleanparam | 90;
-  public final static int imagestate                     = booleanparam | 91;
-  public static final int iskiosk                        = booleanparam | 92; // 11.9.29
-  public final static int isosurfacekey                  = booleanparam | 93;
-  public final static int isosurfacepropertysmoothing    = booleanparam | 94;
+  public final static int imagestate                     = booleanparam | 89;
+  public static final int iskiosk                        = booleanparam | 90; // 11.9.29
+  public final static int isosurfacekey                  = booleanparam | 91;
+  public final static int isosurfacepropertysmoothing    = booleanparam | 92;
+  public final static int jmolinjspecview                = booleanparam | 93; // 14.13.1
   public final static int justifymeasurements            = booleanparam | 95;
   public final static int languagetranslation            = booleanparam | 96;
   public final static int legacyautobonding              = booleanparam | 97;
@@ -2585,6 +2586,7 @@ public class T {
        "isosurfaceKey",
        "isosurfacePropertySmoothing",
        "isosurfacePropertySmoothingPower",
+       "jmolInJSpecView",
        "justifyMeasurements",
        "languageTranslation",
        "leadAtom",
@@ -3632,6 +3634,7 @@ public class T {
         isosurfacekey,                      //        "isosurfaceKey"
         isosurfacepropertysmoothing,        //        "isosurfacePropertySmoothing"
         isosurfacepropertysmoothingpower,   //        "isosurfacePropertySmoothingPower"
+        jmolinjspecview,
         justifymeasurements,                //        "justifyMeasurements"
         languagetranslation,                //        "languageTranslation"
         leadatom,                           //        "leadAtom"

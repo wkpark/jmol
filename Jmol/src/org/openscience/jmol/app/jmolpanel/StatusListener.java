@@ -42,6 +42,7 @@ import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolSyncInterface;
 import org.jmol.c.CBK;
 import org.jmol.dialog.Dialog;
+import org.jmol.script.T;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.JmolPlugin;
@@ -511,7 +512,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         return;
     }
     if (jSpecViewFrame == null) {
-      jSpecViewFrame = new MainFrame((Component) vwr.display, this);
+      jSpecViewFrame = new MainFrame(vwr.getBoolean(T.jmolinjspecview) ? (Component) vwr.display : null, this);
       jSpecViewFrame.setSize(Math.max(1000, jmol.frame.getWidth() + 50), 600);
       jSpecViewFrame.setLocation(jmol.frame.getLocation().x + 10, jmol.frame
           .getLocation().y + 100);

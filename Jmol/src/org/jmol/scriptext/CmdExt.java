@@ -617,6 +617,9 @@ public class CmdExt extends ScriptExt {
       case T.identifier:
         checkLength(2);
         break;
+      case T.chirality:
+        // TODO
+        break;
       case T.formalcharge:
         checkLength(2);
         if (chk)

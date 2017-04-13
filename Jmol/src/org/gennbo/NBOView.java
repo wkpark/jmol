@@ -1063,6 +1063,7 @@ class NBOView {
    * @param sb
    */
   private void appendCameraParams(SB sb) {
+    
     int n = camFields.length;
     for (int i = 0; i < n; i++)
       NBOUtil.postAddGlobalT(sb, "CAMERA_" + camFieldIDs[i], camFields[i]);

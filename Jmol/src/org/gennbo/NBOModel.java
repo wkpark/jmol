@@ -843,7 +843,8 @@ class NBOModel {
     dialog.runScriptQueued("set refreshing true; measurements delete"); // just in case
     clearSelected(true);
     if (action != MODEL_ACTION_LINK) {
-      measures = ""; 
+      if (action != MODEL_ACTION_CLIP)
+        measures = ""; 
       innerLinkOptionBox.setVisible(false);
     }
     switch (action) {
@@ -1392,9 +1393,6 @@ class NBOModel {
       setCurrentValue(sval);
       break;
     case MODEL_ACTION_HBOND:
-      dialog.logValue("testing HBOND: " + s);
-      if (s.length() < 3)
-        s = "1\n1\n4";
       measures = "";
       processHBonds(s);
       break;

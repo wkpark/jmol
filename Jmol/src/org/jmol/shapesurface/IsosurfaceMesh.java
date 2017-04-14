@@ -43,7 +43,6 @@ import org.jmol.util.MeshSurface;
 
 import javajs.util.CU;
 import javajs.util.M4;
-import javajs.util.OC;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.PT;
@@ -294,151 +293,10 @@ public class IsosurfaceMesh extends Mesh {
   }
 
   public Object getPmeshData(boolean isBinary) {
-    MeshWriter mw = new MeshWriter(isBinary);
-    return mw.write();
+    PMeshWriter mw = (PMeshWriter) Interface.getInterface("org.jmol.shapesurface.PMeshWriter", vwr, "script");
+    return mw.write(this, isBinary);
   }
 
-  private class MeshWriter {
-    boolean isBinary;
-    private OC oc;
-
-   MeshWriter(boolean isBinary) {
-      this.isBinary = isBinary;
-      oc = vwr.getOutputChannel(null, null);
-      if (isBinary) {
-        oc.writeByteAsInt(80);
-        oc.writeByteAsInt(77);
-        oc.writeByteAsInt(1);
-        oc.writeByteAsInt(0);
-        oc.writeInt(1);
-        oc.writeInt(vc);
-        oc.writeInt(-1);
-        for (int i = 0; i < 16; i++)
-          oc.writeInt(0); 
-      }
-    }
-   
-    Object write() {
-      boolean fill = false;
-      int[][] polygonIndexes = pis;
-      short cx = (!fill && meshColix != 0 ? meshColix : colix);
-      short[] vertexColixes = (!fill && meshColix != 0 ? null : vcs);
-      boolean colorSolid = (vertexColixes == null);
-      boolean noColor = (vertexColixes == null || !fill && meshColix != 0);
-      boolean colorArrayed = (colorSolid && pcs != null);
-      if (colorArrayed && !fill && fillTriangles)
-        colorArrayed = false;
-      short[] contourColixes = jvxlData.contourColixes;
-      boolean haveBsDisplay = (bsDisplay != null);
-      boolean selectedPolyOnly = (bsSlabDisplay != null);
-      BS bsPolygons = (selectedPolyOnly ? bsSlabDisplay : null);
-      int i0 = 0;
-      int color = 0;
-      if (!isBinary)
-        outputInt(vc);
-      for (int i = 0; i < vc; i++)
-        outputXYZ(vs[i]);
-      if (!isBinary)
-        outputInt(-1); // null-terminated
-      for (int i = pc; --i >= i0;) {
-        int[] polygon = polygonIndexes[i];
-        if (polygon == null || selectedPolyOnly && !bsPolygons.get(i))
-          continue;
-        int iA = polygon[0];
-        int iB = polygon[1];
-        int iC = polygon[2];
-        if (jvxlData.thisSet >= 0 && vertexSets != null
-            && vertexSets[iA] != jvxlData.thisSet)
-          continue;
-        if (haveBsDisplay
-            && (!bsDisplay.get(iA) || !bsDisplay.get(iB) || !bsDisplay.get(iC)))
-          continue;
-        if (colorSolid) {
-          if (colorArrayed && i < pcs.length) {
-            short c = pcs[i];
-            if (c == 0)
-              continue;
-            cx = c;
-          }
-        } else {
-          cx = vertexColixes[iA];
-        }
-        color = C.getArgb(cx);
-        if (fill) {
-          if (iB == iC) {
-            if (iA == iB)
-              outputPoint(iA, color);
-            else
-              outputEdge(iA, iB, color);
-          } else if (colorsExplicit) {
-            color = polygon[MeshSurface.P_EXPLICIT_COLOR];
-            outputTriangle(iA, iB, iC, color, 7);
-          } else {
-            outputTriangle(iA, iB, iC, color, 7);
-          }
-        } else {
-          // mesh only
-          // check: 1 (ab) | 2(bc) | 4(ac)
-          int check = 7 & polygon[MeshSurface.P_CHECK];
-          if (check == 0)
-            continue;
-          if (noColor) {
-          } else if (colorArrayed) {
-            color = C.getArgb(fillTriangles ? C.BLACK
-                : contourColixes[polygon[MeshSurface.P_CONTOUR]
-                    % contourColixes.length]);
-          }
-          outputTriangle(iA, iB, iC, color, check);
-        }
-      }
-      if (isBinary)
-        oc.writeInt(0);
-      else
-        oc.append("0\n");
-      oc.closeChannel();
-      return (isBinary ? oc.toByteArray() : oc.toString());
-    }
-
-    private void outputInt(int i) {
-      if (isBinary)
-        oc.writeInt(i);
-      else
-        oc.append("" + i + "\n");
-    }
-
-    private int outputPoint(int iA, int color) {
-      outputInt(-1);
-      outputInt(iA);
-      outputInt(color);
-      return 1;
-    }
-
-    private void outputXYZ(T3 pt) {
-      if (isBinary) {
-        oc.writeFloat(pt.x);
-        oc.writeFloat(pt.y);
-        oc.writeFloat(pt.z);
-      } else {
-        oc.append(pt.x + " " + pt.y + " " + pt.z + "\n");
-      }
-    }
-
-    private void outputEdge(int iA, int iB, int color) {
-      outputInt(-2);
-      outputInt(iA);
-      outputInt(iB);
-      outputInt(color);
-    }
-
-    private void outputTriangle(int iA, int iB, int iC, int color, int check) {
-      if ((check & 1) != 0)
-        outputEdge(iA, iB, color);
-      if ((check & 2) != 0)
-        outputEdge(iB, iC, color);
-      if ((check & 4) != 0)
-        outputEdge(iC, iA, color);
-    }
-  }
   private static void get3dContour(IsosurfaceMesh m, Lst<Object> v, float value, short colix) {
     BS bsContour = BS.newN(m.pc);
     SB fData = new SB();

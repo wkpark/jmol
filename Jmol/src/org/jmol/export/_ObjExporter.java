@@ -302,7 +302,7 @@ public class _ObjExporter extends __CartesianExporter {
   @Override
   protected void outputHeader() {
     debugPrint("outputHeader");
-    output("# Created by Jmol " + Viewer.getJmolVersion() + "\n");
+    output("#obj Created by Jmol " + Viewer.getJmolVersion() + "\n");
   }
 
   /* (non-Javadoc)

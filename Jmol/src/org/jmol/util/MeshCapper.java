@@ -8,11 +8,10 @@ import java.util.Map;
 import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.M3;
-import javajs.util.M4;
-import javajs.util.Quat;
 import javajs.util.P3;
-import javajs.util.V3;
+import javajs.util.Quat;
 import javajs.util.T3;
+import javajs.util.V3;
 
 /**
  * A class to properly cap a convoluted, closed slice of an isosurface
@@ -87,7 +86,7 @@ public class MeshCapper {
 
   private int nPoints;
 
-  M4 m4, m4inv;
+  M3 m3, m3inv;
 
   /////////////// initialization //////////////////
 
@@ -258,31 +257,29 @@ public class MeshCapper {
     return (j == (i + 1) % nPoints);
   }
 
-  private CapVertex[] test(CapVertex[] vs) {
-    //  dumping = testing = true;
-    //  int n = 0;
-    //  vs = new CapVertex[] {
-    //   new CapVertex(P3.new3(0,  10,  0), n++),
-    //   new CapVertex(P3.new3(0,  0,  0), n++), 
-    //   new CapVertex(P3.new3(1,  0,  0), n++), 
-    //   new CapVertex(P3.new3(2,  0,  0), n++)
-
-    //      new CapVertex(P3.new3(0,  10,  0), n++)
-    //      new CapVertex(P3.new3(-2,  0,  0), n++),
-    //      new CapVertex(P3.new3(-1,  0,  0), n++), 
-    //      new CapVertex(P3.new3(0,  0,  0), n++)
-
-    //      new CapVertex(P3.new3(0,  10,  0), n++),
-    //      new CapVertex(P3.new3(-2,  0,  0), n++),
-    //      new CapVertex(P3.new3(-1,  0,  0), n++), 
-    //      new CapVertex(P3.new3(0,  0,  0), n++), 
-    //      new CapVertex(P3.new3(0,  6,  0), n++), 
-    //      new CapVertex(P3.new3(0,  8,  0), n++) 
-    //  };
-    //  for (int i = 0; i < n; i++)
-    //    vs[i].link(vs[(i + 1)%n]);
-    return vs;
-  }
+//  private CapVertex[] test(CapVertex[] vs) {
+//    dumping = true;
+//    int n = 0;
+//    vs = new CapVertex[] { 
+//        new CapVertex(P3.new3(0, 10, 0), n++),
+//        new CapVertex(P3.new3(0, 0, 0), n++),
+//        new CapVertex(P3.new3(1, 0, 0), n++),
+//        new CapVertex(P3.new3(2, 0, 0), n++)
+//
+//    //      new CapVertex(P3.new3(0,  10,  0), n++)
+//    //      new CapVertex(P3.new3(-2,  0,  0), n++),
+//    //      new CapVertex(P3.new3(-1,  0,  0), n++), 
+//    //      new CapVertex(P3.new3(0,  0,  0), n++)
+//
+//    //      new CapVertex(P3.new3(0,  10,  0), n++),
+//    //      new CapVertex(P3.new3(-2,  0,  0), n++),
+//    //      new CapVertex(P3.new3(-1,  0,  0), n++), 
+//    //      new CapVertex(P3.new3(0,  0,  0), n++), 
+//    //      new CapVertex(P3.new3(0,  6,  0), n++), 
+//    //      new CapVertex(P3.new3(0,  8,  0), n++) 
+//    };
+//    return vs;
+//  }
 
   /////////////// processing //////////////////
 
@@ -293,59 +290,54 @@ public class MeshCapper {
    */
   void createCap(V3 norm) {
 
-
     capMap = null;
+    lstRegions = new Lst<CapVertex[]>();
 
     CapVertex[] vs = new CapVertex[vertices.size()];
 
     if (vs.length < 3)
       return;
 
-    // get transform to xy plane
-    // to give best precision
+    if (Logger.debugging)
+      Logger.info("MeshCapper using " + vs.length + " vertices");
 
-    V3 vab = V3.newVsub(vertices.get(0), vertices.get(1));
+    // transfer to vertex array
+    
+    vertices.toArray(vs);
+    vertices = null;
+
+    // vs = test(vs);
+    
+
+    // Transform to xy plane to give best precision.
+
+    V3 vab = V3.newVsub(vs[0], vs[1]);
     V3 vac;
     if (norm == null) {
-      vac = V3.newVsub(vertices.get(0), vertices.get(vertices.size() - 1));
+      vac = V3.newVsub(vs[0], vs[vs.length - 1]);
     } else {
       vac = V3.newV(norm);
       vac.cross(vac, vab);
     }
-
-    //Get xy plane points
     Quat q = Quat.getQuaternionFrameV(vab, vac, null, false);
-    M3 m3 = q.getMatrix();
-    m4 = M4.newMV(m3, vertices.get(0));
-    m4inv = M4.newM4(m4).invert();
-    vertices.toArray(vs);
-    vertices = null;
-        
+    m3 = q.getMatrix();
+    m3inv = M3.newM3(m3);
+    m3inv.invert();
     for (int i = vs.length; --i >= 0;)
-      m4inv.rotTrans2(vs[i], vs[i]);
+      m3inv.rotate(vs[i]);
 
-    // link by Y,X sort
+    // Fix loose ends and link by Y,X sort, creating the .yxNext link
 
-    vs = test(vs);
-
-    if (Logger.debugging)
-      Logger.info("MeshCapper using " + vs.length + " vertices");
-    
-    CapVertex v0 = sort(vs);
-    if (v0 == null) {
-      Logger.error("two identical points -- aborting");
-      return;
-    }
-
-    lstRegions = new Lst<CapVertex[]>();
+    fixEndsAndSortVertices(vs);
 
     // scan the plane
 
+    CapVertex v0 = vs[0];
     CapVertex v = v0;
     try {
-    do {
-      v = process(v);
-    } while (v != v0);
+      do {
+        v = process(v);
+      } while (v != v0);
     } catch (Exception e) {
       System.out.println("MeshCapper exception " + e);
       e.printStackTrace();
@@ -354,31 +346,36 @@ public class MeshCapper {
       clear();
     if (Logger.debugging)
       Logger.info("MeshCapper created " + nTriangles + " triangles " + nRegions
-        + " regions");
-
+          + " regions");
   }
 
   /**
-   * Generate qnext links based on scanning Y large to Y small and if Y1==Y2,
+   * Generate yxNext links based on scanning Y large to small and if Y1==Y2,
    * then X small to large
    * 
    * @param vs
-   * @return null if there are two identical points (edge crossings)
    */
-  public CapVertex sort(CapVertex[] vs) {
+  
+  private void fixEndsAndSortVertices(CapVertex[] vs) {
+    
+    // First we need to make sure that the edges are completely closed. 
+    // Start with generating lists of points with missing .next (v0s) and .prev (v1s).
+    
     Lst<CapVertex> v0s = new Lst<CapVertex>();
     Lst<CapVertex> v1s = new Lst<CapVertex>();
     int n = vs.length;
-//    for (int i = n; --i >= 0;)
-//      System.out.println(vs[i]);
-//    System.out.println("#----");
-      for (int i = n; --i >= 0;) {  
+    for (int i = n; --i >= 0;) {
       if (vs[i].next == null) {
         v0s.addLast(vs[i]);
       } else if (vs[i].prev == null) {
         v1s.addLast(vs[i]);
       }
     }
+    
+    // For each v0, find the nearest v1 and connect v0 to it. 
+    // This will almost certainly be the same point in space.
+    // If it is, then unlink v1, as it is not needed.
+    
     for (int i = v0s.size(); --i >= 0;) {
       CapVertex v0 = v0s.get(i);
       CapVertex v1 = findNearestVertex(v1s, v0);
@@ -386,35 +383,26 @@ public class MeshCapper {
         System.out.println("MESHCAPPER OHOH");
       } else {
         v0.link(v1);
+        if (v0.distanceSquared(v1) < 1e-6)
+          v1.link(null);
       }
-      
     }
-    MeshCapperSorter sorter = new MeshCapperSorter();
-//    for (int i = 0; i < n; i++) {
-//      CapVertex v = vs[i];
-//      if (vs[i].next == null || vs[i].prev == null)
-//        System.out.println("null meshcapper");
-//    }
-//
-
-    Arrays.sort(vs, sorter);
-    int pt = n;
-
-//    int pt = 0;
-//    for (int i = 0; i < n; i++) {
-//      if (!vs[i].disabled)
-//        vs[pt++] = vs[i];
-//    }
-    if (pt > 0) {
-      for (int i = pt; --i >= 0;) {
-        CapVertex v = vs[i];
-        vs[i].qnext = vs[(i + 1) % pt];
-      }
-      vs[pt - 1].qnext = vs[0];
-    }
-    return vs[0];
+    
+    // Now sort vertices based on X and Y values and make a full loop
+    
+    Arrays.sort(vs, new MeshCapperSorter());
+    for (int i = n; --i >= 0;)
+      vs[i].yxNext = vs[(i + 1) % n];
+    vs[n - 1].yxNext = vs[0];
+    
   }
 
+  /**
+   * Find the nearest vertex to v0 in the list v1s.
+   * @param v1s
+   * @param v0
+   * @return nearest vertex or null if we can't match
+   */
   private CapVertex findNearestVertex(Lst<CapVertex> v1s, CapVertex v0) {
     float min = Float.MAX_VALUE;
     CapVertex vmin = null;
@@ -433,29 +421,16 @@ public class MeshCapper {
     return vmin;
   }
 
-  public class MeshCapperSorter implements
-  Comparator<CapVertex> {
-    
+  public class MeshCapperSorter implements Comparator<CapVertex> {
     
     @Override
     public int compare(CapVertex v1, CapVertex v2) {
       // first HIGHEST Y to LOWEST Y, then LOWEST X to HIGHEST X
       return (v1.y < v2.y ? 1 : v1.y > v2.y || v1.x < v2.x ? -1
-          : v1.x > v2.x ? 1 
-              : 0);//disable(v1, v2));
-    }
-
-  
+          : v1.x > v2.x ? 1 : 0);
+    }  
   }
   
-  int disable(CapVertex v1, CapVertex v2) {
-    if (!v1.disabled && !v2.disabled) {
-      //v2.link(null);
-      v2.disabled = true;
-    }
-    return 0;
-  }
-
   /**
    * Handle the point; mark as processed.
    * 
@@ -472,12 +447,12 @@ public class MeshCapper {
     //                /        \
     //              -/----------*-<
     //              /            \
-    CapVertex q = v.qnext;
-    v.qnext = null; // indicates already processed
+    CapVertex q = v.yxNext;
+    v.yxNext = null; // indicates already processed
     if (dumping)
       Logger.info(v.toString());
     if (v.prev == v.next)
-      return q;
+      return q; // probably removed by fixEndsAndSortVertices
     boolean isDescending = (v.prev.region != null);
     boolean isAscending = (v.next.region != null);
 
@@ -496,7 +471,7 @@ public class MeshCapper {
       }
       CapVertex p = processSplit(v, last);
       // patch in new point as the next to process
-      p.qnext = q;
+      p.yxNext = q;
       q = p;
       // process left branch
       isAscending = true;
@@ -567,7 +542,7 @@ public class MeshCapper {
 
       v1 = last;
       v2 = (isDescending ? v1.prev : v1.next);
-      while (v2 != v && v2.qnext == null
+      while (v2 != v && v2.yxNext == null
           && isDescending == (v.x > v.interpolateX(v2, v1))) {
         if (isDescending) {
           // same side descending
@@ -591,7 +566,7 @@ public class MeshCapper {
           //                  /    \
           //              ----------v(last)--
           //                /        \
-          //              ------------*-<
+          //              ------------*-<f
           //              /            \
 
           addTriangle(v, v1, v2, "same asc " + v.ipt);
@@ -634,7 +609,7 @@ public class MeshCapper {
 
           addTriangle(v, v1, v2, "opp asc " + v.id);
         }
-      } while (v2 != last && v2 != v && v2.qnext == null);
+      } while (v2 != last && v2 != v && v2.yxNext == null);
       if (last.region == null) {
         // done with this region
         lstRegions.removeObj(v.region);
@@ -740,9 +715,6 @@ public class MeshCapper {
     pv.prev.link(pv);
     pv.link(p);
     p.link(p.next);
-
-    //System.out.println("#split v=" + v + "\n#p=" + pv);
-
     return p;
   }
 
@@ -752,7 +724,6 @@ public class MeshCapper {
    * @param v
    */
   private void newRegion(CapVertex v) {
-    //System.out.println("\n\n#new region for " + id);
     nRegions++;
     lstRegions.addLast(v.region = new CapVertex[] { v, v, v });
   }
@@ -848,7 +819,6 @@ public class MeshCapper {
    * @param note
    */
   private void addTriangle(CapVertex v0, CapVertex v1, CapVertex v2, String note) {
-    //System.out.println("#" + test + " " + note);
     ++nTriangles;
     if (checkWinding(v0, v1, v2)) {
       if (dumping)
@@ -907,7 +877,7 @@ public class MeshCapper {
     /**
      * Y-X scan queue forward link
      */
-    protected CapVertex qnext;
+    protected CapVertex yxNext;
 
     /**
      * edge double links
@@ -920,10 +890,6 @@ public class MeshCapper {
      */
 
     CapVertex[] region;
-
-    boolean disabled;
-    
-    T3 cartesian;
 
     CapVertex(T3 p, int i) {
       ipt = i;
@@ -978,7 +944,7 @@ public class MeshCapper {
      * Free all links.
      */
     protected void clear() {
-      qnext = next = prev = null;
+      yxNext = next = prev = null;
       region = null;
     }
 
@@ -1004,22 +970,14 @@ public class MeshCapper {
 
     @Override
     public String toString() {
-      if (cartesian  == null)
-        cartesian = new P3();
-      if (m4 != null)
-        m4.rotTrans2(this, cartesian);
-      return "draw p"
-          + id
-          + " {"
-          + cartesian.x
-          + " "
-          + cartesian.y
-          + " "
-          + cartesian.z
-          + "} # "
+      // for debugging only
+      T3 c = (m3 == null ? this : new P3());
+      if (m3 != null)
+        m3.rotate2(this, c);
+      return "draw p" + id + " {" + c.x + " " + c.y + " " + c.z + "} # "
           + (prev == null ? "null" : prev.id)
           + (next == null ? " null" : " " + next.id)
-              + (region == null ? "" : dumpRegion());
+          + (region == null ? "" : dumpRegion());
     }
 
   }

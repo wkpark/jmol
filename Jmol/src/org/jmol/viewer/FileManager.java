@@ -1193,6 +1193,12 @@ public class FileManager implements BytePoster {
       return "Jvxl+";
     if (line.indexOf("#JVXL") >= 0)
       return "Jvxl";
+    if (line.indexOf("#JmolPmesh") >= 0)
+      return "Pmesh";
+    if (line.indexOf("#obj") >= 0)
+      return "Obj";
+    if (line.indexOf("#pmesh") >= 0)
+      return "Obj";
     if (line.indexOf("<efvet ") >= 0)
       return "Efvet";
     if (line.indexOf("usemtl") >= 0)

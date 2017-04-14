@@ -32,72 +32,81 @@ import org.jmol.viewer.FileManager;
 
 import javajs.util.CU;
 import javajs.util.P3;
+import javajs.util.PT;
 
-/*
+/**
+ * PMESH format created for Jmol. This is not the "pmesh" format from Edinburgh:
  * 
- * ASCII format:
-
- 100
- 3.0000 3.0000 1.0000
- 2.3333 3.0000 1.0000
- ...(98 more like this)
- 81 <-- polygonCount may be -1
- 5
- 0
- 10
- 11
- 1
- 0
- ...(80 more sets like this)
- <-- may be 0 if polygonCount = -1
-
- * The first line defines the number of grid points 
- *   defining the surface (integer, n)
- * The next n lines define the Cartesian coordinates 
- *   of each of the grid points (n lines of x, y, z floating point data points)
- * The next line specifies the number of polygons, m, to be drawn (81 in this case).
- * The next m sets of numbers, one number per line, 
- *   define the polygons. In each set, the first number, p, specifies 
- *   the number of points in each set. Currently this number must be either 
- *   1 (points), 2 (edges), 3 (triangles), 4 (for closed triangles) or 5 (for closed quadrilaterals). The next p numbers specify 
- *   indexes into the list of data points (starting with 0). 
- *   For p > 3, the first and last of these numbers must be identical in order to 
- *   "close" the polygon. 
- *   
- *   If the number of points in a set is negative, it indicates that a color follows:
-
- -5
- 0
- 10
- 11
- 1
- 0
- 16776960 
-
+ *   see http://i-sight.sourceforge.net/docs/GridView/MeshFileReader.html#ReadPMeshFile(java.lang.String,%20GridView.OutputPanel,%20javax.swing.JProgressBar)
  * 
- * Jmol does not care about lines. 
- * 
- * Binary format: 
- * 
- * note that there is NO redundant extra vertex in this format 
+ * That format is read by the ObjReader.
  *
- *  4 bytes: P M \1 \0 
- *  4 bytes: (int) 1 -- first byte used to determine big(==0) or little(!=0) endian
- *  4 bytes: (int) nVertices
- *  4 bytes: (int) nPolygons -- may be -1
- * 64 bytes: reserved
- *  ------------------------------
- *  float[nVertices*3]vertices {x,y,z}
- *  [nPolygons] polygons 
- *  --each polygon--
- *    4 bytes: (int)nVertices (1,2,3, or 4)
- *    [4 bytes * nVertices] int[nVertices]
- *    optional 4 bytes (int)0 -- end of file 
- *
+ * @author Bob Hanson hansonr@stolaf.edu
  */
-
-
 class PmeshReader extends PolygonFileReader {
+
+//ASCII format:
+//#JmolPmesh  optional; recommended for resolution
+//100
+//3.0000 3.0000 1.0000
+//2.3333 3.0000 1.0000
+//...(98 more like this)
+//81 <-- polygonCount may be -1 if terminated
+//5
+//0
+//10
+//11
+//1
+//0
+//...(80 more sets like this)
+//0 <-- added only to terminate a polygonCount = -1
+//
+// The first line defines the number of grid points 
+//   defining the surface (integer, n)
+// The next n lines define the Cartesian coordinates 
+//   of each of the grid points (n lines of x, y, z floating point data points)
+// The next line specifies the number of polygons, m, to be drawn (81 in this case).
+// The next m sets of numbers, one number per line, 
+//   define the polygons. In each set, the first number, p, specifies 
+//   the number of points in each set. Currently this number must be either 
+//   1 (points), 2 (edges), 3 (triangles), 4 (for closed triangles) or 5 (for closed quadrilaterals). The next p numbers specify 
+//   indexes into the list of data points (starting with 0). 
+//   For p > 3, the first and last of these numbers must be identical in order to 
+//   "close" the polygon. 
+//   
+//   If the number of points in a set is negative, it indicates that a color follows:
+//
+//-5
+//0
+//10
+//11
+//1
+//0
+//16776960 
+//
+// 
+// Jmol does not care about lines. 
+// 
+// Binary format: 
+// 
+// note that there is NO redundant extra vertex in this format 
+//
+//  4 bytes: P M \1 \0 
+//  4 bytes: (int) 1 -- first byte used to determine big(==0) or little(!=0) endian
+//  4 bytes: (int) nVertices
+//  4 bytes: (int) nPolygons -- may be -1
+// 64 bytes: reserved
+//  ------------------------------
+//  float[nVertices*3]vertices {x,y,z}
+//  [nPolygons] polygons 
+//  --each polygon--
+//    4 bytes: (int)nVertices (1,2,3, or 4)
+//    [4 bytes * nVertices] int[nVertices]
+//    optional 4 bytes (int)0 -- end of file 
+//
+
+
+
 
   private boolean isBinary;
   protected int nPolygons;
@@ -201,8 +210,11 @@ class PmeshReader extends PolygonFileReader {
   
   protected boolean readVerticesPM() throws Exception {
     pmeshError = type + " ERROR: vertex count must be positive";
-    if (!isBinary)
+    if (!isBinary) {
       nVertices = getInt();
+      if (nVertices == Integer.MIN_VALUE)
+        nVertices = getInt();
+    }
     if (onePerLine)
       iToken = Integer.MAX_VALUE;
     if (nVertices <= 0) {
@@ -281,7 +293,11 @@ class PmeshReader extends PolygonFileReader {
          color = getInt(); 
         } else {
           String c = nextToken();
-          color = parseIntStr(c);
+          try {
+            color = (c.startsWith("0x") ? PT.parseIntRadix(c.substring(2), 16) : parseIntStr(c));
+          } catch (Throwable e) {
+            color = Integer.MIN_VALUE;
+          }
           if (color == Integer.MIN_VALUE)
             color = CU.getArgbFromString(c);
         }

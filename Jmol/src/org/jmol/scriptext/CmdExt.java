@@ -3814,6 +3814,14 @@ public class CmdExt extends ScriptExt {
       //   fileName = fileName.substring(0, fileName.length() - 1);
     }
 
+    if (type.equals("ISOSURFACE")) {
+      type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
+          .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "JVXL");
+      if (type.equals("PMESH"))
+        type = "ISOMESH";
+      else if (type.equals("PMB"))
+        type = "ISOMESHBIN";
+    }
     boolean isImage = PT.isOneOf(type.toLowerCase(), JC.IMAGE_OR_SCENE);
     if (!isImage) {
       if (type.equals("MNU")) {
@@ -4011,7 +4019,7 @@ public class CmdExt extends ScriptExt {
       } else if (data == "MO" || data == "NBO") {
         data = getMoJvxl(Integer.MAX_VALUE, data == "NBO");
         type = "XJVXL";
-      } else if (data == "PMESH") {
+      } else if (data == "PMESH" || data == "PMB") {
         if ((data = (String) getIsosurfaceJvxl(JC.SHAPE_PMESH, data)) == null)
           error(ScriptError.ERROR_noData);
         type = "XJVXL";
@@ -4019,7 +4027,7 @@ public class CmdExt extends ScriptExt {
         if ((data = (String) getIsosurfaceJvxl(JC.SHAPE_ISOSURFACE, data)) == null)
           error(ScriptError.ERROR_noData);
         type = "PMESH";
-      } else if (data == "ISOMESHBIN" || data == "PMB") {
+      } else if (data == "ISOMESHBIN") {
         if ((bytes = getIsosurfaceJvxl(JC.SHAPE_ISOSURFACE, "ISOMESHBIN")) == null)
           error(ScriptError.ERROR_noData);
         type = "PMB";
@@ -5203,7 +5211,7 @@ public class CmdExt extends ScriptExt {
 
   private Object getIsosurfaceJvxl(int iShape, String type) {
    type = (type == "PMESH" || type == "MESH" ? "jvxlMeshX" : 
-     type == "ISOMESH" ? "pmesh" : type == "ISOMESHBIN" ? "pmeshbin" 
+     type == "ISOMESH" ? "pmesh" : type == "ISOMESHBIN" || type == "PMB" ? "pmeshbin" 
         : "jvxlDataXml");   
     return (chk ? "" : getShapeProperty(iShape, type));
   }

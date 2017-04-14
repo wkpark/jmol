@@ -925,6 +925,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return jvxlData.jvxlPlane;
     if (property == "contours")
       return thisMesh.getContours();
+    if (property == "pmesh" || property == "pmeshbin")
+      return thisMesh.getPmeshData(property == "pmeshbin"); 
     if (property == "jvxlDataXml" || property == "jvxlMeshXml") {
       MeshData meshData = null;
       jvxlData.slabInfo = null;

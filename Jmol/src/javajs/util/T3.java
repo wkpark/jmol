@@ -304,7 +304,7 @@ public abstract class T3 implements JSONEncodable, Serializable {
     return (int) (bits ^ (bits >> 32));
   }
 
-  static int floatToIntBits(float x) {
+  public static int floatToIntBits(float x) {
     return (x == 0 ? 0 : Float.floatToIntBits(x));
   }
 

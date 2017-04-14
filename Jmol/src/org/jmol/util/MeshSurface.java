@@ -21,7 +21,7 @@ public class MeshSurface {
   public static final int P_CONTOUR = 4;
   public static final int P_EXPLICIT_COLOR = 4;
 
-  protected Viewer vwr;
+  public Viewer vwr;
   
   private MeshSlicer slicer;
   

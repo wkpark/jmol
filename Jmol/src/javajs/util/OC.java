@@ -440,4 +440,8 @@ public class OC extends OutputStream implements GenericOutputChannel {
     }
   }
 
+  public void writeFloat(float x) {
+    writeInt(x == 0 ? 0 : Float.floatToIntBits(x));
+  }
+
 }

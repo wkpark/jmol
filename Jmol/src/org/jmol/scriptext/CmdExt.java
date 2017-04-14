@@ -3754,6 +3754,7 @@ public class CmdExt extends ScriptExt {
       // quality|PNG|PPM|SPT] "filename"
       // write script "filename"
       // write isosurface t.jvxl
+      // write isosurface t.pmesh
 
       if (type.equals("IMAGE")
           && PT.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
@@ -3862,7 +3863,7 @@ public class CmdExt extends ScriptExt {
         && !PT
             .isOneOf(
                 type,
-                ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;NBO;ISOSURFACE;MESH;PMESH;VAR;FILE;FUNCTION;CIF;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;MOL67;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
+                ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;NBO;ISOSURFACE;MESH;PMESH;PMB;ISOMESHBIN;ISOMESH;VAR;FILE;FUNCTION;CIF;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;MOL67;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
       eval.errorStr2(
           ScriptError.ERROR_writeWhat,
           "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|NBO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
@@ -4011,11 +4012,19 @@ public class CmdExt extends ScriptExt {
         data = getMoJvxl(Integer.MAX_VALUE, data == "NBO");
         type = "XJVXL";
       } else if (data == "PMESH") {
-        if ((data = getIsosurfaceJvxl(true, JC.SHAPE_PMESH)) == null)
+        if ((data = (String) getIsosurfaceJvxl(JC.SHAPE_PMESH, data)) == null)
           error(ScriptError.ERROR_noData);
         type = "XJVXL";
+      } else if (data == "ISOMESH") {
+        if ((data = (String) getIsosurfaceJvxl(JC.SHAPE_ISOSURFACE, data)) == null)
+          error(ScriptError.ERROR_noData);
+        type = "PMESH";
+      } else if (data == "ISOMESHBIN" || data == "PMB") {
+        if ((bytes = getIsosurfaceJvxl(JC.SHAPE_ISOSURFACE, "ISOMESHBIN")) == null)
+          error(ScriptError.ERROR_noData);
+        type = "PMB";
       } else if (data == "ISOSURFACE" || data == "MESH") {
-        if ((data = getIsosurfaceJvxl(data == "MESH", JC.SHAPE_ISOSURFACE)) == null)
+        if ((data = (String) getIsosurfaceJvxl(JC.SHAPE_ISOSURFACE, data)) == null)
           error(ScriptError.ERROR_noData);
         type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
         if (!showOnly)
@@ -5192,9 +5201,11 @@ public class CmdExt extends ScriptExt {
     return sb.toString();
   }
 
-  private String getIsosurfaceJvxl(boolean asMesh, int iShape) {
-    return (chk ? "" : (String) getShapeProperty(iShape, asMesh ? "jvxlMeshX"
-        : "jvxlDataXml"));
+  private Object getIsosurfaceJvxl(int iShape, String type) {
+   type = (type == "PMESH" || type == "MESH" ? "jvxlMeshX" : 
+     type == "ISOMESH" ? "pmesh" : type == "ISOMESHBIN" ? "pmeshbin" 
+        : "jvxlDataXml");   
+    return (chk ? "" : getShapeProperty(iShape, type));
   }
 
   @SuppressWarnings("unchecked")

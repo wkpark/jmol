@@ -41,7 +41,7 @@ import javajs.util.P3;
  3.0000 3.0000 1.0000
  2.3333 3.0000 1.0000
  ...(98 more like this)
- 81
+ 81 <-- polygonCount may be -1
  5
  0
  10
@@ -49,6 +49,7 @@ import javajs.util.P3;
  1
  0
  ...(80 more sets like this)
+ <-- may be 0 if polygonCount = -1
 
  * The first line defines the number of grid points 
  *   defining the surface (integer, n)
@@ -58,9 +59,9 @@ import javajs.util.P3;
  * The next m sets of numbers, one number per line, 
  *   define the polygons. In each set, the first number, p, specifies 
  *   the number of points in each set. Currently this number must be either 
- *   4 (for triangles) or 5 (for quadrilaterals). The next p numbers specify 
+ *   1 (points), 2 (edges), 3 (triangles), 4 (for closed triangles) or 5 (for closed quadrilaterals). The next p numbers specify 
  *   indexes into the list of data points (starting with 0). 
- *   The first and last of these numbers must be identical in order to 
+ *   For p > 3, the first and last of these numbers must be identical in order to 
  *   "close" the polygon. 
  *   
  *   If the number of points in a set is negative, it indicates that a color follows:
@@ -81,10 +82,9 @@ import javajs.util.P3;
  * note that there is NO redundant extra vertex in this format 
  *
  *  4 bytes: P M \1 \0 
- *  4 bytes: ignored
  *  4 bytes: (int) 1 -- first byte used to determine big(==0) or little(!=0) endian
  *  4 bytes: (int) nVertices
- *  4 bytes: (int) nPolygons
+ *  4 bytes: (int) nPolygons -- may be -1
  * 64 bytes: reserved
  *  ------------------------------
  *  float[nVertices*3]vertices {x,y,z}
@@ -92,7 +92,7 @@ import javajs.util.P3;
  *  --each polygon--
  *    4 bytes: (int)nVertices (1,2,3, or 4)
  *    [4 bytes * nVertices] int[nVertices]
- *    
+ *    optional 4 bytes (int)0 -- end of file 
  *
  */
 
@@ -233,19 +233,25 @@ class PmeshReader extends PolygonFileReader {
     pmeshError = type  + " ERROR: polygon count must be zero or positive";
     if (!isBinary)
       nPolygons = getInt();
-    if (nPolygons < 0) {
-      pmeshError += " (" + nPolygons + ")";
-      return false;
-    }
+//    if (nPolygons < 0) {
+//      pmeshError += " (" + nPolygons + ")";
+//      return false;
+//    }
     if (onePerLine)
       iToken = Integer.MAX_VALUE;
     int[] vertices = new int[5];
+    if (nPolygons == -1)
+      nPolygons = Integer.MAX_VALUE;
+    int nread = 0;
     for (int iPoly = 0; iPoly < nPolygons; iPoly++) {
       int intCount = (fixedCount == 0 ? getInt() : fixedCount);
+      if (intCount == 0)
+        break;
+      nread++;
       boolean haveColor = (intCount < 0);
       if (haveColor)
         intCount = -intCount;
-      int vertexCount = intCount - (isClosedFace ? 1 : 0);
+      int vertexCount = intCount - (intCount > 3 && isClosedFace ? 1 : 0);
       // (we will ignore the redundant extra vertex when not binary and not msms)
       if (vertexCount < 1 || vertexCount > 4) {
         pmeshError = type  + " ERROR: bad polygon (must have 1-4 vertices) at #"
@@ -271,10 +277,14 @@ class PmeshReader extends PolygonFileReader {
           vertices[i] = vertices[i - 1];
       int color = 0;
       if (haveColor) {
-        String c = nextToken();
-        color = parseIntStr(c);
-        if (color == Integer.MIN_VALUE)
-          color = CU.getArgbFromString(c);
+        if (isBinary) {
+         color = getInt(); 
+        } else {
+          String c = nextToken();
+          color = parseIntStr(c);
+          if (color == Integer.MIN_VALUE)
+            color = CU.getArgbFromString(c);
+        }
         color |= 0xFF000000;
       }
       // check: 1 (ab) | 2(bc) | 4(ac)
@@ -299,6 +309,7 @@ class PmeshReader extends PolygonFileReader {
     }
     if (isBinary)
       nBytes = binarydoc.getPosition();
+    nPolygons = nread;
     return true;
   }
 

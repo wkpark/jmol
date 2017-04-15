@@ -858,9 +858,14 @@ public class SmilesAtom extends P3 implements Node {
   }
 
   @Override
-  public String getChirality(boolean doCalculate) {
+  public String getCIPChirality(boolean doCalculate) {
     // TODO
     return "";
+  }
+
+  @Override
+  public void setCIPChirality(int c) {
+    // n/a
   }
 
 

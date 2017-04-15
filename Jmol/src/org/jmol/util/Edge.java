@@ -35,31 +35,41 @@ public abstract class Edge {
    *
    */
   
-  // 11 1111 1100 0000 0000
-  // 76 5432 1098 7654 3210
-  // | new connection                 1 << 17  0x20000
-  //  | render as single              1 << 16  0x10000
-  //  |   PyMOL render single         2 << 15  0x18000 + covalent order 
-  //  | | PyMOL render multiple       3 << 15  0x18000 + covalent order 
-  //    | strut                       1 << 15  0x08000
-  //  |  nnm m            | atropisomer        0x10001 + (nnmm << 11)
-  //     ||| | Hydrogen bond          F << 11  0x03800
-  //          |Stereo                 1 << 10  0x00400   
-  //           |Aromatic              1 << 9   0x00200
-  //            |Sulfur-Sulfur        1 << 8   0x00100
-  //              ||| Partial n       7 << 5   0x00E00
-  //                 | |||| Partial m          0x0001F
-  //                    ||| Covalent order     0x00007
-  //          ||| |||| |||| Covalent           0x003FF
-  // 00 0000 0000 0001 0001 UNSPECIFIED
-  // 00 1111 1111 1111 1111 ANY
-  // 01 1111 1111 1111 1111 NULL
+  // 1111 1111 1100 0000 0000
+  // 9876 5432 1098 7654 3210
+  // || CIP stereochemistry mask (unk)  3 << 18  0xC0000
+  // |  CIP stereochemistry Z           2 << 18  0x80000
+  //  | CIP stereochemistry E           1 << 18  0x40000
+  //   | new connection                 1 << 17  0x20000
+  //    | render as single              1 << 16  0x10000
+  //    |   PyMOL render single         2 << 15  0x18000 + covalent order 
+  //    | | PyMOL render multiple       3 << 15  0x18000 + covalent order 
+  //      | strut                       1 << 15  0x08000
+  //    |  nnm m            | atropisomer        0x10001 + (nnmm << 11)
+  //       ||| | Hydrogen bond          F << 11  0x03800
+  //            |Stereo                 1 << 10  0x00400   
+  //             |Aromatic              1 << 9   0x00200
+  //              |Sulfur-Sulfur        1 << 8   0x00100
+  //                ||| Partial n       7 << 5   0x00E00
+  //                   | |||| Partial m          0x0001F
+  //                      ||| Covalent order     0x00007
+  //            ||| |||| |||| Covalent           0x003FF
+  // 0000 0000 0000 0001 0001 UNSPECIFIED
+  // 0000 1111 1111 1111 1111 ANY
+  // 0001 1111 1111 1111 1111 NULL
 
   public final static int BOND_RENDER_SINGLE   = 0x10000;
 
   public final static int TYPE_ATROPISOMER     = 0x10001;
   public final static int TYPE_ATROPISOMER_REV = 0x10002; // only used by SMILES, for ^^nm-
   private final static int ATROPISOMER_SHIFT   = 11;
+
+  public final static int BOND_CIP_STEREO_MASK  = 0xC0000; // 3 << 18
+  public final static int BOND_CIP_STEREO_UNK   = 0xC0000; // 3 << 18 same as mask
+  public final static int BOND_CIP_STEREO_E     = 0x80000; // 2 << 18
+  public final static int BOND_CIP_STEREO_Z     = 0x40000; // 1 << 18
+  public final static int BOND_CIP_STEREO_SHIFT = 18;
+
 
   public final static int BOND_STEREO_MASK   = 0x400; // 1 << 10
   public final static int BOND_STEREO_NEAR   = 0x401; // for JME reader and SMILES
@@ -198,7 +208,7 @@ public abstract class Edge {
       return EnumBondOrder.SINGLE.name;
     return EnumBondOrder.getNameFromCode(order);
   }
-
+  
   public static int getAtropismOrder(int nn, int mm) {
     return getAtropismOrder12(((nn + 1) << 2) + mm + 1);
   }
@@ -333,6 +343,14 @@ public abstract class Edge {
       return "?";
     }
 
+  }
+
+  public void setCIPChirality(int c) {
+    // default is no action
+  }
+
+  public String getCIPChirality(boolean doCalculate) {
+    return "";
   }
 
 }

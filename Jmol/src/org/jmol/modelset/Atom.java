@@ -89,11 +89,13 @@ public class Atom extends Point3fi implements Node {
   private final static int CHARGE_OFFSET = 24;
   private final static int VIBRATION_VECTOR_FLAG = 1;
   private final static int IS_HETERO_FLAG = 2;
-  private final static int CHIRALITY_OFFSET = 4;
-  private final static int CHIRALITY_R_FLAG = 1;
-  private final static int CHIRALITY_S_FLAG = 2; // 3 is "no chirality"
-  private final static int CHIRALITY_PSEUDO_FLAG = 4;  // 5=r, 6=s, 7=* (undetermined)
-  private final static int CHIRALITY_MASK = 0xFF;
+  private final static int CIP_CHIRALITY_OFFSET = 4;
+  private final static int CIP_CHIRALITY_R_FLAG = 1;
+  private final static int CIP_CHIRALITY_S_FLAG = 2; // 3 is "no chirality"
+  private final static int CIP_CHIRALITY_PSEUDO_FLAG = 4;  // 5=r, 6=s, 7=* (undetermined)
+  private final static int CIP_CHIRALITY_Z_FLAG = 8;
+  private final static int CIP_CHIRALITY_E_FLAG = 0x10; // Z|E is "no chirality"
+  private final static int CIP_CHIRALITY_MASK = 0xFF0;
   private final static int FLAG_MASK = 0xF;
 
   public short madAtom;
@@ -198,7 +200,7 @@ public class Atom extends Point3fi implements Node {
   }
 
   private void deleteBondAt(int i) {
-    setChirality(0);
+    setCIPChirality(0);
     int newLength = bonds.length - 1;
     if (newLength == 0) {
       bonds = null;
@@ -1354,7 +1356,7 @@ public class Atom extends Point3fi implements Node {
     case T.chain:
       return getChainIDStr();
     case T.chirality:
-      return getChirality(true);
+      return getCIPChirality(true);
     case T.sequence:
       return getGroup1('?');
     case T.seqcode:
@@ -1397,25 +1399,29 @@ public class Atom extends Point3fi implements Node {
    * Determine R/S chirality at this position; non-H atoms only; cached in formalChargeAndFlags
    * @param doCalculate 
    * 
-   * @return "" or "R" or "S"
+   * @return one of "", "R", "S", "E", "Z", "(r)", "(s)", "(*)"
    */
   @Override
-  public String getChirality(boolean doCalculate) {
-    int flags = (formalChargeAndFlags & CHIRALITY_MASK) >> CHIRALITY_OFFSET;
+  public String getCIPChirality(boolean doCalculate) {
+    int flags = (formalChargeAndFlags & CIP_CHIRALITY_MASK) >> CIP_CHIRALITY_OFFSET;
     if (flags == 0 && atomicAndIsotopeNumber > 1 && doCalculate) {
-      flags = group.chain.model.ms.getChirality(this);
-      formalChargeAndFlags |= ((flags == 0 ? 3 : flags) << CHIRALITY_OFFSET);
+      flags = group.chain.model.ms.getAtomCIPChirality(this);
+      formalChargeAndFlags |= ((flags == 0 ? 3 : flags) << CIP_CHIRALITY_OFFSET);
     }
     switch (flags) {
-    case CHIRALITY_R_FLAG:
+    case CIP_CHIRALITY_Z_FLAG:
+      return "Z";
+    case CIP_CHIRALITY_E_FLAG:
+      return "E";
+    case CIP_CHIRALITY_R_FLAG:
       return "R";
-    case CHIRALITY_S_FLAG:
+    case CIP_CHIRALITY_S_FLAG:
       return "S";
-    case CHIRALITY_PSEUDO_FLAG | CHIRALITY_R_FLAG:
+    case CIP_CHIRALITY_PSEUDO_FLAG | CIP_CHIRALITY_R_FLAG:
       return "(r)";
-    case CHIRALITY_PSEUDO_FLAG | CHIRALITY_S_FLAG:
+    case CIP_CHIRALITY_PSEUDO_FLAG | CIP_CHIRALITY_S_FLAG:
       return "(s)";
-    case CHIRALITY_PSEUDO_FLAG | CHIRALITY_S_FLAG | CHIRALITY_R_FLAG:
+    case CIP_CHIRALITY_PSEUDO_FLAG | CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_R_FLAG:
       return "(*)";
     default:
       return "";
@@ -1424,11 +1430,12 @@ public class Atom extends Point3fi implements Node {
   
   /**
    * 
-   * @param c [0:unknown; 1: R; 2: S; 3: none]
+   * @param c [0:unknown; 1: R; 2: S; 4: Z, 8: E, 3: none, 12: none]
    */
-  void setChirality(int c) {
-    formalChargeAndFlags = (byte)((formalChargeAndFlags & ~CHIRALITY_MASK) 
-        | (c << CHIRALITY_OFFSET));
+  @Override
+  public void setCIPChirality(int c) {
+    formalChargeAndFlags = (formalChargeAndFlags & ~CIP_CHIRALITY_MASK) 
+        | (c << CIP_CHIRALITY_OFFSET);
   }
 
   @Override

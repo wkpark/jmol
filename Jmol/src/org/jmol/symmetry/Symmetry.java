@@ -33,6 +33,7 @@ import org.jmol.bspt.Bspt;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 import javajs.util.Lst;
 
@@ -772,11 +773,29 @@ public class Symmetry implements SymmetryInterface {
    * @return [0:none, 1:R, 2:S]
    */
   @Override
-  public int getChirality(Viewer vwr, Atom atom) {
+  public int getAtomCIPChirality(Viewer vwr, Atom atom) {
     CIPChirality cip = getCIPChirality(vwr);
-    return cip.getChirality(atom);
+    return cip.getAtomChirality(atom);
   }
 
+  /**
+   * Determine the Cahn-Ingold-Prelog R/S chirality of an atom
+   * 
+   * @param atom
+   * @return [0:none, 1:R, 2:S]
+   */
+  @Override
+  public int getBondCIPChirality(Viewer vwr, Bond bond) {
+    CIPChirality cip = getCIPChirality(vwr);
+    return cip.getBondChirality(bond);
+  }
+
+  @Override
+  public void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms) {
+    CIPChirality cip = getCIPChirality(vwr);
+    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms);
+  }
+  
   CIPChirality cip;
   
   private CIPChirality getCIPChirality(Viewer vwr) {

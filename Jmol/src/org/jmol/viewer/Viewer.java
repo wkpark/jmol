@@ -9587,6 +9587,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return getNBOParser().getNBOAtomLabel(atom);
   }
 
+  public void calculateChirality(BS bsAtoms) {
+    if (bsAtoms == null)
+      bsAtoms = bsA();
+    ms.calculateChiralityForAtoms(bsAtoms);
+  }
+
 }
 
 

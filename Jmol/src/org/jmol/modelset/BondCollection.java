@@ -85,7 +85,7 @@ abstract public class BondCollection extends AtomCollection {
     moleculeCount = 0;
     if (haveChirality)
       for (int i = ac; --i >= 0;)
-        at[i].setChirality(0);
+        at[i].setCIPChirality(0);
   }
 
   public BondIterator getBondIteratorForType(int bondType, BS bsAtoms) {

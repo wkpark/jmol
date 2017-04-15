@@ -6,10 +6,10 @@ import java.util.Map;
 
 import javajs.util.Measure;
 import javajs.util.P3;
+import javajs.util.PT;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
-
 import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.Logger;
@@ -18,11 +18,34 @@ import org.jmol.viewer.Viewer;
 
 /**
  * A relatively simple implementation of Cahn-Ingold-Prelog rules for assigning
- * R/S chirality. Based on IUPAC rules. (See text at the end of this document.)
+ * R/S and E/S stereochemical labels. Based on IUPAC rules. (See text at the end of this document.)
+ * 
+ * References:
+ * 
+ * CIP(1966) R.S. Cahn, C. Ingold, V. Prelog, Specification of Molecular
+ * Chirality, Angew.Chem. Internat. Edit. 5, 385ff
+ * 
+ * Mata(1986) Paulina Mata, Ana M. Lobo, Chris Marshall, and A. Peter Johnson,
+ * Implementation of the Cahn-Ingold-Prelog System for Stereochemical Perception
+ * in the LHASA Program, J. Chem. Inf. Comput. Sci. 1994, 34, 491-504 491
+ * http://pubs.acs.org/doi/abs/10.1021/ci00019a004
+ * 
+ * Custer(1986) Roland H. Custer, Mathematical Statements About the Revised
+ * CIP-System, MATCH, 21, 1986, 3-31
+ * http://match.pmf.kg.ac.rs/electronic_versions/Match21/match21_3-31.pdf
+ * 
+ * Favre(2013) Henri A Favre, Warren H Powell, Nomenclature of Organic Chemistry : IUPAC
+ * Recommendations and Preferred Names 2013 DOI:10.1039/9781849733069
+ * http://pubs.rsc.org/en/content/ebook/9780854041824#!divbookcontent
+ * 
+ * IUPAC Project: Corrections, Revisions and Extension for the Nomenclature of
+ * Organic Chemistry - IUPAC Recommendations and Preferred Names 2013 (the IUPAC
+ * Blue Book)
+ * https://iupac.org/projects/project-details/?project_nr=2015-052-1-800
  * 
  * 
- * Introduced in Jmol 14.12.0
- * Validated for Rules 1 and 2 in Jmol 14.13.2
+ * Introduced in Jmol 14.12.0 Validated for Rules 1 and 2 in Jmol 14.13.2
+ * E/Z added 14.14.1
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
@@ -34,7 +57,7 @@ public class CIPChirality {
   //  if (atom.getCovalentBondCount() != 4) exit NO_CHIRALITY 
   //  for (each Rule){  
   //    sortSubstituents() 
-  //    if (done) exit getHandedness();
+  //    if (done) exit checkHandedness();
   //  }
   //  exit NO_CHIRALITY
   // }
@@ -154,15 +177,20 @@ public class CIPChirality {
   static final int TIED = NO_CHIRALITY;
   static final int B_WINS = 1;
   static final int A_WINS = -1;
+  
+  static final int STEREO_R = 1;
+  static final int STEREO_S = 2;
+
+  static final int STEREO_Z = 1;
+  static final int STEREO_E = 2;
 
   int ptID;
-
 
   Viewer vwr;
   
   Map<String, Integer> htPathPoints = new Hashtable<String, Integer>();
 
-  CIPAtom a;
+  CIPAtom a, a1, b1;
   
   /**
    * The current rule being applied exhaustively.
@@ -178,49 +206,161 @@ public class CIPChirality {
     this.vwr = vwr;
     return this;
   }
+  
+  /**
+   * A more general determination of chirality that involves ultimately all
+   * Rules 1-5
+   * 
+   * @param atoms
+   * 
+   * @param bsAtoms
+   */
+  public void getChiralityForAtoms(Node[] atoms, BS bsAtoms) {
+    BS bsToDo = BSUtil.copy(bsAtoms);
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
 
+      Node atom = atoms[i];
+      String c = atom.getCIPChirality(true);
+      if (c.length() > 0) {
+        bsToDo.clear(i);
+      } else {
+        Edge[] bonds = atom.getEdges();
+        int index = atom.getIndex();
+        for (int j = bonds.length; --j >= 0;) {
+          Edge bond = bonds[j];
+          if (bond.getCovalentOrder() == 2
+              && bond.getOtherAtomNode(atom).getIndex() > index) {
+            getBondChirality(bond);
+          }
+        }
+      }
+    }
+    for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
+      Node a = atoms[i];
+      if (a.getCovalentBondCount() != 4)
+        continue;
+      System.out.println("advancing levels for atom " + a);
+      a.setCIPChirality(0);
+      a.setCIPChirality(getAtomChiralityLimited(a, null, null, 5, -1));
+    }
+  }
+  
+  
+ 
   /**
    * Determine the Cahn-Ingold-Prelog R/S chirality of an atom
+   * based only on Rules 1 and 2 -- that is, only the chirality 
+   * that is self-determined, structural, and not relative-chirality dependent.
    * 
    * @param atom
    * @return [0:none, 1:R, 2:S]
    */
-  public int getChirality(Node atom) {
+  public int getAtomChirality(Node atom) {
+    return getAtomChiralityLimited(atom, null, null, 2, -1);
+  }    
+  
+  /**
+   * Determine the Cahn-Ingold-Prelog E/Z chirality of a bond
+   * based only on Rules 1 and 2 -- that is, only the chirality 
+   * that is self-determined, structural, and not relative-chirality dependent.
+   * 
+   * @param bond
+   * @return [0:none, 1:Z, 2:E]
+   */
+  public int getBondChirality(Edge bond) {
+    return getBondChiralityLimited(bond, 2);
+  }
+
+
+  
+  /**
+   * Determine R/S or one half of E/Z determination
+   * @param atom ignored if a is not null
+   * @param a ignored if atom is not null
+   * @param parent null for tetrahedral, other alkene carbon for E/Z
+   * @param ruleMax
+   * @param iref
+   * @return if parent != null: [0:none, 1:R, 2:S] otherwise [0:none, 1: atoms[0] is higher, 2: atoms[1] is higher]
+   */
+  private int getAtomChiralityLimited(Node atom, CIPAtom a, CIPAtom parent, int ruleMax, int iref) {
     int rs = NO_CHIRALITY;
     boolean isChiral = false;
-    if (atom.getCovalentBondCount() == 4
-        && (a = new CIPAtom(atom, null, false)).set()) {
-      try {
-        for (currentRule = 1; currentRule <= 5 && !isChiral; currentRule++) {
-          isChiral = false;
-          if (Logger.debugging)
-            Logger.info("-Rule " + currentRule + " CIPChirality for " + atom + "-----");
-          a.sortSubstituents();
-          isChiral = true;
-          System.out.println(">>>>");
-          for (int i = 0; i < 4; i++) {
-            System.out.println(a.atoms[i] + " " + a.atoms[i].fullPriority);
-          }
-          for (int i = 0; i < 3; i++) {
-            if (a.atoms[i].fullPriority == a.atoms[i + 1].fullPriority) {
-              isChiral = false;
-              break;
+    if (a != null)
+      atom = a.atom;
+    int nbonds = atom.getCovalentBondCount();
+    boolean isAlkene = (nbonds == 3);
+    if (nbonds == (parent == null ? 4 : 3)) {
+      if (a == null)
+        a = new CIPAtom(atom, null, false);
+      this.a = a;
+      a.parent = parent;
+      if (a.set()) {
+        try {
+          if (iref >= 0)
+            a.bsPath.set(iref);
+          for (currentRule = 1; currentRule <= ruleMax && !isChiral; currentRule++) {
+            isChiral = false;
+            if (Logger.debugging)
+              Logger.info("-Rule " + currentRule + " CIPChirality for " + atom + "-----");
+            a.sortSubstituents();
+            isChiral = true;
+            System.out.println(">>>>");
+            for (int i = 0; i < nbonds; i++) {
+              System.out.println(a.atoms[i] + " " + a.atoms[i].fullPriority);
             }
+            for (int i = 0; i < nbonds - 1; i++) {
+              if (a.atoms[i].fullPriority == a.atoms[i + 1].fullPriority) {
+                isChiral = false;
+                break;
+              }
+            }     
           }
+          if (isChiral) {
+            rs = (!isAlkene ? checkHandedness(a) : a.atoms[0].isDuplicate ? 2 : 1);
+          }
+        } catch (Throwable e) {
+          System.out.println(e + " in CIPChirality");
+          if (!vwr.isJS)
+            e.printStackTrace();
         }
-      if (isChiral)
-        rs = getHandedness(a);
-      } catch (Throwable e) {
-        System.out.println(e + " in CIPChirality");
-        if (!vwr.isJS)
-          e.printStackTrace();
-      }
       if (Logger.debugging)
-        Logger.info(atom + " " + (rs == 1 ? "R" : rs == 2 ? "S" : ""));
+        Logger.info(atom + " " + (isAlkene ? "" + rs : rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : ""));
+      }
     }
     if (Logger.debugging)
       Logger.debug("----------------------------------");
     return rs;
+  }
+
+  /**
+   * 
+   * @param bond
+   * @param ruleMax
+   * @return [0:none, 1:Z, 2:E]
+   */
+  private int getBondChiralityLimited(Edge bond, int ruleMax) {
+    int ez = NO_CHIRALITY;
+    Node[] atoms = vwr.ms.at;
+    if (bond.getCovalentOrder() == 2) {
+      Node a = atoms[bond.getAtomIndex1()];
+      Node b = atoms[bond.getAtomIndex2()];
+      a1 = new CIPAtom(a, null, false);
+      b1 = new CIPAtom(b, null, false);
+      int atop = getAtomChiralityLimited(a, a1, b1, ruleMax, -1) - 1;
+      int btop = getAtomChiralityLimited(b, b1, a1, ruleMax, -1) - 1;
+      if (atop >= 0 && btop >= 0) {
+        ez = (checkSeqCIS(b1.atoms[btop], b1, a1, a1.atoms[atop]) ? STEREO_Z
+            : STEREO_E);
+      }
+      if (ez != 0) {
+        a.setCIPChirality(ez << 3);
+        b.setCIPChirality(ez << 3);
+      }
+      if (Logger.debugging)
+        Logger.info(bond + " "
+            + (ez == STEREO_Z ? "Z" : ez == STEREO_E ? "E" : ""));
+    }
+    return ez;
   }
 
   /**
@@ -229,7 +369,7 @@ public class CIPChirality {
    * @param a
    * @return 1 for "R", 2 for "S"
    */
-  static int getHandedness(CIPAtom a) {
+  static int checkHandedness(CIPAtom a) {
     P3 p1 = (P3) a.atoms[0].atom; // highest priority
     P3 p2 = (P3) a.atoms[1].atom;
     P3 p3 = (P3) a.atoms[2].atom;
@@ -238,6 +378,17 @@ public class CIPChirality {
     float d = Measure.getNormalThroughPoints(p1, p2, p3, vNorm, new V3());
     return (Measure.distanceToPlaneV(vNorm, d, p4) > 0 ? 1 : 2);
   }
+
+  public boolean checkSeqCIS(CIPAtom me, CIPAtom parent, CIPAtom grandParent,
+                             CIPAtom greatGrandParent) {
+    V3 vNorm1 = new V3();
+    V3 vTemp = new V3();
+    Measure.getNormalThroughPoints((P3) me.atom, (P3) parent.atom, (P3) grandParent.atom, vNorm1, vTemp);
+    V3 vNorm2 = new V3();
+    Measure.getNormalThroughPoints((P3) parent.atom, (P3) grandParent.atom, (P3) greatGrandParent.atom, vNorm2, vTemp);
+    return (vNorm1.dot(vNorm2) > 0); 
+  }
+
 
   /**
    * Break a tie at any level in the iteration between to atoms that otherwise
@@ -313,6 +464,11 @@ public class CIPChirality {
     }
     System.out.println("compareAB ends in tie for " + a + " vs. " + b);
     return TIED;
+  }
+  
+  static CIPAtom getCommonAncestor(CIPAtom a, CIPAtom b) {
+    while ((a = a.parent) != (b = b.parent)){}
+    return a;    
   }
 
   private class CIPAtom implements Comparable<CIPAtom> {
@@ -433,9 +589,11 @@ public class CIPChirality {
 
     private boolean isSeqCIS;
     
-    private String knownChirality;
+    private String knownAtomChirality = "";
     
     private int nPriorities;
+
+    private String knownChiralityPath = "";
 
     @Override
     public String toString() {
@@ -455,9 +613,10 @@ public class CIPChirality {
         return;
       this.id = ++ptID;
       this.atom = atom;
-      this.knownChirality = atom.getChirality(false);
+      knownAtomChirality = atom.getCIPChirality(false);
       this.parent = parent;
       if (parent != null) {
+        this.knownChiralityPath = parent.knownAtomChirality + this.knownAtomChirality;
         level = parent.level + 1;
         grandParent = parent.parent;
       }
@@ -515,8 +674,10 @@ public class CIPChirality {
         Node other = bond.getOtherAtomNode(atom);
         boolean isParent = (parent != null && parent.atom == other);
         int order = bond.getCovalentOrder();
-        if (isParent && order == 2)
+        if (isParent && order == 2) {
           isAlkeneAtom2 = true;
+          knownAtomChirality = bond.getCIPChirality(false);
+        }
         switch (order) {
         case 3:
           if (!addAtom(pt++, other, isParent)) {
@@ -657,8 +818,11 @@ public class CIPChirality {
         ret[atoms[i].priorityIndex] = atoms[i];
         bs.set(atoms[i].priorityNumber);
       }
+      
+      nPriorities = bs.cardinality();
+      
       if (Logger.debugging) {
-        Logger.info(atom + " nPriorities = " + bs.cardinality());
+        Logger.info(atom + " nPriorities = " + nPriorities);
         for (int i = 0; i < n; i++)
           Logger.info(atom + "[" + i + "]=" + ret[i]);
       }
@@ -764,41 +928,80 @@ public class CIPChirality {
       return b.massNo < massNo ? A_WINS : b.massNo > massNo ? B_WINS : TIED;
     }
 
+    /**
+     * Chapter 9 Rule 2. atomic mass
+     * 
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
     private int checkRule3(CIPAtom b) {
-      return !checkHeritage() || !b.checkHeritage() 
-          || isSeqCIS() == b.isSeqCIS() ? TIED : isSeqCIS() ? A_WINS : B_WINS;
+      int l = getCommonAncestor(this, b).knownChiralityPath.length();
+      String ac = knownChiralityPath.substring(l);
+      String bc = b.knownChiralityPath.substring(l);
+      
+      // TODO: Rule 3 is not quite right. We have to make sure that ONLY one 
+      // such  alkene is present. This can only be done "at the end of the line"
+      // so somehow flag that. Maybe we maintain a pointer to the prev. one?
+      
+      
+      
+      return parent == null  || !parent.isAlkeneAtom2 || !b.parent.isAlkeneAtom2 
+          || isSeqCIS() == b.isSeqCIS() ? TIED 
+              : isSeqCIS() ? 
+                  A_WINS 
+                  : 
+                    B_WINS;
     }
     
+    /**
+     * Check path-based seqCis (as described in Mata(1986) and Custer(1986)
+     * 
+     * @return true if path 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
     private boolean isSeqCIS() {
       if (!haveSeqType) {
-        V3 vNorm1 = new V3();
-        V3 vTemp = new V3();
-        Measure.getNormalThroughPoints((P3) atom, (P3) parent.atom, (P3) grandParent.atom, vNorm1, vTemp);
-        V3 vNorm2 = new V3();
-        Measure.getNormalThroughPoints((P3) parent.atom, (P3) grandParent.atom, (P3) greatGrandParent.atom, vNorm2, vTemp);
-        isSeqCIS = (vNorm1.dot(vNorm2) > 0); 
+        String ez = parent.knownAtomChirality;
+        isSeqCIS =  ez.length() > 0 ? ez.equals("Z") : checkSeqCIS(this, parent, grandParent, greatGrandParent);
         haveSeqType = true;
       }
       return isSeqCIS;
     }
 
+
     /**
-     * Rule 3 only
+     * Chapter 9 Rule 4: like vs. unlike
      * 
-     * @return true if has a greatGrandParent
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    private boolean checkHeritage() {
-      return greatGrandParent != null;
-    }
-
     private int checkRule4(CIPAtom b) {
-      // TODO
+      int l = getCommonAncestor(this, b).knownChiralityPath.length();
+      String ac = knownChiralityPath.substring(l);
+      String bc = b.knownChiralityPath.substring(l);
+      if (ac != null && ac.length() == bc.length() && !ac.equals(bc)) {
+        int n = ac.length();
+        for (int i = 0; i < n - 1; i++)
+          for (int j = i + 1; j < n; j++) {
+            boolean alike = (ac.charAt(i) == ac.charAt(j));
+            boolean blike = (bc.charAt(i) == bc.charAt(j));
+            if (alike != blike)
+              return (alike ? A_WINS : B_WINS);
+          }
+      }
       return TIED;
     }
 
+    /**
+     * Chapter 9 Rule 5. Implemented only for R and Z.
+     * 
+     * For 3D models is it not necessary to consider "unspecified" chirality, as that is only a 2D concept.
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
     private int checkRule5(CIPAtom b) {
-      // TODO
-      return TIED;
+      boolean isRZ = PT.isOneOf(knownAtomChirality, ";RZ;");
+      return (isRZ == PT.isOneOf(b.knownAtomChirality, ";RZ;")? TIED : isRZ ? A_WINS
+          : B_WINS);
     }
 
   }

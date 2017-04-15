@@ -96,6 +96,7 @@ public interface Node {
   public boolean isPyrimidine();
   public boolean isDeleted();
   char getBioSmilesType();
-  String getChirality(boolean doCalculate);
+  String getCIPChirality(boolean doCalculate);
+  void setCIPChirality(int c);
 
 }

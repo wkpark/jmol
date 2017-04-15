@@ -618,8 +618,12 @@ public class CmdExt extends ScriptExt {
         checkLength(2);
         break;
       case T.chirality:
-        // TODO
-        break;
+        eval.iToken = 1;
+        bs1 = (slen == 2 ? null : atomExpressionAt(2));
+        eval.checkLast(eval.iToken);
+        if (!chk)
+          vwr.calculateChirality(bs1);
+        return;
       case T.formalcharge:
         checkLength(2);
         if (chk)

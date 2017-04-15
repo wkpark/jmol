@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 import javajs.util.Lst;
 import javajs.util.P3;
@@ -218,6 +219,10 @@ public interface SymmetryInterface {
 
   void toFractionalM(M4 m);
 
-  public int getChirality(Viewer vwr, Atom atom);
+  int getAtomCIPChirality(Viewer vwr, Atom atom);
+
+  void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms);
+
+  int getBondCIPChirality(Viewer vwr, Bond bond);
 
 }

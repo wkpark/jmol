@@ -33,12 +33,16 @@ import org.jmol.viewer.JC;
 
 public class Bond extends Edge {
 
+  public final static int myVisibilityFlag = JC.getShapeVisibilityFlag(JC.SHAPE_STICKS);
+
   public Atom atom1;
   public Atom atom2;
 
   public short mad;
   public short colix;
 
+  public int shapeVisibilityFlags;
+  
   /**
    * @j2sIgnoreSuperConstructor
    * @param atom1
@@ -61,8 +65,6 @@ public class Bond extends Edge {
     setShapeVisibility(mad != 0);
   }
 
-  public int shapeVisibilityFlags;
-  
   void setShapeVisibility(boolean isVisible) {
     boolean wasVisible = ((shapeVisibilityFlags & myVisibilityFlag) != 0);
     if (wasVisible == isVisible)
@@ -76,8 +78,6 @@ public class Bond extends Edge {
   }
             
   
-  public final static int myVisibilityFlag = JC.getShapeVisibilityFlag(JC.SHAPE_STICKS);
-
   public String getIdentity() {
     return (index + 1) + " "+ Edge.getBondOrderNumberFromOrder(order) + " " + atom1.getInfo() + " -- "
         + atom2.getInfo() + " " + atom1.distance(atom2);
@@ -188,6 +188,40 @@ public class Bond extends Edge {
     order = (i1 > 2 || i2 >= bonds.length || i2 > 2 ? BOND_COVALENT_SINGLE
         : getAtropismOrder(i1 + 1, i2 + 1));
   }
+
+  /**
+   * Determine R/S chirality at this position; non-H atoms only; cached in formalChargeAndFlags
+   * @param doCalculate 
+   * 
+   * @return "" or "Z" or "E"
+   */
+  public String getCIPChirality(boolean doCalculate) {
+    int flags = (order & BOND_CIP_STEREO_MASK) >> BOND_CIP_STEREO_SHIFT;
+    if (flags == 0 && getCovalentOrder() == 2 && doCalculate) {
+      flags = atom1.group.chain.model.ms.getBondCIPChirality(this);
+      order |= ((flags == 0 ? 3 : flags) << BOND_CIP_STEREO_SHIFT);
+    }
+    switch (flags) {
+    case BOND_CIP_STEREO_E:
+      return "E";
+    case BOND_CIP_STEREO_Z:
+      return "Z";
+    default:
+      return "";
+    }
+  }
+  
+  /**
+   * 
+   * @param c [0:unknown; 1: Z; 2: E; 3: none]
+   */
+  @Override
+  public void setCIPChirality(int c) {
+    order = (byte)((order & ~BOND_CIP_STEREO_MASK) 
+        | (c << BOND_CIP_STEREO_SHIFT));
+  }
+
+
 
   @Override
   public String toString() {

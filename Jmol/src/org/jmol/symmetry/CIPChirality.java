@@ -344,6 +344,7 @@ public class CIPChirality {
       }
       root = cipAtom;
       cipAtom.parent = parent;
+      currentRule = 0;
       if (cipAtom.set()) {
         try {
           if (iref >= 0)
@@ -622,8 +623,10 @@ public class CIPChirality {
       if (parent == null) {
         // original atom
         bsPath.set(iatom);
+        rootDistance = 0;
       } else if (atom == root.atom) {
-        // pointing to original atom (0 distance)
+        // pointing to original atom
+        rootDistance = 0;
         isDuplicate = true;
       } else if (bsPath.get(iatom)) {
         isDuplicate = true;
@@ -698,8 +701,12 @@ public class CIPChirality {
       fillNull(pt);
 
       // Do an initial atom-only shallow sort using a.compareTo(b)
-       
+     
+      int ruleNow = currentRule;
+      currentRule = 0;
       Arrays.sort(atoms);
+      currentRule = ruleNow;
+      
       return !isTerminal;
     }
 
@@ -758,22 +765,27 @@ public class CIPChirality {
         for (int i = 0; i < n; i++)
           Logger.info(currentRule + ": " + this + "[" + i + "]=" + atoms[i] + " " + Integer.toHexString(prevPriorities[i]));
       }
-
+      
       int[] indices = new int[4];
 
-      for (int i = 0; i < n; i++)
+      for (int i = 0; i < n; i++) {
         priorities[i] = 1;
+//        if (prevPriorities[i] != 0 && 
+//            (prevPriorities[i]&0xFF000000) != (getBasePriority(atoms[i]) & 0xFF000000))
+//          System.out.println("???????");
+        if (prevPriorities[i] == 0 && currentRule > 1)
+          prevPriorities[i] = getBasePriority(atoms[i]);
+      }
       for (int i = 0; i < n; i++) {
         CIPAtom a = atoms[i];
         for (int j = i + 1; j < n; j++) {
           CIPAtom b = atoms[j];
-          //if (Logger.debugging)
-            //Logger.info("ordering " + this.id + "." + i + "."+ j + " " +  this + "-" + a + " vs " + b + " " + prevPriorities[i] + " " +  prevPriorities[j]);
-          int score = (a.atom == null || b.atom == null || prevPriorities[i] == prevPriorities[j] ? a.compareTo(b) 
-              :  prevPriorities[j] < prevPriorities[i] ? B_WINS : A_WINS);
-          //if (Logger.debugging)
-            //Logger.info("ordering " + this.id + "." + i + "."+ j + " "  + this + "-" + a + " vs " + b
-              //  + " = " + score);
+          if (Logger.debuggingHigh)
+            Logger.info("ordering " + this.id + "." + i + "."+ j + " " +  this + "-" + a + " vs " + b + " " + Integer.toHexString(prevPriorities[i]) + " " +  Integer.toHexString(prevPriorities[j]));
+          int score = compareSubs(a, b, i, j);
+          if (Logger.debuggingHigh)
+            Logger.info("ordering " + this.id + "." + i + "."+ j + " "  + this + "-" + a + " vs " + b
+                + " = " + score);
           switch (score) {
           case NA:
             System.out.println("OHNO");
@@ -781,14 +793,14 @@ public class CIPChirality {
           case B_WINS:
             indices[i]++;
             priorities[i]++;
-    //        if (Logger.debugging)
-      //        Logger.info(atom + "." + b + " B-beats " + a + " ind=" + indices[i]);
+            if (Logger.debuggingHigh)
+              Logger.info(atom + "." + b + " B-beats " + a + " ind=" + indices[i]);
             break;
           case A_WINS:
             indices[j]++;
             priorities[j]++;
-     //       if (Logger.debugging)
-       //       Logger.info(atom + "." + a + " A-beats " + b + " ind=" + indices[j]);
+            if (Logger.debuggingHigh)
+             Logger.info(atom + "." + a + " A-beats " + b + " ind=" + indices[j]);
             break;
           case TIED:
             switch (a.breakTie(b)) {
@@ -797,20 +809,20 @@ public class CIPChirality {
               break;
             case TIED:
               indices[i]++;
-        //      if (Logger.debugging)
-          //      Logger.info(atom + "." + b + " ends up with tie with " + a + " ind=" + indices[i]);
+              if (Logger.debuggingHigh)
+                Logger.info(atom + "." + b + " ends up with tie with " + a + " ind=" + indices[i]);
               break;
             case B_WINS:
               indices[i]++;
               priorities[i]++;
-    //          if (Logger.debugging)
-      //          Logger.info(atom + "." + b + " wins in tie with " + a  + " ind=" + indices[i]+ "\n");
+              if (Logger.debuggingHigh)
+                Logger.info(atom + "." + b + " wins in tie with " + a  + " ind=" + indices[i]+ "\n");
               break;
             case A_WINS:
               indices[j]++;
               priorities[j]++;
-//              if (Logger.debugging)
-  //              Logger.info(atom + "." + a + " wins in tie with " + b + " ind=" + indices[j] + "\n");
+              if (Logger.debuggingHigh)
+                Logger.info(atom + "." + a + " wins in tie with " + b + " ind=" + indices[j] + "\n");
               break;
             }
             break;
@@ -828,24 +840,23 @@ public class CIPChirality {
       int shift = PRIORITY_SHIFT[currentRule];
       for (int i = 0; i < n; i++) {
         int pt = indices[i];
-        newAtoms[pt] = atoms[i];
-        Node atom = atoms[i].atom;
+        CIPAtom a = newAtoms[pt] = atoms[i];
         int p = priorities[i];
         newPriorities[pt] = p;
-        // we put atomic number and mass in specially so that we can recreate them for Rule 3
-        switch (currentRule) {
-        case 10:
-          p = (atom == null ? 0 : 128 - atom.getElementNumber());
-          break;
-        case 12:
-          p = (atom == null ? 0 : 128 - atom.getNominalMass());
-          break;
-        }
+// can't do this, because of tie breaking
+//        switch (currentRule) {
+//        case 0:
+//          p = 127 - (a.atom == null ? 0 : a.elemNo);
+//          break;
+//        case 2:
+//          p = 255 - (a.atom == null ? 0 : a.massNo);
+//          break;
+//        }
         newPrevPriorities[pt] = prevPriorities[i] | (p<<shift);
-        if (atoms[i].atom != null)
+        if (a.atom != null)
           bs.set(priorities[i]);
       }
-      atoms = newAtoms;
+      atoms = newAtoms; 
       priorities = newPriorities;
       prevPriorities = newPrevPriorities;
       nPriorities = bs.cardinality();
@@ -855,6 +866,12 @@ public class CIPChirality {
         for (int i = 0; i < n; i++)
           Logger.info(atom + "[" + i + "]=" + atoms[i] + " " + priorities[i]);
       }
+    }
+
+    private int compareSubs(CIPAtom a, CIPAtom b, int i, int j) {
+      return (a.atom == null ? B_WINS : b.atom == null ? A_WINS
+          : prevPriorities[i] == prevPriorities[j] ? a.compareTo(b)
+              : prevPriorities[j] < prevPriorities[i] ? B_WINS : A_WINS);
     }
 
     /**
@@ -994,7 +1011,6 @@ public class CIPChirality {
         return checkRule5(b);
       }
     }
-
 
     /**
      * Looking for same atom or ghost atom or element number
@@ -1230,14 +1246,13 @@ public class CIPChirality {
 
     }
 
-    private int getBasePriority(CIPAtom atom) {
-      Node a = atom.atom;
+    private int getBasePriority(CIPAtom a) {
       int code = 0;
-      if (a == null) {
+      if (a.atom == null) {
         code = 0x7FFFF << PRIORITY_SHIFT[2];
       } else {
-        code = ((128 - a.getElementNumber()) << PRIORITY_SHIFT[0])
-            | ((128 - a.getNominalMass()) << PRIORITY_SHIFT[2]);
+        code = ((127 - a.elemNo) << PRIORITY_SHIFT[0])
+            | ((255 - a.massNo) << PRIORITY_SHIFT[2]);
       }      
       return code;
     }

@@ -257,16 +257,7 @@ public class CIPChirality {
     // E/Z -- Rule 3
     
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-      Node atom = atoms[i];
-      Edge[] bonds = atom.getEdges();
-      int index = atom.getIndex();
-      for (int j = bonds.length; --j >= 0;) {
-        Edge bond = bonds[j];
-        if (bond.getCovalentOrder() == 2
-            && bond.getOtherAtomNode(atom).getIndex() > index) {
-          getBondChirality(bond);
-        }
-      }
+      getAtomBondChirality(atoms[i], true);
     }
 
     // Necessary? Perhaps for pseudo-chirality 
@@ -280,8 +271,7 @@ public class CIPChirality {
     }
   }
   
-  
- 
+
   /**
    * Determine the Cahn-Ingold-Prelog R/S chirality of an atom
    * based only on Rules 1 and 2 -- that is, only the chirality 
@@ -305,8 +295,25 @@ public class CIPChirality {
   public int getBondChirality(Edge bond) {
     return getBondChiralityLimited(bond, 3);
   }
-
-
+  
+  /**
+   * Get E/Z characteristics for specific atoms
+   * 
+   * @param atom
+   * @param allBonds  
+   */
+ 
+  public void getAtomBondChirality(Node atom, boolean allBonds) {
+    Edge[] bonds = atom.getEdges();
+    int index = atom.getIndex();
+    for (int j = bonds.length; --j >= 0;) {
+      Edge bond = bonds[j];
+      if (bond.getCovalentOrder() == 2
+          && (allBonds || bond.getOtherAtomNode(atom).getIndex() > index)) {
+        getBondChirality(bond);
+      }
+    }
+  }
   
   /**
    * Determine R/S or one half of E/Z determination

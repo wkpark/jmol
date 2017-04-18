@@ -26,14 +26,14 @@ import org.jmol.viewer.Viewer;
  * CIP(1966) R.S. Cahn, C. Ingold, V. Prelog, Specification of Molecular
  * Chirality, Angew.Chem. Internat. Edit. 5, 385ff
  * 
- * Mata(1986) Paulina Mata, Ana M. Lobo, Chris Marshall, and A. Peter Johnson,
- * Implementation of the Cahn-Ingold-Prelog System for Stereochemical Perception
- * in the LHASA Program, J. Chem. Inf. Comput. Sci. 1994, 34, 491-504 491
- * http://pubs.acs.org/doi/abs/10.1021/ci00019a004
- * 
  * Custer(1986) Roland H. Custer, Mathematical Statements About the Revised
  * CIP-System, MATCH, 21, 1986, 3-31
  * http://match.pmf.kg.ac.rs/electronic_versions/Match21/match21_3-31.pdf
+ * 
+ * Mata(1994) Paulina Mata, Ana M. Lobo, Chris Marshall, and A. Peter Johnson,
+ * Implementation of the Cahn-Ingold-Prelog System for Stereochemical Perception
+ * in the LHASA Program, J. Chem. Inf. Comput. Sci. 1994, 34, 491-504 491
+ * http://pubs.acs.org/doi/abs/10.1021/ci00019a004
  * 
  * Favre(2013) Henri A Favre, Warren H Powell, Nomenclature of Organic Chemistry : IUPAC
  * Recommendations and Preferred Names 2013 DOI:10.1039/9781849733069
@@ -351,7 +351,8 @@ public class CIPChirality {
             cipAtom.bsPath.set(iref);
           for (currentRule = 0; currentRule <= ruleMax && !isChiral; currentRule++) {
             isChiral = false;
-            Logger.info("-Rule " + currentRule + " CIPChirality for " + cipAtom
+            if (Logger.debugging)
+              Logger.info("-Rule " + currentRule + " CIPChirality for " + cipAtom
                 + "-----");
             cipAtom.sortSubstituents();
             isChiral = true;

@@ -54,7 +54,7 @@ public class CIPChirality {
 
   // Very rough Pseudocode:
   // 
-  // individual "standard" carbon-based R/S stereochemistry (Rules 1-2)
+  // individual "standard" carbon-based R/S and E/Z stereochemistry (Rules 1, 2, and 3)
   //
   // getChirality(atom) {
   //  if (atom.getCovalentBondCount() != 4) exit NO_CHIRALITY 
@@ -194,7 +194,7 @@ public class CIPChirality {
    * Jmol viewer that created this CIPChirality object
    * 
    */
-  Viewer vwr;
+  private Viewer vwr;
   
   /**
    * incremental pointer providing a unique ID to every CIPAtom for debugging
@@ -238,15 +238,24 @@ public class CIPChirality {
    * @param bsAtoms
    */
   public void getChiralityForAtoms(Node[] atoms, BS bsAtoms) {
+    
+    // Initial Rules 1-3 only
+    
     BS bsToDo = BSUtil.copy(bsAtoms);
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       Node atom = atoms[i];
+      
+      // This call checks to be sure we do not already have it and also
+      // indirectly calls getAtomChirality(Node atom)
+      
       String c = atom.getCIPChirality(true);
       if (c.length() > 0) {
         bsToDo.clear(i);
       }
     }
 
+    // E/Z -- Rule 3
+    
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       Node atom = atoms[i];
       Edge[] bonds = atom.getEdges();
@@ -260,6 +269,8 @@ public class CIPChirality {
       }
     }
 
+    // Necessary? Perhaps for pseudo-chirality 
+    
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
       Node a = atoms[i];
       if (a.getCovalentBondCount() != 4)
@@ -436,13 +447,6 @@ public class CIPChirality {
   }
 
 
-  static CIPAtom getCommonAncestor(CIPAtom a, CIPAtom b) {
-    if ((a.parent == null) != (b.parent == null))
-      System.out.println("OHOH3");
-    while ((a = a.parent) != (b = b.parent)){}
-    return a;    
-  }
-
   final static int[] PRIORITY_SHIFT = new int[] {24, 20, 12, 8, 4, 0};
   
   private class CIPAtom implements Comparable<CIPAtom>, Cloneable {
@@ -469,22 +473,22 @@ public class CIPChirality {
     /**
      * first atom in this atom's root branch  
      */
-    CIPAtom rootSubstituent;
+    private CIPAtom rootSubstituent;
     
     /**
      * Rule 1 element number
      */
-    int elemNo;
+    private int elemNo;
 
     /**
      * Rule 2 nominal atomic mass; may be a rounded value so that 12C is the same as C 
      */
-    int massNo;
+    private int massNo;
 
     /**
      * bond distance from the root atom to this atom
      */
-    int sphere;
+    private int sphere;
 
     /**
      * the array of indices of the associated atoms in the path to this atom
@@ -500,12 +504,12 @@ public class CIPChirality {
      * 
      */
     
-    int rootDistance;
+    private int rootDistance;
 
     /**
      * number of substituent atoms (non-null atoms[] entries)
      */
-    int nAtoms;
+    private int nAtoms;
 
     /**
      * the number of distinct priorities determined for this atom for the current rule
@@ -538,7 +542,7 @@ public class CIPChirality {
      * a flag to prevent finalization of an atom node more than once
      * 
      */
-    boolean isSet;
+    private boolean isSet;
 
     /**
      * a flag to indicate atom that is a duplicate of another, either due to ring closure or multiple bonding
@@ -552,13 +556,13 @@ public class CIPChirality {
      * a flag to indicate an atom that has no substituents; a branch end point; typically H or a halogen (F, Cl, Br, I)
      * 
      */
-    boolean isTerminal;
+    private boolean isTerminal;
 
     /**
      * a flag used in Rule 3 to indicate the second carbon of a double bond
      */
     
-    boolean isAlkeneAtom2;
+    private boolean isAlkeneAtom2;
 
     /**
      * the substituents -- up to four supported here at this time
@@ -571,7 +575,7 @@ public class CIPChirality {
      * due to equivaliencies at a given rule level, these numbers may duplicate
      * and have gaps - for example, [1 1 3 4] 
      */
-    int[] priorities = new int[4];
+    private int[] priorities = new int[4];
 
     /**
      * a number that encodes a substituent's priority prior to any comparisons by previous rules;
@@ -692,7 +696,7 @@ public class CIPChirality {
       return !isTerminal;
     }
 
-    void fillNull(int pt) {
+    private void fillNull(int pt) {
       for (; pt < atoms.length; pt++)
         atoms[pt] = new CIPAtom(null, this, true);      
     }
@@ -705,7 +709,7 @@ public class CIPChirality {
      * @param isDuplicate
      * @return new atom or null
      */
-    CIPAtom addAtom(int i, Node other, boolean isDuplicate) {
+    private CIPAtom addAtom(int i, Node other, boolean isDuplicate) {
       if (i >= atoms.length) {
         if (Logger.debugging)
           Logger.info(" too many bonds on " + atom);
@@ -855,7 +859,7 @@ public class CIPChirality {
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    int checkDuplicate(CIPAtom b) {
+    private int checkDuplicate(CIPAtom b) {
       return b.isDuplicate == isDuplicate ? TIED : b.isDuplicate ? A_WINS : B_WINS;
     }
 
@@ -867,7 +871,7 @@ public class CIPChirality {
      * @return 1 to indicate this is the winner, -1 to indicate b is the winner; 0
      *         for a tie
      */
-    int breakTie(CIPAtom b) {
+    private int breakTie(CIPAtom b) {
 
       // Do a duplicate check -- if that is not a TIE we do not have to go any further.
       
@@ -991,7 +995,7 @@ public class CIPChirality {
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    int checkRule1a(CIPAtom b) {
+    private int checkRule1a(CIPAtom b) {
       return b.atom == atom ? TIED : b.atom == null ? A_WINS : atom == null ? B_WINS
           : b.elemNo < elemNo ? A_WINS : b.elemNo > elemNo ? B_WINS : TIED;
     }
@@ -1003,7 +1007,7 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
 
-    int checkRule1b(CIPAtom b) {
+    private int checkRule1b(CIPAtom b) {
       return !b.isDuplicate || !isDuplicate ? TIED 
           : b.rootDistance < rootDistance ? 
               B_WINS 
@@ -1018,7 +1022,7 @@ public class CIPChirality {
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    int checkRule2(CIPAtom b) {
+    private int checkRule2(CIPAtom b) {
       return b.massNo < massNo ? A_WINS : b.massNo > massNo ? B_WINS : TIED;
     }
 
@@ -1087,7 +1091,7 @@ public class CIPChirality {
       return auxiliaryEZ;
     }
     
-    Lst<CIPAtom> getReturnPath(CIPAtom a) {
+    private Lst<CIPAtom> getReturnPath(CIPAtom a) {
       Lst<CIPAtom> path = new Lst<CIPAtom>();
       while (a.parent != null && a.parent.atoms[0] != null) {
         if (Logger.debugging)
@@ -1156,7 +1160,7 @@ public class CIPChirality {
     private int checkRule4(CIPAtom b) {
       if (Logger.debugging)
         Logger.info("Checking Rule 4 for " + this + " and " + b);
-      int l = getCommonAncestor(this, b).knownChiralityPath.length();
+      int l = getCommonAncestor(b).knownChiralityPath.length();
       if (l >= knownChiralityPath.length())
         return TIED; // some H atoms
       String ac = knownChiralityPath.substring(l);
@@ -1173,6 +1177,15 @@ public class CIPChirality {
       }
       return TIED;
     }
+
+    private CIPAtom getCommonAncestor(CIPAtom b) {
+      CIPAtom a = this;
+      if ((a.parent == null) != (b.parent == null))
+        System.out.println("OHOH3");
+      while ((a = a.parent) != (b = b.parent)){}
+      return a;    
+    }
+
 
     /**
      * Chapter 9 Rule 5. Implemented only for R and Z.

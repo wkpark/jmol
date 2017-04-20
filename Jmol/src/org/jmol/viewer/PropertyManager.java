@@ -1115,7 +1115,7 @@ public class PropertyManager implements JmolPropertyManager {
                     : type.equals("pdb") ? "{selected and not hetero}.label(\"ATOM  %5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines"
                         + "+{selected and hetero}.label(\"HETATM%5i %-4a%1A%3.3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines"
                         : type.equals("xyz") ? "%-2e %10.5x %10.5y %10.5z"
-                            : type.equals("cfi") ? "print 'from Jmol" + Viewer.getJmolVersion() + "\n'+{selected}.count + ' ' + {selected}.bonds.count + '\n'   + {selected}.format('%10.0[atomno] %10.0[elemno] %10.4[xyz]')  + {selected}.bonds.format('%i1 %i2') + '\n' + {selected}.bonds.format('%ORDER')"
+                            : type.equals("cfi") ? "print '$CFI from Jmol" + Viewer.getJmolVersion() + "\n'+{selected}.count + ' ' + {selected}.bonds.count + '\n'   + {selected}.format('%10.0[atomno] %10.0[elemno] %10.4[xyz]')  + {selected}.bonds.format('%i1 %i2') + '\n' + {selected}.bonds.format('%ORDER')"
                             : null);
     if (exp == null)
       return getModelExtract(vwr.getAtomBitSet(atomExpression), false, false,
@@ -1135,7 +1135,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   /**
    * 
-   * V3000, SDF, MOL, JSON, CD, XYZ, XYZVIB, XYZRN, CML, PDB, PQR,
+   * V3000, SDF, MOL, JSON, CD, XYZ, XYZVIB, XYZRN, CML, PDB, PQR
    * 
    * MOL67 is MOL with bonds of type 6 or 7 (aromatic single/double)
    * 

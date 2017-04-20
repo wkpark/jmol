@@ -391,13 +391,16 @@ public class Resolver {
   private final static String[] xmlStartRecords = 
   { "Xml", "<?xml" };
 
+  private final static String[] cfiStartRecords = 
+  { "Input", "$CFI" };
+
   private final static String[][] fileStartsWithRecords =
   { xmlStartRecords, sptRecords, m3dStartRecords, cubeFileStartRecords, 
     mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
     inputFileStartRecords, magresFileStartRecords, pymolStartRecords, 
     janaStartRecords, jsonStartRecords, jcampdxStartRecords, 
-    jmoldataStartRecords, pqrStartRecords, p2nStartRecords, cif2StartRecords };
+    jmoldataStartRecords, pqrStartRecords, p2nStartRecords, cif2StartRecords, cfiStartRecords };
 
   ////////////////////////////////////////////////////////////////
   // Test 3. check first time for special file types

@@ -3875,12 +3875,12 @@ public class CmdExt extends ScriptExt {
         && !PT
             .isOneOf(
                 type,
-                ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;NBO;ISOSURFACE;MESH;PMESH;PMB;ISOMESHBIN;ISOMESH;VAR;FILE;FUNCTION;CIF;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;MOL67;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
+                ";SCENE;JMOL;ZIP;ZIPALL;SPT;HISTORY;MO;NBO;ISOSURFACE;MESH;PMESH;PMB;ISOMESHBIN;ISOMESH;VAR;FILE;FUNCTION;CFI;CIF;CML;JSON;XYZ;XYZRN;XYZVIB;MENU;MOL;MOL67;PDB;PGRP;PQR;QUAT;RAMA;SDF;V2000;V3000;INLINE;"))
       eval.errorStr2(
           ScriptError.ERROR_writeWhat,
           "COORDS|FILE|FUNCTIONS|HISTORY|IMAGE|INLINE|ISOSURFACE|JMOL|MENU|MO|NBO|POINTGROUP|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|SPT|STATE|VAR x|ZIP|ZIPALL  CLIPBOARD",
-          "CIf|CML|GIF|GIFT|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|CD|JSON|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
+          "CIF|CML|CFI|GIF|GIFT|JPG|JPG64|JMOL|JVXL|MESH|MOL|PDB|PMESH|PNG|PNGJ|PNGT|PPM|PQR|SDF|CD|JSON|V2000|V3000|SPT|XJVXL|XYZ|XYZRN|XYZVIB|ZIP"
               + driverList.toUpperCase().replace(';', '|'));
     if (chk)
       return "";
@@ -3965,6 +3965,8 @@ public class CmdExt extends ScriptExt {
         data = vwr.getModelExtract("selected", isCoord, false, data);
         if (data.startsWith("ERROR:"))
           bytes = data;
+      } else if (data == "CFI") {
+        data = vwr.getModelFileData("selected", "cfi", false);
       } else if (data == "FUNCTION") {
         data = vwr.getFunctionCalls(null);
         type = "TXT";

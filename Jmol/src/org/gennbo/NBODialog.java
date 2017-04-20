@@ -813,6 +813,7 @@ public class NBODialog extends JDialog {
       }
       break;
     case PICK:
+      // 1-based atom numbers
       int[] picked = NBOUtil.getAtomsPicked(data);
       if (picked[0] < 0)
         return; // not an atom or a bond -- maybe draw picking is on

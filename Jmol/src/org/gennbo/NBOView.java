@@ -1255,15 +1255,21 @@ class NBOView {
       case BASIS_MO:
         break;
       case BASIS_PNHO:
-      case BASIS_NHO:
-        showOrbital(nextOrbitalForBondPick(at1 + "(" + at2 + ")", at2 + "("
+      case BASIS_NHO: {
+        String sat1 = vwr.ms.at[at1 - 1].getElementSymbol() + at1;
+        String sat2 = vwr.ms.at[at2 - 1].getElementSymbol() + at2;
+        showOrbital(nextOrbitalForBondPick(sat1 + "(" + sat2 + ")", sat2 + "("
             + at1 + ")"));
+      }
         break;
       case BASIS_PNBO:
       case BASIS_NBO:
       case BASIS_PNLMO:
-      case BASIS_NLMO:
-        showOrbital(nextOrbitalForBondPick(at1 + "-" + at2, at2 + "-" + at1));
+      case BASIS_NLMO: {
+        String sat1 = vwr.ms.at[at1 - 1].getElementSymbol() + at1;
+        String sat2 = vwr.ms.at[at2 - 1].getElementSymbol() + at2;
+        showOrbital(nextOrbitalForBondPick(sat1 + "-" + sat2, sat2 + "-" + sat1));
+      }
         break;
       }
     }

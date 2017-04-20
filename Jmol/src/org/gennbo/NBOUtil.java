@@ -136,11 +136,12 @@ public class NBOUtil {
       return new int[] { atom1 + 1, Integer.MIN_VALUE };
     if (atom1 != -3)
       return new int[] { Integer.MIN_VALUE, 0 };
-    String[] sdata = PT.getTokens(data[1].toString().replace('"', ' '));
-    atom1 = PT.parseInt(sdata[3]);
-    int atom2 = PT.parseInt(sdata[4]);
+    // bond
+    String[] sdata = PT.split(data[1].toString(), "#");
+    atom1 = PT.parseInt(sdata[1]);
+    int atom2 = PT.parseInt(sdata[2]);
     System.out.println(atom1 + " picked " + atom2);
-    return new int[] { atom1 + 1, atom2 + 1};
+    return new int[] { atom1, atom2};
   }
 
   public static String addNBOKeyword(String tmp, String s) {

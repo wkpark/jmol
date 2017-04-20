@@ -19,7 +19,8 @@ import org.jmol.viewer.Viewer;
 
 /**
  * A relatively simple implementation of Cahn-Ingold-Prelog rules for assigning
- * R/S and E/S stereochemical labels. Based on IUPAC rules. (See text at the end of this document.)
+ * R/S and E/S stereochemical labels. Based on IUPAC rules. (See text at the end
+ * of this document.)
  * 
  * References:
  * 
@@ -30,13 +31,23 @@ import org.jmol.viewer.Viewer;
  * CIP-System, MATCH, 21, 1986, 3-31
  * http://match.pmf.kg.ac.rs/electronic_versions/Match21/match21_3-31.pdf
  * 
+ * Mata(1993a) Paulina Mata, Ana M. Lobo, Chris Marshall, A.Peter Johnson The
+ * CIP sequence rules: Analysis and proposal for a revision, Tetrahedron:
+ * Asymmetry, Volume 4, Issue 4, April 1993, Pages 657-668
+ * 
  * Mata(1994) Paulina Mata, Ana M. Lobo, Chris Marshall, and A. Peter Johnson,
  * Implementation of the Cahn-Ingold-Prelog System for Stereochemical Perception
  * in the LHASA Program, J. Chem. Inf. Comput. Sci. 1994, 34, 491-504 491
  * http://pubs.acs.org/doi/abs/10.1021/ci00019a004
  * 
- * Favre(2013) Henri A Favre, Warren H Powell, Nomenclature of Organic Chemistry : IUPAC
- * Recommendations and Preferred Names 2013 DOI:10.1039/9781849733069
+ * Mata(2005) Paulina Mata, Ana M. Lobo, The Cahn, Ingold and Prelog System:
+ * eliminating ambiguity in the comparison of diastereomorphic and
+ * enantiomorphic ligands, Tetrahedron: Asymmetry, Volume 16, Issue 13, 4 July
+ * 2005, Pages 2215-2223
+ * 
+ * 
+ * Favre(2013) Henri A Favre, Warren H Powell, Nomenclature of Organic Chemistry
+ * : IUPAC Recommendations and Preferred Names 2013 DOI:10.1039/9781849733069
  * http://pubs.rsc.org/en/content/ebook/9780854041824#!divbookcontent
  * 
  * IUPAC Project: Corrections, Revisions and Extension for the Nomenclature of
@@ -45,8 +56,8 @@ import org.jmol.viewer.Viewer;
  * https://iupac.org/projects/project-details/?project_nr=2015-052-1-800
  * 
  * 
- * Introduced in Jmol 14.12.0 Validated for Rules 1 and 2 in Jmol 14.13.2
- * E/Z added 14.14.1
+ * Introduced in Jmol 14.12.0 Validated for Rules 1 and 2 in Jmol 14.13.2 E/Z
+ * added 14.14.1
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */

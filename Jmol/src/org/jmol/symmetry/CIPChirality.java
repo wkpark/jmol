@@ -19,9 +19,17 @@ import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 /**
- * A relatively simple implementation of Cahn-Ingold-Prelog rules for assigning
- * R/S and E/S stereochemical labels. Based on IUPAC rules. (See text at the end
- * of this document.)
+ * A relatively efficient implementation of Cahn-Ingold-Prelog rules for assigning
+ * R/S and E/S stereochemical labels. Based on IUPAC rules of 2013. 
+ * 
+ * Many thanks to the members of the BlueObelisk-Discuss group, particularly
+ * Mikko Vainio, JOHN MAYNARD, Wolf Ihlenfeldt, and Egon Willighagen, for the excellent
+ * testing suite (https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip),
+ * encouragement, and extremely helpful advice. 
+ * 
+ * Additional thanks to the IUPAC Blue Book Revision project, specifically 
+ * Karl-Heinz Hellwich for alerting me to the errata page for the 2013 IUPAC specs
+ * (http://www.chem.qmul.ac.uk/iupac/bibliog/BBerrors.html)     
  * 
  * References:
  * 
@@ -46,7 +54,6 @@ import org.jmol.viewer.Viewer;
  * enantiomorphic ligands, Tetrahedron: Asymmetry, Volume 16, Issue 13, 4 July
  * 2005, Pages 2215-2223
  * 
- * 
  * Favre(2013) Henri A Favre, Warren H Powell, Nomenclature of Organic Chemistry
  * : IUPAC Recommendations and Preferred Names 2013 DOI:10.1039/9781849733069
  * http://pubs.rsc.org/en/content/ebook/9780854041824#!divbookcontent
@@ -57,8 +64,8 @@ import org.jmol.viewer.Viewer;
  * https://iupac.org/projects/project-details/?project_nr=2015-052-1-800
  * 
  * 
- * Introduced in Jmol 14.12.0 Validated for Rules 1 and 2 in Jmol 14.13.2 E/Z
- * added 14.14.1
+ * Introduced in Jmol 14.12.0; validated for Rules 1 and 2 in Jmol 14.13.2; 
+ * E/Z added 14.14.1; Rules 3 and 4 in process in 14.14.2.
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
@@ -111,68 +118,73 @@ public class CIPChirality {
 
   // Jmol test suite:
   //
+//checkR.spt -- test suite for Jmol CIPChirality.java
+//Bob Hanson hansonr@stolaf.edu 4/18/2017 7:44:43 AM
+
   //  function checkRS(m, key) {
-  //    if (m.find("//")) {
-  //      key = m.split("//")[2]
-  //      m = m.split("//")[1]
-  //    }
-  //    print "loading " + @m
-  //    refresh
-  //    set useMinimizationThread false
-  //    if (m)  load @m filter "2D"
-  //    if (!{_H})  calculate hydrogens
-  //    background label yellow
-  //    color labels black
-  ////    label %[atomname]
-  //    refresh
-  //    set labelfor {_C && chirality != ""} "%[atomname] %[chirality]"
-  //    var rs = {*}.chirality.join("")
-  //    if (_argCount == 2) {
-  //      var ref = _M.molData["chiral_atoms"].replace("\n","").replace(" ","");
-  //      if (ref) {
-  //        key = ref;
-  //        rs = {chirality != ""}.label("%i%[chirality]").join("")
-  //      }
-  //      if (key == rs) {
-  //        print "OK\t" + m + "\t" + rs
-  //      } else {
-  //        var s = "??\t" + m + "\t" + rs + "\t" + key
-  //        refresh 
-  //        print s
-  //        prompt s.replace("\t"," ") 
-  //      }
-  //    } else {
-  //        print m + "\t" + rs
-  //    }
-  //    refresh
+  //   var doCheck = (_argCount == 2)
+  //   if (m.find("//")) {
+  //     key = m.split("//")[2]
+  //     m = m.split("//")[1]
+  //     doCheck = key;
+  //   }
+  //   print "loading " + @m
+  //   set useMinimizationThread false
+  //   if (m)  load @m filter "2D"
+  //   if (!{_H})  calculate hydrogens
+  //   set labelfor {_C} "%[atomname]"
+  //   refresh
+  //   background label yellow
+  //   color labels black
+  //   refresh
+  //   calculate chirality
+  //   set labelfor {_C && chirality != ""} "%[atomname] %[chirality]"
+  //   var rs = {chirality != ""}.label("%[chirality]").join("")
+  //   print " " + doCheck + " " + key + " " + rs 
+  //   if (doCheck) {
+  //     var ref = (docheck == key ? "" : _M.molData["chiral_atoms"].replace("\n","").replace(" ",""))
+  //     if (ref) {
+  //       key = ref;
+  //       rs = {chirality != ""}.label("%i%[chirality]").join("")
+  //     }
+  //     if (key == rs) {
+  //       print "OK\t" + m + "\t" + rs
+  //     } else {
+  //       var s = "??\t" + m + "\t" + rs + "\t" + key
+  //       refresh 
+  //       print s
+  //       var ans = prompt(s.replace("\t"," ") + " \n\n continue?", "yes")
+  //       if (ans != "yes") quit 
+  //     }
+  //   } else {
+  //       print m + "\t" + rs
+  //   }
+  //   refresh
   //  }
-  //
+  //  
+  //  function checkRdir(name, type) {
+  //   x = load(name + ".txt").lines
+  //   for (f in x) {
+  //  //   f = f.trim();
+  //     if (f == "#QUIT") break
+  //     if (!f || f.find("#") == 1) continue
+  //     if (type)
+  //       checkRS(name + "/" + f, type)
+  //     else
+  //       checkRS(name + "/" + f)
+  //   }
+  //  }
+  //  
   //  //set debug
-  //
-  //  x = load("cip/R.txt").lines
-  //  for (f in x) {
-  //    if (f.find("#") == 1) continue
-  //    checkRS("cip/R/" + f, "R")
-  //  }
-  //
-  //  x = load("cip/S.txt").lines
-  //  for (f in x) {
-  //    if (f.find("#") == 1) continue
-  //    checkRS("cip/S/" + f, "S")
-  //  }
-  //
-  //  x = load("cip/rs.txt").lines
-  //  for (f in x) {
-  //    if (f.find("#") == 1) continue
-  //    checkRS("cip/RS/" + f, "?")
-  //  }
-  //
-  //
-  //  x = load("cip/more.txt").lines
-  //  for (f in x) {
-  //    if (f.find("#") == 1) continue
-  //    checkRS("cip/" + f, "?")
-  //  }
+  //  
+  //  //checkrs("cip/RS/(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_2d.mol");
+  //  //quit
+  //  checkRdir("cip/RS", "?");
+  //  checkRdir("cip/R", "R");
+  //  checkRdir("cip/S", "S");
+  //  checkRdir("cip/EZ", "?");
+  //  print "DONE"
+  //  
   //
   //  checkrs("$(R)-3-hydroxy-1,4-heptadiyne", "R")
   //  checkRS("$(R)-glycidol", "R")
@@ -200,22 +212,14 @@ public class CIPChirality {
   static final int STEREO_Z = 1;
   static final int STEREO_E = 2;
 
-  static final int RULE_1A = 0;
-  static final int RULE_1B = 1;
+  static final int RULE_1 = 1;
   static final int RULE_2 = 2;
   static final int RULE_3 = 3;
   static final int RULE_4 = 4;
   static final int RULE_5 = 5;
   
   public String getRuleName() {
-    switch (currentRule) {
-    case RULE_1A:
-      return "1a";
-    case RULE_1B:
-      return "1b";
-    default:
-      return "" + currentRule;
-    }
+    return "" + currentRule;
   }
   /**
    * Jmol viewer that created this CIPChirality object
@@ -239,7 +243,7 @@ public class CIPChirality {
    * The current rule being applied exhaustively.
    * 
    */
-  int currentRule = RULE_1A;
+  int currentRule = RULE_1;
 
   /**
    * Rule 1b hash table that maintains distance of the associated nonduplicated
@@ -293,7 +297,7 @@ public class CIPChirality {
       if (c.length() > 0) {
         bsToDo.clear(i);
       } else {
-        atom.setCIPChirality(getAtomChiralityLimited(atom, null, null, 3, -1));
+        atom.setCIPChirality(getAtomChiralityLimited(atom, null, null, RULE_3, -1));
       }
     }
 
@@ -331,7 +335,7 @@ public class CIPChirality {
    */
   public int getAtomChirality(Node atom) {
     init();
-    return getAtomChiralityLimited(atom, null, null, 3, -1);
+    return getAtomChiralityLimited(atom, null, null, RULE_3, -1);
   }
 
   /**
@@ -344,7 +348,7 @@ public class CIPChirality {
    */
   public int getBondChirality(Edge bond) {
     init();
-    return getBondChiralityLimited(bond, 3);
+    return getBondChiralityLimited(bond, RULE_3);
   }
 
   /**
@@ -395,19 +399,19 @@ public class CIPChirality {
       }
       root = cipAtom;
       cipAtom.parent = parent;
-      currentRule = RULE_1A;
+      currentRule = RULE_1;
       if (cipAtom.set()) {
         try {
           if (iref >= 0)
             cipAtom.bsPath.set(iref);
           boolean doResetAux = false;
-          for (currentRule = RULE_1A; currentRule <= ruleMax && !isChiral; currentRule++) {
+          for (currentRule = RULE_1; currentRule <= ruleMax && !isChiral; currentRule++) {
             if (Logger.debugging)
               Logger.info("-Rule " + getRuleName() + " CIPChirality for "
                   + cipAtom + "-----");
             
             if (currentRule == RULE_4 && useAuxiliaries) {
-              cipAtom.createAuxiliaryRSCenters(true);
+              cipAtom.createAuxiliaryRSCenters("", true);
               doResetAux = true;
             }
             isChiral = false;
@@ -700,6 +704,8 @@ public class CIPChirality {
      */
     int[] prevPriorities = new int[4];
 
+    private String[] rule4List;
+
     /**
      * 
      * @param atom
@@ -828,7 +834,7 @@ public class CIPChirality {
       // Do an initial atom-only shallow sort using a.compareTo(b)
 
       int ruleNow = currentRule;
-      currentRule = RULE_1A;
+      currentRule = RULE_1;
       Arrays.sort(atoms);
       currentRule = ruleNow;
 
@@ -888,8 +894,8 @@ public class CIPChirality {
       if (Logger.debugging) {
         Logger.info("---sortSubstituents---" + atom);
         for (int i = 0; i < n; i++)
-          Logger.info(getRuleName() + ": " + this + "[" + i + "]=" + atoms[i].myPath
-              + " " + Integer.toHexString(prevPriorities[i]));
+          Logger.info(getRuleName() + ": " + this + "[" + i + "]="
+              + atoms[i].myPath + " " + Integer.toHexString(prevPriorities[i]));
       }
 
       int[] indices = new int[4];
@@ -901,9 +907,10 @@ public class CIPChirality {
         //        if (prevPriorities[i] != 0 && 
         //            (prevPriorities[i]&0xFF000000) != (getBasePriority(atoms[i]) & 0xFF000000))
         //          System.out.println("???????");
-        if (prevPriorities[i] == 0 && currentRule > RULE_1B)
+        if (prevPriorities[i] == 0 && currentRule > RULE_1)
           prevPriorities[i] = getBasePriority(atoms[i]);
       }
+      boolean checkRule4List = (currentRule == RULE_4 && rule4List != null);
       for (int i = 0; i < n; i++) {
         CIPAtom a = atoms[i];
         for (int j = i + 1; j < n; j++) {
@@ -913,27 +920,42 @@ public class CIPChirality {
                 + "-" + a + " vs " + b + " " + " Rule " + getRuleName()
                 + Integer.toHexString(prevPriorities[i]) + " "
                 + Integer.toHexString(prevPriorities[j]));
-          int score = compareSubs(a, b, i, j);
+          int score = (a.atom == null ? B_WINS : b.atom == null ? A_WINS
+              : prevPriorities[i] == prevPriorities[j] ? TIED
+                  : prevPriorities[j] < prevPriorities[i] ? B_WINS : A_WINS);
+          if (score == TIED) {
+            if (checkRule4List && rule4List[i] != null && rule4List[j] != null) {
+              score = compareRule4Pair(rule4List[i], rule4List[j]);
+              if (score == TIED)
+                score = NA;
+            } else {
+              score = a.compareTo(b);
+            }
+          }
           if (Logger.debuggingHigh)
             Logger.info("ordering " + this.id + "." + i + "." + j + " " + this
-                + "-" + a + " vs " + b + " = " + score + " Rule " + getRuleName());
+                + "-" + a + " vs " + b + " = " + score + " Rule "
+                + getRuleName());
           switch (score) {
           case NA:
-            System.out.println("OHNO");
+            indices[i]++;
+            if (Logger.debuggingHigh)
+              Logger.info(atom + "." + b + " ends up with tie with " + a
+                  + " Rule " + getRuleName() + " ind=" + indices[i]);
             break;
           case B_WINS:
             indices[i]++;
             priorities[i]++;
             if (Logger.debuggingHigh)
-              Logger.info(atom + "." + b + " B-beats " + a  + " Rule " + getRuleName()+ " ind="
-                  + indices[i]);
+              Logger.info(atom + "." + b + " B-beats " + a + " Rule "
+                  + getRuleName() + " ind=" + indices[i]);
             break;
           case A_WINS:
             indices[j]++;
             priorities[j]++;
             if (Logger.debuggingHigh)
-              Logger.info(atom + "." + a + " A-beats " + b  + " Rule " + getRuleName()+ " ind="
-                  + indices[j]);
+              Logger.info(atom + "." + a + " A-beats " + b + " Rule "
+                  + getRuleName() + " ind=" + indices[j]);
             break;
           case TIED:
             switch (a.breakTie(b)) {
@@ -943,22 +965,22 @@ public class CIPChirality {
             case TIED:
               indices[i]++;
               if (Logger.debuggingHigh)
-                Logger.info(atom + "." + b + " ends up with tie with " + a + " Rule " + getRuleName()
-                    + " ind=" + indices[i]);
+                Logger.info(atom + "." + b + " ends up with tie with " + a
+                    + " Rule " + getRuleName() + " ind=" + indices[i]);
               break;
             case B_WINS:
               indices[i]++;
               priorities[i]++;
               if (Logger.debuggingHigh)
-                Logger.info(atom + "." + b + " wins in tie with " + a + " Rule " + getRuleName() + " ind="
-                    + indices[i] + "\n");
+                Logger.info(atom + "." + b + " wins in tie with " + a
+                    + " Rule " + getRuleName() + " ind=" + indices[i] + "\n");
               break;
             case A_WINS:
               indices[j]++;
               priorities[j]++;
               if (Logger.debuggingHigh)
-                Logger.info(atom + "." + a + " wins in tie with " + " Rule " + getRuleName() + b + " ind="
-                    + indices[j] + "\n");
+                Logger.info(atom + "." + a + " wins in tie with " + " Rule "
+                    + getRuleName() + b + " ind=" + indices[j] + "\n");
               break;
             }
             break;
@@ -972,7 +994,6 @@ public class CIPChirality {
           }
         }
       }
-
       // update the substituent arrays
 
       CIPAtom[] newAtoms = new CIPAtom[n];
@@ -1018,15 +1039,10 @@ public class CIPChirality {
       if (Logger.debugging) {
         Logger.info(atom + " nPriorities = " + nPriorities);
         for (int i = 0; i < n; i++)
-          Logger.info(this.myPath + "[" + i + "]=" + atoms[i] + " " + priorities[i] + " new");
+          Logger.info(this.myPath + "[" + i + "]=" + atoms[i] + " "
+              + priorities[i] + " new");
         Logger.info("-------");
       }
-    }
-
-    private int compareSubs(CIPAtom a, CIPAtom b, int i, int j) {
-      return (a.atom == null ? B_WINS : b.atom == null ? A_WINS
-          : prevPriorities[i] == prevPriorities[j] ? a.compareTo(b)
-              : prevPriorities[j] < prevPriorities[i] ? B_WINS : A_WINS);
     }
 
     /**
@@ -1152,10 +1168,10 @@ public class CIPChirality {
     public int checkCurrentRule(CIPAtom b) {
       switch (currentRule) {
       default:
-      case RULE_1A:
-        return checkRule1a(b);
-      case RULE_1B:
-        return checkRule1b(b);
+      case RULE_1:
+        int score = checkRule1a(b);
+        return (score == TIED ? checkRule1b(b) : score);
+//        return checkRule1b(b);
       case RULE_2:
         return checkRule2(b);
       case RULE_3:
@@ -1318,7 +1334,7 @@ public class CIPChirality {
       atom1.atoms[indices[ib]] = new CIPAtom(null, atom1, false);
       atom1.addReturnPath(null, path);
       int thisRule = currentRule;
-      currentRule = RULE_1A;
+      currentRule = RULE_1;
       atom1.sortSubstituents();
       // Now add the tied branches at the end; it doesn't matter where they 
       // go as long as they are together and in order. 
@@ -1349,37 +1365,59 @@ public class CIPChirality {
     }
     
     /**
-     * @param isRoot unused 
+     * @param base
+     * @return collective string, with setting of rule4List
      */
-    void createAuxiliaryRSCenters(boolean isRoot) {
-      if (atom == null)
-        return;
-      for (int i = 0; i < 4; i++) {
-        CIPAtom a = atoms[i];
-        if (a != null && !a.isDuplicate && !a.isTerminal)
-          a.createAuxiliaryRSCenters(false);
+    String createAuxiliaryRSCenters(String base, boolean isRoot) {
+      int rs = -1;
+      String subRS = "";
+      String s = "~";
+      if (atom != null) {
+        rule4List = new String[4];
+        int nRS = 0;
+        for (int i = 0; i < 4; i++) {
+          CIPAtom a = atoms[i];
+          if (a != null && !a.isDuplicate && !a.isTerminal) {
+            String ssub = rule4List[i] = a
+                .createAuxiliaryRSCenters(base, false);
+            if (ssub.indexOf("R") >= 0 || ssub.indexOf("S") >= 0) {
+              subRS = ssub;
+              nRS++;
+            } else {
+              rule4List[i] = null;
+            }
+          }
+        }
+        if (!isRoot && bondCount == 4 && nPriorities >= 3) {
+          if (true || knownAtomChirality.equals("~")) {
+            CIPAtom atom1 = (CIPAtom) clone();
+            if (atom1.set()) {
+              Lst<CIPAtom> path = getReturnPath(this);
+              atom1.addReturnPath(null, path);
+              int thisRule = currentRule;
+              currentRule = RULE_1;
+              atom1.sortSubstituents();
+              currentRule = thisRule;
+              rs = checkHandedness(atom1);
+              s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
+            }
+          } else {
+            s = knownAtomChirality;
+          }
+        }
+        System.out.println("createAux " + this + " " + nPriorities + " " + rs
+            + " " + nRS + " " + subRS);
+        if (nRS > (isRoot ? 2 : 1)) {
+          System.out.println("CIPChirality WARNING -- Mata-mixed type!");
+          s = "~";
+        }
       }
-      System.out.println("createAux " + this + " " + nPriorities + " " + isRoot);
-      if (isRoot || bondCount != 4 || nPriorities > 0 && nPriorities < 3)
-        return;
-      if (nPriorities == 0)
-        return;
-      CIPAtom atom1 = (CIPAtom) clone();
-      if (!atom1.set())
-        return;
-      Lst<CIPAtom> path = getReturnPath(this);
-      atom1.addReturnPath(null, path);
-      int thisRule = currentRule;
-      currentRule = RULE_1A;
-      atom1.sortSubstituents(); //this sort is not going right
-      currentRule = thisRule;
-      int rs = checkHandedness(atom1);
-      System.out.println(rs + " " + myPath + JC.getCIPChiralityName(rs));
-      if (rs == STEREO_R || rs == STEREO_S) {
-        setAuxiliaryChirality(rs == STEREO_R ? "R" : "S");
-      }
-
-      currentRule = thisRule;
+      s = base + s + subRS;
+      System.out.println("createAux " + rs + " " + myPath + s);
+      return s;
+      //      {
+      //        setAuxiliaryChirality(rs == STEREO_R ? "R" : "S");
+      //      }
     }
 
 
@@ -1422,35 +1460,47 @@ public class CIPChirality {
     private int checkRule4(CIPAtom b) {
       if (Logger.debugging)
         Logger.info("Checking Rule 4 for " + this + " and " + b);
+
       CIPAtom anc = getCommonAncestor(b);
+      anc.doCheckPseudo = false;
+      String acAbbr, bcAbbr;
       int l = anc.knownChiralityPathAbbr.length();
       if (l >= knownChiralityPathAbbr.length())
         return TIED; // some H atoms
-      if (getWorkingChirality().equals("~") && b.getWorkingChirality().equals("~")) 
+      if (getWorkingChirality().equals("~")
+          && b.getWorkingChirality().equals("~"))
         return TIED;
-      String acAbbr = knownChiralityPathAbbr.substring(l);
-      int n = acAbbr.length();
-      String bcAbbr = b.knownChiralityPathAbbr.substring(l);
-      if (n == 0 || n != bcAbbr.length())
+      acAbbr = knownChiralityPathAbbr.substring(l);
+      bcAbbr = b.knownChiralityPathAbbr.substring(l);
+      return anc.compareRule4Pair(acAbbr, bcAbbr);
+    }
+
+    /**
+     * Compare two Rule 4 strings such as RSSSR and SRSRR for a winner.
+     * 
+     * @param aStr
+     * @param bStr
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
+    private int compareRule4Pair(String aStr, String bStr) {
+      // preliminary only
+      aStr = PT.rep(aStr,  "~", "");
+      bStr = PT.rep(bStr,  "~", "");
+      int n = aStr.length();
+      if (n == 0 || n != bStr.length())
         return TIED;
-      // these next will be needed for full Mata analysis;
-      //l = anc.knownChiralityPathFull.length();
-      //String acFull = knownChiralityPathFull.substring(l);
-      //String bcFull = b.knownChiralityPathFull.substring(l);      
-      anc.doCheckPseudo = false;
-      char aref = acAbbr.charAt(0);
-      char bref = bcAbbr.charAt(0);
+      char aref = aStr.charAt(0);
+      char bref = bStr.charAt(0);
       for (int j = 1; j < n; j++) {
-        boolean alike = (aref == acAbbr.charAt(j));
-        boolean blike = (bref == bcAbbr.charAt(j));
+        boolean alike = (aref == aStr.charAt(j));
+        boolean blike = (bref == bStr.charAt(j));
         if (alike != blike)
           return (alike ? A_WINS : B_WINS);
       }
-      if (aref != bref) {
-        anc.doCheckPseudo = true;
-        return aref < bref ? A_WINS : B_WINS;
-      }
-      return TIED;
+      if (aref == bref)
+        return TIED;
+      doCheckPseudo = true;
+      return aref < bref ? A_WINS : B_WINS;
     }
 
     private String getWorkingChirality() {
@@ -1548,7 +1598,7 @@ public class CIPChirality {
     @Override
     public String toString() {
       return (atom == null ? "<null>" : "[" + sphere + "." + id + " "
-          + atom.toString() + (isDuplicate ? "*" : "")
+          + atom.toString() + (isDuplicate ? "*" : "") + knownAtomChirality + auxAtomChirality
           + "]"
       //+ (root ==  null ? "" : "/"+root.atom)
       );

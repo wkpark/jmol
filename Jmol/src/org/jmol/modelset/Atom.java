@@ -90,11 +90,6 @@ public class Atom extends Point3fi implements Node {
   private final static int VIBRATION_VECTOR_FLAG = 1;
   private final static int IS_HETERO_FLAG = 2;
   private final static int CIP_CHIRALITY_OFFSET = 4;
-  private final static int CIP_CHIRALITY_R_FLAG = 1;
-  private final static int CIP_CHIRALITY_S_FLAG = 2; // 3 is "no chirality"
-  private final static int CIP_CHIRALITY_PSEUDO_FLAG = 4;  // 5=r, 6=s, 7=* (undetermined)
-  private final static int CIP_CHIRALITY_Z_FLAG = 8;
-  private final static int CIP_CHIRALITY_E_FLAG = 0x10; // Z|E is "no chirality"
   private final static int CIP_CHIRALITY_MASK = 0xFF0;
   private final static int FLAG_MASK = 0xF;
 
@@ -749,6 +744,11 @@ public class Atom extends Point3fi implements Node {
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
     
+  @Override
+  public P3 getXYZ() {
+    return this;
+  }
+  
   public P3 getFractionalCoordPt(boolean fixJavaFloat, boolean ignoreOffset, P3 pt) {
     // ignoreOffset TRUE uses the original unshifted matrix
     SymmetryInterface c = getUnitCell();
@@ -1399,7 +1399,7 @@ public class Atom extends Point3fi implements Node {
    * Determine R/S chirality at this position; non-H atoms only; cached in formalChargeAndFlags
    * @param doCalculate 
    * 
-   * @return one of "", "R", "S", "E", "Z", "(r)", "(s)", "(*)"
+   * @return one of "", "R", "S", "E", "Z", "r", "s", "?"
    */
   @Override
   public String getCIPChirality(boolean doCalculate) {
@@ -1408,24 +1408,7 @@ public class Atom extends Point3fi implements Node {
       flags = group.chain.model.ms.getAtomCIPChirality(this);
       formalChargeAndFlags |= ((flags == 0 ? 3 : flags) << CIP_CHIRALITY_OFFSET);
     }
-    switch (flags) {
-    case CIP_CHIRALITY_Z_FLAG:
-      return "Z";
-    case CIP_CHIRALITY_E_FLAG:
-      return "E";
-    case CIP_CHIRALITY_R_FLAG:
-      return "R";
-    case CIP_CHIRALITY_S_FLAG:
-      return "S";
-    case CIP_CHIRALITY_PSEUDO_FLAG | CIP_CHIRALITY_R_FLAG:
-      return "(r)";
-    case CIP_CHIRALITY_PSEUDO_FLAG | CIP_CHIRALITY_S_FLAG:
-      return "(s)";
-    case CIP_CHIRALITY_PSEUDO_FLAG | CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_R_FLAG:
-      return "(*)";
-    default:
-      return "";
-    }
+    return (JC.getCIPChiralityName(flags));
   }
   
   /**

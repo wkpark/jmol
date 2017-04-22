@@ -3003,7 +3003,11 @@ public class MathExt {
         : "\n");
     switch (args.length) {
     case 0:
+      break;
     case 1:
+      if (args[0].tok ==  T.on) {
+        return mp.addX(SV.getVariable(PT.getTokens(x.asString())));
+      }
       break;
     case 2:
       if (x.tok == T.varray)

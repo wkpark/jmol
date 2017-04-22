@@ -868,5 +868,10 @@ public class SmilesAtom extends P3 implements Node {
     // n/a
   }
 
+  @Override
+  public P3 getXYZ() {
+    return this;
+  }
+
 
 }

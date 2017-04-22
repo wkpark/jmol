@@ -44,6 +44,60 @@ import java.util.Properties;
 @J2SRequireImport({javajs.util.SB.class})
 public final class JC {
 
+  public final static int CIP_CHIRALITY_R_FLAG = 1;
+  public final static int CIP_CHIRALITY_S_FLAG = 2; // 3 is "no chirality"
+  public final static int CIP_CHIRALITY_PSEUDO_FLAG = 4;
+  public final static int CIP_CHIRALITY_r_FLAG = 5;
+  public final static int CIP_CHIRALITY_s_FLAG = 6;
+  public final static int CIP_CHIRALITY_UNDETERMINED = 7;
+  public final static int CIP_CHIRALITY_Z_FLAG = 8;
+  public final static int CIP_CHIRALITY_E_FLAG = 0x10; // Z|E is "no chirality"
+
+  public static String getCIPChiralityName(int flags) {
+    switch (flags) {
+    case CIP_CHIRALITY_Z_FLAG:
+      return "Z";
+    case CIP_CHIRALITY_E_FLAG:
+      return "E";
+    case CIP_CHIRALITY_R_FLAG:
+      return "R";
+    case CIP_CHIRALITY_S_FLAG:
+      return "S";
+    case CIP_CHIRALITY_r_FLAG:
+      return "r";
+    case CIP_CHIRALITY_s_FLAG:
+      return "s";
+    case CIP_CHIRALITY_UNDETERMINED:
+      return "?";
+    default:
+      return "";
+    }
+  }
+
+  public static int getCIPChiralityCode(String rs) {
+    char c = (rs.length() == 0 ? 'x' : rs.charAt(0));
+    switch (c) {
+    case 'Z':
+      return CIP_CHIRALITY_Z_FLAG;
+    case 'E':
+      return CIP_CHIRALITY_E_FLAG;
+    case 'R':
+      return CIP_CHIRALITY_R_FLAG;
+    case 'S':
+      return CIP_CHIRALITY_S_FLAG;
+    case 'r':
+      return CIP_CHIRALITY_r_FLAG;
+    case 's':
+      return CIP_CHIRALITY_s_FLAG;
+    case '?':
+      return CIP_CHIRALITY_UNDETERMINED;
+    default:
+      return 0;
+    }
+  }
+
+
+
   // axes mode constants --> org.jmol.constant.EnumAxesMode
   // callback constants --> org.jmol.constant.EnumCallback
   // draw constants --> org.jmol.shapespecial.draw.EnumCallback
@@ -1247,6 +1301,7 @@ public final class JC {
     }
     return i;
   }
+
 
 
 }

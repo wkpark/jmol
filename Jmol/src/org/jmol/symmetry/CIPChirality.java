@@ -339,7 +339,6 @@ public class CIPChirality {
       Node a = atoms[i];
       if (!couldBeChiralAtom(a))
         continue;
-      System.out.println("TODO processing  " + a);
       a.setCIPChirality(0);
       a.setCIPChirality(getAtomChiralityLimited(a, null, null, 5, -1));
     }
@@ -1572,7 +1571,6 @@ public class CIPChirality {
       int rs = -1;
       String subRS = "";
       String s = "~";
-      System.out.println("createAux " + this);
       if (atom != null) {
         rule4List = new String[4];
         int nRS = 0;
@@ -1609,15 +1607,9 @@ public class CIPChirality {
           s = "?";
           subRS = "[" + subRS + "]";
         }
-//        System.out.println("createAux " + this + " " + nPriorities + " " + rs
-//            + " " + nRS + " " + subRS);
       }
       s = base + s + subRS;
-      System.out.println("createAux " + rs + " " + myPath + s);
       return s;
-      //      {
-      //        setAuxiliaryChirality(rs == STEREO_R ? "R" : "S");
-      //      }
     }
 
 
@@ -1748,10 +1740,7 @@ public class CIPChirality {
 
     private CIPAtom getCommonAncestor(CIPAtom b) {
       CIPAtom a = this;
-      if ((a.parent == null) != (b.parent == null))
-        System.out.println("OHOH3");
-      while ((a = a.parent) != (b = b.parent)) {
-      }
+      while ((a = a.parent) != (b = b.parent)) {}
       return a;
     }
 

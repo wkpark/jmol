@@ -67,6 +67,8 @@ import org.jmol.viewer.Viewer;
  * Introduced in Jmol 14.12.0; validated for Rules 1 and 2 in Jmol 14.13.2; 
  * E/Z added 14.14.1; Rules 3 and 4 in process in 14.14.2.
  * 
+ * validation suite: see https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip/
+ * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
 public class CIPChirality {

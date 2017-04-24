@@ -76,6 +76,15 @@ public class CIPChirality {
   // 
   // individual "standard" carbon-based R/S and E/Z stereochemistry (Rules 1, 2, and 3)
   //
+  //  getChirality(molecule) {
+  //    checkForAlkenes()
+  //    if (haveAlkenes) checkForSmallRings()
+  //    for(all atoms) getChirality(applyRules1-3)
+  //    for(all double bonds) checkEZ()
+  //    for(all atoms still without designations) getChirality(applyRules1-5)
+  //    removeUnnecessaryEZDesignations()
+  //  }
+  //
   // getChirality(atom) {
   //  for (each Rule){  
   //    sortSubstituents() 

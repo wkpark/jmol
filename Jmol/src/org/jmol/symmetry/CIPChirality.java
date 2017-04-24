@@ -82,7 +82,7 @@ public class CIPChirality {
   //    for(all atoms) getChirality(applyRules1-3)
   //    for(all double bonds) checkEZ()
   //    for(all atoms still without designations) getChirality(applyRules1-5)
-  //    removeUnnecessaryEZDesignations()
+  //    if (haveAlkenes) removeUnnecessaryEZDesignations()
   //  }
   //
   // getChirality(atom) {
@@ -120,7 +120,7 @@ public class CIPChirality {
   //    for (each substituent pairing i in a and b) {
   //      score = min(currentScore, breakTie(a_i, b_i)
   //    }
-  //    return TIED
+  //    return score
   // }
   //
   // 

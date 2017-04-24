@@ -779,9 +779,11 @@ public class Symmetry implements SymmetryInterface {
   }
 
   /**
-   * Determine the Cahn-Ingold-Prelog R/S chirality of an atom
+   * Determine the Cahn-Ingold-Prelog E/Z chirality of a bond
    * 
-   * @param atom
+   * @param vwr
+   * @param bond
+   * 
    * @return [0:none, 1:R, 2:S]
    */
   @Override

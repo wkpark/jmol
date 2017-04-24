@@ -163,7 +163,7 @@ public class Bond extends Edge {
 
   @Override
   public Node getOtherAtomNode(Node thisAtom) {
-    return (atom1 == thisAtom ? atom2 : atom2 == thisAtom ? atom1 : null);
+    return (atom1 == thisAtom ? atom2 : atom2 == thisAtom || thisAtom == null ? atom1 : null);
   }
   
   public void setAtropisomerOptions(BS bsA, BS bsB) {
@@ -195,6 +195,7 @@ public class Bond extends Edge {
    * 
    * @return "" or "Z" or "E"
    */
+  @Override
   public String getCIPChirality(boolean doCalculate) {
     int flags = (order & BOND_CIP_STEREO_MASK) >> BOND_CIP_STEREO_SHIFT;
     if (flags == 0 && getCovalentOrder() == 2 && doCalculate) {

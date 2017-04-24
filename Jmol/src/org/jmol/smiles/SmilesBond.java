@@ -271,7 +271,7 @@ public class SmilesBond extends Edge {
 
   @Override
   public Node getOtherAtomNode(Node atom) {
-    return (atom == atom1 ? atom2 : atom == atom2 ? atom1 : null);
+    return (atom == atom1 ? atom2 : atom == atom2 || atom == null ? atom1 : null);
   }
 
   @Override

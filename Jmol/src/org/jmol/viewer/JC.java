@@ -44,12 +44,14 @@ import java.util.Properties;
 @J2SRequireImport({javajs.util.SB.class})
 public final class JC {
 
+  public final static int CIP_CHIRALITY_UNKNOWN = 0;
   public final static int CIP_CHIRALITY_R_FLAG = 1;
-  public final static int CIP_CHIRALITY_S_FLAG = 2; // 3 is "no chirality"
+  public final static int CIP_CHIRALITY_S_FLAG = 2;
+  public final static int CIP_CHIRALITY_NONE = 3;
   public final static int CIP_CHIRALITY_PSEUDO_FLAG = 4;
   public final static int CIP_CHIRALITY_r_FLAG = 5;
   public final static int CIP_CHIRALITY_s_FLAG = 6;
-  public final static int CIP_CHIRALITY_UNDETERMINED = 7;
+  public final static int CIP_CHIRALITY_CANTDETERMINE = 7;
   public final static int CIP_CHIRALITY_Z_FLAG = 8;
   public final static int CIP_CHIRALITY_E_FLAG = 0x10; // Z|E is "no chirality"
 
@@ -67,8 +69,10 @@ public final class JC {
       return "r";
     case CIP_CHIRALITY_s_FLAG:
       return "s";
-    case CIP_CHIRALITY_UNDETERMINED:
+    case CIP_CHIRALITY_CANTDETERMINE:
       return "?";
+    case CIP_CHIRALITY_NONE:
+    case CIP_CHIRALITY_UNKNOWN:
     default:
       return "";
     }
@@ -90,9 +94,9 @@ public final class JC {
     case 's':
       return CIP_CHIRALITY_s_FLAG;
     case '?':
-      return CIP_CHIRALITY_UNDETERMINED;
+      return CIP_CHIRALITY_CANTDETERMINE;
     default:
-      return 0;
+      return CIP_CHIRALITY_UNKNOWN;
     }
   }
 

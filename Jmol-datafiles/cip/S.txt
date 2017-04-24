@@ -1,6 +1,0 @@
-#(S)-(methylsulfinyl)ethane.mol
-#(S)-(O-methyl_benzenesulfonothioate).mol
-(S)-cyclobutyl(cyclopropyl)methanol_2D.mol
-(S)-cyclobutyl(cyclopropyl)methanol_3D.mol
-1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol-new.mol
-S.sdf

@@ -961,7 +961,7 @@ public class CIPChirality {
       isSet = true;
       if (isDuplicate)
         return true;
-//      atoms = new CIPAtom[4];
+      //      atoms = new CIPAtom[4];
       int nBonds = atom.getBondCount();
       Edge[] bonds = atom.getEdges();
       if (Logger.debuggingHigh)
@@ -979,10 +979,14 @@ public class CIPChirality {
           return true;
         }
         if (order == 2) {
-          isAlkene = true;
-          if (isParent) {
-            isAlkeneAtom2 = true;
-            knownAtomChirality = bond.getCIPChirality(false);
+          if (elemNo > 10 || other.getElementNumber() > 10)
+            order = 1;
+          else {
+            isAlkene = true;
+            if (isParent) {
+              isAlkeneAtom2 = true;
+              knownAtomChirality = bond.getCIPChirality(false);
+            }
           }
         }
         switch (order) {
@@ -994,14 +998,14 @@ public class CIPChirality {
           //$FALL-THROUGH$
         case 2:
           // look out for S=X, which is not planar
-          if (elemNo < 10
-              && addAtom(pt++, other, order != 2 || isParent, order == 2) == null) {
+          if (addAtom(pt++, other, order != 2 || isParent, order == 2) == null) {
             isTerminal = true;
             return false;
           }
           //$FALL-THROUGH$
         case 1:
-          if (!isParent && addAtom(pt++, other, order != 1 && elemNo < 10, false) == null) {
+          if (!isParent
+              && addAtom(pt++, other, order != 1 && elemNo < 10, false) == null) {
             isTerminal = true;
             return false;
           }

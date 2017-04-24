@@ -1,0 +1,5 @@
+(S)-(O-methyl_benzenesulfonothioate).mol//R
+(S)-methyl(phenyl)ethylphospane_oxide.mol//S
+# this is an error in the compound name shown here
+(1R,2r,3S)-(bromofluoromethylsulfinyl)bromofluoromethane.mol//rRS
+(S)-(methylsulfinyl)ethane.mol//S

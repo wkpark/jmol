@@ -1,0 +1,159 @@
+// checkCIP.spt -- test suite for Jmol CIPChirality.java
+// Bob Hanson hansonr@stolaf.edu 4/24/2017 10:49:33 AM
+//
+// sample execution requires that cip/ directory be in the current Jmol directory
+// as indicated with the CD command.
+
+nOK = 0;
+
+
+ function checkRS(m, key) {
+  var doCheck = (_argCount == 2)
+  var a = 0;
+  if (m.find("//")) {
+    key = m.split("//")[2]
+    m = m.split("//")[1]
+    if (key.find("@")) {
+      a = key.split("@")[2]
+      key = key.split("@")[1]
+    }
+    doCheck = key;
+  }
+  print "loading " + @m
+  set useMinimizationThread false
+  load @m filter "2D"
+  if (!{_H})  calculate hydrogens
+  set labelfor {_C} "%[atomname]"
+  refresh
+  background label yellow
+  color labels black
+  refresh
+  if (a) {
+    select atomno = @a
+  } else {
+    calculate chirality
+    select (chirality != "")
+  }
+  set labelfor {selected} "%[atomname] %[chirality]"
+  var rs = {selected}.label("%[chirality]").join("")
+  print " " + doCheck + " key=" + key + " found=" + rs 
+  if (doCheck) {
+    var ref = (docheck == key ? "" : _M.molData.chiral_atoms.replace("\n","").replace(" ",""))
+    if (!ref && docheck != key) {
+      ref = _M.molData.stereounits
+      if (ref) {
+        var tokens = "end " + ref.split(true)
+        ref = ""
+        var atlist = []
+        var s = ""
+        for (var i = tokens.length; i > 0; i--) {
+          var token = tokens[i]
+          if (token.find(":")) continue
+          var itoken = 0 + token
+          if (itoken) {
+            atlist.push(itoken)
+          } else {
+            for (var j = 1; j <= atlist.length; j++) {
+              ref += (atlist[j] + s); 
+            }
+            atlist = []
+            if (token == "end") break
+            s = token
+          }
+        }
+      }
+    }
+    if (ref) {
+      key = ref;
+      rs = {selected}.label("%i%[chirality]").join("")
+    }
+    if (key like rs) {
+      print "OK\t" + m + "\t" + rs
+      nOK++
+    } else {
+      var s = "??\t" + m + "\t found " + rs + "; should be " + key
+      refresh 
+      print s
+      var ans = prompt(s.replace("\t"," ") + " \n\n continue?", "yes")
+      if (ans != "yes") quit 
+    }
+  } else {
+      print m + "\t" + rs
+  }
+  refresh
+}
+
+function checkRdir(name, type) {
+  x = load(name + ".txt").lines
+  for (var f in x) {
+    f = f.trim();
+    if (f == "#QUIT") break
+    if (!f || f.find("#") == 1) continue
+    if (f.find("$") != 1) 
+      f = name + "/" + f
+    if (type)
+      checkRS(f, type)
+    else
+      checkRS(f)
+  }
+}
+
+//set debug
+
+function checksdf(){
+      ref = _M.molData.stereounits
+      if (ref) {
+        var tokens = ("end " + ref).split(true)
+        ref = ""
+        var atlist = []
+        var s = ""
+        for (var i = tokens.length; i > 0; i--) {
+          var token = tokens[i]
+          print "token is " + token
+          if (token.find(":")) continue
+          var itoken = 0 + token
+          if (itoken) {
+            atlist.push(itoken)
+          } else {
+          prompt("s=" + s + " ref="+ ref)
+            for (var j = 1; j <= atlist.length; j++) {
+              ref += "" + atlist[j] 
+            }
+            ref += s
+            atlist = []
+            if (token == "end") break
+            s = token
+          prompt(s + " "+ ref)
+            print s
+          }
+        }
+        print ref
+     }
+}
+
+/**
+ *
+//checkrs("cip/EZ/deb.mol");
+checkRdir("cip/SP", "?");
+checkRdir("cip/RS", "?");
+checkRdir("cip/EZ", "?");
+checkRdir("cip/R", "R");
+checkRdir("cip/S", "S");
+print "DONE: " + nOK
+
+ /**
+
+checkrs("$(R)-3-hydroxy-1,4-heptadiyne", "R")
+checkRS("$(R)-glycidol", "R")
+checkRS("$glucose", "RSRR")
+checkRS("$(2S,3R)-2,3-oxiranediol", "SR")
+checkRS("$(S)-2-butanol", "S")
+checkRS("$(R)-2-butanol", "R")
+checkRS("$(2S,3R)-2,3-butanediol", "SR")
+checkRS("$(2S,3S)-2,3-butanediol", "SS")
+checkRS("$(2R,3R)-2,3-butanediol", "RR")
+checkRS("$(2R,3S)-2,3-butanediol", "RS")
+checkRS("$1,4-dimethylcyclohexane", "")
+checkRS("$cholesterol", "RRSSSRSR") // (3S,8S,9S,10R,13R,14S,17R) and sidechain (R)
+checkRS("==ta1", "SSRSRSSRSRS") // taxol (1S,2S,3R,4S,7R,9S,10S,12R,15S) and sidechain (2R,3S)
+checkRS("cip/RS/(1S,5R)-bicyclo[3.1.0]hex-2-ene_3D.mol")

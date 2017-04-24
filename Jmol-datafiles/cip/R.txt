@@ -1,0 +1,9 @@
+(1R)-1-cycloproply-2-methylpropan-1-ol_2D.mol
+(1R)-1-cycloproply-2-methylpropan-1-ol_3D.mol
+(2R)-2-hydroxybut-3-enal_3D.mol
+#(2R)-2-{bis[(1R)-1-hydroxyethyl]amino}-2-{[(1R)-1-hydroxyethyl][(1S)-1-hydroxyethyl]amino}acetic_acid_2d.sdf
+#(2R)-2-{bis[(1R)-1-hydroxyethyl]amino}-2-{[(1R)-1-hydroxyethyl][(1S)-1-hydroxyethyl]amino}acetic_acid_3d.sdf
+(2R)-butan-2-ol_3d.mol
+(3R)-pent-1-en-3-ol_2D.mol
+(3R)-pent-1-en-3-ol_3D.mol
+R.sdf

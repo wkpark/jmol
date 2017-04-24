@@ -3,7 +3,6 @@ package org.jmol.symmetry;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
-
 import javajs.util.Lst;
 import javajs.util.Measure;
 import javajs.util.P3;
@@ -116,11 +115,11 @@ public class CIPChirality {
   // }
   //
   // compareDeeply(a, b) {
-  //    currentScore = Integer.MAX_VALUE
+  //    bestScore = Integer.MAX_VALUE
   //    for (each substituent pairing i in a and b) {
-  //      score = min(currentScore, breakTie(a_i, b_i)
+  //      bestScore = min(bestScore, breakTie(a_i, b_i)
   //    }
-  //    return score
+  //    return bestScore
   // }
   //
   // 
@@ -263,7 +262,7 @@ public class CIPChirality {
   Map<String, Integer> htPathPoints;
   
   /**
-   * track small rings for removing E/Z indicators
+   * track small rings for removing E/Z indicators as per IUPAC 2013.P-93.5.7.3
    */
   Lst<BS> lstSmallRings = new Lst<BS>();
   
@@ -294,8 +293,19 @@ public class CIPChirality {
   }
 
   /**
+   * Initialize for a new molecular determination.
+   * 
+   */
+  private void init() {
+    ptID = 0;
+    useAuxiliaries = false;
+    nPriorityMax = maxRingSize = 0;
+    lstSmallRings.clear();
+  }
+
+  /**
    * A more general determination of chirality that involves ultimately all
-   * Rules 1-5
+   * Rules 1-5.
    * 
    * @param atoms
    * 
@@ -306,20 +316,13 @@ public class CIPChirality {
       return;
     init();
 
-    boolean haveAlkenes = false;
-    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
-      // check for rings that in the end should force removal of E/Z designations
-      if ((haveAlkenes = couldBeEZ(atoms[i])) == true)
-        break;
-    }
+    BS bsToDo = BSUtil.copy(bsAtoms);
 
-    if (haveAlkenes)
-      getSmallRings(atoms[bsAtoms.nextSetBit(0)]);
-    
+    boolean haveAlkenes = preFilterAtomList(atoms, bsToDo);
+
     // Initial Rules 1-3 only
 
-    BS bsToDo = BSUtil.copy(bsAtoms);
-    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+    for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
       Node atom = atoms[i];
 
       // This call checks to be sure we do not already have it.
@@ -336,39 +339,122 @@ public class CIPChirality {
     // E/Z -- Rule 3
 
     Lst<int[]> lstEZ = new Lst<int[]>();
-    if (haveAlkenes)
-      for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1))
+    if (haveAlkenes) {
+      // using BSAtoms here because we need the entire graph, even starting with an H atom. 
+      getSmallRings(atoms[bsAtoms.nextSetBit(0)]);
+      for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
         getAtomBondChirality(atoms[i], false, lstEZ, bsToDo);
+    }
 
-    // Necessary? Perhaps for pseudo-chirality 
-
-    useAuxiliaries = (bsToDo.equals(bsAtoms) && nPriorityMax == 3 && maxRingSize > 0);
-
+    
+    // On to Rules 4 and 5 for atoms that still could be chiral but don't have a designation.
+    
+    
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
       Node a = atoms[i];
-      if (!couldBeChiralAtom(a))
-        continue;
       a.setCIPChirality(0);
       a.setCIPChirality(getAtomChiralityLimited(a, null, null, 5, -1));
     }
 
     // Finally, remove any E/Z indications in small rings
 
-    if (lstSmallRings.size() > 0 && lstEZ.size() > 0) {
-      for (int i = lstEZ.size(); --i >= 0;) {
-        int[] ab = lstEZ.get(i);
-        for (int j = lstSmallRings.size(); --j >= 0;) {
-          BS ring = lstSmallRings.get(j);
-          if (ring.get(ab[0]) && ring.get(ab[1])) {
-            atoms[ab[0]].setCIPChirality(JC.CIP_CHIRALITY_NONE);
-            atoms[ab[1]].setCIPChirality(JC.CIP_CHIRALITY_NONE);
-          }
-        }
-      }
-    }
-
+    if (lstSmallRings.size() > 0 && lstEZ.size() > 0)
+      clearSmallRingEZ(atoms, lstEZ);
   }
 
+  /**
+   * remove unnecessary atoms from the list and let us know if we have alkenes to consider
+   * @param atoms
+   * @param bsToDo
+   * @return whether we have any alkenes that could be EZ
+   */
+  private boolean preFilterAtomList(Node[] atoms, BS bsToDo) {
+    boolean haveAlkenes = false;
+    for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
+      if (!couldBeChiralAtom(atoms[i])) {
+        bsToDo.clear(i);
+        continue;
+      }
+      if (!haveAlkenes && couldBeEZ(atoms[i]))
+        // do Rule 3, and check for rings that in the end should force removal of E/Z designations
+        haveAlkenes = true;
+    }
+    return haveAlkenes;
+  }
+
+  /**
+   * Determine whether an atom is one we need to consider.
+   * 
+   * @param a
+   * @return true for selected atoms and hybridizations
+   * 
+   */
+  private boolean couldBeChiralAtom(Node a) {
+    boolean mustBePlanar = false;
+    switch (a.getCovalentBondCount()) {
+    case 4:
+      break;
+    case 3:
+      switch (a.getElementNumber()) {
+      case 6: // C
+        mustBePlanar = true;
+        break;
+      case 15: // P
+      case 16: // S
+      case 33: // As
+      case 34: // Se
+      case 51: // Sb
+      case 52: // Te
+      case 83: // Bi
+      case 84: // Po
+        break;
+      default:
+        return false;
+      }
+      break;
+    // could add case 2 for imines here
+    default:
+      return false;
+    }
+    // check that the atom has at most one 1H atom
+    Edge[] edges = a.getEdges();
+    int nH = 0;
+    for (int j = a.getBondCount(); --j >= 0;) {
+      if (edges[j].getOtherAtomNode(a).getAtomicAndIsotopeNumber() == 1
+          && ++nH == 2) {
+        return false;
+      }
+    }
+    float d = getTrigonality(a, vNorm);
+    return ((Math.abs(d) < 0.2f) == mustBePlanar); // arbitrarily set 
+  }
+
+  private boolean couldBeEZ(Node a) {
+    Edge[] bonds = a.getEdges();
+    if (a.getElementNumber() > 10)
+      return false;
+    for (int i = bonds.length, pt = 0; --i >= 0 && pt < 3;)
+      if (bonds[i].getCovalentOrder() == 2)
+        return true;
+    return false;
+  }
+
+  /**
+   * Allow double bonds only if trivalent and first-row atom. (IUPAC 2013.P-93.2.4)
+   * @param a
+   * @param b
+   * @return true if this bond could be E/Z
+   */
+  private boolean couldBeChiralBond(Node a, Node b) {
+    return (a.getElementNumber() < 10 && b.getElementNumber() < 10
+        && a.getCovalentBondCount() == 3 && b.getCovalentBondCount() == 3);
+  }
+
+  /**
+   * Run through a minimal graph to find and catalog all rings.
+   *  
+   * @param atom
+   */
   private void getSmallRings(Node atom) {
     lstSmallRings = new Lst<BS>(); 
     htPathPoints = new Hashtable<String, Integer>();
@@ -396,63 +482,33 @@ public class CIPChirality {
   }
 
   /**
-   * Determine whether an atom is one we need to consider.
+   * Remove E/Z designations for small-rings double bonds (IUPAC 2013.P-93.5.7.3).
    * 
-   * @param a
-   * @return true for selected atoms and hybridizations
-   * 
+   * @param atoms
+   * @param lstEZ
    */
-  private boolean couldBeChiralAtom(Node a) {
-    boolean  mustBePlanar = false;
-    switch (a.getCovalentBondCount()) {
-    case 4:
-      break;
-    case 3:
-      switch (a.getElementNumber()) {
-      case 6: // C
-        mustBePlanar = true;
-        break;
-      case 15: // P
-      case 16: // S
-      case 33: // As
-      case 34: // Se
-      case 51: // Sb
-      case 52: // Te
-      case 83: // Bi
-      case 84: // Po
-        break;
-      default:
-        return false;
+  private void clearSmallRingEZ(Node[] atoms, Lst<int[]> lstEZ) {
+    for (int i = lstEZ.size(); --i >= 0;) {
+      int[] ab = lstEZ.get(i);
+      for (int j = lstSmallRings.size(); --j >= 0;) {
+        BS ring = lstSmallRings.get(j);
+        if (ring.get(ab[0]) && ring.get(ab[1])) {
+          atoms[ab[0]].setCIPChirality(JC.CIP_CHIRALITY_NONE);
+          atoms[ab[1]].setCIPChirality(JC.CIP_CHIRALITY_NONE);
+        }
       }
-      break;
-      // could add case 2 for imines here
-    default:
-      return false;
     }
-    float d = getTrigonality(a);
-    return ((Math.abs(d) < 0.2f) == mustBePlanar); // arbitrarily set 
-  }
-
-  private boolean couldBeEZ(Node a) {
-    Edge[] bonds = a.getEdges();
-    for (int i = bonds.length, pt = 0; --i >= 0 && pt < 3;)
-      if (bonds[i].getCovalentOrder() == 2)
-        return true;
-    return false;
-  }
-
-  private boolean couldBeChiralBond(Node a, Node b) {
-    return (a.getElementNumber() < 10 && b.getElementNumber() < 10
-        && a.getCovalentBondCount() == 3 && b.getCovalentBondCount() == 3);
   }
 
   /**
-   * Determine the trigonality of an atom.
+   * Determine the trigonality of an atom in order to determine whether it might have a lone pair.
+   * The global vector vNorm is returned as well, pointing from the atom to the base plane of its first three substituents.
    * 
    * @param a
+   * @param vNorm  a vector returned with the normal from the atom to the base plane 
    * @return height from plane of first three covalently bonded nodes to this node
    */
-  float getTrigonality(Node a) {
+  float getTrigonality(Node a, V3 vNorm) {
     P3[] pts = new P3[3];
     Edge[] bonds = a.getEdges();
     for (int i = bonds.length, pt = 0; --i >= 0 && pt < 3;)
@@ -460,13 +516,6 @@ public class CIPChirality {
         pts[pt++] = bonds[i].getOtherAtomNode(a).getXYZ();
     P4 plane = Measure.getPlaneThroughPoints(pts[0], pts[1], pts[2], vNorm, vTemp, new P4());
     return Measure.distanceToPlane(plane, a.getXYZ());
-  }
-
-  private void init() {
-    ptID = 0;
-    useAuxiliaries = false;
-    nPriorityMax = maxRingSize = 0;
-    lstSmallRings.clear();
   }
 
   /**
@@ -547,7 +596,7 @@ public class CIPChirality {
         cipAtom = new CIPAtom(atom, null, false, isAlkene);
         int nSubs = atom.getCovalentBondCount();
         int elemNo = atom.getElementNumber();
-        isAlkene = (nSubs == 3 && elemNo < 10);
+        isAlkene = (nSubs == 3 && elemNo < 10); // (IUPAC 2013.P-93.2.4)
         if (nSubs != (parent == null ? 4 : 3)
             - (nSubs == 3 && !isAlkene ? 1 : 0))
           return rs;
@@ -616,12 +665,15 @@ public class CIPChirality {
   }
 
   /**
-   * 
+   * Determine E or Z for a bond.
    * @param bond
    * @param ruleMax
    * @return [0:none, 1:Z, 2:E]
    */
   private int getBondChiralityLimited(Edge bond, int ruleMax) {
+    // TODO: need to make sure that R/S chirality is taken into account here. 
+    // or perhaps in Rule 4?
+    
     if (Logger.debugging)
       Logger.info("get Bond Chirality " + bond);
     int ez = NO_CHIRALITY;
@@ -631,7 +683,7 @@ public class CIPChirality {
       Node b = atoms[bond.getAtomIndex2()];
       // no imines for now
       if (!couldBeChiralBond(a,b))
-        return ez;
+        return NO_CHIRALITY;
       htPathPoints = new Hashtable<String, Integer>();
       CIPAtom a1 = new CIPAtom(a, null, false, true);
       CIPAtom b1 = new CIPAtom(b, null, false, true);
@@ -657,13 +709,21 @@ public class CIPChirality {
     return ez;
   }
 
-  boolean isCIS(CIPAtom me, CIPAtom parent, CIPAtom grandParent,
-                       CIPAtom greatGrandParent) {
-    Measure.getNormalThroughPoints(me.atom.getXYZ(), parent.atom.getXYZ(),
-        grandParent.atom.getXYZ(), vNorm, vTemp);
+  /**
+   * Check cis vs. trans nature of a--b==c--d.
+   * 
+   * @param a
+   * @param b
+   * @param c
+   * @param d
+   * @return true if this is a cis relationship
+   */
+  boolean isCIS(CIPAtom a, CIPAtom b, CIPAtom c, CIPAtom d) {
+    Measure.getNormalThroughPoints(a.atom.getXYZ(), b.atom.getXYZ(),
+        c.atom.getXYZ(), vNorm, vTemp);
     V3 vNorm2 = new V3();
-    Measure.getNormalThroughPoints(parent.atom.getXYZ(), grandParent.atom.getXYZ(),
-        greatGrandParent.atom.getXYZ(), vNorm2, vTemp);
+    Measure.getNormalThroughPoints(b.atom.getXYZ(), c.atom.getXYZ(),
+        d.atom.getXYZ(), vNorm2, vTemp);
     return (vNorm.dot(vNorm2) > 0);
   }
 
@@ -878,7 +938,7 @@ public class CIPChirality {
       atomIndex = atom.getIndex();
       bondCount = atom.getCovalentBondCount();
       if (bondCount == 3 && !isAlkene) {
-        getTrigonality(atom);
+        getTrigonality(atom, vNorm);
         lonePair = new P3();
         lonePair.sub2(atom.getXYZ(), vNorm);
       }
@@ -981,10 +1041,6 @@ public class CIPChirality {
         Node other = bond.getOtherAtomNode(atom);
         boolean isParent = (parent != null && parent.atom == other);
         int order = bond.getCovalentOrder();
-        if (nBonds == 1 && order == 1 && isParent) {
-          isTerminal = true;
-          return true;
-        }
         if (order == 2) {
           if (elemNo > 10 || other.getElementNumber() > 10)
             order = 1;
@@ -995,6 +1051,10 @@ public class CIPChirality {
               knownAtomChirality = bond.getCIPChirality(false);
             }
           }
+        }
+        if (nBonds == 1 && order == 1 && isParent) {
+          isTerminal = true;
+          return true;
         }
         switch (order) {
         case 3:
@@ -1255,16 +1315,13 @@ public class CIPChirality {
         return score*sphere;
 
       // return NO_CHIRALITY/TIED if:
-      //  a) both refer to the same atom
+      //  a) both are null
       //  b) one or the other can't be set (because it has too many connections)
       //  c) or one or the other is terminal (has no substituents) 
       //  d) or they are the same atom
-      if (atom == null)// || currentRule < 3))
-        //if (atom == b.atom && (atom == null || currentRule < 3))  
-        return TIED;
       if ((atom == null) != (b.atom == null))
         return (atom == null ? B_WINS : A_WINS)*(sphere + 1);
-      if (!set() || !b.set() || isTerminal || b.isTerminal || isDuplicate
+      if (!set() || !b.set() || isTerminal && b.isTerminal || isDuplicate
           && b.isDuplicate)
         return TIED;
       if (Logger.debugging)
@@ -1314,7 +1371,7 @@ public class CIPChirality {
     }
 
     private int compareDeep(CIPAtom b) {
-      int finalScore = TIED;
+      int finalScore = (nAtoms == 0 ? B_WINS : TIED);
       int absScore = Integer.MAX_VALUE;
       for (int i = 0; i < nAtoms; i++) {
         CIPAtom ai = atoms[i];

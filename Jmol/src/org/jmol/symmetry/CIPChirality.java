@@ -77,7 +77,6 @@ public class CIPChirality {
   // individual "standard" carbon-based R/S and E/Z stereochemistry (Rules 1, 2, and 3)
   //
   // getChirality(atom) {
-  //  if (atom.getCovalentBondCount() != 4) exit NO_CHIRALITY 
   //  for (each Rule){  
   //    sortSubstituents() 
   //    if (done) exit checkHandedness();
@@ -108,9 +107,9 @@ public class CIPChirality {
   // }
   //
   // compareDeeply(a, b) {
+  //    currentScore = Integer.MAX_VALUE
   //    for (each substituent pairing i in a and b) {
-  //      score = breakTie(a_i, b_i)
-  //      if (score != TIED) return score
+  //      score = min(currentScore, breakTie(a_i, b_i)
   //    }
   //    return TIED
   // }

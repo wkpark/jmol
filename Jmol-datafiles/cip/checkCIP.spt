@@ -7,8 +7,13 @@
 nOK = 0;
 
 
- function checkRS(m, key) {
-  var doCheck = (_argCount == 2)
+ function checkRS(m, n, key) {
+  if (_argCount < 3) {
+    key = n
+    n = 1
+  }
+  if (!n) n = 1
+  var doCheck = (!!key)
   var a = 0;
   if (m.find("//")) {
     key = m.split("//")[2]
@@ -19,9 +24,9 @@ nOK = 0;
     }
     doCheck = key;
   }
-  print "loading " + @m
+  print "loading " + m + " " + n
   set useMinimizationThread false
-  load @m filter "2D"
+  load @m @n filter "2D"
   if (!{_H})  calculate hydrogens
   set labelfor {_C} "%[atomname]"
   refresh
@@ -40,28 +45,7 @@ nOK = 0;
   if (doCheck) {
     var ref = (docheck == key ? "" : _M.molData.chiral_atoms.replace("\n","").replace(" ",""))
     if (!ref && docheck != key) {
-      ref = _M.molData.stereounits
-      if (ref) {
-        var tokens = "end " + ref.split(true)
-        ref = ""
-        var atlist = []
-        var s = ""
-        for (var i = tokens.length; i > 0; i--) {
-          var token = tokens[i]
-          if (token.find(":")) continue
-          var itoken = 0 + token
-          if (itoken) {
-            atlist.push(itoken)
-          } else {
-            for (var j = 1; j <= atlist.length; j++) {
-              ref += (atlist[j] + s); 
-            }
-            atlist = []
-            if (token == "end") break
-            s = token
-          }
-        }
-      }
+      ref = checkSDF()
     }
     if (ref) {
       key = ref;
@@ -86,7 +70,7 @@ nOK = 0;
 function checkRdir(name, type) {
   x = load(name + ".txt").lines
   for (var f in x) {
-    f = f.trim();
+    f = f.trim()
     if (f == "#QUIT") break
     if (!f || f.find("#") == 1) continue
     if (f.find("$") != 1) 
@@ -101,34 +85,30 @@ function checkRdir(name, type) {
 //set debug
 
 function checksdf(){
-      ref = _M.molData.stereounits
-      if (ref) {
-        var tokens = ("end " + ref).split(true)
-        ref = ""
-        var atlist = []
-        var s = ""
-        for (var i = tokens.length; i > 0; i--) {
-          var token = tokens[i]
-          print "token is " + token
-          if (token.find(":")) continue
-          var itoken = 0 + token
-          if (itoken) {
-            atlist.push(itoken)
-          } else {
-          prompt("s=" + s + " ref="+ ref)
-            for (var j = 1; j <= atlist.length; j++) {
-              ref += "" + atlist[j] 
-            }
-            ref += s
-            atlist = []
-            if (token == "end") break
-            s = token
-          prompt(s + " "+ ref)
-            print s
-          }
+  ref = _M.molData.stereounits
+  if (ref) {
+    var tokens = ("end " + ref).split(true)
+    ref = ""
+    var atlist = []
+    var s = ""
+    for (var i = tokens.length; i > 0; i--) {
+      var token = tokens[i]
+      if (token.find(":")) continue
+      var itoken = 0 + token
+      if (token == "0" || itoken) {
+        atlist.push(itoken + 1)
+      } else {
+        for (var j = 1; j <= atlist.length; j++) {
+          ref = "" + atlist[j] + s + ref
         }
-        print ref
-     }
+        atlist = []
+        if (token == "end") break
+        s = token
+      }
+    }
+  }
+   print ref
+   return ref
 }
 
 /**

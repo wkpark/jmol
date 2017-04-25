@@ -1600,34 +1600,41 @@ public class CIPChirality {
       // but generally we will want to process this as "R" and "S"
       // note that this analysis cannot be done ahead of time. 
       return (rule4List[i] == null && rule4List[j] == null ? TIED
-          : rule4List[i] != null && rule4List[j] != null ? compareRule4Pair(
-              rule4List[i], rule4List[j]) : rule4List[i] == null ? B_WINS
+          : rule4List[i] != null && rule4List[j] != null ? compareRule4Pair(i, j) : rule4List[i] == null ? B_WINS
               : A_WINS);
     }
 
     /**
      * Chapter 9 Rules 4 and 5: like vs. unlike
      * 
-     * Compare two strings such as RSSSR and SRSRR for like and unlike
-     * and find a winner. Return IGNORE if they are identical; return A_WINS or
-     * B_WINS if there is a winner, and set this.doCheckPseudo if they are
-     * opposites with reference atom R or S (but not r or s).
+     * Compare two strings such as RSSSR and SRSRR for like and unlike and find
+     * a winner. Return IGNORE if they are identical; return A_WINS or B_WINS if
+     * there is a winner, and set this.doCheckPseudo if they are opposites with
+     * reference atom R or S (but not r or s).
      * 
-     * @param aStr
-     * @param bStr
+     * @param ia
+     * @param ib
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS), or Integer.MIN_VALUE
      *         (IGNORE)
      */
-    private int compareRule4Pair(String aStr, String bStr) {
-      
+    private int compareRule4Pair(int ia, int ib) {
+      String aStr = rule4List[ia];
+      String bStr = rule4List[ib];
+
       if (aStr != null && aStr.indexOf("?") == 0) {
-        System.out.println(this + " " + aStr + " " + bStr);
-        System.out.println("???????????");
+        aStr = getMataList(atoms[ia].rule4List);
+        bStr = getMataList(atoms[ib].rule4List);
+        if (aStr.length() != bStr.length()) {
+          // bStr must have R and S options, but aStr does not
+          return (aStr.length() < bStr.length() ? A_WINS : B_WINS);
+        }
+        if (aStr.indexOf("|") >= 0 || bStr.indexOf("|") >= 0)
+          return TIED; // TODO!
       }
 
       // TODO: preliminary only. The challenge is to get these strings lined up right.
-      aStr = PT.rep(aStr,  "~", "");
-      bStr = PT.rep(bStr,  "~", "");
+      aStr = PT.rep(aStr, "~", "");
+      bStr = PT.rep(bStr, "~", "");
       System.out.println("Rule 4b comparing " + aStr + " " + bStr);
       doCheckPseudo = false;
       int n = aStr.length();
@@ -1635,9 +1642,9 @@ public class CIPChirality {
         return TIED;
       char aref = aStr.charAt(0);
       char bref = bStr.charAt(0);
-      for (int j = 1; j < n; j++) {
-        boolean alike = (aref == aStr.charAt(j));
-        boolean blike = (bref == bStr.charAt(j));
+      for (int c = 1; c < n; c++) {
+        boolean alike = (aref == aStr.charAt(c));
+        boolean blike = (bref == bStr.charAt(c));
         if (alike != blike)
           return (alike ? A_WINS : B_WINS);
       }
@@ -1645,6 +1652,84 @@ public class CIPChirality {
         return IGNORE;
       doCheckPseudo = (aref == 'R' || aref == 'S');
       return aref < bref ? A_WINS : B_WINS;
+    }
+
+    private String getMataList(String[] rule4List) {
+      String[] listA = condenseList(rule4List);
+      Arrays.sort(listA);
+      String aref = getMataRef(listA);
+      switch (aref.length()) {
+      default:
+      case 0:
+        System.out.println("???");
+        return "???";
+      case 1:
+        return getMataSequence(listA, aref);
+      case 2:
+        return getMataSequence(listA, "R")  + "|" + getMataSequence(listA, "S");
+      }
+    }
+
+    private String getMataSequence(String[] lst, String aref) {
+      int n = lst.length;
+      String[] sorted = new String[n];
+      int pt = 0;
+      int len = 0;
+      for (int i = 0; i < n; i++) {
+        String rs = lst[i];
+        if (rs.length() > len)
+          len = rs.length();
+        if (rs.startsWith(aref))
+          sorted[pt++] = rs;
+      }         
+      for (int i = 0; i < n; i++) {
+        String rs = lst[i];
+        if (!rs.startsWith(aref))
+          sorted[pt++] = rs;
+      }
+      String mlist = "";
+      char ch;
+      for (int i = 0; i < len; i++) {
+         for (int j = 0; j < n; j++) {
+           String rs = sorted[j];
+           if (i < rs.length() &&  (ch = rs.charAt(i)) != '~' && ch != ';')             
+             mlist += ch;
+         }
+      }      
+      return mlist;
+    }
+
+    private String getMataRef(String[] lst) {
+      // TODO: does not take into consideration initial ~~ 
+      switch  (lst.length) {
+      case 1:
+        // R or S
+        return lst[0].substring(0, 1);
+      case 2:
+        // RR RS SR SS
+        return (lst[0].charAt(0) == lst[1].charAt(0) ? 
+            lst[0].substring(0, 1) : "RS");           
+      case 3:
+        return lst[1].substring(0, 1);
+      }
+      return "";
+    }
+
+    /**
+     * remove unnecessary nulls
+     * @param a
+     * @return trimmed array
+     */
+    private String[] condenseList(String[] a) {
+      int n = 0;
+      for (int i = a.length; --i >= 0;)
+        if (a[i] != null)
+          n++;
+      String[] b = new String[n];
+      for (int i = a.length; --i >= 0;)
+        if (a[i] != null)
+          b[--n] = a[i];
+      return b;
     }
 
     /**
@@ -1738,8 +1823,8 @@ public class CIPChirality {
         auxPseudo.createAuxiliaryRSCenters(true);
       int rs = -1;
       String subRS = "";
-      String s = "~";
-      boolean done = false;
+      String s = (isRoot ? "" : "~");
+      boolean done = true;
       if (atom != null) {
         rule4List = new String[4]; // full list based on atoms[]
         int[] mataList = new int[4]; //sequential pointers into rule4List
@@ -1760,30 +1845,42 @@ public class CIPChirality {
           }
         }
         int adj = TIED;
-        if (nRS == 0) {
+        switch (nRS) {
+        case 0:
           subRS = "";
-        } else if (nRS == 2 && !isRoot) {
-          // we want to now if these two are enantiomorphic, identical, or diastereomorphic.
-          switch (adj = (compareRule4aEnantiomers(rule4List[mataList[0]], rule4List[mataList[1]]))) {
-          case DIASTEREOMERIC:
-          case NOT_RELEVANT:
-            // create a ?<sphere>[....] object
-            adj = TIED;
-            break;
-          case TIED:
-            // identical -- nothing we can do about this -- two identical ligands
-            adj = IGNORE;
-            subRS = "";
-            break;
-          case A_WINS:
-          case B_WINS:
-            // enantiomers -- we have an r/s situation
-            subRS = "";
-            break;
+          break;
+        case 1:
+          break;
+        case 2:
+          if (!isRoot) {
+            // we want to now if these two are enantiomorphic, identical, or diastereomorphic.
+            switch (adj = (compareRule4aEnantiomers(rule4List[mataList[0]], rule4List[mataList[1]]))) {
+            case DIASTEREOMERIC:
+              done = false;
+              break;
+            case NOT_RELEVANT:
+              // create a ?<sphere>[....] object ?
+              adj = TIED;
+              break;
+            case TIED:
+              // identical -- nothing we can do about this -- two identical ligands
+              subRS = "";
+              break;
+            case A_WINS:
+            case B_WINS:
+              // enantiomers -- we have an r/s situation
+              subRS = "";
+              break;
+            }
           }
+          break;
+        case 3:
+        case 4:
+          done = false;
         }
-        if (adj == IGNORE) {
-          // same chirality -- leave this as ~
+        if (!done) {
+          s = "?" + sphere;
+          subRS = "[" + subRS + "]";
         } else if (!isRoot && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) 
             || bondCount == 3 && elemNo > 10 && nPriorities >= 2 - Math.abs(adj))) {
             // if here, adj is TIED (0), A_WINS (-1), or B_WINS (1) 
@@ -1799,13 +1896,11 @@ public class CIPChirality {
               if (adj != TIED)
                 s = s.toLowerCase();
             }
-        } else if (nRS > 1) {
-          s = "?" + sphere;
-          subRS = "[" + subRS + "]";
         }
       }
       s += subRS;
-      System.out.println(this + " creating aux " + s);
+      if (sphere < 2 && !done)
+        System.out.println(this + " creating aux " + s);
       return s;
     }
 

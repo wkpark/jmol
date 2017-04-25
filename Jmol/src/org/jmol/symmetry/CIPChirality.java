@@ -1772,7 +1772,7 @@ public class CIPChirality {
             break;
           case TIED:
             adj = IGNORE;
-            break;            
+            //$FALL-THROUGH$
           case A_WINS:
           case B_WINS:
             subRS = "";

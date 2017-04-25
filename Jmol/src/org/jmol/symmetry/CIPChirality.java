@@ -1723,11 +1723,10 @@ public class CIPChirality {
     }
     /**
      * This method creates a list of downstream (higher-sphere) auxiliary chirality designators
-     * R, S, r, and s that are passed up the line ultimately to the Sphere-1 root substituent.
-     * They have to be processed there, because only there do we know what exists downstream.
-     * At least that's the idea. Anyway, these strings encode all the Mata information we might need.
-     * Right now we are not allowing for triple forks, just double. And we aren't yet sorting them
-     * or fully processing them.  
+     * R, S, r, and s that are passed upstream ultimately to the Sphere-1 root substituent.
+     * 
+     * work in progress
+     * 
      * @param isRoot 
      * 
      * @return collective string, with setting of rule4List
@@ -1764,25 +1763,30 @@ public class CIPChirality {
         if (nRS == 0) {
           subRS = "";
         } else if (nRS == 2 && !isRoot) {
-          // we want to now if these are enantiomers, identical, or otherwise.
+          // we want to now if these two are enantiomorphic, identical, or diastereomorphic.
           switch (adj = (compareRule4aEnantiomers(rule4List[mataList[0]], rule4List[mataList[1]]))) {
           case DIASTEREOMERIC:
           case NOT_RELEVANT:
+            // create a ?<sphere>[....] object
             adj = TIED;
             break;
           case TIED:
+            // identical -- nothing we can do about this -- two identical ligands
             adj = IGNORE;
-            //$FALL-THROUGH$
+            subRS = "";
+            break;
           case A_WINS:
           case B_WINS:
+            // enantiomers -- we have an r/s situation
             subRS = "";
             break;
           }
         }
         if (adj == IGNORE) {
-          // same chirality
-        } else  if (!isRoot && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) 
+          // same chirality -- leave this as ~
+        } else if (!isRoot && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) 
             || bondCount == 3 && elemNo > 10 && nPriorities >= 2 - Math.abs(adj))) {
+            // if here, adj is TIED (0), A_WINS (-1), or B_WINS (1) 
             CIPAtom atom1 = (CIPAtom) clone();
             if (atom1.set()) {
               atom1.addReturnPath(null, this);

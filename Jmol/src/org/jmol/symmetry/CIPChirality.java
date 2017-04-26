@@ -1634,23 +1634,27 @@ public class CIPChirality {
           // We are trying to ascertain that
           // R lull                  R luuu
           // S luuu   is the same as S lull
-          // maybe "min for one is the same as min for the other?"
           // 
+          // Solution is to SUM all winners. 
           String[] aList = PT.split(aStr, "|");
           String[] bList = PT.split(bStr, "|");
           int minScore = Integer.MAX_VALUE;
+          int sumScore = 0;
           aStr = aList[0];
           bStr = bList[0];
           for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
               int score = compareRule4PairStr(aList[i], bList[j], true);
-              if (score <= minScore) {
-                minScore = score;
+              sumScore += score;
+              if (score != TIED && Math.abs(score) <= minScore) {
+                minScore = Math.abs(score);
                 aStr = aList[i];
                 bStr = bList[j];
               }
             }
           }
+          if (sumScore == TIED)
+            return TIED;
         }
       } else {
         // trim off priority numbers
@@ -1660,6 +1664,17 @@ public class CIPChirality {
       return compareRule4PairStr(aStr, bStr, false);
     }
 
+    /**
+     * Comparison of two strings such as RSSR and SRSS for Rule 4b.
+     * 
+     * @param aStr
+     * @param bStr
+     * @param isRSTest
+     *        return a score qualified by measure of how far into the comparison
+     *        when we find a like/unlike distance
+     * 
+     * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), Integer.MIN_VALUE (IGNORE)
+     */
     private int compareRule4PairStr(String aStr, String bStr, boolean isRSTest) {
       System.out.println(this + " Rule 4b comparing " + aStr + " " + bStr);
       doCheckPseudo = false;
@@ -1672,7 +1687,7 @@ public class CIPChirality {
         boolean alike = (aref == aStr.charAt(c));
         boolean blike = (bref == bStr.charAt(c));
         if (alike != blike)
-          return (isRSTest ? c : alike ? A_WINS : B_WINS);
+          return (isRSTest ? c : 1) * (alike ? A_WINS : B_WINS);
       }
       if (isRSTest)
         return TIED;
@@ -1682,6 +1697,13 @@ public class CIPChirality {
       return aref < bref ? A_WINS : B_WINS;
     }
 
+    /**
+     * Retrieve the Mata Rule 4b list for a given atom.
+     * 
+     * @param ia
+     * @return a String representation of the path through the atoms
+     *  
+     */
     private String getMataList(int ia) {
       String[] rule4List = atoms[ia].rule4List;
       int n = 0;
@@ -1706,6 +1728,14 @@ public class CIPChirality {
       }
     }
 
+    /**
+     * This is the key Mata method -- getting the correct sequence of atoms.
+     * 
+     * @param lst
+     * @param aref
+     * @return one string, possibly separated by | indicating that the result
+     *         has both an R and S side to it
+     */
     private String getMataSequence(String[] lst, String aref) {
       int n = lst.length;
       String[] sorted = new String[n];
@@ -1723,7 +1753,6 @@ public class CIPChirality {
         if (rs.indexOf(aref) != 1)
           sorted[pt++] = rs;
       }
-      
       for (int i = 0; i < n; i++) {
         System.out.println("Sorted Mata list " + i + " " + sorted[i]);  
       }
@@ -1739,6 +1768,12 @@ public class CIPChirality {
       return mlist;
     }
 
+    /**
+     * Determine the reference configuration.
+     * 
+     * @param lst
+     * @return
+     */
     private String getMataRef(String[] lst) {
       // get highest-ranking chiral unit
       int pt = Integer.MAX_VALUE;

@@ -4,16 +4,15 @@
 // sample execution requires that cip/ directory be in the current Jmol directory
 // as indicated with the CD command.
 
+// checkR.spt -- test suite for Jmol CIPChirality.java
+// Bob Hanson hansonr@stolaf.edu 4/18/2017 7:44:43 AM
+
 nOK = 0;
 
+thisN = 0;
 
- function checkRS(m, n, key) {
-  if (_argCount < 3) {
-    key = n
-    n = 1
-  }
-  if (!n) n = 1
-  var doCheck = (!!key)
+ function checkRS(m, key) {
+  var doCheck = (_argCount == 2)
   var a = 0;
   if (m.find("//")) {
     key = m.split("//")[2]
@@ -24,9 +23,13 @@ nOK = 0;
     }
     doCheck = key;
   }
-  print "loading " + m + " " + n
+  if (thisN && (nOK + 1) != thisN) {
+   nOK++;
+   return;
+  }
+  print "loading " + (nOK + 1) + ": " + m
   set useMinimizationThread false
-  load @m @n filter "2D"
+  load @m filter "2D"
   if (!{_H})  calculate hydrogens
   set labelfor {_C} "%[atomname]"
   refresh
@@ -43,10 +46,7 @@ nOK = 0;
   var rs = {selected}.label("%[chirality]").join("")
   print " " + doCheck + " key=" + key + " found=" + rs 
   if (doCheck) {
-    var ref = (docheck == key ? "" : _M.molData.chiral_atoms.replace("\n","").replace(" ",""))
-    if (!ref && docheck != key) {
-      ref = checkSDF()
-    }
+    var ref = (docheck == key ? "" : _M.molData["chiral_atoms"].replace("\n","").replace(" ",""))
     if (ref) {
       key = ref;
       rs = {selected}.label("%i%[chirality]").join("")
@@ -70,7 +70,7 @@ nOK = 0;
 function checkRdir(name, type) {
   x = load(name + ".txt").lines
   for (var f in x) {
-    f = f.trim()
+    f = f.trim();
     if (f == "#QUIT") break
     if (!f || f.find("#") == 1) continue
     if (f.find("$") != 1) 
@@ -82,47 +82,20 @@ function checkRdir(name, type) {
   }
 }
 
-//set debug
+//checkrs("cip/RS/Mata_fig7_I_R.mol","?")
+//checkrs("testn2.mol","?")
 
-function checksdf(){
-  ref = _M.molData.stereounits
-  if (ref) {
-    var tokens = ("end " + ref).split(true)
-    ref = ""
-    var atlist = []
-    var s = ""
-    for (var i = tokens.length; i > 0; i--) {
-      var token = tokens[i]
-      if (token.find(":")) continue
-      var itoken = 0 + token
-      if (token == "0" || itoken) {
-        atlist.push(itoken + 1)
-      } else {
-        for (var j = 1; j <= atlist.length; j++) {
-          ref = "" + atlist[j] + s + ref
-        }
-        atlist = []
-        if (token == "end") break
-        s = token
-      }
-    }
-  }
-   print ref
-   return ref
-}
-
-/**
- *
-//checkrs("cip/EZ/deb.mol");
-checkRdir("cip/SP", "?");
 checkRdir("cip/RS", "?");
+checkRdir("cip/SP", "?");
 checkRdir("cip/EZ", "?");
 checkRdir("cip/R", "R");
 checkRdir("cip/S", "S");
 print "DONE: " + nOK
 
- /**
 
+/**
+
+checkrs("cip/EZ/deb.mol");
 checkrs("$(R)-3-hydroxy-1,4-heptadiyne", "R")
 checkRS("$(R)-glycidol", "R")
 checkRS("$glucose", "RSRR")

@@ -1945,7 +1945,8 @@ public class CIPChirality {
       if (rs1.equals(rs2))
         return TIED;
       int finalScore = TIED;
-      for (int i = 0; i < n; i++) {
+      // "1S", "1R"
+      for (int i = 1; i < n; i++) {
         int i1 = " RS".indexOf(rs1.charAt(i));
         int score = i1 + " RS".indexOf(rs2.charAt(i));
         if (score != 0 && score != STEREO_BOTH)

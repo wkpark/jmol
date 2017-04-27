@@ -631,7 +631,7 @@ public class CIPChirality {
                     + Integer.toHexString(cipAtom.prevPriorities[i]));
             }
           }
-          if (cipAtom.aChiral) {
+          if (cipAtom.achiral) {
             isChiral = false;
           } else {
             for (int i = 0; i < cipAtom.bondCount - 1; i++) {
@@ -641,6 +641,8 @@ public class CIPChirality {
               }
             }
           }
+          if (currentRule == 5)
+            cipAtom.isPseudo = true;
         }
         if (isChiral) {
           rs = (!isAlkene ? cipAtom.checkHandedness()
@@ -861,7 +863,7 @@ public class CIPChirality {
     /**
      * Force achiral condition due to double ties.
      */
-    boolean aChiral;
+    boolean achiral;
 
     /**
      * true atom covalent bond count
@@ -1163,7 +1165,7 @@ public class CIPChirality {
         if (prevPriorities[i] == 0 && currentRule > RULE_1)
           prevPriorities[i] = getBasePriority(atoms[i]);
       }
-      boolean checkRule4List = (currentRule == RULE_4 && rule4List != null);
+      boolean checkRule4List = (currentRule > RULE_3 && rule4List != null);
       for (int i = 0; i < n; i++) {
         CIPAtom a = atoms[i];
         for (int j = i + 1; j < n; j++) {
@@ -1171,14 +1173,17 @@ public class CIPChirality {
           int score = (a.atom == null ? B_WINS : b.atom == null ? A_WINS
                 : prevPriorities[i] == prevPriorities[j] ? TIED
                     : prevPriorities[j] < prevPriorities[i] ? B_WINS : A_WINS);
+          // if this is Rule 4, then we do a check of the forward-based stereochemical path
           if (score == TIED)
-            score = (checkRule4List ? checkRule4(i, j) : a.compareTo(b));
+            score = (checkRule4List ? checkRule4And5(i, j) : a.compareTo(b));
           if (Logger.debuggingHigh)
             Logger.info("ordering " + this.id + "." + i + "." + j + " " + this
                 + "-" + a + " vs " + b + " = " + score);
           switch (score) {
           case IGNORE:
             // just increment the index and go on to the next rule -- no breaking of the tie
+            if (checkRule4List && sphere == 0)
+              achiral = true; // two ligands for the root atom found to be equivalent in Rule 4 must be achiral
             indices[i]++;
             if (Logger.debuggingHigh)
               Logger.info(atom + "." + b + " ends up with tie with " + a);
@@ -1259,7 +1264,7 @@ public class CIPChirality {
           checkPseudoHandedness(ties, indices);
           //}
         } else if (sphere == 0) {
-          aChiral = true;
+          achiral = true;
         }
       }
       if (Logger.debugging) {
@@ -1592,18 +1597,16 @@ public class CIPChirality {
      * @param j
      * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), Integer.MIN_VALUE (IGNORE)
      */
-    private int checkRule4(int i, int j) {
+    private int checkRule4And5(int i, int j) {
       // rule4List[i] = ?1[RR;;SR;;SR;;] ==> atoms[i].rule4List = [RR;  SR;  SR;] 
       // rule4List[j] = ?1[SR;;RS;;RS;;] ==> atoms[j].rule4List = [SR;  RS;  RS;]
-      // note that opposites will need to generate "R" or "S" keys, which will be 
-      // resolved as "r" or "s" 
-      // but generally we will want to process this as "R" and "S"
-      // note that this analysis cannot be done ahead of time. 
-      return (rule4List[i] == null && rule4List[j] == null ? TIED
-          : rule4List[i] != null && rule4List[j] != null ? compareRule4Pair(i, j) : rule4List[i] == null ? B_WINS
-              : A_WINS);
+      if (rule4List[i] == null && rule4List[j] == null)
+        return TIED;
+      if (rule4List[i] == null || rule4List[j] == null)
+        return  rule4List[j] == null ? A_WINS : B_WINS;
+      return compareMataPair(i, j);
     }
-
+    
     /**
      * Chapter 9 Rules 4 and 5: like vs. unlike
      * 
@@ -1614,20 +1617,28 @@ public class CIPChirality {
      * 
      * @param ia
      * @param ib
+     * @param isRule5
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS), or Integer.MIN_VALUE
      *         (IGNORE)
      */
-    private int compareRule4Pair(int ia, int ib) {
+    private int compareMataPair(int ia, int ib) {
+      boolean isRule5 = (currentRule == RULE_5);
+      // note that opposites will need to generate "R" or "S" keys, which will be 
+      // resolved as "r" or "s" 
+      // but generally we will want to process this as "R" and "S"
+      // note that this analysis cannot be done ahead of time
       String aStr = rule4List[ia];
       String bStr = rule4List[ib];
 
       if (aStr != null && aStr.indexOf("?") == 1) {
-        aStr = getMataList(ia);
-        bStr = getMataList(ib);
+        aStr = getMataList(ia, isRule5);
+        bStr = getMataList(ib, isRule5);
         if (aStr.length() != bStr.length()) {
           // bStr must have R and S options, but aStr does not
           return (aStr.length() < bStr.length() ? A_WINS : B_WINS);
         }
+        if (isRule5)
+          return aStr.compareTo(bStr);
         if (aStr.indexOf("|") >= 0 || bStr.indexOf("|") >= 0) {
           // Mata(2005) Figure 9
           // TODO: Still some issues here....
@@ -1701,10 +1712,11 @@ public class CIPChirality {
      * Retrieve the Mata Rule 4b list for a given atom.
      * 
      * @param ia
+     * @param isRule5 
      * @return a String representation of the path through the atoms
      *  
      */
-    private String getMataList(int ia) {
+    private String getMataList(int ia, boolean isRule5) {
       String[] rule4List = atoms[ia].rule4List;
       int n = 0;
       for (int i = rule4List.length; --i >= 0;)
@@ -1715,57 +1727,86 @@ public class CIPChirality {
         if (rule4List[i] != null)
           listA[--n] = rule4List[i];
       Arrays.sort(listA);
-      String aref = getMataRef(listA);
+      String aref = (isRule5 ? "R" : getMataRef(listA));
       switch (aref.length()) {
       default:
       case 0:
         System.out.println("???");
         return "???";
       case 1:
-        return getMataSequence(listA, aref);
+        return getMataSequence(listA, aref, isRule5);
       case 2:
-        return getMataSequence(listA, "R")  + "|" + getMataSequence(listA, "S");
+        return getMataSequence(listA, "R", false)  + "|" + getMataSequence(listA, "S", false);
       }
     }
 
     /**
-     * This is the key Mata method -- getting the correct sequence of atoms.
+     * This is the key Mata method -- getting the correct sequence of R and S
+     * from a set of diasteromorphic paths. Given a specific reference
+     * designation, the task is to sort the paths based on priority (we can't
+     * change the base priority already determined using Rules 1-3) and
+     * reference.
+     * 
+     * We do the sort lexicographically, simply using Array.sort(String[]) with
+     * our reference atom temporarily given the lowest ASCII characater "A"
+     * (65).
      * 
      * @param lst
      * @param aref
+     * @param isRule5
      * @return one string, possibly separated by | indicating that the result
      *         has both an R and S side to it
      */
-    private String getMataSequence(String[] lst, String aref) {
-      int n = lst.length;
-      String[] sorted = new String[n];
-      int pt = 0;
+    private String getMataSequence(String[] lst, String aref, boolean isRule5) {
+      String[] sorted = (isRule5 ? lst : getMataSortedList(lst, aref));
+      int n = sorted.length;
       int len = 0;
       for (int i = 0; i < n; i++) {
-        String rs = lst[i];
+        String rs = sorted[i];
         if (rs.length() > len)
           len = rs.length();
-        if (rs.indexOf(aref) == 1)
-          sorted[pt++] = rs;
-      }         
-      for (int i = 0; i < n; i++) {
-        String rs = lst[i];
-        if (rs.indexOf(aref) != 1)
-          sorted[pt++] = rs;
       }
-      for (int i = 0; i < n; i++) {
-        System.out.println("Sorted Mata list " + i + " " + sorted[i]);  
-      }
+
+      // Strip out all non-R/S designations
       String mlist = "";
       char ch;
       for (int i = 1; i < len; i++) {
-         for (int j = 0; j < n; j++) {
-           String rs = sorted[j];
-           if (i < rs.length() &&  (ch = rs.charAt(i)) != '~' && ch != ';')             
-             mlist += ch;
-         }
-      }      
+        for (int j = 0; j < n; j++) {
+          String rs = sorted[j];
+          if (i < rs.length() && (ch = rs.charAt(i)) != '~' && ch != ';')
+            mlist += ch;
+        }
+        if (isRule5) {
+          // clear out this sphere and resort
+          for (int j = 0; j < n; j++) {
+            String rs = sorted[j];
+            if (i < rs.length())
+              sorted[j] = rs.substring(0, i) + "~" + rs.substring(i + 1);
+          }
+          Arrays.sort(sorted);
+        }
+      }
       return mlist;
+    }
+
+    /**
+     * @param lst 
+     * @param aref 
+     * @return 
+     */
+    private String[] getMataSortedList(String[] lst, String aref) {
+      int n = lst.length;
+      String[] sorted = new String[n];
+      for (int i = 0; i < n; i++)
+        sorted[i] = PT.rep(lst[i], aref, "A");
+      Arrays.sort(sorted);
+      for (int i = 0; i < n; i++)
+        sorted[i] = PT.rep(sorted[i], "A", aref);
+      
+      for (int i = 0; i < n; i++) {
+        System.out.println("Sorted Mata list " + i + " " + sorted[i]);  
+      }
+      return sorted;
     }
 
     /**
@@ -2089,9 +2130,20 @@ public class CIPChirality {
      */
     private int checkRule5(CIPAtom b) {
       // TODO
+      System.out.println("Rule 5 for " + this + " vs. " + b);
       int isRa = ";srSR;".indexOf(getWorkingChirality());
       int isRb = ";srSR;".indexOf(b.getWorkingChirality());
-      return (isRa == isRb ? TIED : isRa > isRb ? A_WINS : B_WINS);
+      if (isRa != isRb) 
+          return   (isRa > isRb ? A_WINS : B_WINS);
+      if (rule4List == null || b.rule4List == null)
+        return TIED;
+      for (int  i = 0; i < 4; i++)
+        if (rule4List[i] != null) {
+          System.out.println(PT.toJSON(this + ".rule4List",  rule4List));
+          System.out.println(PT.toJSON(b + ".rule4List",  b.rule4List));
+          break;
+        }
+      return TIED;
     }
 
     /**

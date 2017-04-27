@@ -633,14 +633,15 @@ public class CIPChirality {
           }
           if (cipAtom.achiral) {
             isChiral = false;
-          } else {
-            for (int i = 0; i < cipAtom.bondCount - 1; i++) {
-              if (cipAtom.prevPriorities[i] == cipAtom.prevPriorities[i + 1]) {
-                isChiral = false;
-                break;
-              }
+            break;
+          }
+          for (int i = 0; i < cipAtom.bondCount - 1; i++) {
+            if (cipAtom.prevPriorities[i] == cipAtom.prevPriorities[i + 1]) {
+              isChiral = false;
+              break;
             }
           }
+
           if (currentRule == 5)
             cipAtom.isPseudo = true;
         }

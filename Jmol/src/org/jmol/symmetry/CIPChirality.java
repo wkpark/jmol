@@ -641,16 +641,15 @@ public class CIPChirality {
               break;
             }
           }
-
           if (currentRule == 5)
             cipAtom.isPseudo = true;
         }
         if (isChiral) {
           rs = (!isAlkene ? cipAtom.checkHandedness()
               : cipAtom.atoms[0].isDuplicate ? STEREO_S : STEREO_R);
+          if (cipAtom.isPseudo && !isAlkene)
+            rs = rs | JC.CIP_CHIRALITY_PSEUDO_FLAG;
         }
-        if (cipAtom.isPseudo && !isAlkene)
-          rs = rs | JC.CIP_CHIRALITY_PSEUDO_FLAG;
         if (Logger.debugging)
           Logger.info(atom + " " + rs);
         if (Logger.debugging)
@@ -2130,21 +2129,11 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int checkRule5(CIPAtom b) {
-      // TODO
-      System.out.println("Rule 5 for " + this + " vs. " + b);
+      if (isTerminal || isDuplicate)
+        return TIED;
       int isRa = ";srSR;".indexOf(getWorkingChirality());
       int isRb = ";srSR;".indexOf(b.getWorkingChirality());
-      if (isRa != isRb) 
-          return   (isRa > isRb ? A_WINS : B_WINS);
-      if (rule4List == null || b.rule4List == null)
-        return TIED;
-      for (int  i = 0; i < 4; i++)
-        if (rule4List[i] != null) {
-          System.out.println(PT.toJSON(this + ".rule4List",  rule4List));
-          System.out.println(PT.toJSON(b + ".rule4List",  b.rule4List));
-          break;
-        }
-      return TIED;
+      return (isRa == isRb ? TIED : isRa > isRb ? A_WINS : B_WINS);
     }
 
     /**

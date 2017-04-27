@@ -238,6 +238,8 @@ public class CIPChirality {
   static final int RULE_4 = 4;
   static final int RULE_5 = 5;
   
+  static final float TRIGONALITY_MIN = 0.2f;
+  
   public String getRuleName() {
     return "" + currentRule;
   }
@@ -382,7 +384,7 @@ public class CIPChirality {
         bsToDo.clear(i);
         continue;
       }
-      if (!haveAlkenes && couldBeEZ(atoms[i]))
+      if (!haveAlkenes && couldBeEZ(atoms[i], null))
         // do Rule 3, and check for rings that in the end should force removal of E/Z designations
         haveAlkenes = true;
     }
@@ -433,28 +435,58 @@ public class CIPChirality {
       }
     }
     float d = getTrigonality(a, vNorm);
-    return ((Math.abs(d) < 0.2f) == mustBePlanar); // arbitrarily set 
-  }
-
-  private boolean couldBeEZ(Node a) {
-    Edge[] bonds = a.getEdges();
-    if (a.getElementNumber() > 10)
-      return false;
-    for (int i = bonds.length, pt = 0; --i >= 0 && pt < 3;)
-      if (bonds[i].getCovalentOrder() == 2)
-        return true;
-    return false;
+    return ((Math.abs(d) < TRIGONALITY_MIN) == mustBePlanar); // arbitrarily set 
   }
 
   /**
-   * Allow double bonds only if trivalent and first-row atom. (IUPAC 2013.P-93.2.4)
+   * Allow double bonds only if trivalent and first-row atom. (IUPAC
+   * 2013.P-93.2.4) Currently: a) first row b) doubly bonded c) doubly bonded
+   * atom is also first row
+   * 
    * @param a
-   * @param b
-   * @return true if this bond could be E/Z
+   * @param b optional other atom
+   * @return if the atom could be an EZ node
    */
-  private boolean couldBeChiralBond(Node a, Node b) {
-    return (a.getElementNumber() < 10 && b.getElementNumber() < 10
-        && a.getCovalentBondCount() == 3 && b.getCovalentBondCount() == 3);
+  private boolean couldBeEZ(Node a, Node b) {
+    switch (a.getCovalentBondCount()) {
+    default:
+      return false;
+    case 2:
+      // imines and diazines
+      if (a.getElementNumber() != 7) // nitrogen
+        return false;
+      break;
+    case 3:
+      // first-row only (IUPAC 2013.P-93.2.4)
+      if (!isFirstRow(a))
+        return false;
+      break;
+    }
+    Edge[] bonds = a.getEdges();
+    int n = 0;
+    for (int i = bonds.length; --i >= 0;)
+      if (bonds[i].getCovalentOrder() == 2) {
+        if (++n > 1)
+          return false; // no central allenes
+        Node other = bonds[i].getOtherAtomNode(a);
+        if (!isFirstRow(other))
+          return false;
+        if (b != null && (other != b || b.getCovalentBondCount() == 1)) {
+          // could be allene central, but I think this is not necessary
+          return false;
+        }
+      }
+    return true;
+  }
+
+  /**
+   * Check if an atom is 1st row
+   * @param a
+   * @return elemno > 2 && elemno <= 10
+   */
+  boolean isFirstRow(Node a) {
+    int n = a.getElementNumber();
+    return (n > 2 && n <= 10);
   }
 
   /**
@@ -602,7 +634,7 @@ public class CIPChirality {
         cipAtom = new CIPAtom(atom, null, false, isAlkene);
         int nSubs = atom.getCovalentBondCount();
         int elemNo = atom.getElementNumber();
-        isAlkene = (nSubs == 3 && elemNo < 10); // (IUPAC 2013.P-93.2.4)
+        isAlkene = (nSubs == 3 && elemNo <= 10); // (IUPAC 2013.P-93.2.4)
         if (nSubs != (parent == null ? 4 : 3)
             - (nSubs == 3 && !isAlkene ? 1 : 0))
           return rs;
@@ -645,7 +677,7 @@ public class CIPChirality {
             }
           }
           if (currentRule == 5)
-            cipAtom.isPseudo = true;
+            cipAtom.isPseudo = cipAtom.canBePseudo;
         }
         if (isChiral) {
           rs = (!isAlkene ? cipAtom.checkHandedness()
@@ -684,18 +716,15 @@ public class CIPChirality {
     if (bond.getCovalentOrder() == 2) {
       Node a = atoms[bond.getAtomIndex1()];
       Node b = atoms[bond.getAtomIndex2()];
-      // no imines for now
-      if (!couldBeChiralBond(a,b))
+      if (!couldBeEZ(a,b))
         return NO_CHIRALITY;
       htPathPoints = new Hashtable<String, Integer>();
       CIPAtom a1 = new CIPAtom(a, null, false, true);
       CIPAtom b1 = new CIPAtom(b, null, false, true);
-      //b1.fillNull(0);
       int atop = getAtomChiralityLimited(a, a1, b1, ruleMax) - 1;
       htPathPoints = new Hashtable<String, Integer>();
       CIPAtom a2 = new CIPAtom(a, null, false, true);
       CIPAtom b2 = new CIPAtom(b, null, false, true);
-      //a2.fillNull(0);
       int btop = getAtomChiralityLimited(b, b2, a2, ruleMax) - 1;
       if (atop >= 0 && btop >= 0) {
         ez = (isCIS(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_Z
@@ -864,7 +893,7 @@ public class CIPChirality {
     public boolean isPseudo;
 
     /**
-     * Force achiral condition due to double ties.
+     * Force achiral condition due to two identical ligands after Rule 4 check.
      */
     boolean achiral;
 
@@ -930,6 +959,8 @@ public class CIPChirality {
      */
     private CIPAtom auxPseudo;
 
+    boolean canBePseudo = true;
+
     /**
      * 
      * @param atom
@@ -945,13 +976,13 @@ public class CIPChirality {
         return;
       this.isAlkene = isAlkene;
       this.atom = atom;
+      this.elemNo = atom.getElementNumber();
+      this.massNo = atom.getNominalMass();
       atomIndex = atom.getIndex();
       bondCount = atom.getCovalentBondCount();
-      if (bondCount == 3 && !isAlkene) {
-        getTrigonality(atom, vNorm);
-        lonePair = new P3();
-        lonePair.sub2(atom.getXYZ(), vNorm);
-      }
+      if (bondCount == 3 && !isAlkene && elemNo > 10)
+        getLonePair();
+      canBePseudo = (bondCount == 4 || bondCount == 3 && lonePair != null); 
       String c = atom.getCIPChirality(false);
       // What we are doing here is creating a lexigraphically sortable string
       // R < S < r < s < ~ and C < T < ~ 
@@ -969,8 +1000,6 @@ public class CIPChirality {
         rootSubstituent = this;
       else if (parent != null)
         rootSubstituent = parent.rootSubstituent;
-      this.elemNo = atom.getElementNumber();
-      this.massNo = atom.getNominalMass();
       this.bsPath = (parent == null ? new BS() : BSUtil.copy(parent.bsPath));
 
       boolean wasDuplicate = isDuplicate;
@@ -1001,6 +1030,16 @@ public class CIPChirality {
         Logger.info("new CIPAtom " + parent + "->" + this);
       if (isDuplicate && !wasDuplicate)
         updateRingList();
+    }
+
+    private void getLonePair() {      
+      float d = getTrigonality(atom, vNorm);
+      if (Math.abs(d) > TRIGONALITY_MIN) {
+        lonePair = new P3();
+        vNorm.scale(d);
+        lonePair.add2(atom.getXYZ(), vNorm);      
+//        System.out.println("$ draw " + lonePair + " // " + atom );
+      }
     }
 
     /**
@@ -1035,7 +1074,6 @@ public class CIPChirality {
       isSet = true;
       if (isDuplicate)
         return true;
-      //      atoms = new CIPAtom[4];
       int nBonds = atom.getBondCount();
       Edge[] bonds = atom.getEdges();
       if (Logger.debuggingHigh)
@@ -1049,7 +1087,7 @@ public class CIPChirality {
         boolean isParent = (parent != null && parent.atom == other);
         int order = bond.getCovalentOrder();
         if (order == 2) {
-          if (elemNo > 10 || other.getElementNumber() > 10)
+          if (elemNo > 10 || !isFirstRow(other))
             order = 1;
           else {
             isAlkene = true;
@@ -1079,7 +1117,7 @@ public class CIPChirality {
           //$FALL-THROUGH$
         case 1:
           if (!isParent
-              && addAtom(pt++, other, order != 1 && elemNo < 10, false) == null) {
+              && addAtom(pt++, other, order != 1 && elemNo <= 10, false) == null) {
             isTerminal = true;
             return false;
           }
@@ -1091,7 +1129,8 @@ public class CIPChirality {
       }
       isTerminal = (pt == 0);
       nAtoms = pt;
-      fillNull(pt);
+      for (; pt < atoms.length; pt++)
+        atoms[pt] = new CIPAtom(null, this, true, false);
 
       // Do an initial atom-only shallow sort using a.compareTo(b)
 
@@ -1101,11 +1140,6 @@ public class CIPChirality {
       currentRule = ruleNow;
 
       return !isTerminal;
-    }
-
-    private void fillNull(int pt) {
-      for (; pt < atoms.length; pt++)
-        atoms[pt] = new CIPAtom(null, this, true, false);
     }
 
     /**
@@ -1149,11 +1183,9 @@ public class CIPChirality {
      */
     void sortSubstituents() {
 
-      int n = 4;
-
       if (Logger.debugging) {
         Logger.info(root + "---sortSubstituents---" + this);
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < 4; i++) {
           Logger.info(getRuleName() + ": " + this + "[" + i + "]="
               + atoms[i].myPath + " " + Integer.toHexString(prevPriorities[i]));
         }
@@ -1161,17 +1193,17 @@ public class CIPChirality {
 
       int[] indices = new int[4];
 
-      BS ties = null;
+      Lst<int[]>ties = null;
 
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < 4; i++) {
         priorities[i] = 1;
         if (prevPriorities[i] == 0 && currentRule > RULE_1)
           prevPriorities[i] = getBasePriority(atoms[i]);
       }
       boolean checkRule4List = (currentRule > RULE_3 && rule4List != null);
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
-        for (int j = i + 1; j < n; j++) {
+        for (int j = i + 1; j < 4; j++) {
           CIPAtom b = atoms[j];
           int score = (a.atom == null ? B_WINS : b.atom == null ? A_WINS
                 : prevPriorities[i] == prevPriorities[j] ? TIED
@@ -1231,21 +1263,20 @@ public class CIPChirality {
             // there are not two such sets. 
             doCheckPseudo = false;
             if (ties == null)
-              ties = new BS();
-            ties.set(i);
-            ties.set(j);
+              ties = new Lst<int[]>();
+            ties.addLast(new int[]{ i, j });
           }
         }
       }
       // update the substituent arrays
 
-      CIPAtom[] newAtoms = new CIPAtom[n];
-      int[] newPriorities = new int[n];
-      int[] newPrevPriorities = new int[n];
+      CIPAtom[] newAtoms = new CIPAtom[4];
+      int[] newPriorities = new int[4];
+      int[] newPrevPriorities = new int[4];
 
       BS bs = new BS();
       int shift = PRIORITY_SHIFT[currentRule];
-      for (int i = 0; i < n; i++) {
+      for (int i = 0; i < 4; i++) {
         int pt = indices[i];
         CIPAtom a = newAtoms[pt] = atoms[i];
         int p = priorities[i];
@@ -1262,17 +1293,18 @@ public class CIPChirality {
         nPriorityMax = nPriorities;
 
       if (ties != null) {
-        if (ties.cardinality() == 2) {
-          //if (sphere != 0 || useAuxiliaries) {
-          checkPseudoHandedness(ties, indices);
-          //}
-        } else if (sphere == 0) {
-          achiral = true;
+        switch (ties.size()) {
+        case 1:
+          checkPseudoHandedness(ties.get(0), indices);
+          break;
+        case 2:
+          canBePseudo = false;
+          break;
         }
       }
       if (Logger.debugging) {
         Logger.info(atom + " nPriorities = " + nPriorities);
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < 4; i++)
           Logger.info(this.myPath + "[" + i + "]=" + atoms[i] + " "
               + priorities[i] + " new");
         Logger.info("-------");
@@ -1620,7 +1652,6 @@ public class CIPChirality {
      * 
      * @param ia
      * @param ib
-     * @param isRule5
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS), or Integer.MIN_VALUE
      *         (IGNORE)
      */
@@ -1706,7 +1737,10 @@ public class CIPChirality {
         return TIED;
       if (aref == bref)
         return IGNORE;
-      doCheckPseudo = (aref == 'R' || aref == 'S');
+      // are opposites
+      if (!canBePseudo)
+        root.canBePseudo = false;
+      doCheckPseudo = canBePseudo && (aref == 'R' || aref == 'S');
       return aref < bref ? A_WINS : B_WINS;
     }
 
@@ -1792,9 +1826,12 @@ public class CIPChirality {
     }
 
     /**
-     * @param lst 
-     * @param aref 
-     * @return 
+     * Sort Mata list of ["RS...", "SR..."] by temporarily assigning the reference atom
+     * chirality the letter "A" and then sorting lexicographically.
+     * 
+     * @param lst
+     * @param aref
+     * @return sorted list
      */
     private String[] getMataSortedList(String[] lst, String aref) {
       int n = lst.length;
@@ -1804,18 +1841,26 @@ public class CIPChirality {
       Arrays.sort(sorted);
       for (int i = 0; i < n; i++)
         sorted[i] = PT.rep(sorted[i], "A", aref);
-      
-      for (int i = 0; i < n; i++) {
-        System.out.println("Sorted Mata list " + i + " " + sorted[i]);  
-      }
+      if (Logger.debuggingHigh)
+        for (int i = 0; i < n; i++)
+          Logger.info("Sorted Mata list " + i + " " + sorted[i]);
       return sorted;
     }
 
     /**
-     * Determine the reference configuration.
+     * Determine the reference designation.
+     * 
+     * This is a key element of Mata analysis. We must above all, respect
+     * the already-determined priorities of these paths. So, for example, if 
+     * we are looking at {1:SRRR, 2:RSSS, 2:RSSS}, where 1 and 2 are priorities, with
+     * 1 being higher priority than 2, then the reference designation is S, not R.
+     * 
+     * When there is one S and one R, return "RS".
+     * 
+     * Not fully tested.
      * 
      * @param lst
-     * @return
+     * @return R, S, or RS
      */
     private String getMataRef(String[] lst) {
       // get highest-ranking chiral unit
@@ -2003,13 +2048,13 @@ public class CIPChirality {
     /**
      * Reverse the path to the parent and check r/s chirality
      * 
-     * @param ties
+     * @param iab
      * @param indices
      * 
      */
-    private void checkPseudoHandedness(BS ties, int[] indices) {
-      int ia = ties.nextSetBit(0);
-      int ib = ties.nextSetBit(ia + 1);
+    private void checkPseudoHandedness(int[] iab, int[] indices) {
+      int ia = iab[0];
+      int ib = iab[1];
       CIPAtom atom1;
       if (auxPseudo == null) {
         // critical here that we do NOT include the tied branches

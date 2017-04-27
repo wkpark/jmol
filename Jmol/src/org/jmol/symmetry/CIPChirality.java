@@ -353,7 +353,7 @@ public class CIPChirality {
       // using BSAtoms here because we need the entire graph, even starting with an H atom. 
       getSmallRings(atoms[bsAtoms.nextSetBit(0)]);
       for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
-        getAtomBondChirality(atoms[i], false, lstEZ, bsToDo);
+        getAtomBondChirality(atoms[i], false, RULE_3, lstEZ, bsToDo);
     }
 
     
@@ -366,6 +366,13 @@ public class CIPChirality {
       a.setCIPChirality(getAtomChiralityLimited(a, null, null, 5));
     }
 
+    if (haveAlkenes) {
+      for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
+        getAtomBondChirality(atoms[i], false, RULE_5, lstEZ, bsToDo);
+    }
+
+
+    
     // Finally, remove any E/Z indications in small rings
 
     if (lstSmallRings.size() > 0 && lstEZ.size() > 0)
@@ -597,7 +604,7 @@ public class CIPChirality {
    * @param bsToDo 
    */
 
-  private void getAtomBondChirality(Node atom, boolean allBonds, Lst<int[]>lstEZ, BS bsToDo) {
+  private void getAtomBondChirality(Node atom, boolean allBonds, int ruleMax, Lst<int[]>lstEZ, BS bsToDo) {
     Edge[] bonds = atom.getEdges();
     int index = atom.getIndex();
     for (int j = bonds.length; --j >= 0;) {
@@ -605,10 +612,10 @@ public class CIPChirality {
       if (bond.getCovalentOrder() == 2) {
         int index2 = bond.getOtherAtomNode(atom).getIndex();
         if ((allBonds || index2 > index)
-          && getBondChiralityLimited(bond, RULE_3) != NO_CHIRALITY) {
+          && getBondChiralityLimited(bond, ruleMax) != NO_CHIRALITY) {
           lstEZ.addLast(new int[] {index, index2});
-          bsToDo.clear(index);
-          bsToDo.clear(index2);
+          //bsToDo.clear(index);
+          //bsToDo.clear(index2);
         }
       }
     }

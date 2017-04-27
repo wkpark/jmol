@@ -5142,9 +5142,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case T.axesorientationrasmol:
       return g.axesOrientationRasmol;
     case T.cartoonsteps:
-      return g.backboneSteps;
+      return g.cartoonSteps;
     case T.cartoonblocks:
-      return g.backboneBlocks;
+      return g.cartoonBlocks;
     case T.bondmodeor:
       return g.bondModeOr;
     case T.cartoonbaseedges:
@@ -5381,7 +5381,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.vibrationPeriod;
     case T.cartoonblockheight:
       // 14.11.0
-      return g.backboneBlockWidth;
+      return g.cartoonBlockHeight;
     }
     Logger.error("viewer.getFloat(" + T.nameOf(tok) + ") - not listed");
     return 0;
@@ -5648,7 +5648,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     switch (tok) {
     case T.cartoonblockheight:
       // 14.11.0
-      g.backboneBlockWidth = value;
+      g.cartoonBlockHeight = value;
       break;
     case T.modulationscale:
       // 14.0.1
@@ -6126,11 +6126,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       break;
     case T.cartoonblocks:
       // 14.11.0
-      g.backboneBlocks = value;
+      g.cartoonBlocks = value;
       break;
     case T.cartoonsteps:
       // 14.1.14
-      g.backboneSteps = value;
+      g.cartoonSteps = value;
       break;
     case T.cartoonribose:
       // 14.1.8

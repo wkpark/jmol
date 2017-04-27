@@ -202,9 +202,9 @@ public class GlobalSettings {
     setF("axesScale", axesScale);
     setF("axesOffset", axesOffset);
     setB("axesOrientationRasmol", axesOrientationRasmol);
-    setF("backboneBlock", backboneBlockWidth);
-    setB("backboneBlocks", backboneBlocks);
-    setB("backboneSteps", backboneSteps);
+    setF("cartoonBlockHeight", cartoonBlockHeight);
+    setB("cartoonBlocks", cartoonBlocks);
+    setB("cartoonSteps", cartoonSteps);
     setB("bondModeOr", bondModeOr);
     setB("bondPicking", bondPicking);
     setI("bondRadiusMilliAngstroms", bondRadiusMilliAngstroms);
@@ -544,9 +544,9 @@ public class GlobalSettings {
 
   boolean cartoonBaseEdges = false;
   boolean cartoonRockets = false;
-  float backboneBlockWidth = 0.5f;
-  boolean backboneBlocks = false;
-  boolean backboneSteps = false;
+  float cartoonBlockHeight = 0.5f;
+  boolean cartoonBlocks = false;
+  boolean cartoonSteps = false;
   boolean cartoonFancy = false;
   boolean cartoonLadders = false;
   boolean cartoonRibose = false;

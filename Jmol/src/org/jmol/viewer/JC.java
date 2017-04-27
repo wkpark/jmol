@@ -52,8 +52,8 @@ public final class JC {
   public final static int CIP_CHIRALITY_r_FLAG = 5;
   public final static int CIP_CHIRALITY_s_FLAG = 6;
   public final static int CIP_CHIRALITY_CANTDETERMINE = 7;
-  public final static int CIP_CHIRALITY_Z_FLAG = 8;
-  public final static int CIP_CHIRALITY_E_FLAG = 0x10; // Z|E is "no chirality"
+  public final static int CIP_CHIRALITY_Z_FLAG = 1 << 3;
+  public final static int CIP_CHIRALITY_E_FLAG = 2 << 3; // Z|E is "no chirality"
 
   public static String getCIPChiralityName(int flags) {
     switch (flags) {

@@ -1644,12 +1644,11 @@ public class CIPChirality {
           return aStr.compareTo(bStr);
         if (aStr.indexOf("|") >= 0 || bStr.indexOf("|") >= 0) {
           // Mata(2005) Figure 9
-          // TODO: Still some issues here....
           // We are trying to ascertain that
           // R lull                  R luuu
           // S luuu   is the same as S lull
           // 
-          // Solution is to SUM all winners. 
+          // Solution is to SUM all winners. If that is 0, then they are the same
           String[] aList = PT.split(aStr, "|");
           String[] bList = PT.split(bStr, "|");
           int minScore = Integer.MAX_VALUE;

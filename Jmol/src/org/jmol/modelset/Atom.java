@@ -1334,7 +1334,8 @@ public class Atom extends Point3fi implements Node {
   @Override
   
   public int getNominalMass() {
-    return Math.round(getMass());
+    int mass = getIsotopeNumber();
+    return (mass > 0 ? mass : Elements.getNaturalIsotope(getElementNumber()));
   }
   
   private float getMass() {

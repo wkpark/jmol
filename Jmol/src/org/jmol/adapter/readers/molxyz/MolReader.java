@@ -32,6 +32,7 @@ import javajs.util.PT;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 
 /**
@@ -278,46 +279,69 @@ public class MolReader extends AtomSetCollectionReader {
 
     Atom[] atoms = asc.atoms;
     Map<String, String> molData = new Hashtable<String, String>();
-    boolean haveData = false;
-    
     rd();
     while (line != null && line.indexOf("$$$$") != 0) {
-      if (line.indexOf(">") != 0) {
-        rd();
+      if (line.indexOf(">") == 0) {
+        readMolData(molData);
         continue;
       }
-      String dataName = PT.trim(line, "> <").toLowerCase();
-      String data = "";
-      float[] fdata = null;
-      while (rd() != null && line.indexOf("$$$$") != 0
-          && line.indexOf(">") != 0) {
-        data += line + "\n";
+      if (line.startsWith("M  ISO")) {
+        readIsotopes();
         continue;
       }
-      data = PT.trim(data, "\n");
-      Logger.info(dataName + ":" + data.replace('\n', '|'));
-      haveData = true;
-      molData.put(dataName, data);
-      if (dataName.toUpperCase().contains("_PARTIAL_CHARGES")) {
-        try {
-          fdata = PT.parseFloatArray(data);
-          for (int i = asc.getLastAtomSetAtomIndex(), n = asc.ac; i < n; i++)
-            atoms[i].partialCharge = 0;
-          int pt = 0;
-          for (int i = (int) fdata[pt++]; --i >= 0;) {
-            int atomIndex = (int) fdata[pt++] + iatom0 - 1;
-            float partialCharge = fdata[pt++];
-            atoms[atomIndex].partialCharge = partialCharge;
-          }
-        } catch (Exception e) {
-          for (int i = asc.getLastAtomSetAtomIndex(), n = asc.ac; i < n; i++)
-            atoms[i].partialCharge = 0;
-          return;
+      rd();
+    }
+    if (!molData.isEmpty())
+      asc.setModelInfoForSet("molData", molData, asc.iSet);
+  }
+
+  private void readIsotopes() throws Exception {
+    int n = parseIntAt(line, 6);
+    try {
+    for (int i = 0, pt = 9; i < n; i++) {
+      int ipt = parseIntAt(line, pt) - 1;
+      Atom atom = asc.atoms[ipt];
+      String ss = atom.getElementSymbol();
+      int iso = parseIntAt(line, pt + 4) + Elements.getNaturalIsotope(JmolAdapter.getElementNumber(ss));
+      pt += 8;
+      String s = atom.elementSymbol = "" + iso + atom.elementSymbol;
+      System.out.println(s);
+      atom.elementSymbol = s;
+    }
+    } catch (Throwable e) {}
+    rd();
+  }
+
+  private void readMolData(Map<String, String> molData) throws Exception {
+    Atom[] atoms = asc.atoms;
+    String dataName = PT.trim(line, "> <").toLowerCase();
+    String data = "";
+    float[] fdata = null;
+    while (rd() != null && line.indexOf("$$$$") != 0
+        && line.indexOf(">") != 0) {
+      data += line + "\n";
+      continue;
+    }
+    data = PT.trim(data, "\n");
+    Logger.info(dataName + ":" + data.replace('\n', '|'));
+    molData.put(dataName, data);
+    if (dataName.toUpperCase().contains("_PARTIAL_CHARGES")) {
+      try {
+        fdata = PT.parseFloatArray(data);
+        for (int i = asc.getLastAtomSetAtomIndex(), n = asc.ac; i < n; i++)
+          atoms[i].partialCharge = 0;
+        int pt = 0;
+        for (int i = (int) fdata[pt++]; --i >= 0;) {
+          int atomIndex = (int) fdata[pt++] + iatom0 - 1;
+          float partialCharge = fdata[pt++];
+          atoms[atomIndex].partialCharge = partialCharge;
         }
+      } catch (Exception e) {
+        for (int i = asc.getLastAtomSetAtomIndex(), n = asc.ac; i < n; i++)
+          atoms[i].partialCharge = 0;
+        return;
       }
     }
-    if (haveData)
-      asc.setModelInfoForSet("molData", molData, asc.iSet);
   }
 
   public void addMolAtom(int iAtom, int isotope, String elementSymbol,

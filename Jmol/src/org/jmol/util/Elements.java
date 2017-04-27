@@ -176,6 +176,27 @@ public class Elements {
     /* 7 Rf - Mt */ 261f, 262f, 263f, 262f, 265f, 268f
     };
   
+   public final static int[] isotopeMass = {
+     0, 
+     /* 1 H */   1, 4, 
+     /* 2 Li */  7, 9,                              11, 12, 14, 16, 19, 20,
+     /* 3 Na */ 23,24,                              27, 28, 31, 32, 35, 40,
+     /* 4 K */      39, 40,  45,   48,  51,   52,  55,  56,  59,  59,  64,  65,  70,  73,  75,  79,  80,  84,
+
+  /* 5 Rb */   85,  88,  89,  91,  93,  96,  98,  101,  103,  106,  108,  112,  115,  119,  122,  128,  127,  131,
+   
+  /* 6 Cs, Ba, actinides */   133,  137,  139,  140,  141,  144,  145,  150,  152,  157,  159,  163,  165,  167,  169,  173,  175,
+  179,  181,  184,  186,  190,  192,  195,  197,  201,  204,  207,  209,   209,  210,  222,
+  
+  /* 7 Fr, Ra, lanthanides */   
+  223,  226,  227,  232,  231,  238,  237,  244,   243,  247, 247,  251,  252,  257,  258,  259,   260,
+   /* 7 Rf - Mt */   261,  262,  263,  262,  265,  268
+   };
+
+   public static int getNaturalIsotope(int elementNumber) {
+     return isotopeMass[elementNumber];
+   }
+
    public static float getAtomicMass(int i) {
      return (i < 1 || i >= atomicMass.length ? 0 : atomicMass[i]);
    }
@@ -459,20 +480,6 @@ public class Elements {
     return 0;
   }
   
-  private static int[] naturalIsotopeMasses = {
-    1, 1, // H
-    6, 12,// C
-    7, 14,// N
-    8, 16,// O   -- can add any number more if desired
-  };
-
-  public static int getNaturalIsotope(int elementNumber) {
-    for (int i = 0; i < naturalIsotopeMasses.length; i += 2)
-      if (naturalIsotopeMasses[i] == elementNumber)
-        return naturalIsotopeMasses[++i];
-    return 0;
-  }
-
 
   // add as we go
   private final static String naturalIsotopes = "1H,12C,14N";

@@ -67,7 +67,8 @@ import org.jmol.viewer.Viewer;
  * 4/6/17 Introduced in Jmol 14.12.0; 
  * validated for Rules 1 and 2 in Jmol 14.13.2; 
  * E/Z added 14.14.1; 
- * 4/27/17 Ruled 3-5 completed 14.15.1   
+ * 4/27/17 Ruled 3-5 completed 14.15.1
+ * 4/28/17 Validated for 146 compounds, including imines and diazines   
  * 
  * 
  * validation suite: see https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip/
@@ -401,8 +402,10 @@ public class CIPChirality {
   private boolean couldBeChiralAtom(Node a) {
     boolean mustBePlanar = false;
     switch (a.getCovalentBondCount()) {
-    case 4:
-      break;
+    default:
+      return  false;
+    case 2:
+      return a.getElementNumber() == 7; // could be diazine or imine
     case 3:
       switch (a.getElementNumber()) {
       case 6: // C
@@ -417,13 +420,14 @@ public class CIPChirality {
       case 83: // Bi
       case 84: // Po
         break;
+      case 4:
+        break;
       default:
         return false;
       }
       break;
-    // could add case 2 for imines here
-    default:
-      return false;
+    case 4:
+      break;
     }
     // check that the atom has at most one 1H atom
     Edge[] edges = a.getEdges();
@@ -453,7 +457,7 @@ public class CIPChirality {
       return false;
     case 2:
       // imines and diazines
-      if (a.getElementNumber() != 7) // nitrogen
+      if (a.getElementNumber  () != 7) // nitrogen
         return false;
       break;
     case 3:
@@ -1228,6 +1232,7 @@ public class CIPChirality {
             priorities[i]++;
             if (Logger.debuggingHigh)
               Logger.info(this + "." + b + " B-beats " + a);
+            
             break;
           case A_WINS:
             indices[j]++;

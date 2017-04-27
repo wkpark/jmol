@@ -64,8 +64,11 @@ import org.jmol.viewer.Viewer;
  * https://iupac.org/projects/project-details/?project_nr=2015-052-1-800
  * 
  * 
- * Introduced in Jmol 14.12.0; validated for Rules 1 and 2 in Jmol 14.13.2; 
- * E/Z added 14.14.1; Rules 3 and 4 in process in 14.14.2.
+ * 4/6/17 Introduced in Jmol 14.12.0; 
+ * validated for Rules 1 and 2 in Jmol 14.13.2; 
+ * E/Z added 14.14.1; 
+ * 4/27/17 Ruled 3-5 completed 14.15.1   
+ * 
  * 
  * validation suite: see https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip/
  * 

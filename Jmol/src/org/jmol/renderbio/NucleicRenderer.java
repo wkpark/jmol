@@ -260,7 +260,6 @@ public class NucleicRenderer {
       boolean isPurine = g.isPurine();
       if (box == null || lastHeight != blockHeight) {
         g.dssrBoxHeight = blockHeight;
-        System.out.println("nucleic "+ blockHeight);
         if (box == null) {
         box = new P3[8];
         for (int j = 8; --j >= 0;)
@@ -268,7 +267,6 @@ public class NucleicRenderer {
         g.dssrBox = box;
         }
         SymmetryInterface uc = vwr.getSymTemp().getUnitCell(oxyz, false, null);
-        System.out.println(uc.getUnitCellState());
         if (ptTemp == null)
           ptTemp = new P3();
         ptTemp.setT(oxyz[0]);

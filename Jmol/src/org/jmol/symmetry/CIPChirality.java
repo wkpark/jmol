@@ -226,6 +226,9 @@ public class CIPChirality {
   static final int STEREO_UNDETERMINED = -1;
   static final int STEREO_BOTH = 3;
 
+  static final int STEREO_RS = -1;
+  static final int STEREO_EZ = -2;
+
   static final int STEREO_R = 1;
   static final int STEREO_S = 2;
 
@@ -508,7 +511,7 @@ public class CIPChirality {
   private void getSmallRings(Node atom) {
     lstSmallRings = new Lst<BS>(); 
     htPathPoints = new Hashtable<String, Integer>();
-    root = new CIPAtom(atom, null, false, false);
+    root = new CIPAtom().create(atom, null, false, false);
     addSmallRings(root);
   }
 
@@ -643,7 +646,7 @@ public class CIPChirality {
     try {
       if (cipAtom == null) {
         htPathPoints = new Hashtable<String, Integer>();
-        cipAtom = new CIPAtom(atom, null, false, isAlkene);
+        cipAtom = new CIPAtom().create(atom, null, false, isAlkene);
         int nSubs = atom.getCovalentBondCount();
         int elemNo = atom.getElementNumber();
         isAlkene = (nSubs == 3 && elemNo <= 10); // (IUPAC 2013.P-93.2.4)
@@ -731,12 +734,12 @@ public class CIPChirality {
       if (!couldBeEZ(a,b))
         return NO_CHIRALITY;
       htPathPoints = new Hashtable<String, Integer>();
-      CIPAtom a1 = new CIPAtom(a, null, false, true);
-      CIPAtom b1 = new CIPAtom(b, null, false, true);
+      CIPAtom a1 = new CIPAtom().create(a, null, false, true);
+      CIPAtom b1 = new CIPAtom().create(b, null, false, true);
       int atop = getAtomChiralityLimited(a, a1, b1, ruleMax) - 1;
       htPathPoints = new Hashtable<String, Integer>();
-      CIPAtom a2 = new CIPAtom(a, null, false, true);
-      CIPAtom b2 = new CIPAtom(b, null, false, true);
+      CIPAtom a2 = new CIPAtom().create(a, null, false, true);
+      CIPAtom b2 = new CIPAtom().create(b, null, false, true);
       int btop = getAtomChiralityLimited(b, b2, a2, ruleMax) - 1;
       if (atop >= 0 && btop >= 0) {
         ez = (isCIS(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_Z
@@ -889,6 +892,12 @@ public class CIPChirality {
     boolean isAlkene;
 
     /**
+     * parent atom of a second alkene or cumulene atom
+     */
+
+    CIPAtom alkeneParent;
+
+    /**
      * a flag used in Rule 3 to indicate the second carbon of a double bond
      */
 
@@ -973,6 +982,10 @@ public class CIPChirality {
 
     boolean canBePseudo = true;
 
+    CIPAtom() {
+      // had a problem in JavaScript that the constructor of an inner function cannot
+      // access this.b$ yet. That assignment is made after construction.
+    }
     /**
      * 
      * @param atom
@@ -980,12 +993,13 @@ public class CIPChirality {
      * @param parent
      * @param isDuplicate
      * @param isAlkene 
+     * @return this
      */
-    CIPAtom(Node atom, CIPAtom parent, boolean isDuplicate, boolean isAlkene) {
+    CIPAtom create(Node atom, CIPAtom parent, boolean isDuplicate, boolean isAlkene) {
       this.id = ++ptID;
       this.parent = parent;
       if (atom == null)
-        return;
+        return this;
       this.isAlkene = isAlkene;
       this.atom = atom;
       this.elemNo = atom.getElementNumber();
@@ -1042,6 +1056,7 @@ public class CIPChirality {
         Logger.info("new CIPAtom " + parent + "->" + this);
       if (isDuplicate && !wasDuplicate)
         updateRingList();
+      return this;
     }
 
     private void getLonePair() {      
@@ -1096,39 +1111,47 @@ public class CIPChirality {
         if (!bond.isCovalent())
           continue;
         Node other = bond.getOtherAtomNode(atom);
-        boolean isParent = (parent != null && parent.atom == other);
+        boolean isParentBond = (parent != null && parent.atom == other);
         int order = bond.getCovalentOrder();
         if (order == 2) {
           if (elemNo > 10 || !isFirstRow(other))
             order = 1;
           else {
             isAlkene = true;
-            if (isParent) {
-              isAlkeneAtom2 = true;
+            if (isParentBond) {
               knownAtomChirality = bond.getCIPChirality(false);
+              if (elemNo == 6 && atom.getCovalentBondCount() == 2) {
+                // allene presumed; could be C=C=O or C=C=N
+                if (isAlkene && parent != null && parent.isAlkene)
+                  alkeneParent = (parent.alkeneParent == null ? parent : parent.alkeneParent);
+                parent.isAlkeneAtom2 = false;
+              } else {
+                alkeneParent = parent;
+              }
+              isAlkeneAtom2 = true;
             }
           }
         }
-        if (nBonds == 1 && order == 1 && isParent) {
+        if (nBonds == 1 && order == 1 && isParentBond) {
           isTerminal = true;
           return true;
         }
         switch (order) {
         case 3:
-          if (addAtom(pt++, other, isParent, false) == null) {
+          if (addAtom(pt++, other, isParentBond, false) == null) {
             isTerminal = true;
             return false;
           }
           //$FALL-THROUGH$
         case 2:
           // look out for S=X, which is not planar
-          if (addAtom(pt++, other, order != 2 || isParent, order == 2) == null) {
+          if (addAtom(pt++, other, order != 2 || isParentBond, order == 2) == null) {
             isTerminal = true;
             return false;
           }
           //$FALL-THROUGH$
         case 1:
-          if (!isParent
+          if (!isParentBond
               && addAtom(pt++, other, order != 1 && elemNo <= 10, false) == null) {
             isTerminal = true;
             return false;
@@ -1142,7 +1165,7 @@ public class CIPChirality {
       isTerminal = (pt == 0);
       nAtoms = pt;
       for (; pt < atoms.length; pt++)
-        atoms[pt] = new CIPAtom(null, this, true, false);
+        atoms[pt] = new CIPAtom().create(null, this, true, false);
 
       // Do an initial atom-only shallow sort using a.compareTo(b)
 
@@ -1180,7 +1203,7 @@ public class CIPChirality {
           }
         }
       }
-      atoms[i] = new CIPAtom(other, this, isDuplicate, isAlkene);
+      atoms[i] = new CIPAtom().create(other, this, isDuplicate, isAlkene);
       if (currentRule > RULE_2)
         prevPriorities[i] = getBasePriority(atoms[i]);
       //      if (Logger.debugging)
@@ -1523,10 +1546,13 @@ public class CIPChirality {
     }
 
     /**
-     * Chapter 9 Rule 3. E/Z. If the this atom and the comparison atom b are on
-     * the same parent, then this is simply a request to break their tie based
-     * on Rule 3; otherwise two paths are being checked for one being seqCis and
-     * one being seqTrans.
+     * Chapter 9 Rule 3. E/Z.
+     * 
+     * We carry out this step only as a tie in the sphere AFTER the second atom.
+     * 
+     * If the this atom and the comparison atom b are on the same parent, then
+     * this is simply a request to break their tie based on Rule 3; otherwise
+     * two paths are being checked for one being seqCis and one being seqTrans.
      * 
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
@@ -1534,11 +1560,18 @@ public class CIPChirality {
     private int checkRule3(CIPAtom b) {
       int za, zb;
       return parent == null || !parent.isAlkeneAtom2 || !b.parent.isAlkeneAtom2
-          || isDuplicate || b.isDuplicate ? IGNORE
+          || isDuplicate || b.isDuplicate
+          || !isCumulativeType(STEREO_EZ) || !b.isCumulativeType(STEREO_EZ)
+          ? IGNORE
           : parent == b.parent 
           ? sign(breakTie(b))
               : (za = parent.getEZaux()) < (zb = b.parent.getEZaux()) ? A_WINS
                   : za > zb ? B_WINS : TIED;
+    }
+
+    private boolean isCumulativeType(int type) {
+      return (parent != null && parent.isAlkeneAtom2 && 
+          ((parent.alkeneParent.sphere + parent.sphere) % 2) == (type == STEREO_EZ ? 1 : 2));
     }
 
     /**
@@ -1559,7 +1592,7 @@ public class CIPChirality {
       // (because there is no need to do this test until we are on the branch that includes
       //  the atom after the alkene).
       if (auxEZ == STEREO_UNDETERMINED
-          && (auxEZ = parent.auxEZ) == STEREO_UNDETERMINED) {
+          && (auxEZ = alkeneParent.auxEZ) == STEREO_UNDETERMINED) {
         CIPAtom winner1 = null;
         CIPAtom winner2 = null;
         CIPAtom atom1 = null;
@@ -1570,8 +1603,8 @@ public class CIPChirality {
           if (auxParentReversed == null) {
             if (Logger.debugging)
               Logger.info("reversing path for " + parent);
-            atom1 = (CIPAtom) parent.clone();
-            atom1.addReturnPath(this, parent);
+            atom1 = (CIPAtom) alkeneParent.clone();
+            atom1.addReturnPath(this, alkeneParent);
           } else {
             atom1 = auxParentReversed;
           }
@@ -1582,12 +1615,12 @@ public class CIPChirality {
                 : STEREO_E);
             if (Logger.debugging)
               Logger.info("getZaux " + (auxEZ == STEREO_Z ? "Z" : "E")
-                  + " for " + this.atom + "=" + this.parent.atom + " : "
+                  + " for " + atom + "=" + alkeneParent.atom + " : "
                   + winner1 + " " + winner2);
           }
         }
       }
-      parent.auxEZ = auxEZ;
+      alkeneParent.auxEZ = auxEZ;
       return auxEZ;
     }
 
@@ -1619,7 +1652,7 @@ public class CIPChirality {
       for (int i = 0, n = path.size(); i < n; i++) {
         CIPAtom p = path.get(i);
         if (p == null) {
-          p = new CIPAtom(null, this, true, isAlkene);
+          p = new CIPAtom().create(null, this, true, isAlkene);
         } else {
           int s = p.sphere;
           p = (CIPAtom) p.clone();
@@ -2072,8 +2105,8 @@ public class CIPChirality {
       if (auxPseudo == null) {
         // critical here that we do NOT include the tied branches
         atom1 = (CIPAtom) clone();
-        atom1.atoms[indices[ia]] = new CIPAtom(null, atom1, false, isAlkene);
-        atom1.atoms[indices[ib]] = new CIPAtom(null, atom1, false, isAlkene);
+        atom1.atoms[indices[ia]] = new CIPAtom().create(null, atom1, false, isAlkene);
+        atom1.atoms[indices[ib]] = new CIPAtom().create(null, atom1, false, isAlkene);
         atom1.addReturnPath(null, this);
       } else {
         atom1 = auxPseudo;

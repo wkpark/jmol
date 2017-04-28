@@ -108,7 +108,10 @@ public class MolecularOrbital extends Isosurface {
       moSquareLinear = (moLinearCombination == null ? null : (Boolean) thisModel.get("moSquareLinear"));
       return;
     }
-
+    
+    if (htModels != null && strID != null)
+      thisModel = htModels.get(strID);
+    
     if ("slab" == propertyName) {
       if (value instanceof Integer) {
         thisModel.put("slabValue", value);
@@ -268,6 +271,7 @@ public class MolecularOrbital extends Isosurface {
     if ("moData" == propertyName) {
       Map<String, Object> moData = (Map<String, Object>) value;
       nboType = (String) moData.get("nboType");
+      thisModel = htModels.get(strID);
       if (nboType == null)
         thisModel.remove("nboType");
       else
@@ -350,7 +354,7 @@ public class MolecularOrbital extends Isosurface {
       int nOrb = (mos == null ? 0 : mos.size());
       int thisMO = index;
       int currentMO = moNumber;
-      boolean isShowCurrent = (thisMO == Integer.MIN_VALUE);
+      boolean isShowCurrent = (thisMO == Integer.MIN_VALUE || thisMO == Integer.MAX_VALUE);
       if (isShowCurrent)
         thisMO = currentMO;
       if (nOrb == 0 || isShowCurrent && currentMO == 0)

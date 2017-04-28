@@ -67,6 +67,7 @@ public class NucleicRenderer {
   private P3[] rScr, rScr5;
   private P3 basePt, backbonePt;
   private P3 baseScreen, backboneScreen;
+  private P3 ptTemp;
   private Viewer vwr;
   private TransformManager tm;
   private JmolRendererInterface g3d;
@@ -259,6 +260,7 @@ public class NucleicRenderer {
       boolean isPurine = g.isPurine();
       if (box == null || lastHeight != blockHeight) {
         g.dssrBoxHeight = blockHeight;
+        System.out.println("nucleic "+ blockHeight);
         if (box == null) {
         box = new P3[8];
         for (int j = 8; --j >= 0;)
@@ -266,8 +268,12 @@ public class NucleicRenderer {
         g.dssrBox = box;
         }
         SymmetryInterface uc = vwr.getSymTemp().getUnitCell(oxyz, false, null);
-        uc.toFractional(oxyz[0], true);
-        uc.setOffsetPt(P3.new3(oxyz[0].x - 2.25f, oxyz[0].y + 5f, oxyz[0].z
+        System.out.println(uc.getUnitCellState());
+        if (ptTemp == null)
+          ptTemp = new P3();
+        ptTemp.setT(oxyz[0]);
+        uc.toFractional(ptTemp, true);
+        uc.setOffsetPt(P3.new3(ptTemp.x - 2.25f, ptTemp.y + 5f, ptTemp.z
             - blockHeight / 2));
         float x = 4.5f;
         float y = (isPurine ? -4.5f : -3f);

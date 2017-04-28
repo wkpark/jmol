@@ -600,6 +600,7 @@ public class CIPChirality {
    * 
    * @param atom
    * @param allBonds true to do all bonds to these atoms from other atoms, not just among them
+   * @param ruleMax 
    * @param lstEZ
    * @param bsToDo 
    */

@@ -1,18 +1,20 @@
 // checkCIP.spt -- test suite for Jmol CIPChirality.java
-// Bob Hanson hansonr@stolaf.edu 4/24/2017 10:49:33 AM
-//
-// sample execution requires that cip/ directory be in the current Jmol directory
-// as indicated with the CD command.
-
-// checkR.spt -- test suite for Jmol CIPChirality.java
 // Bob Hanson hansonr@stolaf.edu 4/18/2017 7:44:43 AM
+// updated 4/27/2017 2:38:10 PM
 
 nOK = 0;
 
 thisN = 0;
+stopped = false;
 
- function checkRS(m, key) {
-  var doCheck = (_argCount == 2)
+ function checkRS(m, n, key) {
+  if (_argCount == 2 && 0 + n != n) {
+    key = n;
+    n = 0;
+  }
+  if (!n)
+    n = 1;
+  var doCheck = !!key
   var a = 0;
   if (m.find("//")) {
     key = m.split("//")[2]
@@ -27,9 +29,9 @@ thisN = 0;
    nOK++;
    return;
   }
-  print "loading " + (nOK + 1) + ": " + m
+  print "loading " + (nOK + 1) + ": " + m + " " + n + " " +  key + " " + docheck
   set useMinimizationThread false
-  load @m filter "2D"
+  load @m @n filter "2D"
   if (!{_H})  calculate hydrogens
   set labelfor {_C} "%[atomname]"
   refresh
@@ -46,10 +48,32 @@ thisN = 0;
   var rs = {selected}.label("%[chirality]").join("")
   print " " + doCheck + " key=" + key + " found=" + rs 
   if (doCheck) {
-    var ref = (docheck == key ? "" : _M.molData["chiral_atoms"].replace("\n","").replace(" ",""))
+    var ref = (docheck == key ? "" : _M.molData["chiral_atoms"].replace("\n","").replace(" ","") + _M.molData["stereounits"])
     if (ref) {
+      if (ref.find("focus:")) {
+        var tokens = ref.split("focus:");
+        ref = ""
+        var refs = []
+        for (var focus in tokens) {
+          if (!focus) continue
+          var items = focus.split("descriptor:")
+          var atoms = items[1].split(true)
+          rs = items[2].trim()
+          var n = atoms.length
+          for (var j = 1; j <= n; j++) {
+            refs[1 + atoms[j]] = rs
+          }
+        }
+        var n = refs.length
+        for (var j = 1; j <= n; j++) {
+          if (refs[j])
+            ref += "" + j + refs[j]
+        }
+      }
       key = ref;
       rs = {selected}.label("%i%[chirality]").join("")
+    } else if (key == "*") {
+      key = ""
     }
     if (key like rs) {
       print "OK\t" + m + "\t" + rs
@@ -72,6 +96,7 @@ function checkRdir(name, type) {
   for (var f in x) {
     f = f.trim();
     if (f == "#QUIT") break
+    if (f == "#stop") exit
     if (!f || f.find("#") == 1) continue
     if (f.find("$") != 1) 
       f = name + "/" + f
@@ -82,12 +107,39 @@ function checkRdir(name, type) {
   }
 }
 
-//checkrs("cip/RS/Mata_fig7_I_R.mol","?")
-//checkrs("testn2.mol","?")
 
-checkRdir("cip/RS", "?");
-checkRdir("cip/SP", "?");
+function checkRSDF(reffile, n, skip) {
+  for (var i = 1; i <= n; i++) {
+    if (skip & i) continue;
+    checkrs(reffile, i, "*")
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+
+
+//
+// structures from a multi-model SDF file that has focus:/descriptor: annotations
+//
+
+
+checkRSDF("cip/stereo_test_cases.sdf", 
+  ({15 16 17 18 19 20 24})  // allene
+      || ({53}) // cumulene
+      || ({12}) // extra "11E" in file
+      || ({34 35 36 37}) // pentacoordinate P; axial
+      || ({}) // failed
+)
+
+//
+// reading files from a directory cip/xx based on file list in cip/xx.txt 
+//
+
+checkRdir("cip/NN", "?");
 checkRdir("cip/EZ", "?");
+checkRdir("cip/SP", "?");
+checkRdir("cip/RS", "?");
 checkRdir("cip/R", "R");
 checkRdir("cip/S", "S");
 print "DONE: " + nOK
@@ -95,6 +147,10 @@ print "DONE: " + nOK
 
 /**
 
+// individual checks made along the way
+
+checkrs("cip/RS/Mata_fig7_I_R.mol","?")
+checkrs("testn2.mol","?")
 checkrs("cip/EZ/deb.mol");
 checkrs("$(R)-3-hydroxy-1,4-heptadiyne", "R")
 checkRS("$(R)-glycidol", "R")

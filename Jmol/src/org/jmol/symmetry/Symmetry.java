@@ -795,13 +795,14 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms) {
     CIPChirality cip = getCIPChirality(vwr);
-    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms);
+    BS bsAtropisomer = vwr.getAtomBitSet("smarts('a-a')");
+    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAtropisomer);
   }
   
   CIPChirality cip;
   
   private CIPChirality getCIPChirality(Viewer vwr) {
-    return (cip == null ? (cip = ((CIPChirality) Interface.getInterface("org.jmol.symmetry.CIPChirality", vwr, "script"))).setViewer(vwr) : cip);
+    return (cip == null ? (cip = ((CIPChirality) Interface.getInterface("org.jmol.symmetry.CIPChirality", vwr, "script"))) : cip);
   }
 
 }

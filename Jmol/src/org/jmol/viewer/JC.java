@@ -49,11 +49,16 @@ public final class JC {
   public final static int CIP_CHIRALITY_S_FLAG = 2;
   public final static int CIP_CHIRALITY_NONE = 3;
   public final static int CIP_CHIRALITY_PSEUDO_FLAG = 4;
-  public final static int CIP_CHIRALITY_r_FLAG = 5;
-  public final static int CIP_CHIRALITY_s_FLAG = 6;
+  public final static int CIP_CHIRALITY_r_FLAG = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
+  public final static int CIP_CHIRALITY_s_FLAG = CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
   public final static int CIP_CHIRALITY_CANTDETERMINE = 7;
-  public final static int CIP_CHIRALITY_Z_FLAG = 1 << 3;
-  public final static int CIP_CHIRALITY_E_FLAG = 2 << 3; // Z|E is "no chirality"
+  public final static int CIP_CHIRALITY_Z_FLAG = 1 << 3; // 0x08
+  public final static int CIP_CHIRALITY_E_FLAG = 2 << 3; // 0x10 Z|E is "no chirality"
+  public final static int CIP_CHIRALITY_AXIAL_FLAG = 4 << 3;
+  public final static int CIP_CHIRALITY_Ra_FLAG = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_AXIAL_FLAG;
+  public final static int CIP_CHIRALITY_Sa_FLAG = CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_AXIAL_FLAG;
+  public final static int CIP_CHIRALITY_ra_FLAG = CIP_CHIRALITY_Ra_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
+  public final static int CIP_CHIRALITY_sa_FLAG = CIP_CHIRALITY_Sa_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
 
   public static String getCIPChiralityName(int flags) {
     switch (flags) {
@@ -61,6 +66,10 @@ public final class JC {
       return "Z";
     case CIP_CHIRALITY_E_FLAG:
       return "E";
+    case CIP_CHIRALITY_Ra_FLAG:
+      return "Ra";
+    case CIP_CHIRALITY_Sa_FLAG:
+      return "Sa";
     case CIP_CHIRALITY_R_FLAG:
       return "R";
     case CIP_CHIRALITY_S_FLAG:
@@ -69,6 +78,10 @@ public final class JC {
       return "r";
     case CIP_CHIRALITY_s_FLAG:
       return "s";
+    case CIP_CHIRALITY_ra_FLAG:
+      return "ra";
+    case CIP_CHIRALITY_sa_FLAG:
+      return "sa";
     case CIP_CHIRALITY_CANTDETERMINE:
       return "?";
     case CIP_CHIRALITY_NONE:

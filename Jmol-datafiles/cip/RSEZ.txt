@@ -3,3 +3,5 @@ test1.mol//SEER
 # next is proposed - stereochemistry uncertain
 test2.mol//REEREEREE
 test3.mol//SEESEESEE
+# not really axial chirality; just cumulene E/Z
+rule_3_with_axial_chirality_8R_3d.mol

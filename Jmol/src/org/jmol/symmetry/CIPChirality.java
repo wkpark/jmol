@@ -233,6 +233,9 @@ public class CIPChirality {
   static final int STEREO_R = JC.CIP_CHIRALITY_R_FLAG;
   static final int STEREO_S = JC.CIP_CHIRALITY_S_FLAG;
 
+  static final int STEREO_M = JC.CIP_CHIRALITY_M_FLAG;
+  static final int STEREO_P = JC.CIP_CHIRALITY_P_FLAG;
+  
   static final int STEREO_Z = JC.CIP_CHIRALITY_Z_FLAG;
   static final int STEREO_E = JC.CIP_CHIRALITY_E_FLAG;
 
@@ -807,13 +810,10 @@ public class CIPChirality {
     int c = NO_CHIRALITY;
     if (atop >= 0 && btop >= 0) {
       if (isAxial) {
-        c = (isRa(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_R
-            : STEREO_S);
-        if (c != NO_CHIRALITY) {
-          c |= JC.CIP_CHIRALITY_AXIAL_FLAG;
-          if ((a2.ties == null) != (b2.ties == null))
-            c |= JC.CIP_CHIRALITY_PSEUDO_FLAG;
-        }
+        c = (isPos(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_P
+            : STEREO_M);
+        if ((a2.ties == null) != (b2.ties == null))
+          c |= JC.CIP_CHIRALITY_PSEUDO_FLAG;
       } else {
         c = (isCis(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_Z
             : STEREO_E);
@@ -847,17 +847,17 @@ public class CIPChirality {
   }
 
   /**
-   * 
+   * Checks the torsion angle and returns true if it is positive
+   *  
    * @param a
    * @param b
    * @param c
    * @param d
    * @return true if torsion angle is
    */
-  boolean isRa(CIPAtom a, CIPAtom b, CIPAtom c, CIPAtom d) {
-    float angle = Measure.computeTorsion(a.atom.getXYZ(), b.atom.getXYZ(), c.atom.getXYZ(),
-        d.atom.getXYZ(), true);
-    return angle < 0;
+  boolean isPos(CIPAtom a, CIPAtom b, CIPAtom c, CIPAtom d) {
+    return (Measure.computeTorsion(a.atom.getXYZ(), b.atom.getXYZ(), c.atom.getXYZ(),
+        d.atom.getXYZ(), true) > 0);
   }
 
   final static int[] PRIORITY_SHIFT = new int[] { 24, 20, 12, 8, 4, 0 };

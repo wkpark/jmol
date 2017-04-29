@@ -160,7 +160,6 @@ public class CIPChirality {
   static final int STEREO_BOTH_RS = STEREO_R | STEREO_S;
   static final int STEREO_BOTH_EZ = STEREO_Z | STEREO_E;
 
-  static final int RULE_0 = 0;
   static final int RULE_1 = 1;
   static final int RULE_2 = 2;
   static final int RULE_3 = 3;
@@ -204,15 +203,21 @@ public class CIPChirality {
   Lst<BS> lstSmallRings = new Lst<BS>();
   
   /**
-   * Max priorities across an entire molecule, for cyclic loops
+   * max priorities across an entire molecule, for cyclic loops
    */
   int nPriorityMax;
   
   /**
-   * Max ring size from closures, across a molecule
+   * max ring size from closures, across a molecule
    * 
    */
   int maxRingSize;
+  
+  /**
+   * don't do this atom again (atropisomer)
+   * 
+   */
+  BS bsAtropisomeric;
   
   V3 vNorm = new V3();
   V3 vNorm2 = new V3();
@@ -243,6 +248,9 @@ public class CIPChirality {
   public void getChiralityForAtoms(Node[] atoms, BS bsAtoms, BS bsAtropisomeric) {
     if (bsAtoms.isEmpty())
       return;
+    
+    this.bsAtropisomeric = bsAtropisomeric;
+    
     init();
 
     BS bsToDo = BSUtil.copy(bsAtoms);
@@ -271,7 +279,7 @@ public class CIPChirality {
       // using BSAtoms here because we need the entire graph, even starting with an H atom. 
       getSmallRings(atoms[bsAtoms.nextSetBit(0)]);
       for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
-        getAtomBondChirality(atoms[i], false, RULE_3, lstEZ, bsToDo, bsAtropisomeric);
+        getAtomBondChirality(atoms[i], false, RULE_3, lstEZ, bsToDo);
     }
 
     
@@ -286,7 +294,7 @@ public class CIPChirality {
 
     if (haveAlkenes) {
       for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
-        getAtomBondChirality(atoms[i], false, RULE_5, lstEZ, bsToDo, bsAtropisomeric);
+        getAtomBondChirality(atoms[i], false, RULE_5, lstEZ, bsToDo);
     }
 
 
@@ -456,6 +464,8 @@ public class CIPChirality {
    * @param lstEZ
    */
   private void clearSmallRingEZ(Node[] atoms, Lst<int[]> lstEZ) {
+    for (int j = lstSmallRings.size(); --j >= 0;)
+      lstSmallRings.get(j).andNot(bsAtropisomeric);
     for (int i = lstEZ.size(); --i >= 0;) {
       int[] ab = lstEZ.get(i);
       for (int j = lstSmallRings.size(); --j >= 0;) {
@@ -523,18 +533,17 @@ public class CIPChirality {
    * @param ruleMax
    * @param lstEZ
    * @param bsToDo
-   * @param bsAtrop 
    */
 
   private void getAtomBondChirality(Node atom, boolean allBonds, int ruleMax,
-                                    Lst<int[]> lstEZ, BS bsToDo, BS bsAtrop) {
+                                    Lst<int[]> lstEZ, BS bsToDo) {
     int index = atom.getIndex();
     Edge[] bonds = atom.getEdges();
-    if (bsAtrop.get(index)) {
+    if (bsAtropisomeric.get(index)) {
       for (int j = bonds.length; --j >= 0;) {
         Node atom1 = bonds[j].getOtherAtomNode(atom);
         int index1 = atom1.getIndex();
-        if (!allBonds && index1 < index || !bsAtrop.get(index1))
+        if (!bsAtropisomeric.get(index1))
           continue;
         getAxialOrEZChirality(atom, atom1, true, ruleMax);
         break;
@@ -549,8 +558,6 @@ public class CIPChirality {
         if ((allBonds || index2 > index)
             && getBondChiralityLimited(bond, atom, ruleMax) != NO_CHIRALITY) {
           lstEZ.addLast(new int[] { index, index2 });
-          //bsToDo.clear(index);
-          //bsToDo.clear(index2);
         }
       }
     }
@@ -728,22 +735,24 @@ public class CIPChirality {
     int c = NO_CHIRALITY;
     if (atop >= 0 && btop >= 0) {
       if (isAxial) {
-        c = (isPos(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_P
-            : STEREO_M);
+        c = (isPos(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_P : STEREO_M);
         if ((a2.ties == null) != (b2.ties == null))
           c |= JC.CIP_CHIRALITY_PSEUDO_FLAG;
       } else {
-        c = (isCis(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_Z
-            : STEREO_E);
+        c = (isCis(b2.atoms[btop], b2, a1, a1.atoms[atop]) ? STEREO_Z : STEREO_E);
       }
     }
-    if (c != NO_CHIRALITY) {
+    if (c != NO_CHIRALITY && (isAxial || !isAtropisomeric(a) && !isAtropisomeric(b))) {
       a.setCIPChirality(c);
       b.setCIPChirality(c);
       if (Logger.debugging)
         Logger.info(a + "-" + b + " " + JC.getCIPChiralityName(c));
     }
     return c;
+  }
+
+  private boolean isAtropisomeric(Node a) {
+    return bsAtropisomeric != null && bsAtropisomeric.get(a.getIndex());
   }
 
   /**
@@ -1211,7 +1220,7 @@ public class CIPChirality {
           Logger.info(" too many bonds on " + atom);
         return null;
       }
-      if (parent == null && currentRule != RULE_0) {
+      if (parent == null) {
         // For top level, we do not allow two 1H atoms.
         int atomIsotope = other.getAtomicAndIsotopeNumber();
         if (atomIsotope == 1) {
@@ -1508,8 +1517,6 @@ public class CIPChirality {
     public int checkCurrentRule(CIPAtom b) {
       switch (currentRule) {
       default:
-      case RULE_0:
-        return b.atom == atom ? TIED : b.atom == null ? A_WINS : atom == null ? B_WINS : TIED;
       case RULE_1:
         int score = checkRule1a(b);
         return (score == TIED ? checkRule1b(b) : score);

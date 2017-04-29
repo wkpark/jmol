@@ -1,6 +1,6 @@
 // checkCIP.spt -- test suite for Jmol CIPChirality.java
 // Bob Hanson hansonr@stolaf.edu 4/18/2017 7:44:43 AM
-// updated 4/27/2017 2:38:10 PM
+// updated 4/29/2017 1:26:31 PM
 
 nOK = 0;
 
@@ -34,6 +34,7 @@ stopped = false;
   load @m @n filter "2D"
   if (!{_H})  calculate hydrogens
   set labelfor {_C} "%[atomname]"
+  rotate best
   refresh
   background label yellow
   color labels black
@@ -59,18 +60,17 @@ stopped = false;
           var items = focus.split("descriptor:")
           var atoms = items[1].split(true)
           rs = items[2].trim()
-          var n = atoms.length
-          for (var j = 1; j <= n; j++) {
-            refs[1 + atoms[j]] = rs
-          }
+          var na = atoms.length
+          refs[1 + atoms[1]] = rs // first
+          refs[1 + atoms[0]] = rs // last
         }
-        var n = refs.length
-        for (var j = 1; j <= n; j++) {
+        var na = refs.length
+        for (var j = 1; j <= na; j++) {
           if (refs[j])
             ref += "" + j + refs[j]
         }
       }
-      key = ref;
+      key = ref.replace("Sa","P").replace("Ra","M").replace("sa","p").replace("ra","m");
       rs = {selected}.label("%i%[chirality]").join("")
     } else if (key == "*") {
       key = ""
@@ -79,7 +79,7 @@ stopped = false;
       print "OK\t" + m + "\t" + rs
       nOK++
     } else {
-      var s = "??\t" + m + "\t found " + rs + "; should be " + key
+      var s = "" + n + "??\t" + m + "\t found " + rs + "; should be " + key
       refresh 
       print s
       var ans = prompt(s.replace("\t"," ") + " \n\n continue?", "yes")
@@ -90,6 +90,8 @@ stopped = false;
   }
   refresh
 }
+
+// check a set of files in a directory based on a file listing with annotations
 
 function checkRdir(name, type) {
   x = load(name + ".txt").lines
@@ -107,16 +109,32 @@ function checkRdir(name, type) {
   }
 }
 
+// check selected models in a multi-model SDF file
 
-function checkRSDF(reffile, n, skip) {
-  for (var i = 1; i <= n; i++) {
+function checkRSDF(reffile, first, last, skip, corrections) {
+  for (var i = first; i <= last; i++) {
     if (skip & i) continue;
-    checkrs(reffile, i, "*")
+    var fix = corrections["" + i];
+    checkrs(reffile + (fix ? "//" + fix : ""), i, "*")
   }
 }
 
 
 //////////////////////////////////////////////////////////////////////////
+
+//
+// reading files from a directory cip/xx based on file list in cip/xx.txt 
+//
+
+
+checkRdir("cip/MP", "*");
+checkRdir("cip/RSEZ", "*");
+checkRdir("cip/NN", "*");
+checkRdir("cip/EZ", "*");
+checkRdir("cip/SP", "*");
+checkRdir("cip/RS", "*");
+checkRdir("cip/R", "R");
+checkRdir("cip/S", "S");
 
 
 //
@@ -124,24 +142,18 @@ function checkRSDF(reffile, n, skip) {
 //
 
 
-checkRSDF("cip/stereo_test_cases.sdf", 
-  ({15 16 17 18 19 20 24})  // allene
-      || ({53}) // cumulene
-      || ({12}) // extra "11E" in file
-      || ({34 35 36 37}) // pentacoordinate P; axial
-      || ({}) // failed
-)
+corrections = {
+  "12":"SEREEE", // extra "11E" in file 
+  "53":"ZREEZZZZZZZ" // cumulene indication is not in order we can handle in SDF file
+}
+skip = 
+   ({34 35 36 37}) || // pentacoordinate P; axial
+     //({15 16 17 18 19 20 24 53}) || // allene, cumulene   
+       ({}) // failed or ignore
 
-//
-// reading files from a directory cip/xx based on file list in cip/xx.txt 
-//
+checkRSDF("cip/testSuites/stereo_test_cases.sdf", 1, 64, skip, corrections)
 
-checkRdir("cip/NN", "?");
-checkRdir("cip/EZ", "?");
-checkRdir("cip/SP", "?");
-checkRdir("cip/RS", "?");
-checkRdir("cip/R", "R");
-checkRdir("cip/S", "S");
+
 print "DONE: " + nOK
 
 
@@ -149,6 +161,7 @@ print "DONE: " + nOK
 
 // individual checks made along the way
 
+checkrs("cip/SREZ/test1.mol", "SEER")
 checkrs("cip/RS/Mata_fig7_I_R.mol","?")
 checkrs("testn2.mol","?")
 checkrs("cip/EZ/deb.mol");

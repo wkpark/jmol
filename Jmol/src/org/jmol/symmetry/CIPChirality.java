@@ -67,8 +67,8 @@ import org.jmol.viewer.JC;
  * validated for Rules 1 and 2 in Jmol 14.13.2; 
  * E/Z added 14.14.1; 
  * 4/27/17 Ruled 3-5 completed 14.15.1
- * 4/28/17 Validated for 146 compounds, including imines and diazines
- * 4/29/17 validated for , including S, P, 
+ * 4/28/17 Validated for 146 compounds, including imines and diazines, sulfur, phosphorus
+ * 4/29/17 validated for 160 compounds, including M/P, m/p (axial chirality for biaryls and odd-number cumulenes)  
  * 
  * 
  * validation suite: see https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip/
@@ -131,89 +131,7 @@ public class CIPChirality {
   //
   // 
 
-  // Jmol test suite:
-  //
-//checkR.spt -- test suite for Jmol CIPChirality.java
-//Bob Hanson hansonr@stolaf.edu 4/18/2017 7:44:43 AM
-
-  //  function checkRS(m, key) {
-  //   var doCheck = (_argCount == 2)
-  //   if (m.find("//")) {
-  //     key = m.split("//")[2]
-  //     m = m.split("//")[1]
-  //     doCheck = key;
-  //   }
-  //   print "loading " + @m
-  //   set useMinimizationThread false
-  //   if (m)  load @m filter "2D"
-  //   if (!{_H})  calculate hydrogens
-  //   set labelfor {_C} "%[atomname]"
-  //   refresh
-  //   background label yellow
-  //   color labels black
-  //   refresh
-  //   calculate chirality
-  //   set labelfor {_C && chirality != ""} "%[atomname] %[chirality]"
-  //   var rs = {chirality != ""}.label("%[chirality]").join("")
-  //   print " " + doCheck + " " + key + " " + rs 
-  //   if (doCheck) {
-  //     var ref = (docheck == key ? "" : _M.molData["chiral_atoms"].replace("\n","").replace(" ",""))
-  //     if (ref) {
-  //       key = ref;
-  //       rs = {chirality != ""}.label("%i%[chirality]").join("")
-  //     }
-  //     if (key == rs) {
-  //       print "OK\t" + m + "\t" + rs
-  //     } else {
-  //       var s = "??\t" + m + "\t" + rs + "\t" + key
-  //       refresh 
-  //       print s
-  //       var ans = prompt(s.replace("\t"," ") + " \n\n continue?", "yes")
-  //       if (ans != "yes") quit 
-  //     }
-  //   } else {
-  //       print m + "\t" + rs
-  //   }
-  //   refresh
-  //  }
-  //  
-  //  function checkRdir(name, type) {
-  //   x = load(name + ".txt").lines
-  //   for (f in x) {
-  //  //   f = f.trim();
-  //     if (f == "#QUIT") break
-  //     if (!f || f.find("#") == 1) continue
-  //     if (type)
-  //       checkRS(name + "/" + f, type)
-  //     else
-  //       checkRS(name + "/" + f)
-  //   }
-  //  }
-  //  
-  //  //set debug
-  //  
-  //  //checkrs("cip/RS/(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_2d.mol");
-  //  //quit
-  //  checkRdir("cip/RS", "?");
-  //  checkRdir("cip/R", "R");
-  //  checkRdir("cip/S", "S");
-  //  checkRdir("cip/EZ", "?");
-  //  print "DONE"
-  //  
-  //
-  //  checkrs("$(R)-3-hydroxy-1,4-heptadiyne", "R")
-  //  checkRS("$(R)-glycidol", "R")
-  //  checkRS("$glucose", "RSRR")
-  //  checkRS("$(2S,3R)-2,3-oxiranediol", "SR")
-  //  checkRS("$(S)-2-butanol", "S")
-  //  checkRS("$(R)-2-butanol", "R")
-  //  checkRS("$(2S,3R)-2,3-butanediol", "SR")
-  //  checkRS("$(2S,3S)-2,3-butanediol", "SS")
-  //  checkRS("$(2R,3R)-2,3-butanediol", "RR")
-  //  checkRS("$(2R,3S)-2,3-butanediol", "RS")
-  //  checkRS("$1,4-dimethylcyclohexane", "")
-  //  checkRS("$cholesterol", "RRSSSRSR") // (3S,8S,9S,10R,13R,14S,17R) and sidechain (R)
-  //  checkRS("==ta1", "SSRSRSSRSRS") // taxol (1S,2S,3R,4S,7R,9S,10S,12R,15S) and sidechain (2R,3S)
+ 
 
   static final int NO_CHIRALITY = 0;
   static final int TIED = NO_CHIRALITY;

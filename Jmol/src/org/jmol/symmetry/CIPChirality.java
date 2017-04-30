@@ -22,7 +22,7 @@ import org.jmol.viewer.JC;
  * R/S and E/S stereochemical labels. Based on IUPAC rules of 2013. 
  * 
  * Many thanks to the members of the BlueObelisk-Discuss group, particularly
- * Mikko Vainio, JOHN MAYNARD, Wolf Ihlenfeldt, and Egon Willighagen, for the excellent
+ * Mikko Vainio, JOHN MAYFIELD, Wolf Ihlenfeldt, and Egon Willighagen, for the excellent
  * testing suite (https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip),
  * encouragement, and extremely helpful advice. 
  * 

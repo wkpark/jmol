@@ -114,12 +114,16 @@ public class NucleicRenderer {
       }
       bsr.renderHermiteConic(i, false, 4);
       colix = bsr.getLeadColix(i);
-      if (bsr.setBioColix(colix))
-        renderNucleicBaseStep(i);
+      if (bsr.setBioColix(colix)) {
+        if (cartoonRibose && bsVisible.get(i + 1))
+          renderNucleicBaseStep(i, pts[i + 1],  screens[i + 1]);
+        else
+          renderNucleicBaseStep(i, null, null);
+      }
     }
   }
 
-  private void renderNucleicBaseStep(int im) {
+  private void renderNucleicBaseStep(int im, T3 ptPnext, T3 scrPnext) {
     if (bsr.isPhosphorusOnly)
       return;
     NucleicMonomer nucleotide = (NucleicMonomer) bsr.monomers[im];
@@ -201,7 +205,10 @@ public class NucleicRenderer {
       renderEdge(rScr, rPt, 3, 6); // C4' - C5' 
       renderEdge(rScr, rPt, 6, 7); // C5' - O5'
       renderEdge(rScr, rPt, 7, 8); // O5' - P'
+      renderEdge(rScr, rPt, 0, 4); // C1' - O4'
       renderCyl(rScr[0], baseScreen, rPt[0], basePt); // C1' - N1 or N9
+      if (ptPnext != null)
+        renderCyl(rScr[5], (P3) scrPnext, rPt[5], (P3) ptPnext); // O3' - P(+1)
       drawEdges(rScr, rPt, 5);
     }
   }

@@ -905,10 +905,16 @@ public class CIPChirality {
     boolean isAlkene;
 
     /**
-     * parent atom of a second alkene or cumulene atom
+     * first atom of an alkene or cumulene atom
      */
 
     CIPAtom alkeneParent;
+
+    /**
+     * last atom of an alkene or cumulene atom
+     */
+
+    CIPAtom alkeneChild;
 
     /**
      * a flag used in Rule 3 to indicate the second carbon of a double bond
@@ -1154,7 +1160,9 @@ public class CIPChirality {
               } else {
                 isAlkeneAtom2 = true;
               }
+              parent.alkeneChild = null;
               alkeneParent = (parent.alkeneParent == null ? parent : parent.alkeneParent);
+              alkeneParent.alkeneChild = this;
               if (parent.alkeneParent == null)
                 parent.nextSP2 = this;
             }
@@ -1606,7 +1614,7 @@ public class CIPChirality {
      * the root atom. This must be reconstructed, because until this point we
      * have not carried out many of the necessary comparisons.
      * 
-     * @return [1: "Zaux", 2: "Eaux", 3: no chirality]
+     * @return one of [STEREO_Z, STEREO_E, NO_CHIRALITY]
      */
     private int getEZaux() {
       // this is the second atom of the alkene, checked as the parent of the next atom
@@ -1791,11 +1799,11 @@ public class CIPChirality {
       int n = aStr.length();
       if (n == 0 || n != bStr.length())
         return TIED;
-      char aref = aStr.charAt(0);
-      char bref = bStr.charAt(0);
+      char aref = fixMataRef(aStr.charAt(0));
+      char bref = fixMataRef(bStr.charAt(0));
       for (int c = 1; c < n; c++) {
-        boolean alike = (aref == aStr.charAt(c));
-        boolean blike = (bref == bStr.charAt(c));
+        boolean alike = (aref == fixMataRef(aStr.charAt(c)));
+        boolean blike = (bref == fixMataRef(bStr.charAt(c)));
         if (alike != blike)
           return (isRSTest ? c : 1) * (alike ? A_WINS : B_WINS);
       }
@@ -1810,6 +1818,20 @@ public class CIPChirality {
       return aref < bref ? A_WINS : B_WINS;
     }
 
+    private char fixMataRef(char c) {
+      switch (c) {
+      case 'R':
+      case 'M':
+      case 'Z':
+        return 'R';
+      case 'S':
+      case 'P':
+      case 'E':
+        return 'S';
+      default:
+        return c;
+      }
+    }
     /**
      * Retrieve the Mata Rule 4b list for a given atom.
      * 
@@ -2056,6 +2078,12 @@ public class CIPChirality {
         if (!done) {
           s = "?" + sphere;
           subRS = "[" + subRS + "]";
+        } else if (isAlkene && alkeneChild != null) {
+          // this does not work. Is "E" a "chiral unit"?
+//          int ez = alkeneChild.getEZaux();
+//          s = (ez == STEREO_Z ? "D" : ez == STEREO_E ? "E" : "~");
+//          System.out.println(myPath + s);
+//          System.out.println("?");
         } else if (!isRoot && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) 
             || bondCount == 3 && elemNo > 10 && nPriorities >= 2 - Math.abs(adj))) {
             // if here, adj is TIED (0), A_WINS (-1), or B_WINS (1) 

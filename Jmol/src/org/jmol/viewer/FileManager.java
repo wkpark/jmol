@@ -1256,8 +1256,8 @@ public class FileManager implements BytePoster {
     tokens = PT.getTokens(line3);
     if (tokens[0].indexOf(".") > 0)
       return (line3.length() >= 60 || tokens.length != 3 ? null : "VaspChgcar"); // M40 files are > 60 char
-    if (nAtoms >= 0)
-      return (tokens.length == 4 ? "Cube" : null); //Can't be a Jvxl file; 
+    if (nAtoms >= 0) 
+      return (tokens.length == 4 || tokens.length == 5 && tokens[4].equals("1") ? "Cube" : null); //Can't be a Jvxl file; 
     nAtoms = -nAtoms;
     for (int i = 4 + nAtoms; --i >= 0;)
       if ((line = br.readLineWithNewline()) == null)

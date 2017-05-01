@@ -2079,13 +2079,16 @@ public class CIPChirality {
           s = "?" + sphere;
           subRS = "[" + subRS + "]";
         } else if (isAlkene && alkeneChild != null) {
+          // we must check for seqCis or M/P
           // this does not work. Is "E" a "chiral unit"?
 //          int ez = alkeneChild.getEZaux();
-//          s = (ez == STEREO_Z ? "D" : ez == STEREO_E ? "E" : "~");
+//          s = (ez == STEREO_Z ? "Z" : ez == STEREO_E ? "E" : "~");
 //          System.out.println(myPath + s);
 //          System.out.println("?");
-        } else if (!isRoot && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) 
-            || bondCount == 3 && elemNo > 10 && nPriorities >= 2 - Math.abs(adj))) {
+        } else if (!isRoot && (
+            bondCount == 4 && nPriorities >= 3 - Math.abs(adj) 
+            || bondCount == 3 && elemNo > 10 && nPriorities >= 2 - Math.abs(adj))
+           ) {
             // if here, adj is TIED (0), A_WINS (-1), or B_WINS (1) 
             CIPAtom atom1 = (CIPAtom) clone();
             if (atom1.set()) {

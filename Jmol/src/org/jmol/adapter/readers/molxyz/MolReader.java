@@ -298,17 +298,17 @@ public class MolReader extends AtomSetCollectionReader {
   private void readIsotopes() throws Exception {
     int n = parseIntAt(line, 6);
     try {
-    for (int i = 0, pt = 9; i < n; i++) {
-      int ipt = parseIntAt(line, pt) - 1;
-      Atom atom = asc.atoms[ipt];
-      String ss = atom.getElementSymbol();
-      int iso = parseIntAt(line, pt + 4) + Elements.getNaturalIsotope(JmolAdapter.getElementNumber(ss));
-      pt += 8;
-      String s = atom.elementSymbol = "" + iso + atom.elementSymbol;
-      System.out.println(s);
-      atom.elementSymbol = s;
+      int i0 = asc.getLastAtomSetAtomIndex();
+      for (int i = 0, pt = 9; i < n; i++) {
+        int ipt = parseIntAt(line, pt);
+        Atom atom = asc.atoms[ipt + i0 - 1];
+        int iso = parseIntAt(line, pt + 4);
+        pt += 8;
+        atom.elementSymbol = "" + iso + atom.elementSymbol;
+      }
+    } catch (Throwable e) {
+      // ignore error here
     }
-    } catch (Throwable e) {}
     rd();
   }
 

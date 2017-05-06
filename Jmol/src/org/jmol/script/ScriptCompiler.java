@@ -1050,7 +1050,12 @@ public class ScriptCompiler extends ScriptTokenParser {
           && (theToken = T.getTokenFromName(identLC)) != null)
         theToken = T.tv(theToken.tok, theToken.intValue, ident);
     } else {
+      // 5/6/2017 The problem here was that the variable "fix" is
+      // changed to "fixed" by getTokenFromName. 
       theToken = T.getTokenFromName(identLC);
+      if (isUserVar && theToken != null && !theToken.value.toString().equalsIgnoreCase(identLC)) {
+        theToken = null;
+      }
       if (theToken != null)
         switch (lastToken.tok) {
         case T.per:
@@ -1602,7 +1607,7 @@ public class ScriptCompiler extends ScriptTokenParser {
       if (ichToken > 0 && PT.isWhitespace(script.charAt(ichToken - 1)))
         addTokenToPrefix(T.tokenSpaceBeforeSquare);
       bracketCount++;
-      break;
+      break;      
     case T.rightsquare:
       bracketCount--;
       if (bracketCount < 0)

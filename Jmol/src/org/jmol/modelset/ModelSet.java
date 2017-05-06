@@ -4093,6 +4093,8 @@ public class ModelSet extends BondCollection {
 
   public void calculateChiralityForAtoms(BS bsAtoms) {
     haveChirality = true;
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) 
+      at[i].setCIPChirality(0);
     Interface.getSymmetry(vwr, "ms").calculateCIPChiralityForAtoms(vwr, bsAtoms);
   }
 

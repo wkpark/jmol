@@ -1907,14 +1907,16 @@ public class CIPChirality {
       // resolved as "r" or "s" 
       // but generally we will want to process this as "R" and "S"
       // note that this analysis cannot be done ahead of time
-      String aStr = rule4List[ia];
-      String bStr = rule4List[ib];
-      if (atoms[ia].nextChiralBranch != null)
-        aStr += atoms[ia].getMataList(getFirstRef(aStr), isRule5);
-      if (atoms[ib].nextChiralBranch != null)
-        bStr += atoms[ib].getMataList(getFirstRef(bStr), isRule5);
-      aStr = aStr.substring(1);
-      bStr = bStr.substring(1);
+      String aStr = rule4List[ia].substring(1);
+      String bStr = rule4List[ib].substring(1);
+      if (atoms[ia].nextChiralBranch != null) {
+        String s = atoms[ia].getMataList(getFirstRef(aStr), isRule5);
+        aStr = (s.indexOf("|") < 0 ? aStr + s : s);
+      }
+      if (atoms[ib].nextChiralBranch != null) {
+        String s = atoms[ib].getMataList(getFirstRef(bStr), isRule5);
+        bStr = (s.indexOf("|") < 0 ? bStr + s : s);
+      }
       if (Logger.debugging)
         Logger.info(dots() + this + " comparing " + atoms[ia] + " " + aStr + " to "
             + atoms[ib] + " " + bStr);
@@ -1998,7 +2000,6 @@ public class CIPChirality {
         if (rule4List[i] != null) {
           listA[--j] = rule4List[i];
         }
-//      Arrays.sort(listA);
       if (aref == null) {
         aref = getMataRef(isRule5);
       } else {
@@ -2099,7 +2100,7 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), Integer.MIN_VALUE (IGNORE)
      */
     private int compareRule4PairStr(String aStr, String bStr, boolean isRSTest) {
-      if (true || Logger.debugging)
+      if (Logger.debugging)
         Logger.info(dots() + this + " Rule 4b comparing " + aStr + " " + bStr);
       doCheckPseudo = false;
       int n = aStr.length();
@@ -2248,7 +2249,7 @@ public class CIPChirality {
               isBranch = true;
               s = "u";
               subRS = "";
-// TODO:  Why is this setting of ret to null?             
+// TODO:  Why is this setting of ret to null?            
               if (ret != null)
                 ret[0] = null;
               break;
@@ -2362,7 +2363,9 @@ public class CIPChirality {
         return NOT_RELEVANT; // TODO: ?? this may not be true -- paths with and without O, N, C for example, that still have stereochemistry
       if (rs1.equals(rs2))
         return TIED;
-      return checkEnantiomer(rs1, rs2, 1, n, " RS");
+      
+      System.out.println("testing ~RS here with " + rs1 + " and " + rs2);
+      return checkEnantiomer(rs1, rs2, 1, n, "~RS");
     }
 
     private int checkEnantiomer(String rs1, String rs2, int m, int n, String rs) {

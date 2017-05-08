@@ -101,7 +101,7 @@ public class SmilesSearch extends JmolMolecule {
 
   int nDouble;
   int ringDataMax = Integer.MIN_VALUE;
-  SB ringSets;
+  Lst<BS> ringSets;
   int ringCount;
 
 
@@ -146,6 +146,8 @@ public class SmilesSearch extends JmolMolecule {
   private BS bsCheck;
 
   public boolean mapUnique;
+
+  private BS bsAromaticRings;
 
   static final int addFlags(int flags, String strFlags) {
     if (strFlags.indexOf("OPEN") >= 0)
@@ -408,7 +410,7 @@ public class SmilesSearch extends JmolMolecule {
       ringData = new BS[ringDataMax + 1];
     }
 
-    ringSets = new SB();
+    ringSets = new Lst<BS>();
     String s = "****";
     int max = ringDataMax;
     while (s.length() < max)
@@ -851,12 +853,11 @@ public class SmilesSearch extends JmolMolecule {
     }
 
     if (isRingCheck) {
-      ringSets.append(" ");
+      BS bsRing = new BS();
       for (int k = atomNum * 3 + 2; --k > atomNum;)
-        ringSets.append("-").appendI(
-            patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1)
+        bsRing.set(patternAtoms[(k <= atomNum * 2 ? atomNum * 2 - k + 1 : k - 1)
                 % atomNum].getMatchingAtomIndex());
-      ringSets.append("- ");
+      ringSets.addLast(bsRing);
       return true;
     }
 
@@ -1311,12 +1312,12 @@ public class SmilesSearch extends JmolMolecule {
       switch (patternOrder) {
       case SmilesBond.TYPE_AROMATIC:
       case SmilesBond.TYPE_RING:
-        bondFound = isRingBond(ringSets, iAtom1, iAtom2);
+        bondFound = isRingBond(ringSets, null, iAtom1, iAtom2);
         break;
       case Edge.BOND_COVALENT_SINGLE:
         // for SMARTS, single bond in aromatic means TO ANOTHER RING;
         // for SMILES, we don't care
-        bondFound = !isSmarts || !isRingBond(ringSets, iAtom1, iAtom2);
+        bondFound = !isSmarts || !isRingBond(ringSets, getBSAromaticRings(), iAtom1, iAtom2);
         break;
       case Edge.BOND_COVALENT_DOUBLE:
         // note: Freiburg considers TYPE_DOUBLE to be NOT aromatic
@@ -1384,15 +1385,38 @@ public class SmilesSearch extends JmolMolecule {
         bondFound = (order == patternOrder);
         break;
       case SmilesBond.TYPE_RING:
-        bondFound = isRingBond(ringSets, iAtom1, iAtom2);
+        bondFound = isRingBond(ringSets, null, iAtom1, iAtom2);
         break;
       }
     }
     return bondFound != patternBond.isNot;
   }
 
-  static boolean isRingBond(SB ringSets, int i, int j) {
-    return (ringSets != null && ringSets.indexOf("-" + i + "-" + j + "-") >= 0);
+  private BS getBSAromaticRings() {
+    if (bsAromaticRings == null) {
+      bsAromaticRings = new BS();
+      if (ringSets != null && bsAromatic != null) {
+        for (int i = ringSets.size(); --i >= 0;) {
+          BS bsRing = (BS) ringSets.get(i).clone();
+          bsRing.andNot(bsAromatic);
+          if (bsRing.isEmpty())
+            bsAromaticRings.set(i);
+        }
+      }
+    }
+    return bsAromaticRings;
+  }
+
+  static boolean isRingBond(Lst<BS> ringSets, BS bsAromaticRings, int a1, int a2) {
+    if (ringSets != null)
+      for (int i = ringSets.size(); --i >= 0;) {
+        BS bsRing = ringSets.get(i);
+        if (bsRing.get(a1) && bsRing.get(a2)) {
+          if (bsAromaticRings == null || bsAromaticRings.get(i))
+          return true;
+        }
+      }
+    return false;
   }
   
   /* ============================================================= */

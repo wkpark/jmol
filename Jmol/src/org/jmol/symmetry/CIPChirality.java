@@ -19,17 +19,25 @@ import org.jmol.util.Node;
 import org.jmol.viewer.JC;
 
 /**
- * A relatively efficient implementation of Cahn-Ingold-Prelog rules for assigning
- * R/S and E/S stereochemical labels. Based on IUPAC rules of 2013. 
+ * A relatively efficient implementation of Cahn-Ingold-Prelog rules for
+ * assigning R/S, M/P, and E/Z stereochemical descriptors. Based on IUPAC Blue
+ * Book rules of 2013.
+ * https://iupac.org/projects/project-details/?project_nr=2001-043-1-800
+ * 
+ * Primary 236-compound Chapter-9 validation set (AY-236) provided by Andres
+ * Yerin, ACD/Labs (Moscow).
+ * 
+ * Mikko Vainio also supplied a 64-compound testing suite (MV-64), which is
+ * available on SourceForge in the Jmol-datafiles directory. 
+ * (https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip).
+ * 
+ * Additional thanks to the IUPAC Blue Book Revision project, specifically
+ * Karl-Heinz Hellwich for alerting me to the errata page for the 2013 IUPAC
+ * specs (http://www.chem.qmul.ac.uk/iupac/bibliog/BBerrors.html)
  * 
  * Many thanks to the members of the BlueObelisk-Discuss group, particularly
- * Mikko Vainio, JOHN MAYFIELD, Wolf Ihlenfeldt, and Egon Willighagen, for the excellent
- * testing suite (https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip),
- * encouragement, and extremely helpful advice. 
- * 
- * Additional thanks to the IUPAC Blue Book Revision project, specifically 
- * Karl-Heinz Hellwich for alerting me to the errata page for the 2013 IUPAC specs
- * (http://www.chem.qmul.ac.uk/iupac/bibliog/BBerrors.html)     
+ * Mikko Vainio, JOHN MAYFIELD, Wolf Ihlenfeldt, and Egon Willighagen, for
+ * encouragement, examples, serious skepticism, and extremely helpful advice.
  * 
  * References:
  * 
@@ -64,40 +72,79 @@ import org.jmol.viewer.JC;
  * https://iupac.org/projects/project-details/?project_nr=2015-052-1-800
  * 
  * 
- * 4/6/17 Introduced in Jmol 14.12.0; 
- * validated for Rules 1 and 2 in Jmol 14.13.2; 
- * E/Z added 14.14.1; 
- * 4/27/17 Ruled 3-5 completed 14.15.1
- * 4/28/17 Validated for 146 compounds, including imines and diazines, sulfur, phosphorus
- * 4/29/17 validated for 160 compounds, including M/P, m/p (axial chirality for biaryls and odd-number cumulenes)  
- * 5/02/17 validated for 161 compounds, including M/P, m/p (axial chirality for biaryls and odd-number cumulenes)  
+ * 4/6/17 Introduced in Jmol 14.12.0; validated for Rules 1 and 2 in Jmol
+ * 14.13.2; E/Z added 14.14.1; 4/27/17 Ruled 3-5 completed 14.15.1 4/28/17
+ * Validated for 146 compounds, including imines and diazines, sulfur,
+ * phosphorus 4/29/17 validated for 160 compounds, including M/P, m/p (axial
+ * chirality for biaryls and odd-number cumulenes) 5/02/17 validated for 161
+ * compounds, including M/P, m/p (axial chirality for biaryls and odd-number
+ * cumulenes) 5/06/16 validated for 236 compound set AY-236.
  * 
- * TODO: mix seqCis and seqTrans with R/S
- * TODO: mix allene M/P with R/S
+ * TODO: mix seqCis and seqTrans with R/S TODO: mix allene M/P with R/S
  * 
  * 
- * Added logic to Rule 1b: The root distance for an aromatic duplicate atom is that of its parent, not its duplicated atom.
+ * Added logic to Rule 1b: The root distance for an aromatic duplicate atom is
+ * that of its parent, not its duplicated atom.
  * 
- *  Rationale: Giving the distance of the duplicated atom introduces a Kekule bias, which is not acceptable.
- * 
- * validation suite: see https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip/
+ * Rationale: Giving the distance of the duplicated atom introduces a Kekule
+ * bias, which is not acceptable.
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
 public class CIPChirality {
 
+  // "Scoring" a vs. b involves returning 0 (TIE) or +/-n, where n>0 indicates b won, n < 0
+  // indicates a won, and the |a| indicates in which shell the decision was made. 
+  // The basic strategy is to loop through the Sequential Rules 1-5, including all parts 
+  // exhaustively prior to applying another rule. This includes subparts:
+  //
+  // Rule 1a (atomic number -- note that this requires an aromaticity check first)
+  // Rule 1b (duplicated atom progenitor root-distance check; revised as described above
+  //         for aromatic systems.
+  // Rule 2  (nominal isotopic mass)
+  // Rule 3  (E/Z not including enantiomorphic seqCis/seqTrans designations)
+  // Rule 4a (chiral precedes pseudochiral precedes nonstereochemical; more of a guideline
+  //         than a sequential rule)
+  // Rule 4b like precedes unlike
+  // Rule 4c r precedes s
+  // Rule 5  R precedes S; M precedes P (final determination of pseudoasymmetry descriptors)
+  //
+  // Some nuances I've learned along the way here:
+  //
+  // 1. Rule 1a requires a definition of aromaticity -- harder than you might think! 
+  // 2. Rule 1b had to be revised to account for Kekule bias (AY-236.215). Note that this 
+  //            rule may only be applied AFTER Rule 1a has been applied exhaustively. In  
+  //            my mind it deserves its own number for this reason. See AY-236.53, 
+  //            (1S,5R)-bicyclo[3.1.0]hex-2-ene, for example.
+  // 3. Rule 3  requires the concept of "auxiliary" (temporary, digraph-specific) descriptors.
+  //            This concept of auxiliary descriptors is the key to not having an analysis
+  //            blow up or somehow require complex, impossible iteration.
+  // 4. Rule 4a need not be separately implemented or carried out "exhaustively". It is
+  //            more of an implicit guideline only, for naming purposes, I think.
+  // 5. Rule 4b Somehow missed in the discussion is that the reference descriptor is determined
+  //            once and only once for each branch from the center under scrutiny. All Rules 
+  //            preceding Rule 4 can be applied to iterated subsections of a digraph. Not this one,
+  //            though. The key is to determine one single "Mata sequence" of R and S descriptors
+  //            for each pair of branches being considered. This same reference 
+  //            carries through all future iterations of the algorithm for that branch.
+  // 6. Rule 4c Again, this rule must be invoked only after Rule 4b is completely set, and again
+  //            it is only for the root branches, not anywhere else.
+  // 7. Rule 5  Final setting of r vs s is again only for the Sphere-1 root branches. It has 
+  //            no relevance past that point.
+  //
+  
   // Very rough Pseudocode:
   // 
-  // individual "standard" carbon-based R/S and E/Z stereochemistry (Rules 1, 2, and 3)
   //
   //  getChirality(molecule) {
+  //    prefilterAtoms()
   //    checkForAlkenes()
-  //    for(all atoms) getAtomChirality(applyRules1-3)
+  //    checkForSmallRings()
+  //    for(all filtered atoms) getAtomChirality(applyRules1-3)
   //    if (haveAlkenes) {
-  //      checkForSmallRings()
   //      for(all double bonds) getBondChirality(applyRules1-3)
   //    }
-  //    for(all atoms still without designations) getAtomChirality(applyRules1-5)
+  //    for(all filtered atoms still without designations) getAtomChirality(applyRules1-5)
   //    if (haveAlkenes) {
   //      for(all double bonds still without designations) getBondChirality(applyRules1-5)
   //      removeUnnecessaryEZDesignations()
@@ -105,18 +152,18 @@ public class CIPChirality {
   //  }
   //
   // getChirality(atom) {
-  //  for (each Rule){  
-  //    sortSubstituents() 
-  //    if (done) exit checkHandedness();
-  //
-  //  exit NO_CHIRALITY
+  //   for (each Rule){  
+  //     sortSubstituents() 
+  //     if (done) exit checkHandedness();
+  //   }
+  //   exit NO_CHIRALITY
   // }
   // 
   // sortSubstituents() {
-  //   for (all pairs of substituents a and b) {
-  //     score = a.compareTo(b, currentRule)
+  //   for (all pairs of substituents a1 and a2) {
+  //     score = a1.compareTo(a2, currentRule)
   //     if (score == TIED) 
-  //       score = breakTie(a,b)
+  //       score = breakTie(a1,a2)
   // }
   // 
   // breakTie(a,b) { 
@@ -241,15 +288,21 @@ public class CIPChirality {
   BS bsAtropisomeric;
   
   /**
-   * Needed for Bob's Rule 1b addition
+   * needed for Jmol's Rule 1b addition
    * 
    */
   BS bsAromatic;
-  
+
+  /**
+   * used to determine whether N is potentially chiral - could do this here, of course....
+   *
+   */
+  BS bsAzacyclic;
+
   V3 vNorm = new V3();
   V3 vNorm2 = new V3();
   V3 vTemp = new V3();
-
+  
   public CIPChirality() {
     // for reflection 
   }
@@ -268,24 +321,28 @@ public class CIPChirality {
    * A more general determination of chirality that involves ultimately all
    * Rules 1-5.
    * 
-   * @param atoms atoms to process 
-   * @param bsAtoms bit set of all atoms to process
-   * @param bsAromatic set of all aromatic atoms
-   * @param bsAtropisomeric bit set of all biphenyl-like connections
+   * @param atoms
+   *        atoms to process
+   * @param bsAtoms
+   *        bit set of all atoms to process
+   * @param bsAtropisomeric
+   *        bit set of all biphenyl-like connections
    */
-  public void getChiralityForAtoms(Node[] atoms, BS bsAtoms, BS bsAromatic, BS bsAtropisomeric) {
+  public void getChiralityForAtoms(Node[] atoms, BS bsAtoms, BS bsAtropisomeric) {
     if (bsAtoms.isEmpty())
       return;
-    this.bsAromatic = (bsAromatic.cardinality() == 0 ? null : bsAromatic);
     this.bsAtropisomeric = bsAtropisomeric;
     init();
+
+    // using BSAtoms here because we need the entire graph, even starting with an H atom.
+    BS bs = BSUtil.copy(bsAtoms);
+    while (!bs.isEmpty())
+      getSmallRings(atoms[bs.nextSetBit(0)], bs);
+    bsAromatic = getAromaticity(atoms);
+    bsAzacyclic = getAzacyclic(atoms, bsAtoms);
+
     BS bsToDo = BSUtil.copy(bsAtoms);
     boolean haveAlkenes = preFilterAtomList(atoms, bsToDo);
-
-    if (haveAlkenes) {
-      // using BSAtoms here because we need the entire graph, even starting with an H atom. 
-      getSmallRings(atoms[bsAtoms.nextSetBit(0)]);
-    }
 
     // Initially only Rules 1-3
 
@@ -313,13 +370,13 @@ public class CIPChirality {
     }
 
     // On to Rules 4 and 5 for atoms that still could be chiral but don't have a designation.
-    
+
     // Interesting question as to whether we need to do this in two stages, but 
     // for now that is what we are doing. The rules require that we can do this, 
     // because no later rule can reverse the result of a previous rule, and so
     // if we do Rules 1-3 for all atoms and then Rules 1-5 for all atoms, that is 
     // at worst inefficient. 
-    
+
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
       Node a = atoms[i];
       a.setCIPChirality(0);
@@ -334,7 +391,30 @@ public class CIPChirality {
       if (lstSmallRings.size() > 0 && lstEZ.size() > 0)
         clearSmallRingEZ(atoms, lstEZ);
     }
-   
+
+  }
+
+  private BS getAzacyclic(Node[] atoms, BS bsAtoms) {
+    BS bsAza = null;
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+      Node atom = atoms[i];
+      if (atom.getElementNumber() != 7 || atom.getCovalentBondCount() != 3
+          || bsAromatic != null && bsAromatic.get(i))
+        continue;
+      int nr = 0;
+      for (int j = lstSmallRings.size(); --j >= 0;) {
+        BS bsRing = lstSmallRings.get(j);
+        if (bsRing.get(i))
+          nr++;
+      }
+      if (nr != 3)
+        continue;
+      if (bsAza == null)
+        bsAza = new BS();
+      bsAza.set(i);
+      
+    }
+    return bsAza;
   }
 
   /**
@@ -378,6 +458,10 @@ public class CIPChirality {
       return a.getElementNumber() == 7; // could be diazine or imine
     case 3:
       switch (a.getElementNumber()) {
+      case 7: // N
+        if (bsAzacyclic != null && bsAzacyclic.get(a.getIndex()))
+          break;
+        return false;
       case 6: // C
         mustBePlanar = true;
         break;
@@ -471,15 +555,56 @@ public class CIPChirality {
    * Run through a minimal graph to find and catalog all rings.
    *  
    * @param atom
+   * @param bs tracks all atoms in this molecular unit
    */
-  private void getSmallRings(Node atom) {
+  private void getSmallRings(Node atom, BS bs) {
     lstSmallRings = new Lst<BS>(); 
     root = new CIPAtom().create(atom, null, false, false);
-    addSmallRings(root);
+    addSmallRings(root, bs);
   }
 
-  private void addSmallRings(CIPAtom a) {
-    if (a == null || a.isTerminal || a.isDuplicate || a.atom == null || a.atom.getCovalentBondCount() > 4)
+
+  /**
+   * Just using a simple aromatic definition involving contiguous sp2 centers.
+   * No electron counting.
+   * @param atoms
+   * @return bsAromatic
+   */
+  private BS getAromaticity(Node[] atoms) {
+    BS bsAromatic = new BS();
+    for (int i = lstSmallRings.size(); --i >= 0;) {
+      BS bsRing = lstSmallRings.get(i);
+      boolean isAromatic = true;
+      for (int j = bsRing.nextSetBit(0); j >= 0; j = bsRing.nextSetBit(j + 1)) {
+        switch(atoms[j].getCovalentBondCount()) {
+        case 2:
+        case 3:
+          continue;
+        default:
+          isAromatic = false;
+          break;
+        }
+      }
+      if (isAromatic)
+        bsAromatic.or(bsRing);
+    }
+     return (bsAromatic.isEmpty() ? null : bsAromatic);
+  }
+
+
+  /**
+   * initiate a new CIPAtom for each substituent of atom, and as part of this process,
+   * check to see if a new ring is being formed.
+   * 
+   * @param a
+   * @param bs
+   */
+  private void addSmallRings(CIPAtom a, BS bs) {
+    if (a == null || a.atom == null)
+      return;
+    if (bs != null)
+      bs.clear(a.atom.getIndex());
+    if (a.isTerminal || a.isDuplicate || a.atom.getCovalentBondCount() > 4)
       return;
     Edge[] bonds = a.atom.getEdges();
     Node atom2;
@@ -487,14 +612,17 @@ public class CIPChirality {
     for (int i = bonds.length; --i >= 0;) {
       Edge bond = bonds[i]; 
       if (bond == null || !bond.isCovalent()
-          || (atom2 = bond.getOtherAtomNode(a.atom)).getElementNumber() == 1
+          || (atom2 = bond.getOtherAtomNode(a.atom)).getCovalentBondCount() == 1
           || a.parent != null && atom2 == a.parent.atom
           )
         continue;
-      a.addAtom(pt++, atom2, false, false);
+      CIPAtom r = a.addAtom(pt++, atom2, false, false);
+      if (r.isRingDuplicate)
+        r.updateRingList();
     }
-    for (int i = 0; i < pt; i++)
-      addSmallRings(a.atoms[i]);
+    for (int i = 0; i < pt; i++) {
+      addSmallRings(a.atoms[i], bs);
+    }
   }
 
   /**
@@ -524,7 +652,7 @@ public class CIPChirality {
    * 
    * @param a
    * @param vNorm  a vector returned with the normal from the atom to the base plane 
-   * @return height from plane of first three covalently bonded nodes to this node
+   * @return distance from plane of first three covalently bonded nodes to this node
    */
   float getTrigonality(Node a, V3 vNorm) {
     P3[] pts = new P3[3];
@@ -538,8 +666,9 @@ public class CIPChirality {
 
   /**
    * Determine the Cahn-Ingold-Prelog R/S chirality of an atom based only on
-   * Rules 1 and 2 -- that is, only the chirality that is self-determined,
-   * structural, and not relative-chirality dependent.
+   * Rules 1-3 -- that is, only the chirality that is self-determined,
+   * structural, and not relative-chirality dependent. (Note that this seeming dependency is an illlusion, 
+   * however. Any stereochemistry can be determined uniquely using auxiliary descriptors.)
    * 
    * @param atom
    * @return [0:none, 1:R, 2:S]
@@ -559,7 +688,7 @@ public class CIPChirality {
    */
   public int getBondChirality(Edge bond) {
     init();
-    getSmallRings(bond.getOtherAtomNode(null));
+    getSmallRings(bond.getOtherAtomNode(null), null);
     return (bond.getCovalentOrder() == 2 ? getBondChiralityLimited(bond, null, RULE_3) : NO_CHIRALITY);
   }
 
@@ -616,7 +745,7 @@ public class CIPChirality {
    * @param bond
    * @param atom
    * @param nSP2
-   *        return of number of sp2 carbons in this alkene or cumulene
+   *        returns the number of sp2 carbons in this alkene or cumulene
    * @param parents
    * @return the terminal atom of this alkene or cumulene
    */
@@ -684,7 +813,7 @@ public class CIPChirality {
         cipAtom = new CIPAtom().create(atom, null, false, isAlkene);
         int nSubs = atom.getCovalentBondCount();
         int elemNo = atom.getElementNumber();
-        isAlkene = (nSubs == 3 && elemNo <= 10); // (IUPAC 2013.P-93.2.4)
+        isAlkene = (nSubs == 3 && elemNo <= 10 && cipAtom.lonePair == null); // (IUPAC 2013.P-93.2.4)
         if (nSubs != (parent == null ? 4 : 3)
             - (nSubs == 3 && !isAlkene ? 1 : 0))
           return rs;
@@ -1036,7 +1165,7 @@ public class CIPChirality {
      * position of the lone pair for winding check
      * 
      */
-    private P3 lonePair;
+    P3 lonePair;
 
     /**
      * the application-assigned unique atom index for this atom; used in updating lstSmallRings
@@ -1091,6 +1220,10 @@ public class CIPChirality {
      * 
      */
     Map<String, Integer> htPathPoints;
+
+    private boolean isTrigonalPyramidal;
+
+    boolean isRingDuplicate;
     
 
 
@@ -1120,9 +1253,10 @@ public class CIPChirality {
       this.massNo = atom.getNominalMass();
       atomIndex = atom.getIndex();
       bondCount = atom.getCovalentBondCount();
-      if (bondCount == 3 && !isAlkene && elemNo > 10)
+      isTrigonalPyramidal = (bondCount == 3 && !isAlkene && (elemNo > 10 || bsAzacyclic != null && bsAzacyclic.get(atomIndex)));
+      if (isTrigonalPyramidal)
         getLonePair();
-      canBePseudo = (bondCount == 4 || bondCount == 3 && lonePair != null);
+      canBePseudo = (bondCount == 4 || isTrigonalPyramidal);
       String c = atom.getCIPChirality(false);
       // What we are doing here is creating a lexigraphically sortable string
       // R < S < r < s < ~ and C < T < ~ 
@@ -1152,12 +1286,12 @@ public class CIPChirality {
         // original atom
         bsPath.set(atomIndex);
         rootDistance = 0;
+      } else if (wasDuplicate && bsAromatic != null && bsAromatic.get(atomIndex)) {
+          rootDistance = parent.rootDistance;
       } else if (atom == root.atom) {
         // pointing to original atom
         rootDistance = 0;
         isDuplicate = true;
-      } else if (wasDuplicate && bsAromatic != null && bsAromatic.get(atomIndex)) {
-          rootDistance = parent.rootDistance;
       } else if (bsPath.get(atomIndex)) {
         isDuplicate = true;
         rootDistance = rootSubstituent.htPathPoints.get(atom.toString())
@@ -1172,10 +1306,8 @@ public class CIPChirality {
       myPath = (parent != null ? parent.myPath + "-" : "") + this;
 
             if (Logger.debugging)
-              Logger.info("new CIPAtom " + parent + "->" + myPath);
-      if (isDuplicate && !wasDuplicate)
-        updateRingList();
-            
+              Logger.info("new CIPAtom " + myPath);
+      isRingDuplicate = (isDuplicate && !wasDuplicate);
       return this;
     }
 
@@ -1240,6 +1372,8 @@ public class CIPChirality {
             isAlkene = true;
             if (isParentBond) {
               knownAtomChirality = bond.getCIPChirality(false);
+              if (knownAtomChirality.equals(""))
+                knownAtomChirality = "~";
               if (atom.getCovalentBondCount() == 2 && atom.getValence() == 4) {
                 parent.isAlkeneAtom2 = false;
               } else {
@@ -1335,8 +1469,7 @@ public class CIPChirality {
     }
 
     /**
-     * Deep-Sort the substituents of an atom. Don't allow ties if this is the
-     * first atom (parent == null).
+     * Deep-Sort the substituents of an atom. 
      * 
      */
     void sortSubstituents() {
@@ -1372,6 +1505,7 @@ public class CIPChirality {
           int score = (a.atom == null ? B_WINS : b.atom == null ? A_WINS
                 : prevPriorities[i] == prevPriorities[j] ? TIED
                     : prevPriorities[j] < prevPriorities[i] ? B_WINS : A_WINS);
+          // note that a.compareTo(b) also down-scores duplicated atoms relative to actual atoms.
           if (score == TIED)
             score = (checkRule4List ? checkRule4And5(i, j) : a.compareTo(b));
           if (Logger_debugHigh)
@@ -1547,7 +1681,7 @@ public class CIPChirality {
       //
       // The rules require that we first only look at just the atoms, so OOC beats OOH.
 
-      if ((score = compareShallow(b)) != TIED)
+      if ((score = compareShallowly(b)) != TIED)
         return score;
 
       // Phase II -- deep check using breakTie
@@ -1558,7 +1692,7 @@ public class CIPChirality {
 
       sortSubstituents();
       b.sortSubstituents();
-      return compareDeep(b);
+      return compareDeeply(b);
     }
 
     private void preSortRule1b() {
@@ -1586,9 +1720,9 @@ public class CIPChirality {
      * using the current rule. 
      * 
      * @param b
-     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     * @return 0 (TIED) or [-1 (A_WINS), or 1 (B_WINS)]*n, where n is the lowest sphere of a win
      */
-    private int compareShallow(CIPAtom b) {
+    private int compareShallowly(CIPAtom b) {
       for (int i = 0; i < nAtoms; i++) {
         CIPAtom ai = atoms[i];
         CIPAtom bi = b.atoms[i];
@@ -1611,9 +1745,9 @@ public class CIPChirality {
      * next sphere.
      * 
      * @param b
-     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     * @return 0 (TIED) or [-1 (A_WINS), or 1 (B_WINS)]*n, where n is the lowest sphere of a win
      */
-    private int compareDeep(CIPAtom b) {
+    private int compareDeeply(CIPAtom b) {
       int finalScore = (nAtoms == 0 ? B_WINS : TIED);
       int absScore = Integer.MAX_VALUE;
       for (int i = 0; i < nAtoms; i++) {
@@ -1638,7 +1772,7 @@ public class CIPChirality {
     }
     /**
      * Used in Array.sort and sortSubstituents; includes a preliminary check for
-     * duplicate, since we know that that atom will ultimately be lower priority
+     * duplicates, since we know that that atom will ultimately be lower priority
      * if all other rules are tied. This is just a convenience.
      * 
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
@@ -1653,7 +1787,7 @@ public class CIPChirality {
     }
       
     /**
-     * This check is not technically one of those listed in the rules, but it us
+     * This check is not technically one of those listed in the rules, but it is
      * useful when preparing to check substituents because if one of the atoms
      * has substituents and the other doesn't, we are done -- there is no reason
      * to check substituents.
@@ -1662,8 +1796,8 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int checkNoSubs(CIPAtom b) {
-      return b.isDuplicate == isDuplicate ? TIED : b.isDuplicate ? A_WINS
-          : B_WINS;
+      return b.isDuplicate == isDuplicate ? TIED : b.isDuplicate ? 
+          A_WINS : B_WINS;
     }
 
     /**
@@ -1717,11 +1851,9 @@ public class CIPChirality {
 
     private int checkRule1b(CIPAtom b) {
       return !b.isDuplicate || !isDuplicate ? TIED
-          : b.rootDistance < rootDistance ? 
-              B_WINS
-              : b.rootDistance > rootDistance ? 
-                  A_WINS 
-                  : TIED;
+          : b.rootDistance == rootDistance ? TIED
+              : b.rootDistance > rootDistance ? A_WINS 
+                  : B_WINS;
     }
 
     /**
@@ -1758,6 +1890,16 @@ public class CIPChirality {
                   : za > zb ? B_WINS : TIED;
     }
 
+    /**
+     * Check to see if this double bond set is of odd or even type (including
+     * standard alkenes as even). Note that this test is not carried out until
+     * the atom after the cumulene, as it is that atom that indicates a need for
+     * this test in the first place.
+     * 
+     * @param type
+     *        STEREO_EZ for even-cumulenes; STEREO_RS for odd-cumulenes
+     * @return true if type matches this cumulene.
+     */
     private boolean isCumulativeType(int type) {
       return (parent != null && parent.isAlkeneAtom2 && 
           ((parent.alkeneParent.sphere + parent.sphere) % 2) == (type == STEREO_EZ ? 1 : 2));
@@ -1768,13 +1910,13 @@ public class CIPChirality {
      * 
      * This method uses CIPAtom.clone() effectively to create a second
      * independent path that is checked without messing up the currently
-     * expanding polygraph.
+     * expanding node graph.
      * 
      * Note that one path from the current atom is in reverse - the path back to
      * the root atom. This must be reconstructed, because until this point we
      * have not carried out many of the necessary comparisons.
      * 
-     * @return one of [STEREO_Z, STEREO_E, NO_CHIRALITY]
+     * @return one of [STEREO_Z, STEREO_E, STEREO_BOTH_EZ]
      */
     private int getEZaux() {
       // this is the second atom of the alkene, checked as the parent of the next atom
@@ -1857,8 +1999,9 @@ public class CIPChirality {
     /**
      * 
      * Create a priority key that matches elemNo and massNo.
-     * 
      * We can skip the duplicate flag, because all these have substituents.
+     * Not convinced this is appropriate in all cases. 
+     * @param addMass 
      * 
      * @return a shifted key based on elemNo and massNo
      */
@@ -2278,8 +2421,8 @@ public class CIPChirality {
           if (isAlkene && alkeneChild != null) {
             // we must check for seqCis or M/P
           } else if (node1 != null
-              && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) || bondCount == 3
-                  && elemNo > 10 && nPriorities >= 2 - Math.abs(adj))) {
+              && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) || isTrigonalPyramidal
+              && nPriorities >= 2 - Math.abs(adj))) {
             if (isBranch) {
               // if here, adj is A_WINS (-1), or B_WINS (1) 
               switch (checkPseudoHandedness(mataList, null)) {

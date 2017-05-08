@@ -795,9 +795,8 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms) {
     CIPChirality cip = getCIPChirality(vwr);
-    BS bsAromatic = vwr.getAtomBitSet("smarts('a')");
     BS bsAtropisomer = vwr.getAtomBitSet("smarts('a-a')");
-    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAromatic, bsAtropisomer);
+    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAtropisomer);
   }
   
   CIPChirality cip;

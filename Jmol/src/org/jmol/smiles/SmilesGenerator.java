@@ -64,7 +64,7 @@ public class SmilesGenerator {
   
   private boolean explicitH;
   
-  private SB ringSets;
+  private Lst<BS> ringSets;
 
   // data
 
@@ -435,7 +435,7 @@ public class SmilesGenerator {
         int index = bond.index;
         Node atom2;
         if (bsDone.get(index) || bond.getCovalentOrder() != 2
-            || SmilesSearch.isRingBond(ringSets, i, (atom2 = bond.getOtherAtomNode(atom1)).getIndex()))
+            || SmilesSearch.isRingBond(ringSets, null, i, (atom2 = bond.getOtherAtomNode(atom1)).getIndex()))
           continue;
         bsDone.set(index);
         int nCumulene = 0;
@@ -651,7 +651,7 @@ public class SmilesGenerator {
     int orderNext = (bondNext == null ? 0 : bondNext.getCovalentOrder());
 
     if (isAromatic || orderNext == 2 && nH > 1 || atomNext != null
-        && SmilesSearch.isRingBond(ringSets, atomIndex, atomNext.getIndex())) {
+        && SmilesSearch.isRingBond(ringSets, null, atomIndex, atomNext.getIndex())) {
       sp2Atoms = null;
     }
 

@@ -1253,7 +1253,8 @@ public class CIPChirality {
       this.massNo = atom.getNominalMass();
       atomIndex = atom.getIndex();
       bondCount = atom.getCovalentBondCount();
-      isTrigonalPyramidal = (bondCount == 3 && !isAlkene && (elemNo > 10 || bsAzacyclic != null && bsAzacyclic.get(atomIndex)));
+      isTrigonalPyramidal = (bondCount == 3 && !isAlkene && (elemNo > 10 || bsAzacyclic != null
+          && bsAzacyclic.get(atomIndex)));
       if (isTrigonalPyramidal)
         getLonePair();
       canBePseudo = (bondCount == 4 || isTrigonalPyramidal);
@@ -1281,13 +1282,14 @@ public class CIPChirality {
       // I argue that for aromatic compounds, this introduces a Kekule problem and that for
       // those cases, the rootDistance should be the sphere of the parent, not the duplicated atom.
       // This shows up in AV-360#215. 
-      
+
       if (parent == null) {
         // original atom
         bsPath.set(atomIndex);
         rootDistance = 0;
-      } else if (wasDuplicate && bsAromatic != null && bsAromatic.get(atomIndex)) {
-          rootDistance = parent.rootDistance;
+      } else if (wasDuplicate && bsAromatic != null
+          && bsAromatic.get(atomIndex)) {
+        rootDistance = parent.rootDistance;
       } else if (atom == root.atom) {
         // pointing to original atom
         rootDistance = 0;
@@ -1304,9 +1306,8 @@ public class CIPChirality {
       }
       this.isDuplicate = isDuplicate;
       myPath = (parent != null ? parent.myPath + "-" : "") + this;
-
-            if (Logger.debugging)
-              Logger.info("new CIPAtom " + myPath);
+      if (Logger.debugging)
+        Logger.info("new CIPAtom " + myPath);
       isRingDuplicate = (isDuplicate && !wasDuplicate);
       return this;
     }

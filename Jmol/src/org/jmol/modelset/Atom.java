@@ -1422,6 +1422,15 @@ public class Atom extends Point3fi implements Node {
         | (c << CIP_CHIRALITY_OFFSET);
   }
 
+  /**
+   * 
+   * @param c [0:unknown; 1: R; 2: S; 4: Z, 8: E, 3: none, 12: none]
+   */
+  @Override
+  public int getCIPChiralityCode() {
+    return (formalChargeAndFlags & CIP_CHIRALITY_MASK) >> CIP_CHIRALITY_OFFSET;
+  }
+
   @Override
   public char getInsertionCode() {
     return group.getInsertionCode();

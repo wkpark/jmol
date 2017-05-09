@@ -5268,6 +5268,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.strutsMultiple;
     case T.testflag1:
       // no PNGJ caching
+      // debug mouse actions
       return g.testFlag1;
     case T.testflag2:
       // passed to MOCalcuation, but not used

@@ -869,6 +869,13 @@ public class SmilesAtom extends P3 implements Node {
   }
 
   @Override
+  public int getCIPChiralityCode() {
+    //n/a
+    return 0; 
+  }
+
+
+  @Override
   public P3 getXYZ() {
     return this;
   }

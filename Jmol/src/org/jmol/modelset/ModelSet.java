@@ -4097,8 +4097,5 @@ public class ModelSet extends BondCollection {
       at[i].setCIPChirality(0);
     Interface.getSymmetry(vwr, "ms").calculateCIPChiralityForAtoms(vwr, bsAtoms);
   }
-
-
-
 }
 

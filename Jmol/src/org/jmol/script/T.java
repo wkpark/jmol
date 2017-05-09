@@ -788,6 +788,7 @@ public class T {
 
   public final static int backgroundmodel  = setparam | 2;
   public final static int debug            = setparam | 4;
+  public final static int debughigh        = setparam | 5;
   public final static int defaultlattice   = setparam | 6;
   public final static int highlight        = setparam | 8;// 12.0.RC14
   public final static int showscript       = setparam | 10;
@@ -2339,6 +2340,7 @@ public class T {
        "celShading",
        "celShadingPower",
        "debug",
+       "debugHigh",
        "defaultLattice",
        "measurements",
        "measurement",
@@ -3387,6 +3389,7 @@ public class T {
         celshading,                         //        "celShading"
         celshadingpower,                    //        "celShadingPower"
         debug,                              //        "debug"
+        debughigh,                          //        "debugHigh"
         defaultlattice,                     //        "defaultLattice"
         measurements,                       //        "measurements"
         -1,                                 //        "measurement"

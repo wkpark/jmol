@@ -98,6 +98,7 @@ public interface Node {
   public boolean isDeleted();
   char getBioSmilesType();
   String getCIPChirality(boolean doCalculate);
+  int getCIPChiralityCode();
   void setCIPChirality(int c);
   public P3 getXYZ();
 

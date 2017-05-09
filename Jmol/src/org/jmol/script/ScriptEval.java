@@ -6782,10 +6782,11 @@ public class ScriptEval extends ScriptExpr {
       setBooleanProperty("bondModeOr", b);
       return;
     case T.debug:
+    case T.debughigh:
       if (chk)
         return;
       int iLevel = (tokAt(2) == T.off || tokAt(2) == T.integer
-          && intParameter(2) == 0 ? 4 : 5);
+          && intParameter(2) == 0 ? 4 : (tok == T.debughigh ? 6 : 5));
       Logger.setLogLevel(iLevel);
       setIntProperty("logLevel", iLevel);
       if (iLevel == 4) {

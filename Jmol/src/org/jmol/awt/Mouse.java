@@ -180,8 +180,8 @@ class Mouse implements MouseWheelListener, MouseListener,
     int modifiers = ke.getModifiers();
     // for whatever reason, CTRL may also drop the 6- and 7-bits,
     // so we are in the ASCII non-printable region 1-31
-    if (Logger.debuggingHigh)
-      Logger.debug("MouseManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
+//    if (Logger.debuggingHigh && vwr.getBoolean(T.testflag1))
+//      Logger.debug("MouseManager keyTyped: " + ch + " " + (0+ch) + " " + modifiers);
     if (modifiers != 0 && modifiers != Event.SHIFT_MASK) {
       switch (ch) {
       case (char) 11:

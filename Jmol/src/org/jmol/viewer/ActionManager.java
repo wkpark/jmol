@@ -880,7 +880,7 @@ public class ActionManager implements EventManager {
                           int buttonMods) {
     if (!vwr.getMouseEnabled())
       return;
-    if (Logger.debuggingHigh && mode != Event.MOVED)
+    if (Logger.debuggingHigh && mode != Event.MOVED && vwr.getBoolean(T.testflag1))
       vwr.showString("mouse action: " + mode + " " + buttonMods + " " + Binding.getMouseActionName(Binding.getMouseAction(count, buttonMods, mode), false), false);
     if (vwr.tm.stereoDoubleDTI)
       x = x << 1;
@@ -980,7 +980,7 @@ public class ActionManager implements EventManager {
       buttonMods = Binding.getButtonMods(pressAction);
     }
     setMouseActions(pressedCount, buttonMods, false);
-    if (Logger.debuggingHigh)
+    if (Logger.debuggingHigh && vwr.getBoolean(T.testflag1))
       Logger.debug(Binding.getMouseActionName(pressAction, false));
 
     if (isDrawOrLabelAction(dragAction)) {
@@ -1264,7 +1264,7 @@ public class ActionManager implements EventManager {
 
 
   private void checkReleaseAction(int x, int y, long time, boolean dragRelease) {
-    if (Logger.debuggingHigh)
+    if (Logger.debuggingHigh && vwr.getBoolean(T.testflag1))
       Logger.debug(Binding.getMouseActionName(pressAction, false));
     vwr.checkInMotion(0);
     vwr.setInMotion(false);
@@ -1331,7 +1331,7 @@ public class ActionManager implements EventManager {
       if (clickAction == 0)
         return;
     }
-    if (Logger.debuggingHigh)
+    if (Logger.debuggingHigh  && vwr.getBoolean(T.testflag1))
       Logger.debug(Binding.getMouseActionName(clickAction, false));
     if (bnd(clickAction, ACTION_clickFrank)) {
       if (vwr.frankClicked(x, y)) {

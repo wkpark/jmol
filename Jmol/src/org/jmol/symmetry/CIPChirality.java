@@ -2387,6 +2387,7 @@ public class CIPChirality {
       String subRS = "";
       String s = (node1 == null ? "" : "~");
       boolean isBranch = false;
+      boolean isrs = false;
       if (atom != null) {
         rule4List = new String[4]; // full list based on atoms[]
         int[] mataList = new int[4]; //sequential pointers into rule4List
@@ -2426,8 +2427,10 @@ public class CIPChirality {
         case 2:
           if (node1 != null) {
             // we want to now if these two are enantiomorphic, identical, or diastereomorphic.
-            switch (adj = (compareRule4aEnantiomers(rule4List[mataList[0]],
-                rule4List[mataList[1]]))) {
+            if (root.atomIndex == 21)
+              System.out.println("testing21");
+            adj = (compareRule4aEnantiomers(rule4List[mataList[0]], rule4List[mataList[1]]));
+            switch (adj) {
             case DIASTEREOMERIC:
               isBranch = true;
               s = "";
@@ -2450,6 +2453,7 @@ public class CIPChirality {
             case A_WINS:
             case B_WINS:
               isBranch = true;
+              isrs = subRS.indexOf("r") >= 0;
               // enantiomers -- we have an r/s situation
               // process to determine chirality, but then set ret[0] to be null
               subRS = "";
@@ -2488,6 +2492,8 @@ public class CIPChirality {
                 System.out.println("for " + atoms[mataList[0]] + atoms[mataList[1]] + " adj=" + adj + "S->rs=" + s);
                 break;
               }
+              if (isrs)
+                s = s.toUpperCase(); // Rule 4c
               subRS = "";
               if (ret != null)
                 ret[0] = null;
@@ -2553,16 +2559,16 @@ public class CIPChirality {
      *         if diastereomeric
      */
     private int compareRule4aEnantiomers(String rs1, String rs2) {
-      if (rs1.indexOf("R") < 0 && rs1.indexOf("S") < 0
-          || rs1.charAt(0) != rs2.charAt(0))
+      if (rs1.charAt(0) != rs2.charAt(0))
         return NOT_RELEVANT;
       int n = rs1.length(); 
       if (n != rs2.length())
         return NOT_RELEVANT; // TODO: ?? this may not be true -- paths with and without O, N, C for example, that still have stereochemistry
       if (rs1.equals(rs2))
         return TIED;      
+      String rs = (rs1.indexOf("R") < 0 && rs1.indexOf("S") < 0 ? "~rs" : "~RS");
 //      System.out.println("testing ~RS here with " + rs1 + " and " + rs2);
-      return checkEnantiomer(rs1, rs2, 1, n, "~RS");
+      return checkEnantiomer(rs1, rs2, 1, n, rs);
     }
 
     private int checkEnantiomer(String rs1, String rs2, int m, int n, String rs) {

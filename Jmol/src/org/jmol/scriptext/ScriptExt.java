@@ -193,6 +193,7 @@ public abstract class ScriptExt {
       case T.varray:
         points = e.getPointArray(index, -1, false);
         break;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         bs = atomExpressionAt(index);

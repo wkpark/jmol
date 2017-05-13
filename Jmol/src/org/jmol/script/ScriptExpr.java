@@ -2470,7 +2470,7 @@ abstract class ScriptExpr extends ScriptParam {
           }
           i = iToken;
         } else if (chk) {
-          v = null;
+          v = new BS();
         } else {
           if (tokAt(i) == T.integer) {
             v = vwr.ms.getAtoms(T.atomno, Integer.valueOf(st[i].intValue));
@@ -2493,10 +2493,6 @@ abstract class ScriptExpr extends ScriptParam {
         } else if (v instanceof Boolean) {
           fixed[j] = (((Boolean) v).booleanValue() ? T.tokenOn : T.tokenOff);
         } else if (v instanceof Integer) {
-          // if (isExpression && !isClauseDefine
-          // && (var_set = getParameter(var + "_set", false)) != null)
-          // fixed[j] = new Token(Token.define, "" + var_set);
-          // else
           fixed[j] = T.tv(T.integer, ((Integer) v).intValue(), v);
         } else if (v instanceof Float) {
           fixed[j] = T.tv(T.decimal, getFloatEncodedInt("" + v), v);

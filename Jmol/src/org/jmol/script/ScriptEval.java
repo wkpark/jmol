@@ -3141,6 +3141,7 @@ public class ScriptEval extends ScriptExpr {
         if (!chk)
           setObjectArgb("background", argb);
         return;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         i = -1;
@@ -3493,7 +3494,7 @@ public class ScriptEval extends ScriptExpr {
         case T.from:
           key = paramAsStr(i - 1);
           nSkip -= 2;
-          if (tokAt(++i) == T.expressionBegin || tokAt(i) == T.bitset) {
+          if (isAtomExpression(++i)) {
             inTok = T.bitset;
             bsOrList = atomExpressionAt(i);
             if (isBondSet)
@@ -3909,17 +3910,12 @@ public class ScriptEval extends ScriptExpr {
     default:
       param = optParameterAsString(2);
       break;
+    case T.define:
     case T.expressionBegin:
     case T.bitset:
       param = atomExpressionAt(2);
-      if (property.equalsIgnoreCase("bondInfo")) {
-        switch (tokAt(++iToken)) {
-        case T.expressionBegin:
-        case T.bitset:
+      if (property.equalsIgnoreCase("bondInfo") && isAtomExpression(++iToken))
           param = new BS[] { (BS) param, atomExpressionAt(iToken) };
-          break;
-        }
-      }
       break;
     }
     if (property.length() > 0 && propertyID < 0) {
@@ -4093,6 +4089,7 @@ public class ScriptEval extends ScriptExpr {
     P4 plane = null;
     BS bs = null;
     int iAtom = Integer.MIN_VALUE;
+    int ipt = 1;
     switch (tokAt(1)) {
     case T.nada:
       if (chk)
@@ -4102,8 +4099,23 @@ public class ScriptEval extends ScriptExpr {
       vwr.invertAtomCoordPt(pt, bs);
       return;
     case T.stereo:
-      iAtom = atomExpressionAt(2).nextSetBit(0);
-      // and only these:
+    case T.atoms:
+      ipt++;
+      //$FALL-THROUGH$
+    case T.bitset:
+    case T.expressionBegin:
+    case T.define:
+      bs = atomExpressionAt(ipt);
+      if (!isAtomExpression(iToken + 1)) {
+        checkLengthErrorPt(iToken + 1, iToken + 1);
+        if (!chk) {
+          for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+            vwr.invertRingAt(i, false);
+          }
+        }
+        return;
+      }
+      iAtom = bs.nextSetBit(0);
       bs = atomExpressionAt(iToken + 1);
       break;
     case T.point:
@@ -4115,14 +4127,6 @@ public class ScriptEval extends ScriptExpr {
     case T.hkl:
       plane = hklParameter(2);
       break;
-    case T.atoms:
-      bs = atomExpressionAt(2);
-      if (!chk) {
-        for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-          vwr.invertRingAt(i, false);
-        }
-      }
-      return;
     }
     checkLengthErrorPt(iToken + 1, 1);
     if (plane == null && pt == null && iAtom == Integer.MIN_VALUE)
@@ -5379,7 +5383,7 @@ public class ScriptEval extends ScriptExpr {
         isMolecular = true;
         i++;
       }
-      if (tokAt(i) == T.bitset || tokAt(i) == T.expressionBegin) {
+      if (isAtomExpression(i)) {
         isMolecular = true;
         Object[] ret = new Object[1];
         center = centerParameter(i, ret);
@@ -5589,6 +5593,17 @@ public class ScriptEval extends ScriptExpr {
           cameraDepth, cameraX, cameraY);
     if (isJS && floatSecondsTotal > 0 && vwr.g.waitForMoveTo)
       throw new ScriptInterruption(this, "moveTo", 1);
+  }
+
+  public boolean isAtomExpression(int i) {
+    switch(tokAt(i)) {
+    case T.define: // added 5/13/17
+    case T.bitset:
+    case T.expressionBegin:
+      return true;
+    default:
+      return false;
+    }
   }
 
   private boolean cmdPause() throws ScriptException {
@@ -5814,19 +5829,19 @@ public class ScriptEval extends ScriptExpr {
     boolean axesOrientationRasmol = vwr.getBoolean(T.axesorientationrasmol);
     for (int i = 1; i < slen; ++i) {
       switch (tok = getToken(i).tok) {
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
+        if (translation != null || q != null || nPoints == 2) {
+          bsAtoms = atomExpressionAt(i);
+          ptsB = null;
+          isSelected = true;
+          break;
+        }
+        //$FALL-THROUGH$
       case T.leftbrace:
       case T.point3f:
       case T.dollarsign:
-        if (tok == T.bitset || tok == T.expressionBegin) {
-          if (translation != null || q != null || nPoints == 2) {
-            bsAtoms = atomExpressionAt(i);
-            ptsB = null;
-            isSelected = true;
-            break;
-          }
-        }
         haveRotation = true;
         if (nPoints == 2)
           nPoints = 0;
@@ -7685,6 +7700,7 @@ public class ScriptEval extends ScriptExpr {
       invArg();
     BS bs = null;
     switch (tokAt(2)) {
+    case T.define:
     case T.bitset:
     case T.expressionBegin:
       bs = atomExpressionAt(2);
@@ -7856,6 +7872,7 @@ public class ScriptEval extends ScriptExpr {
     char type;
     switch (tokAt(++i)) {
     case T.nada:
+    case T.define:
     case T.bitset:
     case T.expressionBegin:
       type = '\0';
@@ -8213,6 +8230,7 @@ public class ScriptEval extends ScriptExpr {
         colorvalue1 = (argb == 0 ? null : Integer.valueOf(argb));
         getToken(index = iToken + 1);
         break;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         if (theToken.value instanceof BondSet) {

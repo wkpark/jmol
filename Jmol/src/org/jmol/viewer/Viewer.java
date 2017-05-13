@@ -7504,13 +7504,13 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public void invertAtomCoordPt(P3 pt, BS bs) {
     // Eval
-    ms.invertSelected(pt, null, -1, null, bs);
+    ms.invertSelected(pt, null, -1, bs);
     checkMinimization();
     sm.setStatusAtomMoved(bs);
   }
 
   public void invertAtomCoordPlane(P4 plane, BS bs) {
-    ms.invertSelected(null, plane, -1, null, bs);
+    ms.invertSelected(null, plane, -1, bs);
     checkMinimization();
     sm.setStatusAtomMoved(bs);
   }
@@ -7555,14 +7555,15 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       setStatusAtomPicked(atomIndex, "inverted: " + Escape.eBS(bs), null);
   }
 
-  public void invertSelected(P3 pt, P4 plane, int iAtom, BS invAtoms) {
+  public void invertSelected(P3 pt, P4 plane, int iAtom, BS bsAtoms) {
     // Eval
-    BS bs = bsA();
-    if (bs.isEmpty())
+    if (bsAtoms == null)
+      bsAtoms = bsA();
+    if (bsAtoms.cardinality() == 0)
       return;
-    ms.invertSelected(pt, plane, iAtom, invAtoms, bs);
+    ms.invertSelected(pt, plane, iAtom, bsAtoms);
     checkMinimization();
-    sm.setStatusAtomMoved(bs);
+    sm.setStatusAtomMoved(bsAtoms);
   }
 
   public void moveAtoms(M4 m4, M3 mNew, M3 rotation, V3 translation, P3 center,

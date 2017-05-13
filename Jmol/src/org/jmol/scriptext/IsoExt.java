@@ -191,7 +191,7 @@ public class IsoExt extends ScriptExt {
       case T.calculate:
         getCharges = true;
         propertyName = "calculate";
-        if (tokAt(i+1) == T.bitset || tokAt(i + 1) == T.expressionBegin) {
+        if (eval.isAtomExpression(i + 1)) {
           propertyValue = bsSelected = atomExpressionAt(++i);
           i = eval.iToken;
         }
@@ -567,8 +567,7 @@ public class IsoExt extends ScriptExt {
           center = centerParameter(++i);
           // draw ID xxx symop [n or "x,-y,-z"] [optional {center}]
           // so we also check here for the atom set to get the right model
-          bsAtoms = (tokAt(i) == T.bitset || tokAt(i) == T.expressionBegin ? atomExpressionAt(i)
-              : null);
+          bsAtoms = (eval.isAtomExpression(i) ? atomExpressionAt(i) : null);
           i = eval.iToken;
         }
         int nth = (target != null && tokAt(i + 1) == T.integer ? eval
@@ -645,6 +644,7 @@ public class IsoExt extends ScriptExt {
         i = eval.iToken;
         havePoints = true;
         break;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         propertyName = "atomSet";
@@ -1904,6 +1904,7 @@ public class IsoExt extends ScriptExt {
         addShapeProperty(propertyList, "lcaoType", lcaoType);
         sbCommand.append(" lcaocartoon ").append(PT.esc(lcaoType));
         switch (getToken(++i).tok) {
+        case T.define:
         case T.bitset:
         case T.expressionBegin:
           // automatically selects just the model of the first atom in the set.
@@ -2733,6 +2734,7 @@ public class IsoExt extends ScriptExt {
       case T.connect:
         propertyName = "connections";
         switch (tokAt(++i)) {
+        case T.define:
         case T.bitset:
         case T.expressionBegin:
           propertyValue = new int[] { atomExpressionAt(i).nextSetBit(0) };
@@ -3036,6 +3038,7 @@ public class IsoExt extends ScriptExt {
       case T.delete:
         propertyName = "delete";
         break;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         propertyName = "select";
@@ -3068,7 +3071,7 @@ public class IsoExt extends ScriptExt {
         }
         break;
       case T.select:
-        if (tokAt(i + 1) == T.bitset || tokAt(i + 1) == T.expressionBegin) {
+        if (eval.isAtomExpression(i + 1)) {
           propertyName = "select";
           propertyValue = atomExpressionAt(i + 1);
           i = eval.iToken;
@@ -3291,6 +3294,7 @@ public class IsoExt extends ScriptExt {
         params = eval.floatParameterSet(++i, 1, 10);
         i = eval.iToken;
         break;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         if (isWild || bsB != null)
@@ -3648,6 +3652,7 @@ public class IsoExt extends ScriptExt {
         data = pts;
       }
       break;
+    case T.define:
     case T.bitset:
     case T.expressionBegin:
       data = atomExpressionAt(i + 1);

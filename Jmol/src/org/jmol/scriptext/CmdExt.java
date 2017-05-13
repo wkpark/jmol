@@ -1545,13 +1545,14 @@ public class CmdExt extends ScriptExt {
           points.addLast(bs2);
         }
         break;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
+        nBitSets++;
+        //$FALL-THROUGH$
       case T.leftbrace:
       case T.point3f:
       case T.dollarsign:
-        if (eval.theTok == T.bitset || eval.theTok == T.expressionBegin)
-          nBitSets++;
         if (atomIndex >= 0)
           invArg();
         Object[] ret = new Object[1];
@@ -1716,6 +1717,7 @@ public class CmdExt extends ScriptExt {
         }
         distances[distanceCount++] = dist;
         break;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         if (nAtomSets > 2 || isBonds && nAtomSets > 0)
@@ -2211,6 +2213,7 @@ public class CmdExt extends ScriptExt {
         case T.scale:
           value = Float.valueOf(floatParameter(++i));
           break;
+        case T.define:
         case T.bitset:
         case T.expressionBegin:
           key = "atoms";
@@ -2530,6 +2533,7 @@ public class CmdExt extends ScriptExt {
     case T.nada:
     case T.on:
       break;
+    case T.define:
     case T.bitset:
     case T.expressionBegin:
       bs = atomExpressionAt(1);
@@ -2785,7 +2789,7 @@ public class CmdExt extends ScriptExt {
         P3[][] pathGuide;
         Lst<P3[]> vp = new Lst<P3[]>();
         BS bs;
-        if (tokAt(i + 1) == T.bitset || tokAt(i + 1) == T.expressionBegin) {
+        if (eval.isAtomExpression(i + 1)) {
           bs = atomExpressionAt(++i);
           i = eval.iToken;
         } else {
@@ -3371,7 +3375,7 @@ public class CmdExt extends ScriptExt {
         if (nAtomSets > 1 || id != null && !haveCenter || noToParam == i)
           invPO();
         nAtomSets = 3; // don't allow two of these
-        if (tokAt(++i) == T.bitset || tokAt(i) == T.expressionBegin) {
+        if (eval.isAtomExpression(++i)) {
           // select... polyhedron .... to ....
           propertyName = (needsGenerating ? "to" : "toBitSet");
           propertyValue = atomExpressionAt(i);
@@ -3386,6 +3390,7 @@ public class CmdExt extends ScriptExt {
         i = eval.iToken;
         needsGenerating = true;
         break;
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         if (typeSeen)
@@ -5001,6 +5006,7 @@ public class CmdExt extends ScriptExt {
       break;
     case T.center:
       switch (tokAt(++i)) {
+      case T.define:
       case T.bitset:
       case T.expressionBegin:
         pt = vwr.ms.getAtomSetCenter(atomExpressionAt(i));
@@ -5019,6 +5025,7 @@ public class CmdExt extends ScriptExt {
       pt.y -= 0.5f;
       pt.z -= 0.5f;
       break;
+    case T.define:
     case T.bitset:
     case T.expressionBegin:
       int iAtom = atomExpressionAt(i).nextSetBit(0);

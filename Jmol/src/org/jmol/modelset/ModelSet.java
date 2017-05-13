@@ -3739,9 +3739,17 @@ public class ModelSet extends BondCollection {
     }
   }
 
-  public void invertSelected(P3 pt, P4 plane, int iAtom, BS invAtoms, BS bs) {
+  /**
+   * Carries out a stereochemical inversion through a point, across a plane, or at a chirality center.
+   * 
+   * @param pt point to invert around if not null
+   * @param plane plane to invert across if not null
+   * @param iAtom atom to switch two groups on if >= 0
+   * @param bsAtoms atoms to switch for the atom option
+   */
+  public void invertSelected(P3 pt, P4 plane, int iAtom, BS bsAtoms) {
     if (pt != null) {
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
         float x = (pt.x - at[i].x) * 2;
         float y = (pt.y - at[i].y) * 2;
         float z = (pt.z - at[i].z) * 2;
@@ -3755,7 +3763,7 @@ public class ModelSet extends BondCollection {
       norm.normalize();
       float d = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y
           + plane.z * plane.z);
-      for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+      for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
         float twoD = -Measure.distanceToPlaneD(plane, d, at[i]) * 2;
         float x = norm.x * twoD;
         float y = norm.y * twoD;
@@ -3770,13 +3778,13 @@ public class ModelSet extends BondCollection {
       Bond[] bonds = thisAtom.bonds;
       if (bonds == null)
         return;
-      BS bsAtoms = new BS();
+      BS bsToMove = new BS();
       Lst<P3> vNot = new Lst<P3>();
       BS bsModel = vwr.getModelUndeletedAtomsBitSet(thisAtom.mi);
       for (int i = 0; i < bonds.length; i++) {
         Atom a = bonds[i].getOtherAtom(thisAtom);
-        if (invAtoms.get(a.i)) {
-          bsAtoms.or(JmolMolecule.getBranchBitSet(at, a.i, bsModel, null,
+        if (bsAtoms.get(a.i)) {
+          bsToMove.or(JmolMolecule.getBranchBitSet(at, a.i, bsModel, null,
               iAtom, true, true));
         } else {
           vNot.addLast(a);
@@ -3787,7 +3795,7 @@ public class ModelSet extends BondCollection {
       pt = Measure.getCenterAndPoints(vNot)[0];
       V3 v = V3.newVsub(thisAtom, pt);
       Quat q = Quat.newVA(v, 180);
-      moveAtoms(null, null, q.getMatrix(), null, bsAtoms, thisAtom, true, false);
+      moveAtoms(null, null, q.getMatrix(), null, bsToMove, thisAtom, true, false);
     }
   }
 

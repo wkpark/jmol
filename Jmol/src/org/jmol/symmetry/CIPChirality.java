@@ -91,7 +91,8 @@ import org.jmol.viewer.JC;
  * 
  * 5/06/16 validated for 236 compound set AY-236.
  * 
- * 5/13/16 Jmol 14.15.4. validated for mixed Rule 4b systems involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
+ * 5/13/16 Jmol 14.15.4. algorithm simplified; validated for mixed Rule 4b systems
+ * involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
  * 
  * 5/14/16 Jmol 14.15.5. trimmed up and documented; 956 lines
  * 
@@ -665,7 +666,7 @@ public class CIPChirality {
         i = nRings;
       }
     }
-     return bs;
+    return bs;
   }
 
 
@@ -1313,7 +1314,10 @@ public class CIPChirality {
 
     private boolean isTrigonalPyramidal;
 
-    boolean isKekuleAmbigous;
+    /**
+     * is an atom that is involved in more than one Kekule form
+     */
+    boolean isKekuleAmbiguous;
 
     /**
      * potentially useful information that this duplicate is from an double- or triple-bond, 
@@ -1344,8 +1348,8 @@ public class CIPChirality {
       this.isAlkene = isAlkene;
       this.atom = atom;
       atomIndex = atom.getIndex();
-      isKekuleAmbigous = (bsKekuleAmbiguous != null && bsKekuleAmbiguous.get(atomIndex));
-      elemNo = (isDuplicate && isKekuleAmbigous ? parent.getKekuleElementNumber() : atom.getElementNumber());
+      isKekuleAmbiguous = (bsKekuleAmbiguous != null && bsKekuleAmbiguous.get(atomIndex));
+      elemNo = (isDuplicate && isKekuleAmbiguous ? parent.getKekuleElementNumber() : atom.getElementNumber());
       massNo = atom.getNominalMass();
       bondCount = atom.getCovalentBondCount();
       isTrigonalPyramidal = (bondCount == 3 && !isAlkene && (elemNo > 10 || bsAzacyclic != null
@@ -1383,7 +1387,7 @@ public class CIPChirality {
       if (parent == null) {
         // original atom
         bsPath.set(atomIndex);
-      } else if (sp2Duplicate && isKekuleAmbigous) {
+      } else if (sp2Duplicate && isKekuleAmbiguous) {
         // *** Rule 1b Jmol amendment ***
       } else if (atom == root.atom) {
         // pointing to original atom
@@ -2542,7 +2546,7 @@ public class CIPChirality {
               // it does not contribute to the Mata sequence (so would mess it up).
               boolean isAxial = (((alkeneChild.sphere - sphere) % 2) == 0);
               if (isAxial || auxEZ == STEREO_BOTH_EZ
-                  && alkeneChild.bondCount >= 2 && !isKekuleAmbigous) {
+                  && alkeneChild.bondCount >= 2 && !isKekuleAmbiguous) {
                 rs = getEneWinnerChirality(this, alkeneChild, RULE_5,
                     isAxial);
                 switch (rs) {

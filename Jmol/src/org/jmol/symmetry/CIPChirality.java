@@ -159,18 +159,17 @@ public class CIPChirality {
   // 3. Rule 3  requires the concept of "auxiliary" (temporary, digraph-specific) descriptors.
   //            This concept of auxiliary descriptors is the key to not having an analysis
   //            blow up or somehow require complex, impossible iteration.
-  // 4. Rule 4a need not be separately implemented or carried out "exhaustively". It is
-  //            more of an implicit guideline only, for naming purposes, I think.
+  // 4. Rule 4a needs to be addressed exhaustively prior to Rules 4b and 4c. 
   // 5. Rule 4b Somehow missed in the discussion is that the reference descriptor is determined
   //            once and only once for each branch from the center under scrutiny. All Rules 
   //            preceding Rule 4 can be applied to iterated subsections of a digraph. Not this one,
-  //            though. The key is to determine one single "Mata sequence" of R and S descriptors
-  //            for each pair of branches being considered. This same reference 
-  //            carries through all future iterations of the algorithm for that branch.
+  //            nor Rule 5, though. The key is to determine one single "Mata sequence" of R and S descriptors
+  //            for each pair of branches being considered. This same reference carries through all  
+  //            future iterations of the algorithm for that branch.
   // 6. Rule 4c Again, this rule must be invoked only after Rule 4b is completely set, and again
   //            it is only for the root branches, not anywhere else.
-  // 7. Rule 5  Final setting of r vs s is again only for the Sphere-1 root branches. It has 
-  //            no relevance past that point.
+  // 7. Rule 5  Final setting pseudoasymmetry (r/s, m/p) can be done along the same line as Rule 4b,
+  //            but with slightly different sorting criteria.
   //
   
   // The algorithm:
@@ -229,7 +228,7 @@ public class CIPChirality {
   // compareDeeply(a, b) {
   //    bestScore = Integer.MAX_VALUE
   //    for (each substituent pairing i in a and b) {
-  //      bestScore = min(bestScore, breakTie(a_i, b_i)
+  //      bestScore = min(bestScore, breakTie(a_i, b_i))
   //    }
   //    return bestScore
   // }

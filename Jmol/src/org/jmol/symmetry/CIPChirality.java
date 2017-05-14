@@ -93,7 +93,7 @@ import org.jmol.viewer.JC;
  * 
  * 5/13/16 Jmol 14.15.4. validated for mixed Rule 4b systems involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
  * 
- * 5/14/16 Jmol 14.15.5. trimmed up and documented; 955 lines
+ * 5/14/16 Jmol 14.15.5. trimmed up and documented; 956 lines
  * 
  * NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE!
  * 
@@ -274,7 +274,8 @@ public class CIPChirality {
   static final int STEREO_Z = JC.CIP_CHIRALITY_Z_FLAG;
   static final int STEREO_E = JC.CIP_CHIRALITY_E_FLAG;
 
-  static final int STEREO_BOTH = STEREO_R | STEREO_S; // must be the number 3
+  static final int STEREO_BOTH_RS = STEREO_R | STEREO_S; // must be the number 3
+  static final int STEREO_BOTH_EZ = STEREO_E | STEREO_Z; 
 
   static final int RULE_1a = 1;
   static final int RULE_1b = 2;
@@ -764,7 +765,7 @@ public class CIPChirality {
   public int getAtomChirality(Node atom) {
     init();
     int rs = getAtomChiralityLimited(atom, null, null, RULE_5);
-    return (rs == NO_CHIRALITY ? STEREO_BOTH : rs);
+    return (rs == NO_CHIRALITY ? STEREO_BOTH_RS : rs);
   }
 
   /**
@@ -963,7 +964,7 @@ public class CIPChirality {
       {
          e.printStackTrace();
        }
-      return STEREO_BOTH;
+      return STEREO_BOTH_RS;
     }
     return rs;
   }
@@ -2073,7 +2074,7 @@ public class CIPChirality {
           && (auxEZ = alkeneParent.auxEZ) == STEREO_UNDETERMINED) {
         auxEZ = getEneWinnerChirality(alkeneParent, this, RULE_3, false);
         if (auxEZ == NO_CHIRALITY)
-          auxEZ = STEREO_BOTH;
+          auxEZ = STEREO_BOTH_EZ;
       }
       alkeneParent.auxEZ = auxEZ;
       if (Logger.debugging)
@@ -2540,7 +2541,7 @@ public class CIPChirality {
               // case we have a simple E or Z, and there is no need to check AND
               // it does not contribute to the Mata sequence (so would mess it up).
               boolean isAxial = (((alkeneChild.sphere - sphere) % 2) == 0);
-              if (isAxial || auxEZ == STEREO_BOTH
+              if (isAxial || auxEZ == STEREO_BOTH_EZ
                   && alkeneChild.bondCount >= 2 && !isKekuleAmbigous) {
                 rs = getEneWinnerChirality(this, alkeneChild, RULE_5,
                     isAxial);
@@ -2700,7 +2701,7 @@ public class CIPChirality {
         int score = i1 + rs.indexOf(rs2.charAt(i));
         if (score == 0)
           continue;
-        if (score != STEREO_BOTH)
+        if (score != STEREO_BOTH_RS)
           return DIASTEREOMERIC;
         if (finalScore == TIED)
           finalScore =  (i1 == STEREO_R ? A_WINS : B_WINS);

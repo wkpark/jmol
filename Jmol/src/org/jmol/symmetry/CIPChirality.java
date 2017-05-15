@@ -94,7 +94,7 @@ import org.jmol.viewer.JC;
  * 5/13/16 Jmol 14.15.4. algorithm simplified; validated for mixed Rule 4b systems
  * involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
  * 
- * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs 948 lines
+ * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs; 948 lines
  * 
  * NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE!
  * 

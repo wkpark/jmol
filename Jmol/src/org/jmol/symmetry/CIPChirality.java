@@ -94,7 +94,7 @@ import org.jmol.viewer.JC;
  * 5/13/16 Jmol 14.15.4. algorithm simplified; validated for mixed Rule 4b systems
  * involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
  * 
- * 5/14/16 Jmol 14.15.5. trimmed up and documented; 956 lines
+ * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs 948 lines
  * 
  * NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE!
  * 
@@ -904,7 +904,7 @@ public class CIPChirality {
         cipAtom = new CIPAtom().create(atom, null, false, isAlkene);
         int nSubs = atom.getCovalentBondCount();
         int elemNo = atom.getElementNumber();
-        isAlkene = (nSubs == 3 && elemNo <= 10 && cipAtom.lonePair == null); // (IUPAC 2013.P-93.2.4)
+        isAlkene = (nSubs == 3 && elemNo <= 10 && !cipAtom.isTrigonalPyramidal); // (IUPAC 2013.P-93.2.4)
         if (nSubs != (parent == null ? 4 : 3)
             - (nSubs == 3 && !isAlkene ? 1 : 0))
           return rs;
@@ -1265,12 +1265,6 @@ public class CIPChirality {
     private String[] rule4List;
 
     /**
-     * position of the lone pair for winding check
-     * 
-     */
-    P3 lonePair;
-
-    /**
      * the application-assigned unique atom index for this atom; used in updating lstSmallRings
      * 
      */
@@ -1312,7 +1306,7 @@ public class CIPChirality {
      */
     Map<Integer, Integer> htPathPoints;
 
-    private boolean isTrigonalPyramidal;
+    boolean isTrigonalPyramidal;
 
     /**
      * is an atom that is involved in more than one Kekule form
@@ -1354,8 +1348,6 @@ public class CIPChirality {
       bondCount = atom.getCovalentBondCount();
       isTrigonalPyramidal = (bondCount == 3 && !isAlkene && (elemNo > 10 || bsAzacyclic != null
           && bsAzacyclic.get(atomIndex)));
-      if (isTrigonalPyramidal)
-        getLonePair();
       canBePseudo = (bondCount == 4 || isTrigonalPyramidal);
       //String c = atom.getCIPChirality(false);
       // What we are doing here is creating a lexigraphically sortable string
@@ -1433,19 +1425,6 @@ public class CIPChirality {
         }
       }
       return ave / n;
-    }
-
-    /**
-     * Calculate a lone pair position based on a trigonal pyramidal geometry.
-     * 
-     */
-    private void getLonePair() {      
-      float d = getTrigonality(atom, vNorm);
-      if (Math.abs(d) > TRIGONALITY_MIN) {
-        lonePair = new P3();
-        vNorm.scale(d);
-        lonePair.add2(atom.getXYZ(), vNorm); 
-      }
     }
 
     /**
@@ -2808,9 +2787,10 @@ public class CIPChirality {
       P3 p1 = atoms[0].atom.getXYZ(); // highest priority
       P3 p2 = atoms[1].atom.getXYZ();
       P3 p3 = atoms[2].atom.getXYZ();
-      P3 p4 = (lonePair == null ? atoms[3].atom.getXYZ() : lonePair); // lowest priority
+      // lone pair position need not be calculated; we can just use the atom itself for this calculation
       float d = Measure.getNormalThroughPoints(p1, p2, p3, vNorm, vTemp);
-      return (Measure.distanceToPlaneV(vNorm, d, p4) > 0 ? STEREO_R : STEREO_S);
+      return (Measure.distanceToPlaneV(vNorm, d, (isTrigonalPyramidal ? atom
+          : atoms[3].atom).getXYZ()) > 0 ? STEREO_R : STEREO_S);
     }
 
     /**

@@ -36,7 +36,7 @@ import org.jmol.viewer.JC;
  * specs (http://www.chem.qmul.ac.uk/iupac/bibliog/BBerrors.html)
  * 
  * Many thanks to the members of the BlueObelisk-Discuss group, particularly
- * Mikko Vainio, JOHN MAYFIELD, Wolf Ihlenfeldt, and Egon Willighagen, for
+ * Mikko Vainio, JOHN MAY, Wolf Ihlenfeldt, and Egon Willighagen, for
  * encouragement, examples, serious skepticism, and extremely helpful advice.
  * 
  * References:
@@ -96,8 +96,10 @@ import org.jmol.viewer.JC;
  * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs; 948
  * lines
  * 
- * 5/17/16 Jmol 14.15.5. adds helicene M/P chirality; validated using CCDC
+ * 5/17/16 Jmol 14.15.5. adds helicene M/P chirality;  
+ * validated using CCDC
  * structures HEXHEL02 HEXHEL03 HEXHEL04 ODAGOS ODAHAF
+ * http://pubs.rsc.org/en/content/articlehtml/2017/CP/C6CP07552E
  * 
  * NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE!
  * 

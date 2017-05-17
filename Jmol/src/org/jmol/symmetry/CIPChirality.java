@@ -2624,6 +2624,10 @@ public class CIPChirality {
                 atom1.sortByRule(RULE_1a);
                 rs = atom1.checkHandedness();
                 s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
+//                if (root.atomIndex == 12) {
+//                System.out.println("determining " + s + " for " + root + "->" + atom1);
+//                rs = atom1.checkHandedness();
+//                }
                 node1.addMataRef(sphere, priority, rs);
               }
             }
@@ -2817,7 +2821,10 @@ public class CIPChirality {
     }
 
     /**
-     * Determine the ordered CIP winding of this atom.
+     * Determine the ordered CIP winding of this atom. For this, we just take
+     * the directed normal through the plane containing the top three
+     * substituent atoms and dot that with the vector from any one of them to
+     * the root atom. If this is positive, we have R.
      * 
      * @return 1 for "R", 2 for "S"
      */
@@ -2825,11 +2832,12 @@ public class CIPChirality {
       P3 p1 = atoms[0].atom.getXYZ(); // highest priority
       P3 p2 = atoms[1].atom.getXYZ();
       P3 p3 = atoms[2].atom.getXYZ();
-      // lone pair position need not be calculated; we can just use the atom itself for this calculation
-      float d = Measure.getNormalThroughPoints(p1, p2, p3, vNorm, vTemp);
-      return (Measure.distanceToPlaneV(vNorm, d, (isTrigonalPyramidal ? atom
-          : atoms[3].atom).getXYZ()) > 0 ? STEREO_R : STEREO_S);
+      Measure.getNormalThroughPoints(p1, p2, p3, vNorm, vTemp);
+      vTemp.setT(atom.getXYZ());
+      vTemp.sub(p1);
+      return (vTemp.dot(vNorm) > 0 ? STEREO_R : STEREO_S);
     }
+
 
     /**
      * Just a simple signum for integers

@@ -96,7 +96,7 @@ import org.jmol.viewer.JC;
  * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs; 948
  * lines
  * 
- * 5/17/16 Jmol 14.15.5. adds helicene M/P chirality;  
+ * 5/17/16 Jmol 14.15.5. adds helicene M/P chirality; 959 lines  
  * validated using CCDC
  * structures HEXHEL02 HEXHEL03 HEXHEL04 ODAGOS ODAHAF
  * http://pubs.rsc.org/en/content/articlehtml/2017/CP/C6CP07552E

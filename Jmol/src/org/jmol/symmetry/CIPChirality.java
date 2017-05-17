@@ -28,7 +28,7 @@ import org.jmol.viewer.JC;
  * Yerin, ACD/Labs (Moscow).
  * 
  * Mikko Vainio also supplied a 64-compound testing suite (MV-64), which is
- * available on SourceForge in the Jmol-datafiles directory. 
+ * available on SourceForge in the Jmol-datafiles directory.
  * (https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip).
  * 
  * Additional thanks to the IUPAC Blue Book Revision project, specifically
@@ -74,32 +74,52 @@ import org.jmol.viewer.JC;
  * 
  * 4/6/17 Introduced in Jmol 14.12.0; validated for Rules 1 and 2 in Jmol
  * 14.13.2;
- *  
- * E/Z added 14.14.1; 
  * 
- * 4/27/17 Ruled 3-5 preliminary version 14.15.1 
+ * E/Z added 14.14.1;
+ * 
+ * 4/27/17 Ruled 3-5 preliminary version 14.15.1
  * 
  * 4/28/17 Validated for 146 compounds, including imines and diazines, sulfur,
- * phosphorus 
+ * phosphorus
  * 
- * 4/29/17 validated for 160 compounds, including M/P, m/p (axial
- * chirality for biaryls and odd-number cumulenes) 
+ * 4/29/17 validated for 160 compounds, including M/P, m/p (axial chirality for
+ * biaryls and odd-number cumulenes)
  * 
- * 5/02/17 validated for 161
- * compounds, including M/P, m/p (axial chirality for biaryls and odd-number
- * cumulenes) 
+ * 5/02/17 validated for 161 compounds, including M/P, m/p (axial chirality for
+ * biaryls and odd-number cumulenes)
  * 
  * 5/06/16 validated for 236 compound set AY-236.
  * 
- * 5/13/16 Jmol 14.15.4. algorithm simplified; validated for mixed Rule 4b systems
- * involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
+ * 5/13/16 Jmol 14.15.4. algorithm simplified; validated for mixed Rule 4b
+ * systems involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
  * 
- * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs; 948 lines
+ * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs; 948
+ * lines
+ * 
+ * 5/17/16 Jmol 14.15.5. adds helicene M/P chirality; validated using CCDC
+ * structures HEXHEL02 HEXHEL03 HEXHEL04 ODAGOS ODAHAF
  * 
  * NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE!
  * 
- * Added logic to Rule 1b: The root distance for a Kekule-ambiguous duplicate atom is
- * its own sphere, not the sphere of its duplicated atom.
+ * Added logic to Rule 1b: The root distance for a Kekule-ambiguous duplicate
+ * atom is its own sphere, not the sphere of its duplicated atom.
+ * 
+ * Stated more precisely:
+ * 
+ * Proposed amended Rule 1:
+ * 
+ * (1a) higher atomic number precedes lower;
+ * 
+ * (1b) in comparing two duplicate nodes, lower root distance precedes higher
+ * root distance, where "root distance" is defined:
+ * 
+ * (i) in the case of a duplicate atom for which the atomic number is averaged
+ * over two or more atoms in applying Rule 1a, the distance from the duplicate
+ * node itself to the root node; and
+ * 
+ * (ii) in all other cases, the distance of its corresponding nonduplicated atom
+ * node to the root node.
+ * 
  * 
  * Rationale: Giving the distance of the duplicated atom introduces a Kekule
  * bias, which is not acceptable.
@@ -333,7 +353,8 @@ public class CIPChirality {
   Lst<BS> lstSmallRings = new Lst<BS>();
   
   /**
-   * don't do this atom again (atropisomer)
+   * the aromatic atoms connected by a nonaromatic single bond
+   * smarts("a-a")
    * 
    */
   BS bsAtropisomeric;
@@ -381,8 +402,10 @@ public class CIPChirality {
    *        bit set of all atoms to process
    * @param bsAtropisomeric
    *        bit set of all biphenyl-like connections
+   * @param bsHelixM aromatic atoms at the end of a negative helical turn; smarts("A{a}(.t:-10,-40)a(.t:-10,-40)aaa")
+   * @param bsHelixP aromatic atoms at the end of a positive helical turn; smarts("A{a}(.t:10,40)a(.t:10,40)aaa")
    */
-  public void getChiralityForAtoms(Node[] atoms, BS bsAtoms, BS bsAtropisomeric) {
+  public void getChiralityForAtoms(Node[] atoms, BS bsAtoms, BS bsAtropisomeric, BS bsHelixM, BS bsHelixP) {
     if (bsAtoms.isEmpty())
       return;
     init();
@@ -419,6 +442,21 @@ public class CIPChirality {
       if (lstSmallRings.size() > 0 && lstEZ.size() > 0)
         clearSmallRingEZ(atoms, lstEZ);
     }
+    
+    // add helical chiralities
+
+    if (bsHelixM != null) 
+      for (int i = bsHelixM.nextSetBit(0); i >= 0; i = bsHelixM.nextSetBit(i + 1))
+        atoms[i].setCIPChirality(STEREO_M);
+
+
+    if (bsHelixM != null) 
+      for (int i = bsHelixM.nextSetBit(0); i >= 0; i = bsHelixM.nextSetBit(i + 1))
+        atoms[i].setCIPChirality(STEREO_M);
+
+    if (bsHelixP != null) 
+      for (int i = bsHelixP.nextSetBit(0); i >= 0; i = bsHelixP.nextSetBit(i + 1))
+        atoms[i].setCIPChirality(STEREO_P);
 
     if (Logger.debugging) {
       Logger.info("sp2-aromatic = " + bsKekuleAmbiguous);

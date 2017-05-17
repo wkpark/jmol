@@ -795,8 +795,15 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms) {
     CIPChirality cip = getCIPChirality(vwr);
-    BS bsAtropisomer = vwr.getAtomBitSet("smarts('a-a')");
-    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAtropisomer);
+    BS bsAtropisomer = null, bsHelixM = null, bsHelixP = null;
+    try {
+      bsAtropisomer = vwr.getSmartsMatch("a-a", bsAtoms);
+      bsHelixM = vwr.getSmartsMatch("A{a}(.t:-10,-40)a(.t:-10,-40)aaa", bsAtoms);
+      bsHelixP = vwr.getSmartsMatch("A{a}(.t:10,40)a(.t:10,40)aaa", bsAtoms);
+    } catch (Exception e) {
+     // ignore
+    }
+    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAtropisomer, bsHelixM, bsHelixP);
   }
   
   CIPChirality cip;

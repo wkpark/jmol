@@ -278,7 +278,9 @@ public class CIPChirality {
   static final int TIED = NO_CHIRALITY;
   static final int B_WINS = 1;
   static final int A_WINS = -1;
-  static final int DIASTEREOMERIC = Integer.MAX_VALUE;
+  static final int DIASTEREOMERIC = -3;
+  static final int DIASTEREOMERIC_A_WINS = -2;
+  static final int DIASTEREOMERIC_B_WINS = 2;
   static final int IGNORE = Integer.MIN_VALUE;
   static final int NOT_RELEVANT = Integer.MIN_VALUE;
 
@@ -2198,7 +2200,7 @@ public class CIPChirality {
     private int checkRule4And5(int i, int j) {
       return (rule4List[i] == null && rule4List[j] == null ? TIED
           : rule4List[j] == null ? A_WINS : rule4List[i] == null ? B_WINS
-              : compareRootMataPair(i, j));
+              : compareMataPair(i, j));
     }
     
     /**
@@ -2214,7 +2216,7 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS), or Integer.MIN_VALUE
      *         (IGNORE)
      */
-    private int compareRootMataPair(int ia, int ib) {
+    private int compareMataPair(int ia, int ib) {
       boolean isRule5 = (currentRule == RULE_5);
       // note that opposites will need to generate "R" or "S" keys, which will be 
       // resolved as "r" or "s" 
@@ -2473,7 +2475,7 @@ public class CIPChirality {
       String subRS = "";
       String s = (node1 == null ? "" : "~");
       boolean isBranch = false;
-      boolean isrs = false;
+      boolean noPseudo = false;
       if (atom != null) {
         rule4List = new String[4]; // full list based on atoms[]
         int[] mataList = new int[4]; //sequential pointers into rule4List
@@ -2513,28 +2515,28 @@ public class CIPChirality {
         case 2:
           if (node1 != null) {
             // we want to now if these two are enantiomorphic, identical, or diastereomorphic.
-            adj = (compareRule4aEnantiomers(rule4List[mataList[0]],
-                rule4List[mataList[1]]));
+            adj = (compareRule4aIsomers(mataList[0],mataList[1]));
             switch (adj) {
-            case DIASTEREOMERIC:
+            case TIED:
+              // identical
               isBranch = true;
-              s = "";
+              s = "~";
+              subRS = "";
               break;
             case NOT_RELEVANT:
               s = "";
               isBranch = true;
               adj = TIED;
               break;
-            case TIED:
-              // identical
-              isBranch = true;
-              s = "~"; // was "u"
-              subRS = "";
-              break;
+            case DIASTEREOMERIC_A_WINS:
+            case DIASTEREOMERIC_B_WINS:
+              adj -= sign(adj);
+              subRS = "r";
+              //$FALL-THROUGH$
             case A_WINS:
             case B_WINS:
               isBranch = true;
-              isrs = subRS.indexOf("r") >= 0;
+              noPseudo = subRS.indexOf("r") >= 0;
               // enantiomers -- we have an r/s situation
               // process to determine chirality, but then set ret[0] to be null
               subRS = "";
@@ -2543,16 +2545,50 @@ public class CIPChirality {
           }
           break;
         case 3:
+          // 
+          // check for exactly one enantiomeric pair among the three groups
+          //
+          //    {RRS}    e      d     
+          //           {SSR}    d
+          //                  {SRS}  two enantiomers and a diastereomer (r/s)
+          //
+          //
+          int irs = 0, jrs = 0, adj0 = TIED;
+          for (int i = 0; i < 2; i++) {
+            for (int j = i + 1; j < 3; j++) {
+              adj0 = (compareRule4aIsomers(mataList[i],mataList[j]));
+              switch (adj0) {
+              case A_WINS:
+              case B_WINS:
+                if (adj == TIED) {
+                  adj = adj0;
+                  irs = i;
+                  jrs = j;
+                  continue;
+                }
+                i = j = 3;
+                adj = TIED;
+                break;
+              default:  
+                break;
+              }
+            }
+          }
+          if (adj != TIED) {
+            mataList[0] = mataList[irs];
+            mataList[1] = mataList[jrs];
+          }
+          //$FALL-THROUGH$
         case 4:
           s = "";
           isBranch = true;
+          break;
         }
         if (isBranch) {
           subRS = "";
           if (ret != null)
             ret[0] = this;
         }
-
         if (!isBranch || adj == A_WINS || adj == B_WINS) {
           if (isAlkene) {
             if (!isBranch && alkeneChild != null) {
@@ -2601,6 +2637,9 @@ public class CIPChirality {
           } else if (node1 != null
               && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) || isTrigonalPyramidal
                   && nPriorities >= 2 - Math.abs(adj))) {
+            // if adj is 1 or -1, then we check for one fewer priorities because
+            // it means we had two groups that were either enantiomers or diasteriomers
+            
             if (isBranch) {
               // if here, adj is A_WINS (-1), or B_WINS (1) 
               // we check based on A winning, but then reverse it if B actually won
@@ -2612,8 +2651,8 @@ public class CIPChirality {
                 s = (adj == A_WINS ? "s" : "r");
                 break;
               }
-              if (isrs)
-                s = s.toUpperCase(); // Rule 4c // AY-236.148
+              if (noPseudo)
+                s = s.toUpperCase(); // Rule 4c or diasteriomers // AY-236.148
               auxChirality = s;
               subRS = "";
               if (ret != null)
@@ -2626,10 +2665,7 @@ public class CIPChirality {
                 atom1.sortByRule(RULE_1a);
                 rs = atom1.checkHandedness();
                 s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
-//                if (root.atomIndex == 12) {
-//                System.out.println("determining " + s + " for " + root + "->" + atom1);
-//                rs = atom1.checkHandedness();
-//                }
+                System.out.println("determining " + s + " for " + root + "->" + atom1);
                 node1.addMataRef(sphere, priority, rs);
               }
             }
@@ -2687,13 +2723,15 @@ public class CIPChirality {
     /**
      * Check for enantiomeric strings such as S;R; or SR
      * 
-     * @param rs1
-     * @param rs2
+     * @param i1
+     * @param i2
      * @return NOT_RELEVANT if there is no stereochemistry, TIED if they are equal,
-     *         A_WINS for enantiomer Rxxx, B_WINS for Sxxxx, or DIASTEREOMERIC
-     *         if diastereomeric
+     *         A_WINS for enantiomer Rxxx, B_WINS for Sxxxx, or DIASTERIOMERIC_A_WINS
+     *          or DIASTERIOMERIC_B_WINS
      */
-    private int compareRule4aEnantiomers(String rs1, String rs2) {
+    private int compareRule4aIsomers(int i1, int i2) {
+      String rs1 = rule4List[i1];
+      String rs2 = rule4List[i2];
       if (rs1.charAt(0) != rs2.charAt(0))
         return NOT_RELEVANT;
       int n = rs1.length(); 
@@ -2702,7 +2740,16 @@ public class CIPChirality {
       if (rs1.equals(rs2))
         return TIED;      
       String rs = (rs1.indexOf("R") < 0 && rs1.indexOf("S") < 0 ? "~rs" : "~RS");
-      return checkEnantiomer(rs1, rs2, 1, n, rs);
+      int score = checkEnantiomer(rs1, rs2, 1, n, rs);
+      if (score == DIASTEREOMERIC) {
+        switch (compareMataPair(i1, i2)) {
+        case A_WINS:
+          return DIASTEREOMERIC_A_WINS;
+        case B_WINS:
+          return DIASTEREOMERIC_B_WINS;          
+        }
+      }
+      return score;
     }
 
     /**
@@ -2728,8 +2775,9 @@ public class CIPChirality {
         int score = i1 + rs.indexOf(rs2.charAt(i));
         if (score == 0)
           continue;
-        if (score != STEREO_BOTH_RS)
+        if (score != STEREO_BOTH_RS) {
           return DIASTEREOMERIC;
+        }
         if (finalScore == TIED)
           finalScore =  (i1 == STEREO_R ? A_WINS : B_WINS);
       }

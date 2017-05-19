@@ -197,14 +197,21 @@ public class CIPChirality {
   // 4. Rule 3  requires the concept of "auxiliary" (temporary, digraph-specific) descriptors.
   //            This concept of auxiliary descriptors is the key to not having an analysis
   //            blow up or somehow require complex, impossible iteration.
-  // 5. Rule 4a needs to be addressed exhaustively prior to Rules 4b and 4c. 
+  // 5. Rule 4a needs to be addressed exhaustively prior to Rules 4b and 4c. This involves the
+  //            the initial generation of all auxiliary descriptors, including r/s and R/S at
+  //            branching points. In the course of doing this, all rules, 1-5, must be employed
+  //            at these auxiliary centers using the already-created digraph. This rule serves to
+  //            avoid the need for Rule 4b for all except the most unusual cases, where, for example,
+  //            there are two otherwise identical branches, but one can be identified as S and the
+  //            other only r or no-stereo, but not R. Thus, only branches that end up as R/R, R/S, S/S,
+  //            r/r, r/s, s/s, or nst/nst need be investigated by Rule 4b.  
   // 6. Rule 4b Somehow missed in the discussion is that the reference descriptor is determined
   //            once and only once for each branch from the center under scrutiny. All Rules 
   //            preceding Rule 4 can be applied to iterated subsections of a digraph. Not this one,
   //            nor Rule 5, though. The key is to determine one single "Mata sequence" of R and S descriptors
   //            for each pair of branches being considered. This same reference carries through all  
   //            future iterations of the algorithm for that branch.
-  // 7. Rule 4c Again, this rule must be invoked only after Rule 4b is completely set, and again
+  // 7. Rule 4c Again, this subrule must be invoked only after Rule 4b is completed, and again
   //            it is only for the root branches, not anywhere else.
   // 8. Rule 5  Final setting pseudoasymmetry (r/s, m/p) can be done along the same line as Rule 4b,
   //            but with slightly different sorting criteria.
@@ -217,6 +224,7 @@ public class CIPChirality {
   //    prefilterAtoms()
   //    checkForAlkenes()
   //    checkForSmallRings()
+  //    checkForHelicenes()
   //    checkForBridgeheadNitrogens()
   //    checkForKekuleIssues()
   //    checkForAtropisomerism()
@@ -224,6 +232,7 @@ public class CIPChirality {
   //    if (haveAlkenes) {
   //      for(all double bonds) getBondChirality(a1, a2)
   //      removeUnnecessaryEZDesignations()
+  //      indicateHeliceneChirality()
   //    }
   //  }
   //
@@ -307,10 +316,11 @@ public class CIPChirality {
   static final int RULE_2  = 3;
   static final int RULE_3  = 4;
   static final int RULE_4a = 5;
-  static final int RULE_4bc = 6; // can be done together; no need for a separate loop
-  static final int RULE_5  = 7;
+  static final int RULE_4b = 6; 
+  static final int RULE_4c = 7; 
+  static final int RULE_5  = 8;
   
-  static final String[] ruleNames = {"","1a", "1b", "2", "3", "4a", "4bc", "5"}; 
+  static final String[] ruleNames = {"","1a", "1b", "2", "3", "4a", "4b", "4c", "5"}; 
 
   public String getRuleName() {
     return ruleNames[currentRule];
@@ -325,7 +335,7 @@ public class CIPChirality {
   /**
    * maximum path to display for debugging only
    */
-  public static final int MAX_PATH = 30;
+  public static final int MAX_PATH = 50;
   
   /**
    * maximum ring size that can have a double bond with no E/Z designation;
@@ -436,31 +446,32 @@ public class CIPChirality {
       int c = getAtomChiralityLimited(a, null, null, RULE_5);
       a.setCIPChirality(c == 0 ? JC.CIP_CHIRALITY_NONE : c);
     }
-
-    // set bond chiralities
-    
     if (haveAlkenes) {
+
+      // set bond chiralities E/Z and M/P
+      
       Lst<int[]> lstEZ = new Lst<int[]>();
       for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
         getAtomBondChirality(atoms[i], lstEZ, bsToDo);
       if (lstSmallRings.size() > 0 && lstEZ.size() > 0)
         clearSmallRingEZ(atoms, lstEZ);
+      
+      // Add helicene chiralities -- predetermined using a Jmol SMARTS conformational search.
+      //
+      // M: A{a}(.t:-10,-40)a(.t:-10,-40)aaa
+      // P: A{a}(.t:10,40)a(.t:10,40)aaa
+      //
+      // Note that indicators are on the first and last aromatic atoms {a}. 
+
+      if (bsHelixM != null) 
+        for (int i = bsHelixM.nextSetBit(0); i >= 0; i = bsHelixM.nextSetBit(i + 1))
+          atoms[i].setCIPChirality(STEREO_M);
+
+
+      if (bsHelixP != null) 
+        for (int i = bsHelixP.nextSetBit(0); i >= 0; i = bsHelixP.nextSetBit(i + 1))
+          atoms[i].setCIPChirality(STEREO_P);
     }
-    
-    // add helical chiralities
-
-    if (bsHelixM != null) 
-      for (int i = bsHelixM.nextSetBit(0); i >= 0; i = bsHelixM.nextSetBit(i + 1))
-        atoms[i].setCIPChirality(STEREO_M);
-
-
-    if (bsHelixM != null) 
-      for (int i = bsHelixM.nextSetBit(0); i >= 0; i = bsHelixM.nextSetBit(i + 1))
-        atoms[i].setCIPChirality(STEREO_M);
-
-    if (bsHelixP != null) 
-      for (int i = bsHelixP.nextSetBit(0); i >= 0; i = bsHelixP.nextSetBit(i + 1))
-        atoms[i].setCIPChirality(STEREO_P);
 
     if (Logger.debugging) {
       Logger.info("sp2-aromatic = " + bsKekuleAmbiguous);
@@ -1391,13 +1402,6 @@ public class CIPChirality {
       isTrigonalPyramidal = (bondCount == 3 && !isAlkene && (elemNo > 10 || bsAzacyclic != null
           && bsAzacyclic.get(atomIndex)));
       canBePseudo = (bondCount == 4 || isTrigonalPyramidal);
-      //String c = atom.getCIPChirality(false);
-      // What we are doing here is creating a lexigraphically sortable string
-      // R < S < r < s < ~ and C < T < ~ // actually, C and T are not used
-      // we ignore r and s here. 
-      //if (c.equals("") || c.equals("r") || c.equals("s"))
-        //c = "~"; // none
-      //knownAtomChirality = c;
       if (parent != null)
         sphere = parent.sphere + 1;
       if (sphere == 1) {
@@ -1577,10 +1581,6 @@ public class CIPChirality {
 
       Arrays.sort(atoms);
       return true;
-      // pretty sure this next test cannot be true
-//      if (isTerminal)
-//        System.out.println("????");
-//      return !isTerminal;
     }
 
     /**
@@ -1638,7 +1638,7 @@ public class CIPChirality {
       }
 
       // if this is Rule 4 or 5, then we do a check of the forward-based stereochemical path
-      boolean checkRule4List = (rule4List != null && (currentRule == RULE_4bc || currentRule == RULE_5));
+      boolean checkRule4List = (rule4List != null && currentRule > RULE_4a);
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
         for (int j = i + 1; j < 4; j++) {
@@ -1989,7 +1989,8 @@ public class CIPChirality {
         return checkRule3(b); // can be IGNORE
       case RULE_4a:
         return checkRules4a(b, " sr SR PM");
-      case RULE_4bc:
+      case RULE_4b:
+      case RULE_4c:
       case RULE_5:
         return TIED; // not carried out here because these need access to a full list of ligands 
 //      case RULE_4c:  // taken care of by RULE_4bc
@@ -2217,61 +2218,66 @@ public class CIPChirality {
      *         (IGNORE)
      */
     private int compareMataPair(int ia, int ib) {
-      boolean isRule5 = (currentRule == RULE_5);
       // note that opposites will need to generate "R" or "S" keys, which will be 
       // resolved as "r" or "s" 
       // but generally we will want to process this as "R" and "S"
       // note that this analysis cannot be done ahead of time
       String aStr = rule4List[ia].substring(1);
       String bStr = rule4List[ib].substring(1);
-      boolean haveRS = false;
-      if (atoms[ia].nextChiralBranch != null) {
-        String s = atoms[ia].getMataList(getFirstRef(aStr), isRule5);
-        haveRS = (s.indexOf("|") >= 0); 
-        aStr = (haveRS ? s :  aStr + s);
-      }
-      if (atoms[ib].nextChiralBranch != null) {
-        String s = atoms[ib].getMataList(getFirstRef(bStr), isRule5);
-        haveRS |= (s.indexOf("|") >= 0); 
-        bStr = (s.indexOf("|") < 0 ? bStr + s : s);
-      }
-      if (Logger.debugging)
-        Logger.info(dots() + this + " comparing " + atoms[ia] + " " + aStr + " to "
-            + atoms[ib] + " " + bStr);
-      if (isRule5 || !haveRS && aStr.length() != bStr.length()) {
-        // note that these two strings can be different lengths
-        // if we have sXX and ~
-        return sign(aStr.compareTo(bStr));
-      }
-      if (haveRS) {
-        // Mata(2005) Figure 9
-        // We are trying to ascertain that
-        // R lull                  R luuu
-        // S luuu   is the same as S lull
-        // 
-        // Solution is to SUM all winners. If that is 0, then they are the same
-        String[] aList = PT.split(aStr, "|");
-        String[] bList = PT.split(bStr, "|");
-        int minScore = Integer.MAX_VALUE;
-        int sumScore = 0;
-        aStr = aList[0];
-        bStr = bList[0];
-        for (int i = aList.length; --i >= 0;) {
-          for (int j = bList.length; --j >= 0;) {
-            int score = compareRule4PairStr(aList[i], bList[j], true);
-            sumScore += score;
-            if (score != TIED && Math.abs(score) <= minScore) {
-              minScore = Math.abs(score);
-              aStr = aList[i];
-              bStr = bList[j];
+      if (currentRule == RULE_4c) {
+        aStr = PT.rep(aStr,  "~",  "");
+        bStr = PT.rep(bStr,  "~",  "");
+      } else {
+        boolean haveRS = false;
+        boolean isRule5 = (currentRule == RULE_5);
+        if (atoms[ia].nextChiralBranch != null) {
+          String s = atoms[ia].getMataList(getFirstRef(aStr), isRule5);
+          haveRS = (s.indexOf("|") >= 0);
+          aStr = (haveRS ? s : aStr + s);
+        }
+        if (atoms[ib].nextChiralBranch != null) {
+          String s = atoms[ib].getMataList(getFirstRef(bStr), isRule5);
+          haveRS |= (s.indexOf("|") >= 0);
+          bStr = (s.indexOf("|") < 0 ? bStr + s : s);
+        }
+        if (Logger.debugging)
+          Logger.info(dots() + this + " comparing " + atoms[ia] + " " + aStr
+              + " to " + atoms[ib] + " " + bStr);
+        if (isRule5 || !haveRS && aStr.length() != bStr.length()) {
+          // note that these two strings can be different lengths
+          // if we have sXX and ~
+          return sign(aStr.compareTo(bStr));
+        }
+        aStr = cleanRule4Str(aStr);
+        bStr = cleanRule4Str(bStr);
+        if (haveRS) {
+          // Mata(2005) Figure 9
+          // We are trying to ascertain that
+          // R lull                  R luuu
+          // S luuu   is the same as S lull
+          // 
+          // Solution is to SUM all winners. If that is 0, then they are the same
+          String[] aList = PT.split(aStr, "|");
+          String[] bList = PT.split(bStr, "|");
+          int minScore = Integer.MAX_VALUE;
+          int sumScore = 0;
+          aStr = aList[0];
+          bStr = bList[0];
+          for (int i = aList.length; --i >= 0;) {
+            for (int j = bList.length; --j >= 0;) {
+              int score = compareRule4PairStr(aList[i], bList[j], true);
+              sumScore += score;
+              if (score != TIED && Math.abs(score) <= minScore) {
+                minScore = Math.abs(score);
+                aStr = aList[i];
+                bStr = bList[j];
+              }
             }
           }
+          if (sumScore == TIED)
+            return TIED;
         }
-        if (sumScore == TIED)
-          return TIED;
       }
-      aStr = PT.rep(aStr, "~", "");
-      bStr = PT.rep(bStr, "~", "");
       if (aStr.length() == 1 && "RS".indexOf(aStr) < 0) {
         int score = checkEnantiomer(aStr, bStr, 0, aStr.length(), " rs");
         switch (score) {
@@ -2283,6 +2289,11 @@ public class CIPChirality {
         }
       }
       return compareRule4PairStr(aStr, bStr, false);
+    }
+
+    private String cleanRule4Str(String aStr) {
+      return (aStr.length() > 1 ?
+          PT.replaceAllCharacters(aStr, "sr~", "") : aStr);
     }
 
     /**
@@ -2412,7 +2423,7 @@ public class CIPChirality {
      */
     private int compareRule4PairStr(String aStr, String bStr, boolean isRSTest) {
       if (Logger.debugging)
-        Logger.info(dots() + this + " Rule 4b comparing " + aStr + " " + bStr);
+        Logger.info(dots() + this.myPath + " Rule 4b comparing " + aStr + " " + bStr);
       doCheckPseudo = false;
       int n = aStr.length();
       if (n == 0 ||  n != bStr.length())
@@ -2655,17 +2666,18 @@ public class CIPChirality {
                 s = s.toUpperCase(); // Rule 4c or diasteriomers // AY-236.148
               auxChirality = s;
               subRS = "";
-              if (ret != null)
-                ret[0] = null;
+              //if (ret != null)
+                //ret[0] = null;
             } else {
               // if here, adj is TIED (0) 
               CIPAtom atom1 = (CIPAtom) clone();
               if (atom1.set()) {
                 atom1.addReturnPath(null, this);
+                //System.out.println("determining " + s + " for " + atom1.myPath);
                 atom1.sortByRule(RULE_1a);
                 rs = atom1.checkHandedness();
                 s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
-                System.out.println("determining " + s + " for " + root + "->" + atom1);
+                //System.out.println("determining " + s + " for " + atom1.myPath);
                 node1.addMataRef(sphere, priority, rs);
               }
             }
@@ -2738,8 +2750,13 @@ public class CIPChirality {
       if (n != rs2.length())
         return NOT_RELEVANT; // TODO: ?? this may not be true -- paths with and without O, N, C for example, that still have stereochemistry
       if (rs1.equals(rs2))
-        return TIED;      
-      String rs = (rs1.indexOf("R") < 0 && rs1.indexOf("S") < 0 ? "~rs" : "~RS");
+        return TIED;
+      boolean haveRS = (rs1.indexOf("R") >= 0 || rs1.indexOf("S") >= 0);
+      String rs = (haveRS ? "~RS" : "~rs");
+      if (haveRS) {
+        rs1 = PT.replaceAllCharacters(rs1, "rs", "~");
+        rs2 = PT.replaceAllCharacters(rs2, "rs", "~");
+      }
       int score = checkEnantiomer(rs1, rs2, 1, n, rs);
       if (score == DIASTEREOMERIC) {
         switch (compareMataPair(i1, i2)) {
@@ -2910,12 +2927,14 @@ public class CIPChirality {
       a.atoms = new CIPAtom[4];
       a.priorities = new int[4];
       a.htPathPoints = htPathPoints;
+      a.doCheckPseudo = false;
       for (int i = 0; i < 4; i++) {
 //        a.priorities[i] = priorities[i];
         if (atoms[i] != null) {
           a.atoms[i] = atoms[i];
         }
       }
+      a.ties = null;
       if (Logger.debugging)
         Logger.info("cloning " + this + " as " + a);
       return a;

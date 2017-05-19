@@ -255,4 +255,19 @@ final public class CommandHistory {
     //System.out.println("HISTORY:" + i+" "+commandList.get(i));
   }
 
+  private Lst<String> lstStates;
+  
+  public void pushState(String stateInfo) {
+    if (lstStates == null)
+      lstStates = new Lst<String>();
+    lstStates.addLast(stateInfo);    
+  }
+
+  public String popState() {
+    if (lstStates == null || lstStates.size() == 0)
+      return null;
+    String s = lstStates.removeItemAt(lstStates.size() - 1);
+    return s;
+  }
+
 }

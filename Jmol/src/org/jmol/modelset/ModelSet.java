@@ -2964,6 +2964,8 @@ public class ModelSet extends BondCollection {
       vwr.shm.setShapeSizeBs(JC.SHAPE_BALLS, 0, vwr.rd,
           BSUtil.newAndSetBit(atomIndex));
       setAtomName(atomIndex, type + atom.getAtomNumber(), false);
+      if (vwr.getBoolean(T.modelkitmode))
+        am[atom.mi].isModelKit = true;
       if (!am[atom.mi].isModelKit)
         taintAtom(atomIndex, TAINT_ATOMNAME);
     } else if (type.equals("Pl")) {

@@ -5108,6 +5108,7 @@ public class CmdExt extends ScriptExt {
     P3 pt = (++e.iToken < slen ? centerParameter(e.iToken) : null);
     if (chk)
       return;
+    vwr.pushState();
     switch (atomsOrBonds) {
     case T.atoms:
       e.clearDefinedVariableAtomSets();

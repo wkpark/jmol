@@ -125,7 +125,7 @@ public class XmlCmlReader extends XmlReader {
   protected String moleculeID;
   
   protected Map<String, Object> htModelAtomMap;
-  private boolean is2d;
+  private boolean optimize2d;
 
   /**
    * state constants
@@ -142,14 +142,14 @@ public class XmlCmlReader extends XmlReader {
     MOLECULE_ATOM_SCALAR = 9,
     MOLECULE_BOND_ARRAY = 10, 
     MOLECULE_BOND = 11, 
-    MOLECULE_FORMULA = 12,
-    MOLECULE_ATOM_BUILTIN = 13, 
-    MOLECULE_BOND_BUILTIN = 14,
-    MODULE = 15,
+    MOLECULE_BOND_STEREO = 12, 
+    MOLECULE_FORMULA = 13,
+    MOLECULE_ATOM_BUILTIN = 14, 
+    MOLECULE_BOND_BUILTIN = 15,
+    MODULE = 16,
     SYMMETRY = 17,
     LATTICE_VECTOR = 18,
     ASSOCIATION = 19;
-
   /**
    * the current state
    */
@@ -169,8 +169,10 @@ public class XmlCmlReader extends XmlReader {
   @Override
   protected void processXml(XmlReader parent,
                             Object saxReader) throws Exception {
-    is2d = parent.checkFilterKey("2D");
+    optimize2d = parent.checkFilterKey("2D");
     processXml2(parent, saxReader);
+    if (optimize2d)
+      set2D();
   }
 
   @Override
@@ -306,7 +308,7 @@ public class XmlCmlReader extends XmlReader {
           for (int i = tokenCount; --i >= 0;)
             atomArray[i].atomName = tokens[i];
         }
-        boolean is3d = (!is2d && (val = atts.get("x3")) != null);
+        boolean is3d = (!optimize2d && (val = atts.get("x3")) != null);
         if (is3d) {
           is3d = true;
           coords3D = true;
@@ -418,7 +420,13 @@ public class XmlCmlReader extends XmlReader {
         setKeepChars(true);
         state = MOLECULE_BOND_BUILTIN;
         scalarDictValue = val;
+      } else if (name.equals("bondstereo")) {
+        state = MOLECULE_BOND_STEREO;
       }
+      break;
+    case MOLECULE_BOND_STEREO:
+      setKeepChars(true);
+      state = MOLECULE_BOND_STEREO;
       break;
     case MOLECULE_ATOM:
       if (name.equals("scalar")) {
@@ -622,6 +630,13 @@ public class XmlCmlReader extends XmlReader {
         atom.elementSymbol = chars.toString();
       setKeepChars(false);
       break;
+    case MOLECULE_BOND_STEREO:
+      String stereo = chars.toString();
+      if (bond.order == 1)
+        bond.order = (stereo.equals("H") ? JmolAdapter.ORDER_STEREO_FAR : JmolAdapter.ORDER_STEREO_NEAR);
+      setKeepChars(false);
+      state = MOLECULE_BOND;
+      break;
     case MOLECULE_BOND_BUILTIN: // ACD Labs
       state = MOLECULE_BOND;
       if (scalarDictValue.equals("atomRef")) {
@@ -690,8 +705,10 @@ public class XmlCmlReader extends XmlReader {
     parent.applySymmetryToBonds = true;
     a1 = fixSerialName(a1);
     a2 = fixSerialName(a2);
-    if (joinList == null || !checkBondToR(a1, a2))
+    if (joinList == null || !checkBondToR(a1, a2)) {
       asc.addNewBondFromNames(a1, a2, order);
+      bond = asc.bonds[asc.bondCount - 1];
+    }
   }
 
   private String fixSerialName(String a) {

@@ -7944,6 +7944,20 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     commandHistory.addCommand(PT.replaceAllCharacters(command, "\r\n\t", " "));
   }
 
+  public void pushState() {
+    if (autoExit || !haveDisplay || !getPreserveState())
+      return;
+    commandHistory.pushState(getStateInfo());
+  }
+  
+  public void popState() {
+    if (autoExit || !haveDisplay || !getPreserveState())
+      return;
+    String state = commandHistory.popState();
+    if (state != null)
+      evalStringQuiet(state);
+  }
+  
   /**
    * Removes one command from the command history
    * 

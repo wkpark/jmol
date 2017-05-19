@@ -33,6 +33,7 @@ import javajs.util.SB;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollection;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.adapter.smarter.Bond;
 import org.jmol.adapter.smarter.Resolver;
 import org.jmol.api.Interface;
 import org.jmol.util.Logger;
@@ -92,6 +93,7 @@ import org.jmol.util.Logger;
 public class XmlReader extends AtomSetCollectionReader {
 
   protected Atom atom;
+  protected Bond bond;
   //protected String[] domAttributes;
   protected XmlReader parent; // XmlReader itself; to be assigned by the subReader
   public Map<String, String> atts;

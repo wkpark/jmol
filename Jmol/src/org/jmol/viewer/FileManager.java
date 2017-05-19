@@ -210,6 +210,12 @@ public class FileManager implements BytePoster {
         && Viewer.hasDatabasePrefix(name0)) {
       htParams.put("dbName", name0);
     }
+    if (name.endsWith("%2D%")) {
+      String filter = (String) htParams.get("filter");
+      htParams.put("filter", (filter == null ? "" : filter) + "2D");
+      name = name.substring(0, name.length() - 4);
+    }
+      
     int pt = name.indexOf("::");
     String nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
     String fileType = (pt >= 0 ? name.substring(0, pt) : null);

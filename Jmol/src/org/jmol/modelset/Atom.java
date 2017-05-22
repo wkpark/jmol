@@ -87,11 +87,16 @@ public class Atom extends Point3fi implements Node {
   private int formalChargeAndFlags; //  cccc ---- -*RS --hv
   
   private final static int CHARGE_OFFSET = 24;
+
+  private final static int FLAG_MASK = 0xF;
   private final static int VIBRATION_VECTOR_FLAG = 1;
   private final static int IS_HETERO_FLAG = 2;
+  
   private final static int CIP_CHIRALITY_OFFSET = 4;
-  private final static int CIP_CHIRALITY_MASK = 0xFF0;
-  private final static int FLAG_MASK = 0xF;
+  private final static int CIP_CHIRALITY_MASK = 0x1F0;
+  private final static int CIP_CHIRALITY_RULE_OFFSET = 9;
+  private final static int CIP_CHIRALITY_RULE_MASK = 0xE00;
+  private final static int CIP_MASK = CIP_CHIRALITY_MASK | CIP_CHIRALITY_RULE_MASK; 
 
   public short madAtom;
 
@@ -1358,6 +1363,8 @@ public class Atom extends Point3fi implements Node {
       return getChainIDStr();
     case T.chirality:
       return getCIPChirality(true);
+    case T.ciprule:
+      return getCIPChiralityRule();
     case T.sequence:
       return getGroup1('?');
     case T.seqcode:
@@ -1406,26 +1413,28 @@ public class Atom extends Point3fi implements Node {
   public String getCIPChirality(boolean doCalculate) {
     int flags = (formalChargeAndFlags & CIP_CHIRALITY_MASK) >> CIP_CHIRALITY_OFFSET;
     if (flags == 0 && atomicAndIsotopeNumber > 1 && doCalculate) {
-      flags = group.chain.model.ms.getAtomCIPChirality(this);
+      flags = group.chain.model.ms.getAtomCIPChiralityCode(this);
       formalChargeAndFlags |= ((flags == 0 ? JC.CIP_CHIRALITY_NONE : flags) << CIP_CHIRALITY_OFFSET);
     }
     return (JC.getCIPChiralityName(flags));
   }
-  
-  /**
-   * 
-   * @param c [0:unknown; 1: R; 2: S; 4: Z, 8: E, 3: none, 12: none]
-   */
-  @Override
-  public void setCIPChirality(int c) {
-    formalChargeAndFlags = (formalChargeAndFlags & ~CIP_CHIRALITY_MASK) 
-        | (c << CIP_CHIRALITY_OFFSET);
+
+  public String getCIPChiralityRule() {
+    String rs = getCIPChirality(true);
+    int flags = (rs.length() == 0 ? -1 : (formalChargeAndFlags & CIP_CHIRALITY_RULE_MASK) >> CIP_CHIRALITY_RULE_OFFSET);
+    return (JC.getCIPRuleName(flags + 1));
   }
 
   /**
    * 
-   * @param c [0:unknown; 1: R; 2: S; 4: Z, 8: E, 3: none, 12: none]
+   * @param c [0:unknown; 3:none; 1: R; 2: S; 5: Z; 6: E; 9: M, 10: P, +r,s
    */
+  @Override
+  public void setCIPChirality(int c) {
+    formalChargeAndFlags = (formalChargeAndFlags & ~CIP_MASK) 
+        | (c << CIP_CHIRALITY_OFFSET);
+  }
+
   @Override
   public int getCIPChiralityCode() {
     return (formalChargeAndFlags & CIP_CHIRALITY_MASK) >> CIP_CHIRALITY_OFFSET;

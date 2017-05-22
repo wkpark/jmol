@@ -771,6 +771,21 @@ public class ModelSet extends BondCollection {
     return bsDeleted;
   }
 
+  public void resetMolecules() {
+    molecules = null;
+    moleculeCount = 0;
+    if (haveChirality) {
+      int modelIndex = -1;
+      for (int i = ac; --i >= 0;) {
+        Atom a = at[i];
+        a.setCIPChirality(0);
+        if (a.mi != modelIndex)
+          am[modelIndex = a.mi].hasChirality = false;
+      }
+    }
+  }
+
+
   private void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,
                            BS bsModelAtoms, BS bsBonds) {
     /*
@@ -4096,9 +4111,14 @@ public class ModelSet extends BondCollection {
    * @param atom
    * @return [0:none, 1:R, 2:S]
    */
-  public int getAtomCIPChirality(Atom atom) {
+  public int getAtomCIPChiralityCode(Atom atom) {
     haveChirality = true;
-    return Interface.getSymmetry(vwr, "ms").getAtomCIPChirality(vwr, atom);
+    Model m = am[atom.mi];
+    if (!m.hasChirality) {
+      calculateChiralityForAtoms(m.bsAtoms);
+      m.hasChirality = true; 
+    }
+    return atom.getCIPChiralityCode();
   }
 
   public void calculateChiralityForAtoms(BS bsAtoms) {

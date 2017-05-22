@@ -767,18 +767,6 @@ public class Symmetry implements SymmetryInterface {
   }
 
   /**
-   * Determine the Cahn-Ingold-Prelog R/S chirality of an atom
-   * 
-   * @param atom
-   * @return [0:none, 1:R, 2:S]
-   */
-  @Override
-  public int getAtomCIPChirality(Viewer vwr, Atom atom) {
-    CIPChirality cip = getCIPChirality(vwr);
-    return cip.getAtomChirality(atom);
-  }
-
-  /**
    * Determine the Cahn-Ingold-Prelog E/Z chirality of a bond
    * 
    * @param vwr

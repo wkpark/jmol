@@ -186,6 +186,8 @@ public class Model {
   }
 
   private BS bsCheck;
+
+  boolean hasChirality;
   
   /**
    * 

@@ -44,20 +44,25 @@ import java.util.Properties;
 @J2SRequireImport({javajs.util.SB.class})
 public final class JC {
 
+  // requires 8 bits for rule and type:        rrrba*SR
   public final static int CIP_CHIRALITY_UNKNOWN = 0;
   public final static int CIP_CHIRALITY_R_FLAG = 1;
   public final static int CIP_CHIRALITY_S_FLAG = 2;
-  public final static int CIP_CHIRALITY_NONE = 3;
   public final static int CIP_CHIRALITY_CANTDETERMINE = 7;
+
+  public final static int CIP_CHIRALITY_NONE = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_S_FLAG;
+  public final static int CIP_CHIRALITY_EZ_FLAG = 1 << 2;      //  100
+  public final static int CIP_CHIRALITY_PSEUDO_FLAG = 1 << 3; //  1000
+  public final static int CIP_CHIRALITY_AXIAL_FLAG = 1 << 4; //  10000
+  public final static int CIP_CHIRALITY_NAME_MASK = 7 << 5; //11100000
+  public final static int CIP_CHIRALITY_NAME_OFFSET = 5;
+
+  public final static int CIP_CHIRALITY_Z_FLAG = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_EZ_FLAG;
+  public final static int CIP_CHIRALITY_E_FLAG = CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_EZ_FLAG;
   
-  public final static int CIP_CHIRALITY_Z_FLAG = 1 << 3; // 0x08
-  public final static int CIP_CHIRALITY_E_FLAG = 2 << 3; // 0x10 Z|E is "no chirality"
-  
-  public final static int CIP_CHIRALITY_AXIAL_FLAG = 4 << 3;
   public final static int CIP_CHIRALITY_M_FLAG = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_AXIAL_FLAG;
   public final static int CIP_CHIRALITY_P_FLAG = CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_AXIAL_FLAG;
 
-  public final static int CIP_CHIRALITY_PSEUDO_FLAG = 4;
   public final static int CIP_CHIRALITY_r_FLAG = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
   public final static int CIP_CHIRALITY_s_FLAG = CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
   public final static int CIP_CHIRALITY_m_FLAG = CIP_CHIRALITY_M_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
@@ -92,6 +97,11 @@ public final class JC {
     default:
       return "";
     }
+  }
+
+  private static final String[] ruleNames = {"", "1a", "1b", "2", "3", "4a", "4b", "4c", "5"}; 
+  public static String getCIPRuleName(int i) {
+    return ruleNames[i];
   }
 
   public static int getCIPChiralityCode(String rs) {

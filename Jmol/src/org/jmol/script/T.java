@@ -556,6 +556,7 @@ public class T {
   public final static int symbol        = strproperty |14 | settable;
   public final static int symmetry      = strproperty |15 | predefinedset;
   public final static int chirality     = strproperty |16;
+  public final static int ciprule = strproperty |17;
 
   public final static int atomno        = intproperty | 1 | settable;
   public final static int atomid        = intproperty | 2;
@@ -2366,6 +2367,7 @@ public class T {
        "boundBoxColor",
        "boundingBoxColor",
        "chirality",
+       "cipRule",
        "currentLocalPath",
        "dataSeparator",
        "defaultAngleLabel",
@@ -3415,6 +3417,7 @@ public class T {
         boundboxcolor,                      //        "boundBoxColor"
         -1,                                 //        "boundingBoxColor"
         chirality,
+        ciprule,
         currentlocalpath,                   //        "currentLocalPath"
         dataseparator,                      //        "dataSeparator"
         defaultanglelabel,                  //        "defaultAngleLabel"

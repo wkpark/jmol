@@ -169,7 +169,8 @@ public class LabelToken {
       T.magneticshielding, T.chemicalshift, T.chainno, T.seqid,
       T.modx, T.mody, T.modz, T.modo, T.modxyz, T.symop, 
       T.nbo, // added in 14.8.2
-      T.chirality // added in 14.11.4
+      T.chirality, // added in 14.11.4
+      T.ciprule // added in 14.17.0
   };
 
   public LabelToken() {

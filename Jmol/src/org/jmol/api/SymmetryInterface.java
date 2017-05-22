@@ -219,8 +219,6 @@ public interface SymmetryInterface {
 
   void toFractionalM(M4 m);
 
-  int getAtomCIPChirality(Viewer vwr, Atom atom);
-
   void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms);
 
   int getBondCIPChirality(Viewer vwr, Bond bond);

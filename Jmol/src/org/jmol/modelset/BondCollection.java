@@ -80,14 +80,6 @@ abstract public class BondCollection extends AtomCollection {
     releaseModelSetAC();
   }
 
-  public void resetMolecules() {
-    molecules = null;
-    moleculeCount = 0;
-    if (haveChirality)
-      for (int i = ac; --i >= 0;)
-        at[i].setCIPChirality(0);
-  }
-
   public BondIterator getBondIteratorForType(int bondType, BS bsAtoms) {
     //Dipoles, Sticks
     return new BondIteratorSelected(bo, bondCount, bondType, bsAtoms, 
@@ -330,7 +322,7 @@ abstract public class BondCollection extends AtomCollection {
     int iDst = bsBond.nextSetBit(0);
     if (iDst < 0)
       return;
-    resetMolecules();
+    ((ModelSet) this).resetMolecules();
     int modelIndexLast = -1;
     int n = bsBond.cardinality();
     for (int iSrc = iDst; iSrc < bondCount; ++iSrc) {

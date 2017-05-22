@@ -96,10 +96,12 @@ import org.jmol.viewer.JC;
  * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs; 948
  * lines
  * 
- * 5/17/16 Jmol 14.15.5. adds helicene M/P chirality; 959 lines  
+ * 5/17/16 Jmol 14.16.1. adds helicene M/P chirality; 959 lines  
  * validated using CCDC
  * structures HEXHEL02 HEXHEL03 HEXHEL04 ODAGOS ODAHAF
  * http://pubs.rsc.org/en/content/articlehtml/2017/CP/C6CP07552E
+ * 
+ * 5/22/16 Jmol 14.17.1. adds helicene M/P chirality; 1000 lines  
  * 
  * NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE!
  * 
@@ -295,10 +297,6 @@ public class CIPChirality {
 
   static final int STEREO_UNDETERMINED = -1;
 
-  static final int STEREO_RS = -1;
-  static final int STEREO_EZ = -2;
-  static final int STEREO_ALLENE = -3;
-
   static final int STEREO_R = JC.CIP_CHIRALITY_R_FLAG;
   static final int STEREO_S = JC.CIP_CHIRALITY_S_FLAG;
 
@@ -320,10 +318,8 @@ public class CIPChirality {
   static final int RULE_4c = 7; 
   static final int RULE_5  = 8;
   
-  static final String[] ruleNames = {"","1a", "1b", "2", "3", "4a", "4b", "4c", "5"}; 
-
   public String getRuleName() {
-    return ruleNames[currentRule];
+    return JC.getCIPRuleName(currentRule);
   }
 
   /**
@@ -444,7 +440,7 @@ public class CIPChirality {
       Node a = atoms[i];
       a.setCIPChirality(0);
       int c = getAtomChiralityLimited(a, null, null, RULE_5);
-      a.setCIPChirality(c == 0 ? JC.CIP_CHIRALITY_NONE : c);
+      a.setCIPChirality(c == 0 ? JC.CIP_CHIRALITY_NONE : c | ((currentRule - 1) << JC.CIP_CHIRALITY_NAME_OFFSET));
     }
     if (haveAlkenes) {
 
@@ -603,21 +599,17 @@ public class CIPChirality {
     case 4:
       break;
     }
-    // check that the atom has at most one 1H atom
+    // check that the atom has at most one 1H atom and whether it must be planar and has a double bond
     Edge[] edges = a.getEdges();
     int nH = 0;
+    boolean haveDouble =  false;
     for (int j = edges.length; --j >= 0;) {
-      if (edges[j].getOtherAtomNode(a).getAtomicAndIsotopeNumber() == 1
-          && ++nH == 2) {
-        return false;
-      }
+      if (mustBePlanar && edges[j].getCovalentOrder() == 2)
+        haveDouble = true;
+      if (edges[j].getOtherAtomNode(a).getAtomicAndIsotopeNumber() == 1)
+        nH++;
     }
-    float d = getTrigonality(a, vNorm);
-    boolean planar = (Math.abs(d) < TRIGONALITY_MIN);
-    if (planar == mustBePlanar)
-      return  true;
-    System.out.println("??????? planar=" + planar + "??" + a);
-    return false; 
+    return (nH < 2 && (haveDouble || mustBePlanar == Math.abs(getTrigonality(a, vNorm)) < TRIGONALITY_MIN));
   }
 
   /**
@@ -649,7 +641,7 @@ public class CIPChirality {
     for (int i = bonds.length; --i >= 0;)
       if (bonds[i].getCovalentOrder() == 2) {
         if (++n > 1)
-          return STEREO_ALLENE; //central allenes
+          return STEREO_M; //central allenes
         Node other = bonds[i].getOtherAtomNode(a);
         if (!isFirstRow(other))
           return STEREO_UNDETERMINED;
@@ -658,7 +650,7 @@ public class CIPChirality {
           return STEREO_UNDETERMINED;
         }
       }
-    return STEREO_EZ;
+    return STEREO_Z;
   }
 
   /**
@@ -800,26 +792,12 @@ public class CIPChirality {
   float getTrigonality(Node a, V3 vNorm) {
     P3[] pts = new P3[3];
     Edge[] bonds = a.getEdges();
-    for (int i = bonds.length, pt = 0; --i >= 0 && pt < 3;)
-      if (bonds[i].isCovalent())
-        pts[pt++] = bonds[i].getOtherAtomNode(a).getXYZ();
+    Node other;
+    for (int n = bonds.length, i = n, pt = 0; --i >= 0 && pt < 3;)
+      if (bonds[i].isCovalent() && ((other = bonds[i].getOtherAtomNode(a)).getAtomicAndIsotopeNumber() != 1 || n < 4))
+        pts[pt++] = other.getXYZ();
     P4 plane = Measure.getPlaneThroughPoints(pts[0], pts[1], pts[2], vNorm, vTemp, new P4());
     return Measure.distanceToPlane(plane, a.getXYZ());
-  }
-
-  /**
-   * Determine the Cahn-Ingold-Prelog R/S chirality of an atom based only on
-   * Rules 1-3 -- that is, only the chirality that is self-determined,
-   * structural, and not relative-chirality dependent. (Note that this seeming dependency is an illlusion, 
-   * however. Any stereochemistry can be determined uniquely using auxiliary descriptors.)
-   * 
-   * @param atom
-   * @return [0:none, 1:R, 2:S]
-   */
-  public int getAtomChirality(Node atom) {
-    init();
-    int rs = getAtomChiralityLimited(atom, null, null, RULE_5);
-    return (rs == NO_CHIRALITY ? STEREO_BOTH_RS : rs);
   }
 
   /**
@@ -1001,8 +979,10 @@ public class CIPChirality {
           if (isChiral) {
             rs = (!isAlkene ? cipAtom.checkHandedness()
                 : cipAtom.atoms[0].isDuplicate ? STEREO_S : STEREO_R);
-            if (!isAlkene && cipAtom.isPseudo && cipAtom.canBePseudo)
+            if (!isAlkene && cipAtom.isPseudo && cipAtom.canBePseudo) {
+              currentRule = RULE_5;
               rs = rs | JC.CIP_CHIRALITY_PSEUDO_FLAG;
+            }
             if (Logger.debugging)
               Logger.info(atom + " " + JC.getCIPChiralityName(rs) + " by Rule " + getRuleName() + "\n----------------------------------");
             break;
@@ -1036,12 +1016,11 @@ public class CIPChirality {
       Logger.info("get Bond Chirality " + bond);
     if (a == null)
       a = bond.getOtherAtomNode(null);
-    Node b = bond.getOtherAtomNode(a);
-    if (couldBeChiralAlkene(a, b) == STEREO_UNDETERMINED)
+    if (couldBeChiralAlkene(a,  bond.getOtherAtomNode(a)) == STEREO_UNDETERMINED)
       return NO_CHIRALITY;
     int[] nSP2 = new int[1];
     Node[] parents = new Node[2];
-    b = getLastCumuleneAtom(bond, a, nSP2, parents);
+    Node b = getLastCumuleneAtom(bond, a, nSP2, parents);
     boolean isCumulene = (nSP2[0] > 2);
     boolean isAxial = isCumulene && (nSP2[0] % 2 == 1);
     return getAxialOrEZChirality(a, parents[0], parents[1], b, isAxial, ruleMax);
@@ -1062,13 +1041,15 @@ public class CIPChirality {
   private int getAxialOrEZChirality(Node a, Node pa, Node pb, Node b, boolean isAxial, int ruleMax) {
     CIPAtom a1 = new CIPAtom().create(a, null, false, true);
     int atop = getAlkeneEndTopPriority(a1, pa, isAxial, ruleMax);
+    int ruleA = currentRule;
     CIPAtom b2 = new CIPAtom().create(b, null, false, true);
     int btop = getAlkeneEndTopPriority(b2, pb, isAxial, ruleMax);
+    int ruleB = currentRule;
     int c = (atop >= 0 && btop >= 0 ? 
       getEneChirality(b2.atoms[btop], b2, a1, a1.atoms[atop], isAxial, true) : NO_CHIRALITY);
     if (c != NO_CHIRALITY && (isAxial || !bsAtropisomeric.get(a.getIndex()) && !bsAtropisomeric.get(b.getIndex()))) {
-      a.setCIPChirality(c);
-      b.setCIPChirality(c);
+      a.setCIPChirality(c| ((ruleA - 1) << JC.CIP_CHIRALITY_NAME_OFFSET));
+      b.setCIPChirality(c| ((ruleB - 1) << JC.CIP_CHIRALITY_NAME_OFFSET));
       if (Logger.debugging)
         Logger.info(a + "-" + b + " " + JC.getCIPChiralityName(c));
     }
@@ -1273,6 +1254,12 @@ public class CIPChirality {
     CIPAtom alkeneChild;
 
     /**
+     * last atom of a root-spiro 
+     */
+
+    CIPAtom spiroEnd;
+
+    /**
      * a flag used in Rule 3 to indicate the second carbon of a double bond
      */
 
@@ -1431,6 +1418,7 @@ public class CIPChirality {
         // pointing to original atom
         isDuplicate = true;
         rootDistance = 0;
+        rootSubstituent.spiroEnd = parent;
       } else if (bsPath.get(atomIndex)) {
         isDuplicate = true;
         rootDistance = rootSubstituent.htPathPoints.get(Integer.valueOf(atomIndex))
@@ -1613,8 +1601,9 @@ public class CIPChirality {
     }
 
     /**
-     * Deep-Sort the substituents of an atom, setting the node's atoms[] and priorities[] arrays.
-     * Checking for "ties" that will lead to pseudochirality is also done here.
+     * Deep-Sort the substituents of an atom, setting the node's atoms[] and
+     * priorities[] arrays. Checking for "ties" that will lead to
+     * pseudochirality is also done here.
      * 
      */
     void sortSubstituents() {
@@ -1622,6 +1611,7 @@ public class CIPChirality {
       int[] indices = new int[4];
       int[] prevPrior = new int[4];
       ties = null;
+      int nTies = 0;
 
       for (int i = 0; i < 4; i++) {
         prevPrior[i] = priorities[i];
@@ -1678,8 +1668,14 @@ public class CIPChirality {
               Logger.info(dots() + this + "." + a + " A-beats " + b);
             break;
           case TIED:
-            switch (sign(score = a.breakTie(b))) {
+            switch (score = sign(a.breakTie(b))) {
             case TIED:
+              if (parent == null && currentRule >= RULE_4c && ++nTies == 2
+                  && a.spiroEnd != null && atoms[0].spiroEnd != null
+                  && atoms[0].spiroEnd != a.spiroEnd) {
+                priorities[1]++;
+                priorities[a.spiroEnd.atom == atoms[0].atom ? j : i]++;
+              }
               indices[j]++;
               if (Logger_debugHigh)
                 Logger.info(dots() + this + "." + b + " ends up with tie with "
@@ -1706,7 +1702,7 @@ public class CIPChirality {
             doCheckPseudo = false;
             if (ties == null)
               ties = new Lst<int[]>();
-            ties.addLast(new int[] { i, j });
+            ties.addLast(new int[] { i, j, score });
           }
         }
       }
@@ -1729,7 +1725,7 @@ public class CIPChirality {
       nPriorities = bs.cardinality();
 
       // Check for pseudochirality
-      
+
       if (ties != null && !isOddCumulene) {
         switch (ties.size()) {
         case 1:
@@ -1741,7 +1737,14 @@ public class CIPChirality {
           }
           break;
         case 2:
-          canBePseudo = false;
+          break;
+        case 4:
+          if (nPriorities == 2) {
+            priorities[1]++;
+            priorities[atoms[0].spiroEnd == atoms[2].spiroEnd ? 3 : 2]++;
+            nPriorities = 4;
+            achiral = false;
+          }
           break;
         }
       }
@@ -2677,8 +2680,8 @@ public class CIPChirality {
                 atom1.sortByRule(RULE_1a);
                 rs = atom1.checkHandedness();
                 s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
-                //System.out.println("determining " + s + " for " + atom1.myPath);
-                node1.addMataRef(sphere, priority, rs);
+                //System.out.println(this + " determining " + s + " for " + atom1.myPath);
+                parent.addMataRef(sphere, priority, rs);
               }
             }
           }
@@ -2718,6 +2721,7 @@ public class CIPChirality {
      * @param rs
      */
     private void addMataRef(int sphere, int priority, int rs) {
+      //System.out.println(this + " addMata " + sphere + " " + priority + " " +rs + " " + rule4Count);
       if (rule4Count == null) {
         rule4Count = new int[] {Integer.MAX_VALUE, 0, 0};
       }
@@ -2729,6 +2733,8 @@ public class CIPChirality {
         }
         rule4Count[rs]++;
       }
+      if (parent != null && parent != root)
+        parent.addMataRef(sphere, priority, rs);
 //      System.out.println(this + " " + sphere + " " + priority + " " + rs + " "
 //          + PT.toJSON("rule4Count", rule4Count));
     }
@@ -2928,6 +2934,8 @@ public class CIPChirality {
       a.priorities = new int[4];
       a.htPathPoints = htPathPoints;
       a.doCheckPseudo = false;
+      //a.rule4Count = null;
+      //a.rule4List = null;
       for (int i = 0; i < 4; i++) {
 //        a.priorities[i] = priorities[i];
         if (atoms[i] != null) {
@@ -2941,13 +2949,14 @@ public class CIPChirality {
 
     }
 
-
     @Override
     public String toString() {
       return (atom == null ? "<null>" : "[" + currentRule + "." + sphere + "," + rootDistance + "." + id + "." + atom.getAtomName() + (isDuplicate ? "*" : "") + "]");
     }
 
+    
   }
+
 
 }
 

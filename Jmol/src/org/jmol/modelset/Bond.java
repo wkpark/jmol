@@ -190,36 +190,38 @@ public class Bond extends Edge {
   }
 
   /**
-   * Determine R/S chirality at this position; non-H atoms only; cached in formalChargeAndFlags
+   * Not implemented.
+   * 
    * @param doCalculate 
    * 
    * @return "" or "Z" or "E"
    */
   @Override
   public String getCIPChirality(boolean doCalculate) {
-    int flags = (order & BOND_CIP_STEREO_MASK) >> BOND_CIP_STEREO_SHIFT;
-    if (flags == 0 && getCovalentOrder() == 2 && doCalculate) {
-      flags = atom1.group.chain.model.ms.getBondCIPChirality(this);
-      order |= ((flags == 0 ? 3 : flags) << BOND_CIP_STEREO_SHIFT);
-    }
-    switch (flags) {
-    case BOND_CIP_STEREO_E:
-      return "E";
-    case BOND_CIP_STEREO_Z:
-      return "Z";
-    default:
+//    int flags = (order & BOND_CIP_STEREO_MASK) >> BOND_CIP_STEREO_SHIFT;
+//    if (flags == 0 && getCovalentOrder() == 2 && doCalculate) {
+//      flags = atom1.group.chain.model.ms.getBondCIPChirality(this);
+//      order |= ((flags == 0 ? 3 : flags) << BOND_CIP_STEREO_SHIFT);
+//    }
+//    switch (flags) {
+//    case BOND_CIP_STEREO_E:
+//      return "E";
+//    case BOND_CIP_STEREO_Z:
+//      return "Z";
+//    default:
       return "";
-    }
+//    }
   }
   
   /**
+    * Not implemented.
    * 
    * @param c [0:unknown; 1: Z; 2: E; 3: none]
    */
   @Override
   public void setCIPChirality(int c) {
-    order = (byte)((order & ~BOND_CIP_STEREO_MASK) 
-        | (c << BOND_CIP_STEREO_SHIFT));
+//    order = (byte)((order & ~BOND_CIP_STEREO_MASK) 
+//        | (c << BOND_CIP_STEREO_SHIFT));
   }
 
 

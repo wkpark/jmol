@@ -1505,19 +1505,15 @@ public class CIPChirality {
           else {
             isAlkene = true;
             if (isParentBond) {
-              auxChirality = bond.getCIPChirality(false);
-              if (auxChirality.equals(""))
-                auxChirality = "~";
               if (atom.getCovalentBondCount() == 2 && atom.getValence() == 4) {
                 parent.isAlkeneAtom2 = false;
-                parent.auxChirality = "~";
               } else {
                 isAlkeneAtom2 = true;
               }
               parent.alkeneChild = null;
               alkeneParent = (parent.alkeneParent == null ? parent : parent.alkeneParent);
               alkeneParent.alkeneChild = this;
-              alkeneParent.auxChirality = auxChirality;
+              nextSP2 = parent;
               if (parent.alkeneParent == null)
                 parent.nextSP2 = this;
             }
@@ -2130,7 +2126,7 @@ public class CIPChirality {
     private int getEneWinnerChirality(CIPAtom end1, CIPAtom end2, int maxRule, boolean isAxial) {
       CIPAtom winner1 = getEneEndWinner(end1, end1.nextSP2, maxRule);
       CIPAtom winner2 = (winner1 == null || winner1.atom == null ? null
-          : getEneEndWinner(end2, end2.parent, maxRule));
+          : getEneEndWinner(end2, end2.nextSP2, maxRule));
       return getEneChirality(winner1, end1, end2, winner2, isAxial, false);
     }
 

@@ -64,11 +64,12 @@ public abstract class Edge {
   public final static int TYPE_ATROPISOMER_REV = 0x10002; // only used by SMILES, for ^^nm-
   private final static int ATROPISOMER_SHIFT   = 11;
 
-  public final static int BOND_CIP_STEREO_MASK  = 0xC0000; // 3 << 18
-  public final static int BOND_CIP_STEREO_UNK   = 0xC0000; // 3 << 18 same as mask
-  public final static int BOND_CIP_STEREO_E     = 0x80000; // 2 << 18
-  public final static int BOND_CIP_STEREO_Z     = 0x40000; // 1 << 18
-  public final static int BOND_CIP_STEREO_SHIFT = 18;
+  // NOT IMPLEMENTED
+//  public final static int BOND_CIP_STEREO_MASK  = 0xC0000; // 3 << 18
+//  public final static int BOND_CIP_STEREO_UNK   = 0xC0000; // 3 << 18 same as mask
+//  public final static int BOND_CIP_STEREO_E     = 0x80000; // 2 << 18
+//  public final static int BOND_CIP_STEREO_Z     = 0x40000; // 1 << 18
+//  public final static int BOND_CIP_STEREO_SHIFT = 18;
 
 
   public final static int BOND_STEREO_MASK   = 0x400; // 1 << 10

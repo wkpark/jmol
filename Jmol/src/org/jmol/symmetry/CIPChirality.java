@@ -439,6 +439,7 @@ public class CIPChirality {
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
       Node a = atoms[i];
       a.setCIPChirality(0);
+      ptID = 0;
       int c = getAtomChiralityLimited(a, null, null, RULE_5);
       a.setCIPChirality(c == 0 ? JC.CIP_CHIRALITY_NONE : c | ((currentRule - 1) << JC.CIP_CHIRALITY_NAME_OFFSET));
     }
@@ -955,8 +956,7 @@ public class CIPChirality {
           if (currentRule == RULE_4a)
             cipAtom.createAuxiliaryRule4Data(null, null);          
           isChiral = false;
-          cipAtom.sortSubstituents();
-          isChiral = true;
+          isChiral = cipAtom.sortSubstituents(0);
           if (Logger.debugging) {
             Logger.info(currentRule + ">>>>" + cipAtom);
             for (int i = 0; i < cipAtom.bondCount; i++) { // Logger
@@ -967,12 +967,6 @@ public class CIPChirality {
           if (cipAtom.achiral) {
             isChiral = false;
             break;
-          }
-          for (int i = 0; i < cipAtom.bondCount - 1; i++) {
-            if (cipAtom.priorities[i] == cipAtom.priorities[i + 1]) {
-              isChiral = false;
-              break;
-            }
           }
           if (currentRule == RULE_5)
             cipAtom.isPseudo = cipAtom.canBePseudo;
@@ -1605,14 +1599,16 @@ public class CIPChirality {
      * priorities[] arrays. Checking for "ties" that will lead to
      * pseudochirality is also done here.
      * 
+     * @param sphere current working sphere 
+     * @return all priorities assigned
+     * 
      */
-    void sortSubstituents() {
+    boolean sortSubstituents(int sphere) {
 
       int[] indices = new int[4];
       int[] prevPrior = new int[4];
       ties = null;
       int nTies = 0;
-
       for (int i = 0; i < 4; i++) {
         prevPrior[i] = priorities[i];
         priorities[i] = 0;
@@ -1633,7 +1629,7 @@ public class CIPChirality {
         CIPAtom a = atoms[i];
         for (int j = i + 1; j < 4; j++) {
           CIPAtom b = atoms[j];
-          boolean Logger_debugHigh = Logger.debuggingHigh && b.isHeavy()
+          boolean logger_debugHigh = Logger.debuggingHigh && b.isHeavy()
               && a.isHeavy();
           int score = (a.atom == null ? B_WINS : b.atom == null ? A_WINS
               : prevPrior[i] == prevPrior[j] ? TIED
@@ -1641,7 +1637,7 @@ public class CIPChirality {
           // note that a.compareTo(b) also down-scores duplicated atoms relative to actual atoms.
           if (score == TIED)
             score = (checkRule4List ? checkRule4And5(i, j) : a.checkPriority(b));
-          if (Logger_debugHigh)
+          if (logger_debugHigh)
             Logger.info(dots() + "ordering " + this.id + "." + i + "." + j
                 + " " + this + "-" + a + " vs " + b + " = " + score);
           switch (score) {
@@ -1650,47 +1646,53 @@ public class CIPChirality {
             if (checkRule4List && sphere == 0)
               achiral = true; // two ligands for the root atom found to be equivalent in Rule 4 must be achiral
             indices[i]++;
-            if (Logger_debugHigh)
+            if (logger_debugHigh)
               Logger.info(dots() + atom + "." + b + " ends up with tie with "
                   + a);
             break;
           case B_WINS:
             indices[i]++;
             priorities[i]++;
-            if (Logger_debugHigh)
+            if (logger_debugHigh)
               Logger.info(dots() + this + "." + b + " B-beats " + a);
 
             break;
           case A_WINS:
             indices[j]++;
             priorities[j]++;
-            if (Logger_debugHigh)
+            if (logger_debugHigh)
               Logger.info(dots() + this + "." + a + " A-beats " + b);
             break;
           case TIED:
-            switch (score = sign(a.breakTie(b))) {
+            switch (score = sign(a.breakTie(b, sphere + 1))) {
             case TIED:
               if (parent == null && currentRule >= RULE_4c && ++nTies == 2
                   && a.spiroEnd != null && atoms[0].spiroEnd != null
+                  && a.spiroEnd.atom != b.atom
                   && atoms[0].spiroEnd != a.spiroEnd) {
                 priorities[1]++;
-                priorities[a.spiroEnd.atom == atoms[0].atom ? j : i]++;
+                int pt = (a.spiroEnd.atom == atoms[0].atom ? j : i);
+                priorities[pt]++;
+                indices[pt]++;              
+                if (logger_debugHigh)
+                  Logger.info(dots() + this + " spiro Xaa'bb' tie resolved");
+              } else {
+                indices[j]++;                
+                if (logger_debugHigh)
+                  Logger.info(dots() + this + "." + b + " ends up with tie with "
+                      + a);
               }
-              indices[j]++;
-              if (Logger_debugHigh)
-                Logger.info(dots() + this + "." + b + " ends up with tie with "
-                    + a);
               break;
             case B_WINS:
               indices[i]++;
               priorities[i]++;
-              if (Logger_debugHigh)
+              if (logger_debugHigh)
                 Logger.info(dots() + this + "." + b + " wins in tie with " + a);
               break;
             case A_WINS:
               indices[j]++;
               priorities[j]++;
-              if (Logger_debugHigh)
+              if (logger_debugHigh)
                 Logger.info(dots() + this + "." + a + " wins in tie with " + b);
               break;
             }
@@ -1748,7 +1750,7 @@ public class CIPChirality {
           break;
         }
       }
-      if (Logger.debugging) {
+      if ((Logger.debugging) && atoms[2].atom != null && atoms[2].elemNo != 1) {
         Logger.info(dots() + atom + " nPriorities = " + nPriorities);
         for (int i = 0; i < 4; i++) { // Logger
           Logger.info(dots() + myPath + "[" + i + "]=" + atoms[i] + " "
@@ -1757,6 +1759,7 @@ public class CIPChirality {
         }
         Logger.info(dots() + "-------");
       }
+      return (nPriorities >= bondCount);
     }
     
     /**
@@ -1773,9 +1776,11 @@ public class CIPChirality {
      * are the same by sorting their substituents.
      * 
      * @param b
+     * @param sphere current working sphere 
      * @return [0 (TIED), -1 (A_WINS), or 1 (B_WINS)] * sphere where broken
      */
-    private int breakTie(CIPAtom b) { 
+    private int breakTie(CIPAtom b, int sphere) {
+      if (atomIndex == 1 && b.atomIndex == 3)
       if (Logger.debugging && isHeavy() && b.isHeavy())
         Logger.info(dots() + "tie for " + this + " and " + b + " at sphere " + sphere);
 
@@ -1826,7 +1831,7 @@ public class CIPChirality {
       //
       // The rules require that we first only look at just the atoms, so OOC beats OOH.
 
-      if ((score = compareShallowly(b)) != TIED)
+      if ((score = compareShallowly(b, sphere)) != TIED)
         return score;
 
       // Phase II -- deep check using breakTie
@@ -1835,9 +1840,9 @@ public class CIPChirality {
       // Now iteratively deep-sort each list based on substituents
       // and then check them one by one to see if the tie can be broken.
 
-      sortSubstituents();
-      b.sortSubstituents();
-      return compareDeeply(b);
+      sortSubstituents(sphere);
+      b.sortSubstituents(sphere);
+      return compareDeeply(b, sphere);
     }
 
     /**
@@ -1875,9 +1880,10 @@ public class CIPChirality {
      * using the current rule. 
      * 
      * @param b
+     * @param sphere current working sphere 
      * @return 0 (TIED) or [-1 (A_WINS), or 1 (B_WINS)]*sphereOfSubstituent
      */
-    private int compareShallowly(CIPAtom b) {
+    private int compareShallowly(CIPAtom b, int sphere) {
       for (int i = 0; i < nAtoms; i++) {
         CIPAtom ai = atoms[i];
         CIPAtom bi = b.atoms[i];
@@ -1887,8 +1893,8 @@ public class CIPChirality {
           score = TIED;
         if (score != TIED) {
           if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
-            Logger.info(ai.dots() + "compareShallow " + ai + " " + bi + ": " + score*ai.sphere);
-          return score*ai.sphere;
+            Logger.info(ai.dots() + "compareShallow " + i + " " + this + "." + ai + "/" + b + "." + bi + ": " + score*(sphere + 1));
+          return score*(sphere + 1);
         }
       }
       return TIED;
@@ -1900,17 +1906,18 @@ public class CIPChirality {
      * next sphere.
      * 
      * @param b
+     * @param sphere current working sphere 
      * @return 0 (TIED) or [-1 (A_WINS), or 1 (B_WINS)]*n, where n is the lowest sphere of a win
      */
-    private int compareDeeply(CIPAtom b) {
+    private int compareDeeply(CIPAtom b, int sphere) {
       int finalScore = (nAtoms == 0 ? B_WINS : TIED);
       int absScore = Integer.MAX_VALUE;
       for (int i = 0; i < nAtoms; i++) {
         CIPAtom ai = atoms[i];
         CIPAtom bi = b.atoms[i];
         if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
-          Logger.info(ai.dots() + "compareDeep sub " + ai + " " + bi);
-        int score = ai.breakTie(bi);
+          Logger.info(ai.dots() + "compareDeep sub " + this + "." + ai + " " + b + "." + bi);
+        int score = ai.breakTie(bi, sphere + 1);
         if (score == TIED)
           continue;
         int abs = Math.abs(score);
@@ -2064,7 +2071,7 @@ public class CIPChirality {
           || !isEvenCumulene() || !b.isEvenCumulene()
           ? IGNORE
           : parent == b.parent 
-          ? sign(breakTie(b))
+          ? sign(breakTie(b, 0))
               : (za = parent.getEZaux()) < (zb = b.parent.getEZaux()) ? A_WINS
                   : za > zb ? B_WINS : TIED;
     }
@@ -2139,7 +2146,7 @@ public class CIPChirality {
      */
     private CIPAtom getEneEndWinner(CIPAtom end, CIPAtom parent, int ruleMax) {
       CIPAtom atom1 = (CIPAtom) end.clone();
-      atom1.addReturnPath(parent, atom1);
+      atom1.addReturnPath(parent, end);
       CIPAtom a = null;
       for (int i = RULE_1a; i <= ruleMax; i++)
         if ((a = atom1.getTopSorted(i)) != null)
@@ -2157,7 +2164,7 @@ public class CIPChirality {
       Lst<CIPAtom> path = new Lst<CIPAtom>();
       while (a.parent != null && a.parent.atoms[0] != null) {
         if (Logger.debugging)
-          Logger.info("path:" + a.parent.atom + "->" + a.atom);
+          Logger.info("path:" + a.parent + "->" + a);
         path.addLast(a = a.parent);
       }
       path.addLast(null);
@@ -2166,28 +2173,56 @@ public class CIPChirality {
 
     /**
      * 
-     * @param last
+     * @param newParent
      * @param fromAtom
      */
-    private void addReturnPath(CIPAtom last, CIPAtom fromAtom) {
+    private void addReturnPath(CIPAtom newParent, CIPAtom fromAtom) {
       Lst<CIPAtom> path = getReturnPath(fromAtom);
-      CIPAtom thisAtom = this;
+      CIPAtom thisAtom = this, newSub, oldParent = null, oldSub = newParent;
       for (int i = 0, n = path.size(); i < n; i++) {
-        CIPAtom p = path.get(i);
-        if (p == null) {
-          p = new CIPAtom().create(null, this, true, isAlkene);
-        } else {
-          int s = p.sphere;
-          p = (CIPAtom) p.clone();
-          p.sphere = s + 1;
-        }
-        thisAtom.replaceParentSubstituent(last, p);
-        if (last == null)
-          break;
-        last = last.parent;
-        thisAtom = p;
+        oldParent = path.get(i);
+        
+        newSub = (oldParent == null ? new CIPAtom().create(null, this, true, isAlkene)
+            : (CIPAtom) oldParent.clone());
+        newSub.sphere = thisAtom.sphere + 1;
+        
+//        if (oldParent == null) {
+//          newSub = new CIPAtom().create(null, this, true, isAlkene);
+//        } else {
+//          s = oldParent.sphere;
+//          newSub = (CIPAtom) oldParent.clone();
+//          newSub.sphere = s + 1;
+//        }
+
+        thisAtom.replaceParentSubstituent(oldSub, newParent, newSub);
+        newParent = thisAtom;
+        thisAtom = newSub;
+        oldSub = fromAtom;
+        fromAtom = oldParent;
       }
     }
+    
+    /**
+     * Swap a substituent and the parent in preparation for reverse traversal of
+     * this path back to the root atom.
+     * 
+     * @param oldSub  
+     * @param newParent
+     * @param newSub
+     */
+    private void replaceParentSubstituent(CIPAtom oldSub, CIPAtom newParent, CIPAtom newSub) {
+      for (int i = 0; i < 4; i++)
+        if (atoms[i] == oldSub || newParent == null && atoms[i].atom == null) {
+          if (Logger.debugging)
+            Logger.info("reversed: " + newParent + "->" + this + "->" + newSub);
+          parent = newParent;
+          atoms[i] = newSub;
+          Arrays.sort(atoms);
+          break;
+        }
+    }
+
+
 
     /**
      * The result of checking a Mata series of parallel paths may be one of
@@ -2672,15 +2707,15 @@ public class CIPChirality {
               //if (ret != null)
                 //ret[0] = null;
             } else {
-              // if here, adj is TIED (0) 
+              // if here, adj is TIED (0) or
               CIPAtom atom1 = (CIPAtom) clone();
               if (atom1.set()) {
                 atom1.addReturnPath(null, this);
-                //System.out.println("determining " + s + " for " + atom1.myPath);
-                atom1.sortByRule(RULE_1a);
+                atom1.sortToRule(RULE_3);
                 rs = atom1.checkHandedness();
                 s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
-                //System.out.println(this + " determining " + s + " for " + atom1.myPath);
+                if (Logger.debugging)
+                  Logger.info("AUX " + s + " for " + atom1.myPath);
                 parent.addMataRef(sphere, priority, rs);
               }
             }
@@ -2697,16 +2732,23 @@ public class CIPChirality {
      * Sort by a given rule, preserving root.canBePseudo and currentRule.
      * 
      * @param rule
+     * @return true if a decision has bee made
      */
-    private void sortByRule(int rule) {
+    private boolean sortByRule(int rule) {
       boolean rootPseudo = root.canBePseudo;
       int current = currentRule;
       currentRule = rule;
-      sortSubstituents();
+      boolean isChiral = sortSubstituents(0);
       currentRule = current; 
       root.canBePseudo = rootPseudo;
+      return isChiral;
     }
 
+    private void sortToRule(int maxRule) {
+      for (int i = RULE_1a; i <= maxRule; i++)
+        if (sortByRule(i))
+          return;        
+    }
     private boolean isChiralSequence(String ssub) {
       return ssub.indexOf("R") >= 0 || ssub.indexOf("S") >= 0
           || ssub.indexOf("r") >= 0 || ssub.indexOf("s") >= 0
@@ -2721,7 +2763,6 @@ public class CIPChirality {
      * @param rs
      */
     private void addMataRef(int sphere, int priority, int rs) {
-      //System.out.println(this + " addMata " + sphere + " " + priority + " " +rs + " " + rule4Count);
       if (rule4Count == null) {
         rule4Count = new int[] {Integer.MAX_VALUE, 0, 0};
       }
@@ -2733,7 +2774,9 @@ public class CIPChirality {
         }
         rule4Count[rs]++;
       }
-      if (parent != null && parent != root)
+      if (Logger.debugging)
+        Logger.info(this + " addMata " + sphere + " " + priority + " " +rs + " " + PT.toJSON("rule4Count",rule4Count));
+      if (parent != null) // && parent != root)
         parent.addMataRef(sphere, priority, rs);
 //      System.out.println(this + " " + sphere + " " + priority + " " + rs + " "
 //          + PT.toJSON("rule4Count", rule4Count));
@@ -2839,24 +2882,6 @@ public class CIPChirality {
               + atoms[i].myPath);
       }
       return rs;
-    }
-
-    /**
-     * Swap a substituent and the parent in preparation for reverse traversal of
-     * this path back to the root atom.
-     * 
-     * @param newParent
-     * @param newSub
-     */
-    private void replaceParentSubstituent(CIPAtom newParent, CIPAtom newSub) {
-      for (int i = 0; i < 4; i++)
-        if (atoms[i] == newParent || newParent == null && atoms[i].atom == null) {
-          atoms[i] = newSub;
-          if (Logger.debugging)
-            Logger.info("replace " + this + "[" + i + "]=" + newSub);
-          parent = newParent;
-          return;
-        }
     }
 
     /**

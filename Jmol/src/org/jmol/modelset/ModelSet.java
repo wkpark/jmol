@@ -4115,17 +4115,23 @@ public class ModelSet extends BondCollection {
     haveChirality = true;
     Model m = am[atom.mi];
     if (!m.hasChirality) {
-      calculateChiralityForAtoms(m.bsAtoms);
+      calculateChiralityForAtoms(m.bsAtoms, false);
       m.hasChirality = true; 
     }
     return atom.getCIPChiralityCode();
   }
 
-  public void calculateChiralityForAtoms(BS bsAtoms) {
+  public String calculateChiralityForAtoms(BS bsAtoms, boolean withReturn) {
     haveChirality = true;
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) 
       at[i].setCIPChirality(0);
     Interface.getSymmetry(vwr, "ms").calculateCIPChiralityForAtoms(vwr, bsAtoms);
+    if (!withReturn)
+      return null;
+    String s = "";
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) 
+      s += at[i].getCIPChirality(false);
+    return s;
   }
 }
 

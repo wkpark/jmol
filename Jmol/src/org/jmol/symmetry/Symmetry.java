@@ -26,6 +26,17 @@ package org.jmol.symmetry;
 
 import java.util.Map;
 
+import javajs.util.Lst;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.Matrix;
+import javajs.util.P3;
+import javajs.util.P3i;
+import javajs.util.Quat;
+import javajs.util.SB;
+import javajs.util.T3;
+import javajs.util.V3;
+
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
 import org.jmol.api.SymmetryInterface;
@@ -33,27 +44,13 @@ import org.jmol.bspt.Bspt;
 import org.jmol.bspt.CubeIterator;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
-import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
-import javajs.util.Lst;
-
-import org.jmol.util.JmolMolecule;
-import javajs.util.P3;
-
 import org.jmol.util.Escape;
-import org.jmol.util.Tensor;
+import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
+import org.jmol.util.Tensor;
 import org.jmol.viewer.Viewer;
-
-import javajs.util.M3;
-import javajs.util.M4;
-import javajs.util.Matrix;
-import javajs.util.P3i;
-import javajs.util.Quat;
-import javajs.util.SB;
-import javajs.util.T3;
-import javajs.util.V3;
 
 public class Symmetry implements SymmetryInterface {
   // NOTE: THIS CLASS IS VERY IMPORTANT.

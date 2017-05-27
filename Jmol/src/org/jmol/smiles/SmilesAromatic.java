@@ -36,6 +36,7 @@ import org.jmol.util.BSUtil;
 import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 import org.jmol.util.Node;
+import org.jmol.util.SimpleNode;
 
 public class SmilesAromatic {
 
@@ -98,7 +99,7 @@ public class SmilesAromatic {
           Edge[] aedges = a.getEdges();
           int ai = a.getIndex();
           for (int j = aedges.length; --j >= 0;) {
-            Node a2 = aedges[j].getOtherAtomNode(a);
+            SimpleNode a2 = aedges[j].getOtherNode(a);
             int a2i = a2.getIndex();
             if (a2i > ai && bs.get(a2i))
               edges.addLast(aedges[j]);
@@ -439,7 +440,7 @@ public class SmilesAromatic {
             // just check that the connected atom is either C or flat-aromatic
             // if it is, assign 1 pi electron; if it is not, set it to 0 as long
             // we are not being strict or discard this ring if we are.
-            Node het = b.getOtherAtomNode(atom);
+            SimpleNode het = b.getOtherNode(atom);
             n = (het.getElementNumber() == 6 || bsAromatic.get(het.getIndex()) ? 1
                 : strictness > 0 ? -100 : 0);
             break;
@@ -516,7 +517,7 @@ public class SmilesAromatic {
         Edge[] bonds = jmolAtoms[i].getEdges();
         int naro = 0;
         for (int j = bonds.length; --j >= 0;) {
-          Node otherAtom = bonds[j].getOtherAtomNode(jmolAtoms[i]);
+          SimpleNode otherAtom = bonds[j].getOtherNode(jmolAtoms[i]);
           int order = bonds[j].getCovalentOrder();
           int ai2 = otherAtom.getIndex();
           boolean isJAro = bsAromatic.get(ai2);

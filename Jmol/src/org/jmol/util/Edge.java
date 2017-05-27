@@ -25,7 +25,7 @@
 package org.jmol.util;
 
 
-public abstract class Edge {
+public abstract class Edge implements SimpleEdge {
 
   
   /**
@@ -132,10 +132,10 @@ public abstract class Edge {
 
   abstract public int getAtomIndex2();
 
+  @Override
   abstract public int getCovalentOrder();
 
-  abstract public Node getOtherAtomNode(Node atom);
-
+  @Override
   abstract public boolean isCovalent();
 
   abstract public boolean isHydrogen();
@@ -224,7 +224,7 @@ public abstract class Edge {
 
   public static Node getAtropismNode(int order, Node a1, boolean isFirst) {
     int i1 = (order >> (ATROPISOMER_SHIFT + (isFirst ? 2 : 0))) & 3;
-    return a1.getEdges()[i1 - 1].getOtherAtomNode(a1);
+    return (Node) a1.getEdges()[i1 - 1].getOtherNode(a1);
   }
 
   public static boolean isAtropism(int order) {
@@ -346,10 +346,17 @@ public abstract class Edge {
 
   }
 
+  /**
+   * @param c  
+   */
   public void setCIPChirality(int c) {
     // default is no action
   }
 
+  /**
+   * @param doCalculate  
+   * @return CIP chirality label
+   */
   public String getCIPChirality(boolean doCalculate) {
     return "";
   }

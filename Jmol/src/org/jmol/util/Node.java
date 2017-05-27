@@ -29,24 +29,32 @@ import javajs.util.P3;
 
 import org.jmol.java.BS;
 
-public interface Node {
+public interface Node extends SimpleNode {
   
   // abstracts out the essential pieces for SMILES processing
   
   public int getAtomicAndIsotopeNumber();
+  @Override
   public String getAtomName();
   public int getAtomSite();
   public int getBondedAtomIndex(int j);
+  @Override
   public int getCovalentBondCount();
   public int getCovalentHydrogenCount();
+  @Override
   public Edge[] getEdges();
+  @Override
   public int getElementNumber();
   public int getFormalCharge();
+  @Override
   public int getIndex();
+  @Override
   public int getIsotopeNumber();
+  @Override
   public int getValence();
   public void set(float x, float y, float z);
   public int getMoleculeNumber(boolean inModel);
+  @Override
   public int getNominalMass();
 
   
@@ -62,8 +70,6 @@ public interface Node {
   public BS findAtomsLike(String substring);
   public String getAtomType();
   public int getModelIndex();
-  // could include hydrogen bonds
-  public int getBondCount();
   public int getAtomNumber();
   /**
    * can be > 0 for PDB model with no H atoms or for SMILES string CCC
@@ -99,7 +105,9 @@ public interface Node {
   char getBioSmilesType();
   String getCIPChirality(boolean doCalculate);
   int getCIPChiralityCode();
+  @Override
   void setCIPChirality(int c);
+  @Override
   public P3 getXYZ();
 
 }

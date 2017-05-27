@@ -40,6 +40,7 @@ import org.jmol.util.Elements;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Node;
+import org.jmol.util.SimpleNode;
 import org.jmol.viewer.JC;
 
 /**
@@ -73,8 +74,8 @@ public class SmilesGenerator {
   private BS bsBondsUp = new BS();
   private BS bsBondsDn = new BS();
   private BS bsToDo;
-  private Node prevAtom;
-  private Node[] prevSp2Atoms;
+  private SimpleNode prevAtom;
+  private SimpleNode[] prevSp2Atoms;
   
   // outputs
 
@@ -403,7 +404,7 @@ public class SmilesGenerator {
    * @param atomFrom
    * @return   the correct character '/', '\\', '\0' (meaning "no stereochemistry")
    */
-  private char getBondStereochemistry(Edge bond, Node atomFrom) {
+  private char getBondStereochemistry(Edge bond, SimpleNode atomFrom) {
     if (bond == null)
       return '\0';
     int i = bond.index;
@@ -433,27 +434,27 @@ public class SmilesGenerator {
       for (int k = 0; k < bonds.length; k++) {
         Edge bond = bonds[k];
         int index = bond.index;
-        Node atom2;
+        SimpleNode atom2;
         if (bsDone.get(index) || bond.getCovalentOrder() != 2
-            || SmilesSearch.isRingBond(ringSets, null, i, (atom2 = bond.getOtherAtomNode(atom1)).getIndex()))
+            || SmilesSearch.isRingBond(ringSets, null, i, (atom2 = bond.getOtherNode(atom1)).getIndex()))
           continue;
         bsDone.set(index);
         int nCumulene = 0;
-        Node a10 = atom1;
+        SimpleNode a10 = atom1;
         while (atom2.getCovalentBondCount() == 2 && atom2.getValence() == 4) {
-          Edge[] e2 = atom2.getEdges();
-          Edge e = e2[e2[0].getOtherAtomNode(atom2) == a10 ? 1 : 0];
+          Edge[] e2 = (Edge[]) atom2.getEdges();
+          Edge e = e2[e2[0].getOtherNode(atom2) == a10 ? 1 : 0];
           bsDone.set(e.index);
           a10 = atom2;
-          atom2 = e.getOtherAtomNode(atom2);
+          atom2 = e.getOtherNode(atom2);
           nCumulene++;
         }
         if (nCumulene % 2 == 1)
           continue;
         Edge b0 = null;
-        Node a0 = null;
+        SimpleNode a0 = null;
         int i0 = 0;
-        Node[] atom12 = new Node[] { atom1, atom2 };
+        SimpleNode[] atom12 = new SimpleNode[] { atom1, atom2 };
         int edgeCount = 1;
         
         // OK, so we have a double bond. Only looking at single bonds around it.
@@ -463,10 +464,10 @@ public class SmilesGenerator {
         
         for (int j = 0; j < 2 && edgeCount > 0 && edgeCount < 3; j++) {
           edgeCount = 0;
-          Node atomA = atom12[j];
-          Edge[] bb = atomA.getEdges();
+          SimpleNode atomA = atom12[j];
+          Edge[] bb = ((Node) atomA).getEdges();
           for (int b = 0; b < bb.length; b++) {
-            if (bb[b].getCovalentOrder() != 1 || bb[b].getOtherAtomNode(atomA).getElementNumber() == 1)
+            if (bb[b].getCovalentOrder() != 1 || bb[b].getOtherNode(atomA).getElementNumber() == 1)
               continue;
             edges[j][edgeCount++] = bb[b];
             if (getBondStereochemistry(bb[b], atomA) != '\0') {
@@ -503,7 +504,7 @@ public class SmilesGenerator {
         // could ever get that with a real molecule. 
         
         char c0 = getBondStereochemistry(b0, atom12[i0]);
-        a0 = b0.getOtherAtomNode(atom12[i0]);
+        a0 = b0.getOtherNode(atom12[i0]);
         if (a0 == null)
           continue;
         for (int j = 0; j < 2; j++)
@@ -512,7 +513,7 @@ public class SmilesGenerator {
             if (b1 == null || b1 == b0)
               continue;
             int bi = b1.index;
-            Node a1 = b1.getOtherAtomNode(atom12[j]);
+            SimpleNode a1 = b1.getOtherNode(atom12[j]);
             if (a1 == null)
               continue;
             char c1 = getBondStereochemistry(b1, atom12[j]);
@@ -544,7 +545,7 @@ public class SmilesGenerator {
     }
   }
 
-  private Node getSmilesAt(SB sb, Node atom,
+  private Node getSmilesAt(SB sb, SimpleNode atom,
                            boolean allowConnectionsToOutsideWorld,
                            boolean allowBranches, boolean forceBrackets) {
     int atomIndex = atom.getIndex();
@@ -562,12 +563,12 @@ public class SmilesGenerator {
     Lst<Edge> v = new Lst<Edge>();
     Edge bondNext = null;
     Edge bondPrev = null;
-    Edge[] bonds = atom.getEdges();
+    Edge[] bonds = (Edge[])atom.getEdges();
     if (polySmilesCenter != null) {
       allowBranches = false;
       sortBonds(atom, prevAtom, polySmilesCenter);
     }
-    Node aH = null;
+    SimpleNode aH = null;
     int stereoFlag = (isAromatic ? 10 : 0);
     if (Logger.debugging)
       Logger.debug(sb.toString());
@@ -580,7 +581,7 @@ public class SmilesGenerator {
         Edge bond = bonds[i];
         if (!bond.isCovalent())
           continue;
-        Node atom1 = bonds[i].getOtherAtomNode(atom);
+        SimpleNode atom1 = bonds[i].getOtherNode(atom);
         int index1 = atom1.getIndex();
         if (index1 == prevIndex) {
           bondPrev = bonds[i];
@@ -615,7 +616,7 @@ public class SmilesGenerator {
 
     // add the bond from the previous atom and carry over the prev atom in case it is sp2
     
-    Node[] sp2Atoms = prevSp2Atoms;
+    SimpleNode[] sp2Atoms = prevSp2Atoms;
     int nSp2Atoms = (sp2Atoms == null ? 1 : 2);
     if (sp2Atoms == null)
       sp2Atoms = new Node[5];
@@ -635,9 +636,9 @@ public class SmilesGenerator {
     if (allowBranches)
       for (int i = 0; i < nBonds; i++) {
         Edge bond = v.get(i);
-        Node a = bond.getOtherAtomNode(atom);
+        SimpleNode a = bond.getOtherNode(atom);
         int n = a.getCovalentBondCount()
-            - (includeHs ? 0 : a.getCovalentHydrogenCount());
+            - (includeHs ? 0 : ((Node) a).getCovalentHydrogenCount());
         int order = bond.getCovalentOrder();
         if (n == 1 && (bondNext != null || i < nBonds - 1)) {
           bsBranches.set(bond.index);
@@ -647,7 +648,7 @@ public class SmilesGenerator {
           bondNext = bond;
         }
       }
-    Node atomNext = (bondNext == null ? null : bondNext.getOtherAtomNode(atom));
+    Node atomNext = (bondNext == null ? null : (Node) bondNext.getOtherNode(atom));
     int orderNext = (bondNext == null ? 0 : bondNext.getCovalentOrder());
 
     if (isAromatic || orderNext == 2 && nH > 1 || atomNext != null
@@ -656,7 +657,7 @@ public class SmilesGenerator {
     }
 
     // initialize stereo[] for stereochemistry 
-    Node[] stereo = new Node[7];
+    SimpleNode[] stereo = new Node[7];
 
     if (stereoFlag < 7 && bondPrev != null) {
       if (havePreviousSp2Atoms && bondPrev.getCovalentOrder() == 2 && orderNext == 2
@@ -693,7 +694,7 @@ public class SmilesGenerator {
       Edge bond = v.get(i);
       if (!bsBranches.get(bond.index))
         continue;
-      Node a = bond.getOtherAtomNode(atom);
+      SimpleNode a = bond.getOtherNode(atom);
       SB s2 = new SB();
       prevAtom = atom;
       prevSp2Atoms = null;
@@ -733,7 +734,7 @@ public class SmilesGenerator {
       Edge bond = v.get(i);
       if (bond == bondNext)
         continue;
-      Node a = bond.getOtherAtomNode(atom);
+      SimpleNode a = bond.getOtherNode(atom);
       strPrev = getBondOrder(bond, atomIndex, a.getIndex(), isAromatic);
       if (!deferStereo) {
         chBond = getBondStereochemistry(bond, atom);
@@ -776,10 +777,10 @@ public class SmilesGenerator {
     int charge = atom.getFormalCharge();
     int isotope = atom.getIsotopeNumber();
     int valence = atom.getValence();
-    float osclass = (openSMILES ? atom.getFloatProperty("property_atomclass")
+    float osclass = (openSMILES ? ((Node)atom).getFloatProperty("property_atomclass")
         : Float.NaN);
     String atomName = atom.getAtomName();
-    String groupType = atom.getBioStructureTypeName();
+    String groupType = ((Node)atom).getBioStructureTypeName();
     // for bioSMARTS we provide the connecting atom if 
     // present. For example, in 1BLU we have 
     // .[CYS.SG#16] could match either the atom number or the element number 
@@ -788,7 +789,7 @@ public class SmilesGenerator {
     if (topologyOnly)
       sb.append("*");
     else if (isExtension && groupType.length() != 0 && atomName.length() != 0)
-      addBracketedBioName(sb, atom, "." + atomName, false);
+      addBracketedBioName(sb, (Node)atom, "." + atomName, false);
     else
       sb.append(SmilesAtom.getAtomLabel(
           atomicNumber,
@@ -841,7 +842,7 @@ public class SmilesGenerator {
     return atomNext;
   }
 
-  private Node[] atemp;
+  private SimpleNode[] atemp;
   /**
    * swap slices of an array [i0 i1) with [i1 i2)
    * @param a
@@ -849,7 +850,7 @@ public class SmilesGenerator {
    * @param i1
    * @param i2
    */
-  private void swapArray(Node[] a, int i0, int i1, int i2) {
+  private void swapArray(SimpleNode[] a, int i0, int i1, int i2) {
     int n = i1 - i0;
     if (atemp == null || atemp.length < n)
       atemp = new Node[n];
@@ -895,7 +896,7 @@ public class SmilesGenerator {
     return false;
   }
 
-  void sortBonds(Node atom, Node refAtom, P3 center) {
+  void sortBonds(SimpleNode atom, SimpleNode refAtom, P3 center) {
     if (smilesStereo == null)
       try {
         smilesStereo = SmilesStereo.newStereo(null);
@@ -917,22 +918,22 @@ public class SmilesGenerator {
    * @param vTemp 
    * @return  "@" or "@@" or ""
    */
-  private String sortInorganic(Node atom, Lst<Edge> v, VTemp vTemp) {
+  private String sortInorganic(SimpleNode atom, Lst<Edge> v, VTemp vTemp) {
     int atomIndex = atom.getIndex();
     int n = v.size();
     Lst<Edge[]> axialPairs = new  Lst<Edge[]>();
     Lst<Edge> bonds = new  Lst<Edge>();
-    Node a1, a2, a01 = null, a02 = null;
+    SimpleNode a1, a2, a01 = null, a02 = null;
     Edge bond1, bond2;
     BS bsDone = new BS();
     Edge[] pair0 = null;
-    Node[] stereo = new Node[6];
+    SimpleNode[] stereo = new Node[6];
     boolean isOK = true; // AX6 or AX5
     String s = "";
     int naxial = 0;
     for (int i = 0; i < n; i++) {
       bond1 = v.get(i);
-      stereo[0] = a1 = bond1.getOtherAtomNode(atom);
+      stereo[0] = a1 = bond1.getOtherNode(atom);
       // just looking for the opposite atom not being identical
       if (i == 0)
         s = addStereoCheck(0, atomIndex, a1, "", null);
@@ -946,7 +947,7 @@ public class SmilesGenerator {
         if (bsDone.get(j))
           continue;
         bond2 = v.get(j);
-        a2 = bond2.getOtherAtomNode(atom);
+        a2 = bond2.getOtherNode(atom);
         if (SmilesStereo.isDiaxial(atom, atom, a1, a2, vTemp, -0.95f)) {
           switch (++naxial) {
           case 1:
@@ -984,7 +985,7 @@ public class SmilesGenerator {
       return "";
     pair0 = axialPairs.get(0);
     bond1 = pair0[0];
-    stereo[0] = bond1.getOtherAtomNode(atom);
+    stereo[0] = bond1.getOtherNode(atom);
     
     // now sort them into the ligand vector in the proper order
     v.clear();
@@ -1000,18 +1001,18 @@ public class SmilesGenerator {
     for (int i = 0; i < bonds.size(); i++) {
       bond1 = bonds.get(i);
       v.addLast(bond1);
-      stereo[i + 1] = bond1.getOtherAtomNode(atom);
+      stereo[i + 1] = bond1.getOtherNode(atom);
     }
     v.addLast(pair0[1]);
-    stereo[n - 1] = pair0[1].getOtherAtomNode(atom);
+    stereo[n - 1] = pair0[1].getOtherNode(atom);
     
     // now deterimine the stereochemistry
     
     return SmilesStereo.getStereoFlag(atom, stereo, n, vTemp);
   }
 
-  private String checkStereoPairs(Node atom, int atomIndex,
-                                  Node[] stereo, int stereoFlag) {
+  private String checkStereoPairs(SimpleNode atom, int atomIndex,
+                                  SimpleNode[] stereo, int stereoFlag) {
     if (stereoFlag < 4)
       return "";
     if (stereoFlag == 4 && (atom.getElementNumber()) == 6) {
@@ -1041,14 +1042,14 @@ public class SmilesGenerator {
    * @param bsDone
    * @return null if duplicate
    */
-  private String addStereoCheck(int level, int atomIndex, Node atom, String s,
+  private String addStereoCheck(int level, int atomIndex, SimpleNode atom, String s,
                                 BS bsDone) {
     if (bsDone != null)
       bsDone.set(atomIndex);
     //System.out.println("level=" + level + " atomIndex=" + atomIndex + " atom=" + atom + " s=" + s);
-    int n = atom.getAtomicAndIsotopeNumber();
+    int n = ((Node)atom).getAtomicAndIsotopeNumber();
     int nx = atom.getCovalentBondCount();
-    int nh = (n == 6 && !explicitH ? atom.getCovalentHydrogenCount() : 0);
+    int nh = (n == 6 && !explicitH ? ((Node) atom).getCovalentHydrogenCount() : 0);
     // only carbon or singly-connected atoms are checked
     // for C we use nh -- CH3, for example.
     // for other atoms, we use number of bonds.
@@ -1064,12 +1065,12 @@ public class SmilesGenerator {
       case 2:
         if (bsDone == null)
           return s;
-        Edge[] edges = atom.getEdges();
+        Edge[] edges = ((Node)atom).getEdges();
         String s2 = "";
         String sa2 = "";
         int nunique = (nh == 2 ? 0 : 3);
         for (int j = atom.getBondCount(); --j >= 0;) {
-          Node a2 = edges[j].getOtherAtomNode(atom);
+          SimpleNode a2 = edges[j].getOtherNode(atom);
           int i2 = a2.getIndex();
           if (bsDone.get(i2) || !edges[j].isCovalent() || a2.getElementNumber() == 1)
             continue;
@@ -1094,7 +1095,7 @@ public class SmilesGenerator {
         // must check isotopes for CH3
         int ndt = 0;
         for (int j = 0; j < nx && ndt < 3; j++) {
-          int ia = atom.getBondedAtomIndex(j);
+          int ia = ((Node)atom).getBondedAtomIndex(j);
           if (ia == atomIndex)
             continue;
           ndt += atoms[ia].getAtomicAndIsotopeNumber();

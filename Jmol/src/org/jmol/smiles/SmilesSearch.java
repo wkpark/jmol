@@ -40,6 +40,7 @@ import org.jmol.util.Edge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.util.Node;
+import org.jmol.util.SimpleNode;
 import org.jmol.viewer.JC;
 
 /**
@@ -654,7 +655,7 @@ public class SmilesSearch extends JmolMolecule {
             // clear out all atoms connected to the last atom only
             jmolBonds = a.getEdges();
             for (int k = 0; k < jmolBonds.length; k++)
-              bs.set(jmolBonds[k].getOtherAtomNode(a).getIndex());
+              bs.set(jmolBonds[k].getOtherNode(a).getIndex());
           }
         }
         boolean skipGroup = ((newPatternAtom.isBioAtomWild));
@@ -1509,9 +1510,9 @@ public class SmilesSearch extends JmolMolecule {
         while (sAtom2.getBondCount() == 2 && sAtom2.getValence() == 4) {
           nCumulene++;
           Edge[] e2 = sAtom2.getEdges();
-          Edge e = e2[e2[0].getOtherAtomNode(sAtom2) == a10 ? 1 : 0];
+          Edge e = e2[e2[0].getOtherNode(sAtom2) == a10 ? 1 : 0];
           a10 = sAtom2;
-          sAtom2 = (SmilesAtom) e.getOtherAtomNode(sAtom2);
+          sAtom2 = (SmilesAtom) e.getOtherNode(sAtom2);
         }
         if (nCumulene % 2 == 1)
           continue;
@@ -1577,7 +1578,7 @@ public class SmilesSearch extends JmolMolecule {
     Node a11 = Edge.getAtropismNode(b.matchingBond.order, a1, isFirst);
     SmilesBond[] b1 = s1.bonds;
     for (int i = s1.getBondCount(); --i >= 0;)
-      if (((SmilesAtom) b1[i].getOtherAtomNode(s1)).getMatchingAtom() == a11)
+      if (((SmilesAtom) b1[i].getOtherNode(s1)).getMatchingAtom() == a11)
         return i + 1;
     return 0;
   }
@@ -1644,8 +1645,8 @@ public class SmilesSearch extends JmolMolecule {
       Edge bond = bonds[k];
       if (bond.order == Edge.BOND_COVALENT_DOUBLE)
         continue;
-      Node atom = bond.getOtherAtomNode(dbAtom1);
-      atom.set(-1, (nBonds++ == 0) ? -1 : 1, 0);
+      SimpleNode atom = bond.getOtherNode(dbAtom1);
+      ((Node) atom).set(-1, (nBonds++ == 0) ? -1 : 1, 0);
       int mode = (bond.getAtomIndex2() == dbAtom1.getIndex() ? nBonds : -nBonds);
       switch (bond.order) {
       case Edge.BOND_STEREO_NEAR:
@@ -1657,15 +1658,15 @@ public class SmilesSearch extends JmolMolecule {
     }
     int dir2 = 0;
     nBonds = 0;
-    Node[] atoms = new Node[2];
+    SimpleNode[] atoms = new Node[2];
     bonds = dbAtom2.getEdges();
     for (int k = bonds.length; --k >= 0;) {
       Edge bond = bonds[k];
       if (bond.order == Edge.BOND_COVALENT_DOUBLE)
         continue;
-      Node atom = bond.getOtherAtomNode(dbAtom2);
+      SimpleNode atom = bond.getOtherNode(dbAtom2);
       atoms[nBonds] = atom;
-      atom.set(1, (nBonds++ == 0) ? 1 : -1, 0);
+      ((Node) atom).set(1, (nBonds++ == 0) ? 1 : -1, 0);
       int mode = (bond.getAtomIndex2() == dbAtom2.getIndex() ? nBonds : -nBonds);
       switch (bond.order) {
       case Edge.BOND_STEREO_NEAR:

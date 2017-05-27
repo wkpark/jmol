@@ -318,7 +318,7 @@ public class JmolMolecule {
     for (int i = bonds.length; --i >= 0;) {
       Edge bond = bonds[i];
       if (bond != null && bond.isCovalent()
-          && !getCovalentlyConnectedBitSet(atoms, bond.getOtherAtomNode(atom),
+          && !getCovalentlyConnectedBitSet(atoms, (Node) bond.getOtherNode(atom),
               bsToTest, allowCyclic, allowBioResidue, biobranches, bsResult))
         return false;
     }

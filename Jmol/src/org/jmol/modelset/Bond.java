@@ -28,7 +28,7 @@ package org.jmol.modelset;
 import org.jmol.java.BS;
 import org.jmol.util.C;
 import org.jmol.util.Edge;
-import org.jmol.util.Node;
+import org.jmol.util.SimpleNode;
 import org.jmol.viewer.JC;
 
 public class Bond extends Edge {
@@ -38,7 +38,7 @@ public class Bond extends Edge {
   public Atom atom1;
   public Atom atom2;
 
-  public short mad;
+  public short mad; 
   public short colix;
 
   public int shapeVisibilityFlags;
@@ -162,7 +162,7 @@ public class Bond extends Edge {
   }
 
   @Override
-  public Node getOtherAtomNode(Node thisAtom) {
+  public SimpleNode getOtherNode(SimpleNode thisAtom) {
     return (atom1 == thisAtom ? atom2 : atom2 == thisAtom || thisAtom == null ? atom1 : null);
   }
   

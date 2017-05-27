@@ -37,6 +37,8 @@ import org.jmol.util.Edge;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Node;
+import org.jmol.util.SimpleEdge;
+import org.jmol.util.SimpleNode;
 
 //import org.jmol.util.Logger;
 
@@ -477,7 +479,7 @@ public class SmilesStereo {
     } 
     int n = bonds.length;
     for (int k = 0; k < n; k++) {
-      SmilesAtom bAtom = (SmilesAtom) bonds[k].getOtherAtomNode(atom);
+      SmilesAtom bAtom = (SmilesAtom) bonds[k].getOtherNode(atom);
       if (bAtom == cAtom) {
         map[i] = (k + 1) * 10 + n000 + i;
         return true;
@@ -505,19 +507,19 @@ public class SmilesStereo {
    * @param bonds
    * @param vTemp 
    */
-  void sortBondsByStereo(Node atom, Node atomPrev, T3 ref, Edge[] bonds,
+  void sortBondsByStereo(SimpleNode atom, SimpleNode atomPrev, T3 ref, SimpleEdge[] bonds,
                           V3 vTemp) {
     if (bonds.length < 2 || !(atom instanceof T3))
       return;
     if (atomPrev == null)
-      atomPrev = bonds[0].getOtherAtomNode(atom);
+      atomPrev = bonds[0].getOtherNode(atom);
     Object[][] aTemp = new Object[bonds.length][0];
     if (sorter == null)
       sorter = new PolyhedronStereoSorter();
     vTemp.sub2((T3)atomPrev, ref);
     sorter.setRef(vTemp);
     for (int i = bonds.length; --i >= 0;) {
-      Node a = bonds[i].getOtherAtomNode(atom);
+      SimpleNode a = bonds[i].getOtherNode(atom);
       float f = (a == atomPrev ? 0 : 
         sorter.isAligned((T3) a, ref, (T3) atomPrev) ? -999 : 
           Measure.computeTorsion((T3) atom,
@@ -809,13 +811,13 @@ public class SmilesStereo {
    * @param v
    * @return String
    */
-  static String getStereoFlag(Node atom0, Node[] atoms, int nAtoms, VTemp v) {
-    Node atom1 = atoms[0];
-    Node atom2 = atoms[1];
-    Node atom3 = atoms[2];
-    Node atom4 = atoms[3];
-    Node atom5 = atoms[4];
-    Node atom6 = atoms[5];
+  static String getStereoFlag(SimpleNode atom0, SimpleNode[] atoms, int nAtoms, VTemp v) {
+    SimpleNode atom1 = atoms[0];
+    SimpleNode atom2 = atoms[1];
+    SimpleNode atom3 = atoms[2];
+    SimpleNode atom4 = atoms[3];
+    SimpleNode atom5 = atoms[4];
+    SimpleNode atom6 = atoms[5];
     int chiralClass = TETRAHEDRAL;
     // what about POLYHEDRAL?
     switch (nAtoms) {
@@ -850,10 +852,10 @@ public class SmilesStereo {
     return "";
   }
 
-  private static boolean checkStereochemistryAll(boolean isNot, Node atom0,
+  private static boolean checkStereochemistryAll(boolean isNot, SimpleNode atom0,
                                          int chiralClass, int order,
-                                         Node atom1, Node atom2, Node atom3,
-                                         Node atom4, Node atom5, Node atom6,
+                                         SimpleNode atom1, SimpleNode atom2, SimpleNode atom3,
+                                         SimpleNode atom4, SimpleNode atom5, SimpleNode atom6,
                                          VTemp v) {
 
     switch (chiralClass) {
@@ -927,7 +929,7 @@ public class SmilesStereo {
     }
   }
 
-  static boolean isDiaxial(Node atomA, Node atomB, Node atom1, Node atom2,
+  static boolean isDiaxial(SimpleNode atomA, SimpleNode atomB, SimpleNode atom1, SimpleNode atom2,
                            VTemp v, float f) {
     v.vA.sub2((P3) atomA, (P3) atom1);
     v.vB.sub2((P3) atomB, (P3) atom2);
@@ -947,7 +949,7 @@ public class SmilesStereo {
    * @param v
    * @return 1 for "@", 2 for "@@"
    */
-  static int getHandedness(Node a, Node b, Node c, Node pt, VTemp v) {
+  static int getHandedness(SimpleNode a, SimpleNode b, SimpleNode c, SimpleNode pt, VTemp v) {
     float d = Measure.getNormalThroughPoints((P3) a, (P3) b, (P3) c, v.vTemp, v.vA);    
 //    int atat = (distanceToPlane(v.vTemp, d, (P3) pt) > 0 ? 1 : 2);
 //    System.out.println("$ draw p1 " + P3.newP((P3)a) +" color red '"+a+" [2]'");

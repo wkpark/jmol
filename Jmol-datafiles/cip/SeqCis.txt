@@ -1,0 +1,4 @@
+# Rule 4b with symmetric seqCis/seqTrans ligands
+seqcis.mol
+# Rule 4b with symmetric seqCis/seqTrans ligands and an additional center
+seqcis2.mol

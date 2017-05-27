@@ -901,7 +901,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       triangleCount = triangles.length;
     } else {
 
-      int nPoints = vertexCount + 1;
+      nPoints = vertexCount + 1;
       int ni = vertexCount - 2;
       int nj = vertexCount - 1;
       float planarParam = (Float.isNaN(this.planarParam) ? DEFAULT_PLANAR_PARAM

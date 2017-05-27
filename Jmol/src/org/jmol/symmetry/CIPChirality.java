@@ -19,7 +19,7 @@ import org.jmol.util.Node;
 import org.jmol.viewer.JC;
 
 /**
- * A full validated relatively efficient implementation of Cahn-Ingold-Prelog
+ * A fully validated relatively efficient implementation of Cahn-Ingold-Prelog
  * rules for assigning R/S, M/P, and E/Z stereochemical descriptors. Based on
  * IUPAC Blue Book rules of 2013.
  * https://iupac.org/projects/project-details/?project_nr=2001-043-1-800

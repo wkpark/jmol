@@ -4095,17 +4095,6 @@ public class ModelSet extends BondCollection {
   }
 
   /**
-   * Determine the Cahn-Ingold-Prelog Z/E chirality of an atom
-   * 
-   * @param bond
-   * @return [0:none, 1:Z, 2:E]
-   */
-  public int getBondCIPChirality(Bond bond) {
-    haveChirality = true;
-    return Interface.getSymmetry(vwr, "ms").getBondCIPChirality(vwr, bond);
-  }
-
-  /**
    * Determine the Cahn-Ingold-Prelog R/S chirality of an atom
    * 
    * @param atom

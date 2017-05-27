@@ -221,6 +221,4 @@ public interface SymmetryInterface {
 
   void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms);
 
-  int getBondCIPChirality(Viewer vwr, Bond bond);
-
 }

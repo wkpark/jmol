@@ -766,20 +766,6 @@ public class Symmetry implements SymmetryInterface {
     return lst;
   }
 
-  /**
-   * Determine the Cahn-Ingold-Prelog E/Z chirality of a bond
-   * 
-   * @param vwr
-   * @param bond
-   * 
-   * @return [0:none, 1:R, 2:S]
-   */
-  @Override
-  public int getBondCIPChirality(Viewer vwr, Bond bond) {
-    CIPChirality cip = getCIPChirality(vwr);
-    return cip.getBondChirality(bond);
-  }
-
   @Override
   public void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms) {
     CIPChirality cip = getCIPChirality(vwr);

@@ -19,10 +19,42 @@ import org.jmol.util.Node;
 import org.jmol.viewer.JC;
 
 /**
- * A relatively efficient implementation of Cahn-Ingold-Prelog rules for
- * assigning R/S, M/P, and E/Z stereochemical descriptors. Based on IUPAC Blue
- * Book rules of 2013.
+ * A full validated relatively efficient implementation of Cahn-Ingold-Prelog
+ * rules for assigning R/S, M/P, and E/Z stereochemical descriptors. Based on
+ * IUPAC Blue Book rules of 2013.
  * https://iupac.org/projects/project-details/?project_nr=2001-043-1-800
+ * 
+ * Features include:
+ * 
+ *  - deeply validated 
+ *  
+ *  - implemented in Java (Jmol) and JavaScript (JSmol)
+ *  
+ *  - only two Java classes; roughly 1000 lines
+ *  
+ *  - efficient, one-pass process for each center using a single finite digrapnh for all auxiliary descriptors
+ *  
+ *  - exhaustive processing of all 8 sequence rules (1a, 1b, 2, 3, 4a, 4b, 4c, 5)
+ *  
+ *  - includes R/S, r/s, M/P (axial, not planar), E/Z
+ *  
+ *  - covers any-length odd and even cumulenes
+ *  
+ *  - uses Jmol conformational SMARTS to detect atropisomers and helicenes 
+ *  
+ *  - covers chiral phosphorus and sulfur, including trigonal pyramidal and tetrahedral
+ *  
+ *  - properly treats complex combinations of R/S, M/P, and seqCis/seqTrans centers (Rule 4b)
+ * 
+ *  - properly treats neutral-species resonance structures using fractional atomic mass and a modified Rule 1b
+ *  
+ *  - implements CIP spiro rule (BB P-93.5.3.1)
+ *  
+ *  - detects small rings (fewer than 8 members) and removes E/Z specifications for such
+ * 
+ *  - detects chiral bridgehead nitrogens
+ *  
+ *  - reports atom descriptor along with the rule that ultimately decided it
  * 
  * Primary 236-compound Chapter-9 validation set (AY-236) provided by Andres
  * Yerin, ACD/Labs (Moscow).
@@ -31,12 +63,15 @@ import org.jmol.viewer.JC;
  * available on SourceForge in the Jmol-datafiles directory.
  * (https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/cip).
  * 
+ * Additional test structures provided by John Mayfield.
+ * 
  * Additional thanks to the IUPAC Blue Book Revision project, specifically
  * Karl-Heinz Hellwich for alerting me to the errata page for the 2013 IUPAC
- * specs (http://www.chem.qmul.ac.uk/iupac/bibliog/BBerrors.html)
+ * specs (http://www.chem.qmul.ac.uk/iupac/bibliog/BBerrors.html), Gerry Moss
+ * for discussions, Andres Yerin for discussion and digraph checking.
  * 
  * Many thanks to the members of the BlueObelisk-Discuss group, particularly
- * Mikko Vainio, JOHN MAY, Wolf Ihlenfeldt, and Egon Willighagen, for
+ * Mikko Vainio, John Mayfield (aka John May), Wolf Ihlenfeldt, and Egon Willighagen, for
  * encouragement, examples, serious skepticism, and extremely helpful advice.
  * 
  * References:
@@ -71,36 +106,36 @@ import org.jmol.viewer.JC;
  * Blue Book)
  * https://iupac.org/projects/project-details/?project_nr=2015-052-1-800
  * 
+ * code history:
  * 
- * 4/6/17 Introduced in Jmol 14.12.0; validated for Rules 1 and 2 in Jmol
- * 14.13.2;
+ * 5/27/17 Jmol 14.17.1 fully validated; simplified code; 978 lines
  * 
- * E/Z added 14.14.1;
+ * 5/17/17 Jmol 14.16.1. adds helicene M/P chirality; 959 lines validated using
+ * CCDC structures HEXHEL02 HEXHEL03 HEXHEL04 ODAGOS ODAHAF
+ * http://pubs.rsc.org/en/content/articlehtml/2017/CP/C6CP07552E
  * 
- * 4/27/17 Ruled 3-5 preliminary version 14.15.1
+ * 5/14/17 Jmol 14.15.5. trimmed up and documented; no need for lone pairs; 948
+ * lines
  * 
- * 4/28/17 Validated for 146 compounds, including imines and diazines, sulfur,
- * phosphorus
+ * 5/13/17 Jmol 14.15.4. algorithm simplified; validated for mixed Rule 4b
+ * systems involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
  * 
- * 4/29/17 validated for 160 compounds, including M/P, m/p (axial chirality for
- * biaryls and odd-number cumulenes)
+ * 5/06/17 validated for 236 compound set AY-236.
  * 
  * 5/02/17 validated for 161 compounds, including M/P, m/p (axial chirality for
  * biaryls and odd-number cumulenes)
  * 
- * 5/06/16 validated for 236 compound set AY-236.
+ * 4/29/17 validated for 160 compounds, including M/P, m/p (axial chirality for
+ * biaryls and odd-number cumulenes)
  * 
- * 5/13/16 Jmol 14.15.4. algorithm simplified; validated for mixed Rule 4b
- * systems involving auxiliary R/S, M/P, and seqCis/seqTrans; 959 lines
+ * 4/28/17 Validated for 146 compounds, including imines and diazines, sulfur,
+ * phosphorus
  * 
- * 5/14/16 Jmol 14.15.5. trimmed up and documented; no need for lone pairs; 948
- * lines
+ * 4/27/17 Rules 3-5 preliminary version 14.15.1
  * 
- * 5/17/16 Jmol 14.16.1. adds helicene M/P chirality; 959 lines validated using
- * CCDC structures HEXHEL02 HEXHEL03 HEXHEL04 ODAGOS ODAHAF
- * http://pubs.rsc.org/en/content/articlehtml/2017/CP/C6CP07552E
+ * 4/6/17 Introduced in Jmol 14.12.0; validated for Rules 1 and 2 in Jmol
+ * 14.13.2; 100 lines
  * 
- * 5/22/16 Jmol 14.17.1. adds helicene M/P chirality; 1000 lines
  * 
  * NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE! NOTE!
  * 
@@ -280,7 +315,7 @@ public class CIPChirality {
   //    return bestScore
   // }
   //
-  // 
+  // Of course, the actual code is a bit more complex than that.
 
   static final int NO_CHIRALITY = 0;
   static final int TIED = NO_CHIRALITY;
@@ -320,21 +355,21 @@ public class CIPChirality {
   }
 
   /**
-   * measure of planarity in a trigonal system
+   * measure of planarity in a trigonal system, in Angstroms
    * 
    */
   static final float TRIGONALITY_MIN = 0.2f;
 
   /**
-   * maximum path to display for debugging only
+   * maximum path to display for debugging only using SET DEBUG in Jmol
    */
-  public static final int MAX_PATH = 50;
+  static final int MAX_PATH = 50;
 
   /**
    * maximum ring size that can have a double bond with no E/Z designation; also
    * used for identifying aromatic rings and bridgehead nitrogens
    */
-  public static final int SMALL_RING_MAX = 7;
+  static final int SMALL_RING_MAX = 7;
 
   /**
    * incremental pointer providing a unique ID to every CIPAtom for debugging
@@ -380,9 +415,7 @@ public class CIPChirality {
 
   // temporary fields
 
-  V3 vNorm = new V3();
-  V3 vNorm2 = new V3();
-  V3 vTemp = new V3();
+  V3 vNorm = new V3(), vNorm2 = new V3(), vTemp = new V3();
 
   public CIPChirality() {
     // for reflection 
@@ -684,9 +717,8 @@ public class CIPChirality {
    * @return bsKekuleAmbiguous
    */
   private BS getKekule(Node[] atoms) {
-    BS bs = new BS();
     int nRings = lstSmallRings.size();
-    BS bsDone = new BS();
+    BS bs = new BS(), bsDone = new BS();
     for (int i = nRings; --i >= 0;) {
       if (bsDone.get(i))
         continue;
@@ -817,24 +849,6 @@ public class CIPChirality {
   }
 
   /**
-   * Determine the Cahn-Ingold-Prelog E/Z chirality of a bond based only on
-   * Rules 1-3 -- that is, only the chirality that is self-determined,
-   * structural, and not relative-chirality dependent.
-   * 
-   * @param bond
-   * 
-   * @return [0:none, 1:Z, 2:E]
-   */
-  public int getBondChirality(Edge bond) {
-    if (bond.getCovalentOrder() != 2)
-      return NO_CHIRALITY;
-    init();
-    lstSmallRings = new Lst<BS>();
-    getSmallRings(bond.getOtherAtomNode(null), null);
-    return getBondChiralityLimited(bond, null, RULE_5);
-  }
-
-  /**
    * Get E/Z characteristics for specific atoms. Also check here for
    * atropisomeric M/P designations
    * 
@@ -946,13 +960,11 @@ public class CIPChirality {
   private int getAtomChiralityLimited(Node atom, CIPAtom cipAtom,
                                       CIPAtom parent, int ruleMax) {
     int rs = NO_CHIRALITY;
-    boolean isChiral = false;
-    boolean isAlkene = false;
+    boolean isChiral = false, isAlkene = false;
     try {
       if (cipAtom == null) {
         cipAtom = new CIPAtom().create(atom, null, false, isAlkene);
-        int nSubs = atom.getCovalentBondCount();
-        int elemNo = atom.getElementNumber();
+        int nSubs = atom.getCovalentBondCount(), elemNo = atom.getElementNumber();
         isAlkene = (nSubs == 3 && elemNo <= 10 && !cipAtom.isTrigonalPyramidal); // (IUPAC 2013.P-93.2.4)
         if (nSubs != (parent == null ? 4 : 3)
             - (nSubs == 3 && !isAlkene ? 1 : 0))
@@ -1036,8 +1048,7 @@ public class CIPChirality {
     int[] nSP2 = new int[1];
     Node[] parents = new Node[2];
     Node b = getLastCumuleneAtom(bond, a, nSP2, parents);
-    boolean isCumulene = (nSP2[0] > 2);
-    boolean isAxial = isCumulene && (nSP2[0] % 2 == 1);
+    boolean isAxial = nSP2[0] % 2 == 1;
     return setBondChirality(a, parents[0], parents[1], b, isAxial, ruleMax);
   }
 
@@ -1297,7 +1308,7 @@ public class CIPChirality {
     /**
      * permanent check for pseudochirality
      */
-    public boolean isPseudo;
+    boolean isPseudo;
 
     /**
      * Force achiral condition due to two identical ligands after Rule 4 check.
@@ -1307,7 +1318,7 @@ public class CIPChirality {
     /**
      * true atom covalent bond count
      */
-    public int bondCount;
+    int bondCount;
 
     /**
      * the substituents -- up to four supported here at this time
@@ -1341,6 +1352,9 @@ public class CIPChirality {
      */
     private int auxEZ = STEREO_UNDETERMINED;
 
+    /**
+     * a flag set false in Mata analysis  
+     */
     boolean canBePseudo = true;
 
     /**
@@ -1358,10 +1372,19 @@ public class CIPChirality {
      */
     private CIPAtom nextSP2;
 
+    /**
+     * points to next branching point that has two or more chiral branches 
+     */
     private CIPAtom nextChiralBranch;
 
+    /**
+     * [sphere, nR, nS] -- tracks the number of R and S centers for the lowest sphere
+     */
     private int[] rule4Count;
 
+    /**
+     * 
+     */
     private int priority;
 
     /**
@@ -1960,11 +1983,9 @@ public class CIPChirality {
      *         sphere of a win
      */
     private int compareDeeply(CIPAtom b, int sphere) {
-      int finalScore = (nAtoms == 0 ? B_WINS : TIED);
-      int absScore = Integer.MAX_VALUE;
+      int finalScore = (nAtoms == 0 ? B_WINS : TIED), absScore = Integer.MAX_VALUE;
       for (int i = 0; i < nAtoms; i++) {
-        CIPAtom ai = atoms[i];
-        CIPAtom bi = b.atoms[i];
+        CIPAtom ai = atoms[i], bi = b.atoms[i];
         if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
           Logger.info(ai.dots() + "compareDeep sub " + this + "." + ai + " " + b + "." + bi);
         int score = ai.breakTie(bi, sphere + 1);
@@ -2006,7 +2027,7 @@ public class CIPChirality {
      * 
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    public int checkPriority(CIPAtom b) {
+    private int checkPriority(CIPAtom b) {
       int score;
       return (b == null ? A_WINS
           : (atom == null) != (b.atom == null) ? (atom == null ? B_WINS
@@ -2169,8 +2190,8 @@ public class CIPChirality {
      */
     private int getEneWinnerChirality(CIPAtom end1, CIPAtom end2, int maxRule,
                                       boolean isAxial) {
-      CIPAtom winner1 = getEneEndWinner(end1, end1.nextSP2, maxRule);
-      CIPAtom winner2 = (winner1 == null || winner1.atom == null ? null
+      CIPAtom winner1 = getEneEndWinner(end1, end1.nextSP2, maxRule), 
+          winner2 = (winner1 == null || winner1.atom == null ? null
           : getEneEndWinner(end2, end2.nextSP2, maxRule));
       return getEneChirality(winner1, end1, end2, winner2, isAxial, false);
     }
@@ -2289,14 +2310,12 @@ public class CIPChirality {
       // resolved as "r" or "s" 
       // but generally we will want to process this as "R" and "S"
       // note that this analysis cannot be done ahead of time
-      String aStr = rule4List[ia].substring(1);
-      String bStr = rule4List[ib].substring(1);
+      String aStr = rule4List[ia].substring(1), bStr = rule4List[ib].substring(1);
       if (currentRule == RULE_4c) {
         aStr = PT.rep(aStr, "~", "");
         bStr = PT.rep(bStr, "~", "");
       } else {
-        boolean haveRS = false;
-        boolean isRule5 = (currentRule == RULE_5);
+        boolean haveRS = false, isRule5 = (currentRule == RULE_5);
         if (atoms[ia].nextChiralBranch != null) {
           String s = atoms[ia].getMataList(getFirstRef(aStr), isRule5);
           haveRS = (s.indexOf("|") >= 0);
@@ -2324,10 +2343,8 @@ public class CIPChirality {
           // S luuu   is the same as S lull
           // 
           // Solution is to SUM all winners. If that is 0, then they are the same
-          String[] aList = PT.split(aStr, "|");
-          String[] bList = PT.split(bStr, "|");
-          int minScore = Integer.MAX_VALUE;
-          int sumScore = 0;
+          String[] aList = PT.split(aStr, "|"), bList = PT.split(bStr, "|");
+          int minScore = Integer.MAX_VALUE, sumScore = 0;
           aStr = aList[0];
           bStr = bList[0];
           for (int i = aList.length; --i >= 0;) {
@@ -2434,7 +2451,7 @@ public class CIPChirality {
      *         has both an R and S side to it
      */
     private String getMataSequence(String[] lst, String chRef, boolean isRule5) {
-      int n = lst.length;
+      int n = lst.length, len = 0;
       String[] lst1 = new String[n];
       for (int j = n, i = rule4List.length; --i >= 0;) {
         if (rule4List[i] != null) {
@@ -2445,7 +2462,6 @@ public class CIPChirality {
         }
       }
       String[] sorted = (isRule5 ? lst1 : getMataSortedList(lst1, chRef));
-      int len = 0;
       for (int i = 0; i < n; i++) {
         String rs = sorted[i];
         if (rs.length() > len)
@@ -2492,8 +2508,7 @@ public class CIPChirality {
       int n = aStr.length();
       if (n == 0 || n != bStr.length())
         return TIED;
-      char aref = aStr.charAt(0);
-      char bref = bStr.charAt(0);
+      char aref = aStr.charAt(0), bref = bStr.charAt(0);
       for (int c = 1; c < n; c++) {
         boolean alike = (aref == aStr.charAt(c));
         if (alike != (bref == bStr.charAt(c)))
@@ -2549,10 +2564,8 @@ public class CIPChirality {
      */
     String createAuxiliaryRule4Data(CIPAtom node1, CIPAtom[] ret) {
       int rs = -1;
-      String subRS = "";
-      String s = (node1 == null ? "" : "~");
-      boolean isBranch = false;
-      boolean noPseudo = false;
+      String subRS = "", s = (node1 == null ? "" : "~");
+      boolean isBranch = false, noPseudo = false;
       if (atom != null) {
         rule4List = new String[4]; // full list based on atoms[]
         int[] mataList = new int[4]; //sequential pointers into rule4List
@@ -2824,8 +2837,7 @@ public class CIPChirality {
      *         DIASTERIOMERIC_A_WINS or DIASTERIOMERIC_B_WINS
      */
     private int compareRule4aIsomers(int i1, int i2) {
-      String rs1 = rule4List[i1];
-      String rs2 = rule4List[i2];
+      String rs1 = rule4List[i1], rs2 = rule4List[i2];
       if (rs1.charAt(0) != rs2.charAt(0))
         return NOT_RELEVANT;
       int n = rs1.length();
@@ -2946,8 +2958,7 @@ public class CIPChirality {
     private int checkRules4a(CIPAtom b, String test) {
       if (isTerminal || isDuplicate)
         return TIED;
-      int isRa = test.indexOf(auxChirality);
-      int isRb = test.indexOf(b.auxChirality);
+      int isRa = test.indexOf(auxChirality), isRb = test.indexOf(b.auxChirality);
       return (isRa > isRb + 1 ? A_WINS : isRb > isRa + 1 ? B_WINS : TIED);
     }
 
@@ -2960,9 +2971,7 @@ public class CIPChirality {
      * @return 1 for "R", 2 for "S"
      */
     int checkHandedness() {
-      P3 p1 = atoms[0].atom.getXYZ(); // highest priority
-      P3 p2 = atoms[1].atom.getXYZ();
-      P3 p3 = atoms[2].atom.getXYZ();
+      P3 p1 = atoms[0].atom.getXYZ(), p2 = atoms[1].atom.getXYZ(), p3 = atoms[2].atom.getXYZ();
       Measure.getNormalThroughPoints(p1, p2, p3, vNorm, vTemp);
       vTemp.setT(atom.getXYZ());
       vTemp.sub(p1);

@@ -1619,7 +1619,6 @@ public class CIPChirality {
       alkeneParent = (parent.alkeneParent == null ? parent
           : parent.alkeneParent);
       alkeneParent.alkeneChild = this;
-      // System.out.println(alkeneParent + " child is " + this);
       nextSP2 = parent;
       if (parent.alkeneParent == null)
         parent.nextSP2 = this;
@@ -2822,10 +2821,8 @@ public class CIPChirality {
       if (Logger.debugging)
         Logger.info(this + " addMata " + sphere + " " + priority + " " + rs
             + " " + PT.toJSON("rule4Count", rule4Count));  // Logger
-      if (parent != null) // && parent != root)
+      if (parent != null)
         parent.addMataRef(sphere, priority, rs);
-      //      System.out.println(this + " " + sphere + " " + priority + " " + rs + " "
-      //          + PT.toJSON("rule4Count", rule4Count));
     }
 
     /**
@@ -2976,10 +2973,7 @@ public class CIPChirality {
       Measure.getNormalThroughPoints(p1, p2, p3, vNorm, vTemp);
       vTemp.setT((atoms[3].atom == null ? atom : atoms[3].atom).getXYZ());
       vTemp.sub(p1);
-      float f = vTemp.dot(vNorm);
-      System.out.println("draw d1 vector " + P3.newP(atom.getXYZ()) + " " + vNorm);
-      System.out.println("draw d2 vector " + P3.newP(atom.getXYZ()) + " " + vTemp);
-      return (f > 0 ? STEREO_R : STEREO_S);
+      return (vTemp.dot(vNorm) > 0 ? STEREO_R : STEREO_S);
     }
 
     /**

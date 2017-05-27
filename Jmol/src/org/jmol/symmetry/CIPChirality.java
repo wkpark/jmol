@@ -52,7 +52,7 @@ import org.jmol.viewer.JC;
  *  
  *  - detects small rings (fewer than 8 members) and removes E/Z specifications for such
  * 
- *  - detects chiral bridgehead nitrogens
+ *  - detects chiral bridgehead nitrogens and E/Z imines and diazines 
  *  
  *  - reports atom descriptor along with the rule that ultimately decided it
  * 

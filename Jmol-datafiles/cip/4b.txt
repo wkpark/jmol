@@ -1,3 +1,0 @@
-# jmol source; unverified
-test4bext.mol//rRSsRSSRsSsSRRrSRRS
-test4b.mol//rRSsRSSSrRsSRRrSRRS

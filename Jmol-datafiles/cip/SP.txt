@@ -1,5 +1,0 @@
-# this is an error in the compound name shown here - see P-93.2.5, page 1216
-(S)-(O-methyl_benzenesulfonothioate).mol//R
-(S)-methyl(phenyl)ethylphospane_oxide.mol//S
-(1R,2r,3S)-(bromofluoromethylsulfinyl)bromofluoromethane.mol//rRS
-(S)-(methylsulfinyl)ethane.mol//S

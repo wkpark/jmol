@@ -7,7 +7,7 @@
 
 sourcedir = "cip" // local version
 
-sourcedir = "https://chemapps.stolaf.edu/jmol/cip"
+sourcedir = "https://www.stolaf.edu/people/hansonr/jmol/cip"
 
 
 // Check a set of Jmol 3D files -- first line includes "CIP:xxxxx;"
@@ -26,14 +26,14 @@ function checkCIP(info, n) {
 // check a set of files in a directory based on a file listing with annotations
 
 function checkRdir(name, type) {
-  var x = load(name + ".txt").lines
+  var x = load(sourceDir + "/" + name + ".txt").lines
   for (var f in x) {
     f = f.trim();
     if (f == "#QUIT") break
     if (f == "#stop") exit
     if (!f || f.find("#") == 1) continue
     if (f.find("$") != 1) 
-      f = sourceDir + "/bytype/" + name + "/" + f      
+      f = sourceDir + "/" + name + "/" + f      
     if (type)
       checkRS(f, type)
     else
@@ -64,7 +64,7 @@ nOK = 0;
 thisN = 0;
 stopped = false;
 
- function checkRS(fname, n, key, isQuiet) {
+function checkRS(fname, n, key, isQuiet) {
   if (_argCount == 2 && 0 + n != n) {
     key = n;
     n = 0;
@@ -75,8 +75,16 @@ stopped = false;
   var a = 0;
   if (fname.find("//")) {
     fname = fname.split("//")
-    key = fname[2]
-    fname = fname[1]
+    switch (fname.length) {
+      case 2:
+      key = fname[2]
+      fname = fname[1]
+      break;
+      case 3:
+      // http://
+      key = fname[3] 
+      fname = fname[1] + "//" + fname[2]
+    }
     doCheck = key;
   }
   if (thisN && (nOK + 1) != thisN) {
@@ -256,7 +264,7 @@ AY236 = [
 ]
 
 //
-// Test Suite MV-64 (Mikko Vainio,  èbo Akademi University, Turku, Finland)
+// Test Suite MV-64 (Mikko Vainio,  Æbo Akademi University, Turku, Finland)
 //
 
 MV64 = [
@@ -268,7 +276,7 @@ MV64 = [
 ]
 
 //
-// Test Suite MV-116 (Mikko Vainio,  èbo Akademi University, Turku, Finland)
+// Test Suite MV-116 (Mikko Vainio,  Æbo Akademi University, Turku, Finland)
 //
 // ZIP file cleaned of redundant 2D files, hypervalent models, and undefined stereochemistry, planar chirality
 
@@ -293,7 +301,7 @@ print "\tshowRS"
 
 /////////////////////////////////////////////////////////////////////
 
-var ans = prompt("Do single test?", "yes")
+var ans = prompt("Do a special test?", "no")
 if (ans == "null") quit
 if (ans == "yes") {
   set debughigh
@@ -307,8 +315,8 @@ if (ans == "yes") {
 checkCIP(AY236)
 checkCIP(MV116)
 checkCIP(MV64)
-checkRdir("bytypes/centres", "*");
-checkRdir("bytypes/more", "*");
+checkRdir("bytype/centres", "*")
+checkRdir("bytype/more", "*")
 
 print "DONE: " + nOK
 

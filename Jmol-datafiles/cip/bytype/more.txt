@@ -1,4 +1,10 @@
-# Rule 4b R/S + E/Z ?
-#dimethylcyclodecadiene.mol
+# distinguishing simple E/Z from auxiliary seqCis/seqTrans
+dimethylcyclodecadiene.mol//EEsEEs
+# these next two are NOT the same, but they have the same RS descriptors
+# probably needs to be an adjustment to the LOCANT rules, not the SEQUENCE rules
+testJM1.mol//SRSRRSRS
+testJM2.mol//SRRSRSSR
+# just a good case
+testJM3.mol//Rssrrr
 # impossibly deep 
 #chebi51439.mol

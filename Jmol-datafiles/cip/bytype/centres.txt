@@ -1,0 +1,38 @@
+# ambiguous 2D->3D 2-iminoethen-1-ol.xml
+# CHEBI_2955.xml//X
+# CHEBI_3049.xml//SsR
+# ChEBI_33517.mol//X
+# CHEBI_3353_imph.xml//sRS
+# double-intradependant.xml
+# Fe octahedral ChEBI_4991.mol//X
+# implicitPseudoCentre.xml//R
+# not relevant mixed_h_representation.mol//X
+(6R)-vomifoliol.xml//EESR
+(E)-2-(2-Furyl)-3-(5-nitro-2-furyl)acrylamide.xml//EE
+(Z)-2-(2-Furyl)-3-(5-nitro-2-furyl)acrylamide.xml//ZZ
+alliin.xml//SR
+ChEBI_10642.mol//rrrrrr
+CHEBI_15406.xml//RR
+CHEBI_15645.xml//RSRSS
+CHEBI_16419.xml//RRRRRRRRS
+CHEBI_17268.xml//ssssss
+ChEBI_2639.mol//ZZ
+ChEBI_2955_new.mol//RRRRSSRRSRRRSRSSSR
+ChEBI_3049_new.mol//RrSr
+CHEBI_3353_new.mol//sRS
+ChEBI_53643.mol//SRSSSR
+ChEBI_61677.mol//SSRRS
+ChEBI_66261.mol//RSRRRRRSEEEEEEEE
+CHEBI_73215.mol//RSRRSSRZZ
+ChEBI_82965.mol//RS
+daniel.mol//S
+demo.xml//RR
+double-intradependant.mol//rrssRRssrr
+implicitPseudoCentre.mol//R
+intradependants.xml//ssss
+myo-inositol.xml//ssssss
+pairrule.xml//SSRSRRSSrSS
+priority-test.xml//SSS
+r_sarin.mol//R
+s_sarin.mol//S
+unsolvable.xml//RssS

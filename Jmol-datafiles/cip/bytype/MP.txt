@@ -1,0 +1,3 @@
+(Sa)-6,6'-dibromobiphenyl-2,2'-dicarboxylic_acid.mol//PP
+(3sa,4S,5R)-1,4-dibromo-3-[bromo(fluoro)methyl]-4-fluorobuta-1,2-diene.mol//ppSR
+

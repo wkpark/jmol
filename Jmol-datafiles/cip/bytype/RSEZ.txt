@@ -1,0 +1,7 @@
+# test for Rule 4/5 bond E/Z generation
+test1.mol//SEER
+# next is proposed - stereochemistry uncertain
+test2.mol//RZZRZZRZZ
+test3.mol//SZZSZZSZZ
+# not really axial chirality; just cumulene E/Z
+rule_3_with_axial_chirality_8R_3d.mol//ZREEZEZZZEZ

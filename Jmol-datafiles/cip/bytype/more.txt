@@ -1,0 +1,4 @@
+# Rule 4b R/S + E/Z ?
+#dimethylcyclodecadiene.mol
+# impossibly deep 
+#chebi51439.mol

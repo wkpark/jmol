@@ -1,0 +1,10 @@
+# these next do not indicate diazine double bond stereochemistry  
+ZINC71780520.sdf//EE
+ZINC71780516.sdf//EE
+ZINC20754358.sdf//EESS
+# these next consider a tertiary amine to be chiral
+ZINC61991202.sdf//S
+ZINC74233042.sdf//R
+# an example of an enamine anion
+ZINC63608989.sdf
+

@@ -1,0 +1,130 @@
+"addMikko(1,""EZ/(1E,3E)-1,3-diethylidenecyclobutane.mol"",""EEEE"")"	#VALUE!	1	"(1E,3E)-1,3-diethylidenecyclobutane.mol"			"(1E,3E)-1,3-diethylidenecyclobutane.mol"	EEEE	EZ	2 OK	cip	RS	ZINC02144165.sdf	S	RS
+"addMikko(2,""R/(1R)-1-cycloproply-2-methylpropan-1-ol_3D.mol"",""R"")"	#VALUE!	2	(1R)-1-cycloproply-2-methylpropan-1-ol_3D.mol			(1R)-1-cycloproply-2-methylpropan-1-ol_3D.mol	R	R	4 OK	cip	RS	"(1s,3s)-cyclobutane-1,3-diol.mol"	ss	RS
+"addMikko(3,""EZ/(1R,2E,3S,4E)-2,4-bis(chloromethylidene)cyclobutane-1,3-diol.mol"",""SEREEE"")"	#VALUE!	3	"(1R,2E,3S,4E)-2,4-bis(chloromethylidene)cyclobutane-1,3-diol.mol"			"(1R,2E,3S,4E)-2,4-bis(chloromethylidene)cyclobutane-1,3-diol.mol"	SEREEE	EZ	5 OK	cip	RS	"(1s,4s)-1,4-dimethylcyclohexane.mol"	ss	RS
+"addMikko(4,""RS/(1R,2R)-2-chlorocyclohexanol_3d.mol"",""RR"")"	#VALUE!	4	"(1R,2R)-2-chlorocyclohexanol_3d.mol"			"(1R,2R)-2-chlorocyclohexanol_3d.mol"	RR	RS	8 OK	cip	RS	"(1s,4s)-4-bromo-4-methylcyclohexan-1-amine.mol"	ss	RS
+"addMikko(5,""RS/(1R,2R)-2-chlorocyclohexanol_3d_noH.mol"",""RR"")"	#VALUE!	5	"(1R,2R)-2-chlorocyclohexanol_3d_noH.mol"			"(1R,2R)-2-chlorocyclohexanol_3d_noH.mol"	RR	RS	9 OK	cip	RS	"(2R,3r,4R,5s,6R)-2,6-dichloro-3,5-bis[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"	RsRrRSS	RS
+"addMikko(6,""RS/(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane.mol"",""RRSSRR"")"	#VALUE!	6	"(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane.mol"			"(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane.mol"	RRSSRR	RS	10 OK	cip	RS	"(2R,3r,4R,5s,6R)-2,6-dichloro-3,5-bis[(1S)-1-chloroethyl]heptan-4-ol_2d.sdf"		RS
+"addMikko(7,""RS/(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane_3d.sdf"",""SSRRRR"")"	#VALUE!	7	"(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane_3d.sdf"			"(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane_3d.sdf"	SSRRRR	RS	12 OK	cip	RS	"(2R,3s,4S,6R)-2,6-dichloro-5-[(1R)-1-chloroethyl]-3-[(1S)-1-chloroethyl]heptan-4-ol_2d.sdf"	RsSRSR	RS
+"addMikko(8,""SP/(1R,2r,3S)-(bromofluoromethylsulfinyl)bromofluoromethane.mol"",""rRS"")"	#VALUE!	8	"(1R,2r,3S)-(bromofluoromethylsulfinyl)bromofluoromethane.mol"			"(1R,2r,3S)-(bromofluoromethylsulfinyl)bromofluoromethane.mol"	rRS	SP	13 OK	cip	RS	"(2R,3r,4S)-2,3,4-trichloropentane.mol"	RrS	RS
+"addMikko(9,""RS/(1R,2R,3S,4S,5R,6R)-1,2,3,4,5,6-hexachlorocyclohexane.mol"",""RRSSRR"")"	#VALUE!	9	"(1R,2R,3S,4S,5R,6R)-1,2,3,4,5,6-hexachlorocyclohexane.mol"			"(1R,2R,3S,4S,5R,6R)-1,2,3,4,5,6-hexachlorocyclohexane.mol"	RRSSRR	RS	14 OK	cip	RS	"(2R,3s,4S)-2,3,4-trichloropentane.mol"	RsS	RS
+"addMikko(10,""RS/(1R,2R,4R,5R)-cyclohexane-1,2,3,4,5-pentol_3d.mol"",""RRRR"")"	#VALUE!	10	"(1R,2R,4R,5R)-cyclohexane-1,2,3,4,5-pentol_3d.mol"			"(1R,2R,4R,5R)-cyclohexane-1,2,3,4,5-pentol_3d.mol"	RRRR	RS	17 OK	cip	RS	"(2R,3r,4S)-2,3,4-trichloropentane.mol"	RrS	RS
+"addMikko(11,""RS/(1r,3r)-cyclobutane-1,3-diol.mol"",""rr"")"	#VALUE!	11	"(1r,3r)-cyclobutane-1,3-diol.mol"			"(1r,3r)-cyclobutane-1,3-diol.mol"	rr	RS	18 OK	cip	RS	"(2R,3s,4S)-2,3,4-trichloropentane.mol"	RsS	RS
+"addMikko(12,""RS/(1r,4r)-1,4-dimethylcyclohexane.mol"",""rr"")"	#VALUE!	12	"(1r,4r)-1,4-dimethylcyclohexane.mol"			"(1r,4r)-1,4-dimethylcyclohexane.mol"	rr	RS	19 OK	cip	RS	mata2005Fig8VIbModified.mol	SSssSRRRRRSRSS	RS
+"addMikko(13,""RS/(1r,4r)-4-bromo-4-methylcyclohexan-1-amine.mol"",""rr"")"	#VALUE!	13	"(1r,4r)-4-bromo-4-methylcyclohexan-1-amine.mol"			"(1r,4r)-4-bromo-4-methylcyclohexan-1-amine.mol"	rr	RS	20 OK	cip	RS	mata2005Figure8VIb2.mol	SSsssSRRRRRRSSS	RS
+"addMikko(14,""RS/(1s)-1-{[(1R,2R)-1,2,-dichloropropyl][(1S,2R)-1,2-dichloropropyl]amino}-1-{[(1R,2S)-1,2,-dichloropropyl][(1S,2S)-1,2-dichloropropyl]amino}-methan-1-ol_3d.sdf"",""SSsRRSRRS"")"	#VALUE!	14	"(1s)-1-{[(1R,2R)-1,2,-dichloropropyl][(1S,2R)-1,2-dichloropropyl]amino}-1-{[(1R,2S)-1,2,-dichloropropyl][(1S,2S)-1,2-dichloropropyl]amino}-methan-1-ol_3d.sdf"			"(1s)-1-{[(1R,2R)-1,2,-dichloropropyl][(1S,2R)-1,2-dichloropropyl]amino}-1-{[(1R,2S)-1,2,-dichloropropyl][(1S,2S)-1,2-dichloropropyl]amino}-methan-1-ol_3d.sdf"	SSsRRSRRS	RS	22 OK	cip	RS	Mata_fig7_II_R.mol	RSSRRRRRRSSSR	RS
+"addMikko(15,""RS/(1s,3s)-cyclobutane-1,3-diol.mol"",""ss"")"	#VALUE!	15	"(1s,3s)-cyclobutane-1,3-diol.mol"			"(1s,3s)-cyclobutane-1,3-diol.mol"	ss	RS	23 OK	cip	RS	"(2R,3S,6R,9R,10S)-6-chloro-5-[(1R,2S)-1,2-dihydroxypropoxy]-7-[(1S,2S-1,2-dihydroxypropoxy]-4,8-dioxa-5,7-diazaundecane-2,3,9,10-tetrol_3d.sdf"	SRSSRSSRS	RS
+"addMikko(16,""RS/(1s,4s)-1,4-dimethylcyclohexane.mol"",""ss"")"	#VALUE!	16	"(1s,4s)-1,4-dimethylcyclohexane.mol"			"(1s,4s)-1,4-dimethylcyclohexane.mol"	ss	RS	24 OK	cip	RS	"(2R,3S,6R,9R,10S)-6-chloro-5-[(1R,2S)-1,2-dihydroxypropoxy]-7-[(1S,2S-1,2-dihydroxypropoxy]-4,8-dioxa-5,7-diazaundecane-2,3,9,10-tetrol_2d.sdf"	SRSSRSSRS	RS
+"addMikko(17,""RS/(1s,4s)-4-bromo-4-methylcyclohexan-1-amine.mol"",""ss"")"	#VALUE!	17	"(1s,4s)-4-bromo-4-methylcyclohexan-1-amine.mol"			"(1s,4s)-4-bromo-4-methylcyclohexan-1-amine.mol"	ss	RS	25 OK	cip	RS	"(1s)-1-{[(1R,2R)-1,2,-dichloropropyl][(1S,2R)-1,2-dichloropropyl]amino}-1-{[(1R,2S)-1,2,-dichloropropyl][(1S,2S)-1,2-dichloropropyl]amino}-methan-1-ol_3d.sdf"	SSsRRSRRS	RS
+"addMikko(18,""RS/(1S,5R)-bicyclo[3.1.0]hex-2-ene_2D.mol"",""SR"")"	#VALUE!	18	"(1S,5R)-bicyclo[3.1.0]hex-2-ene_2D.mol"			"(1S,5R)-bicyclo[3.1.0]hex-2-ene_2D.mol"	SR	RS	26 OK	cip	RS	"(2R,3R,5R,7R,8R)-4.4-bis[(2S,3R)-3-chlorobutan-2-yl]-6,6-bis[(2S4S)-3-chlorobutan-2-yl]-2,8-dichloro-3,7-dimethylnonan-5-ol_3d.sdf"	RSRSSRRRRSRSS	RS
+"addMikko(19,""RS/(1S,5R)-bicyclo[3.1.0]hex-2-ene_3D.mol"",""SR"")"	#VALUE!	19	"(1S,5R)-bicyclo[3.1.0]hex-2-ene_3D.mol"			"(1S,5R)-bicyclo[3.1.0]hex-2-ene_3D.mol"	SR	RS	27 OK	cip	RS	"(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane.mol"	RRSSRR	RS
+"addMikko(20,""RS/(1S,5R,8S,12S,13R,15S)-12-methyl-14-oxa-18-thiahexacyclo[blabla]octadecan-8-ol.sdf"",""SRSSSR"")"	#VALUE!	20	"(1S,5R,8S,12S,13R,15S)-12-methyl-14-oxa-18-thiahexacyclo[blabla]octadecan-8-ol.sdf"			"(1S,5R,8S,12S,13R,15S)-12-methyl-14-oxa-18-thiahexacyclo[blabla]octadecan-8-ol.sdf"	SRSSSR	RS	28 OK	cip	RS	"(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane_2d.sdf"	SSRRRR	RS
+"addMikko(21,""R/(2R)-2-{bis[(1R)-1-hydroxyethyl]amino}-2-{[(1R)-1-hydroxyethyl][(1S)-1-hydroxyethyl]amino}acetic_acid_3d.sdf"",""RRRSR"")"	#VALUE!	21	(2R)-2-{bis[(1R)-1-hydroxyethyl]amino}-2-{[(1R)-1-hydroxyethyl][(1S)-1-hydroxyethyl]amino}acetic_acid_3d.sdf			(2R)-2-{bis[(1R)-1-hydroxyethyl]amino}-2-{[(1R)-1-hydroxyethyl][(1S)-1-hydroxyethyl]amino}acetic_acid_3d.sdf	RRRSR	R	31 OK	cip	RS	"(1R,2R,3S,4S,5R,6R)-1,2,3,4,5,6-hexachlorocyclohexane_2d.mol"	SSRRRR	RS
+"addMikko(22,""R/(2R)-2-hydroxybut-3-enal_3D.mol"",""R"")"	#VALUE!	22	(2R)-2-hydroxybut-3-enal_3D.mol			(2R)-2-hydroxybut-3-enal_3D.mol	R	R	29 OK	cip	RS	"(1R,2R,3R,4R,5S,6S)-1,2,3,4,5,6-hexachlorocyclohexane_3d.sdf"	SSRRRR	RS
+"addMikko(23,""R/(2R)-butan-2-ol_3d.mol"",""R"")"	#VALUE!	23	(2R)-butan-2-ol_3d.mol			(2R)-butan-2-ol_3d.mol	R	R	32 OK	cip	RS	"(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_2d.mol"	RSRRR	RS
+"addMikko(24,""RS/(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.sdf"",""RSRRR"")"	#VALUE!	24	"(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.sdf"			"(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.sdf"	RSRRR	RS	35 OK	cip	RS	"(2R,3R,4S,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.mol"	RSSRR	RS
+"addMikko(25,""RS/(2R,3r,4R,5s,6R)-2,6-dichloro-3,5-bis[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"",""RsRrRSS"")"	#VALUE!	25	"(2R,3r,4R,5s,6R)-2,6-dichloro-3,5-bis[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"			"(2R,3r,4R,5s,6R)-2,6-dichloro-3,5-bis[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"	RsRrRSS	RS	37 OK	cip	RS	"(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_2d.mol"	RSRRR	RS
+"addMikko(26,""RS/(2R,3r,4S)-2,3,4-trichloropentane.mol"",""RrS"")"	#VALUE!	26	"(2R,3r,4S)-2,3,4-trichloropentane.mol"			"(2R,3r,4S)-2,3,4-trichloropentane.mol"	RrS	RS	38 OK	cip	RS	"(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_2d.sdf"	RSRRR	RS
+"addMikko(27,""RS/(2R,3R,4S,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.mol"",""RSSRR"")"	#VALUE!	27	"(2R,3R,4S,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.mol"			"(2R,3R,4S,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.mol"	RSSRR	RS	39 OK	cip	RS	"(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.sdf"	RSRRR	RS
+"addMikko(28,""RS/(2R,3R,5R,7R,8R)-4.4-bis[(2S,3R)-3-chlorobutan-2-yl]-6,6-bis[(2S4S)-3-chlorobutan-2-yl]-2,8-dichloro-3,7-dimethylnonan-5-ol_3d.sdf"",""RSRSSRRRRSRSS"")"	#VALUE!	28	"(2R,3R,5R,7R,8R)-4.4-bis[(2S,3R)-3-chlorobutan-2-yl]-6,6-bis[(2S4S)-3-chlorobutan-2-yl]-2,8-dichloro-3,7-dimethylnonan-5-ol_3d.sdf"			"(2R,3R,5R,7R,8R)-4.4-bis[(2S,3R)-3-chlorobutan-2-yl]-6,6-bis[(2S4S)-3-chlorobutan-2-yl]-2,8-dichloro-3,7-dimethylnonan-5-ol_3d.sdf"	RSRSSRRRRSRSS	RS	41 OK	cip	RS	"(1R,2R)-2-chlorocyclohexanol_2d.mol"	RR	RS
+"addMikko(29,""RS/(2R,3S,4R,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_2D.mol"",""SRRSR"")"	#VALUE!	29	"(2R,3S,4R,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_2D.mol"			"(2R,3S,4R,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_2D.mol"	SRRSR	RS	42 OK	cip	RS	"(1R,2R)-2-chlorocyclohexanol_2d_noH.mol"	RR	RS
+"addMikko(30,""RS/(2R,3S,4R,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_3D.mol"",""SRRSR"")"	#VALUE!	30	"(2R,3S,4R,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_3D.mol"			"(2R,3S,4R,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_3D.mol"	SRRSR	RS	43 OK	cip	RS	"(1R,2R)-2-chlorocyclohexanol_3d.mol"	RR	RS
+"addMikko(31,""RS/(2R,3s,4S)-2,3,4-trichloropentane.mol"",""RsS"")"	#VALUE!	31	"(2R,3s,4S)-2,3,4-trichloropentane.mol"			"(2R,3s,4S)-2,3,4-trichloropentane.mol"	RsS	RS	44 OK	cip	RS	"(1R,2R)-2-chlorocyclohexanol_3d_noH.mol"	RR	RS
+"addMikko(32,""RS/(2R,3S,4S,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_2D.mol"",""SRSSR"")"	#VALUE!	32	"(2R,3S,4S,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_2D.mol"			"(2R,3S,4S,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_2D.mol"	SRSSR	RS	45 OK	cip	RS	"(1R,2R,4R,5R)-cyclohexane-1,2,3,4,5-pentol_2d_noH.mol"	RRRR	RS
+"addMikko(33,""RS/(2R,3S,4S,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_3D.mol"",""SRSSR"")"	#VALUE!	33	"(2R,3S,4S,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_3D.mol"			"(2R,3S,4S,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_3D.mol"	SRSSR	RS	46 OK	cip	RS	"(1R,2R,4R,5R)-cyclohexane-1,2,3,4,5-pentol_3d.mol"	RRRR	RS
+"addMikko(34,""RS/(2R,3s,4S,6R)-2,6-dichloro-5-[(1R)-1-chloroethyl]-3-[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"",""RsSRSR"")"	#VALUE!	34	"(2R,3s,4S,6R)-2,6-dichloro-5-[(1R)-1-chloroethyl]-3-[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"			"(2R,3s,4S,6R)-2,6-dichloro-5-[(1R)-1-chloroethyl]-3-[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"	RsSRSR	RS	48 OK	cip	RS	"(1S,5R)-bicyclo[3.1.0]hex-2-ene_3D.mol"	SR	RS
+"addMikko(35,""RS/(2R,3S,6R,9R,10S)-6-chloro-5-[(1R,2S)-1,2-dihydroxypropoxy]-7-[(1S,2S-1,2-dihydroxypropoxy]-4,8-dioxa-5,7-diazaundecane-2,3,9,10-tetrol_3d.sdf"",""SRSSRSSRS"")"	#VALUE!	35	"(2R,3S,6R,9R,10S)-6-chloro-5-[(1R,2S)-1,2-dihydroxypropoxy]-7-[(1S,2S-1,2-dihydroxypropoxy]-4,8-dioxa-5,7-diazaundecane-2,3,9,10-tetrol_3d.sdf"			"(2R,3S,6R,9R,10S)-6-chloro-5-[(1R,2S)-1,2-dihydroxypropoxy]-7-[(1S,2S-1,2-dihydroxypropoxy]-4,8-dioxa-5,7-diazaundecane-2,3,9,10-tetrol_3d.sdf"	SRSSRSSRS	RS	50 OK	cip	RS	"(2R,3S,4R,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_3D.mol"	SRRSR	RS
+"addMikko(36,""RS/(2S,4aS,8aS)-8a-chloro-2-fluoro-decahydronaphthalen-4a-ol.sdf"",""SSS"")"	#VALUE!	36	"(2S,4aS,8aS)-8a-chloro-2-fluoro-decahydronaphthalen-4a-ol.sdf"			"(2S,4aS,8aS)-8a-chloro-2-fluoro-decahydronaphthalen-4a-ol.sdf"	SSS	RS	51 OK	cip	RS	"(2R,3S,4S,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_2D.mol"	SRSSR	RS
+"addMikko(37,""EZ/(2Z,5Z,7S,8Z,11Z)-9-[(2Z)-but-2-en-1-yl]-5-[(2E)-but-2-en-1-yl]trideca-2,5,8,11-tetraen-7-ol_3d.mol"",""EEZZSZZZZZZ"")"	#VALUE!	37	"(2Z,5Z,7S,8Z,11Z)-9-[(2Z)-but-2-en-1-yl]-5-[(2E)-but-2-en-1-yl]trideca-2,5,8,11-tetraen-7-ol_3d.mol"			"(2Z,5Z,7S,8Z,11Z)-9-[(2Z)-but-2-en-1-yl]-5-[(2E)-but-2-en-1-yl]trideca-2,5,8,11-tetraen-7-ol_3d.mol"	EEZZSZZZZZZ	EZ	53 OK	cip	RS	"(2S,4aS,8aS)-8a-chloro-2-fluoro-decahydronaphthalen-4a-ol.sdf"	SSS	RS
+"addMikko(38,""EZ/(2Z,7R,11E)-trideca-2,11-dien-7-ol_3d.mol"",""EERZZ"")"	#VALUE!	38	"(2Z,7R,11E)-trideca-2,11-dien-7-ol_3d.mol"			"(2Z,7R,11E)-trideca-2,11-dien-7-ol_3d.mol"	EERZZ	EZ	55 OK	cip	RS	one-R-one-S.sdf	RS	RS
+"addMikko(39,""EZ/(2Z,7S,11E)-dichlorotrideca-2,11-dien-7-ol_3d.mol"",""ZZSEE"")"	#VALUE!	39	"(2Z,7S,11E)-dichlorotrideca-2,11-dien-7-ol_3d.mol"			"(2Z,7S,11E)-dichlorotrideca-2,11-dien-7-ol_3d.mol"	ZZSEE	EZ	57 OK	cip	RS	"_2R,3R_-3-methylpentan-2-ol.sdf"	RR	RS
+"addMikko(40,""R/(3R)-pent-1-en-3-ol_3D.mol"",""R"")"	#VALUE!	40	(3R)-pent-1-en-3-ol_3D.mol			(3R)-pent-1-en-3-ol_3D.mol	R	R	59 OK	cip	RS	beta-eudesmol.sdf	SRR	RS
+"addMikko(41,""MP/(3sa,4S,5R)-1,4-dibromo-3-[bromo(fluoro)methyl]-4-fluorobuta-1,2-diene.mol"",""ppSR"")"	#VALUE!	41	"(3sa,4S,5R)-1,4-dibromo-3-[bromo(fluoro)methyl]-4-fluorobuta-1,2-diene.mol"			"(3sa,4S,5R)-1,4-dibromo-3-[bromo(fluoro)methyl]-4-fluorobuta-1,2-diene.mol"	ppSR	MP	60 OK	cip	RS	beta-eudesmol_3d.sdf	SRR	RS
+"addMikko(42,""RS/(4aR,8aS)-8a-methyl-octahydro-1H-2-benzopyran.sdf"",""RS"")"	#VALUE!	42	"(4aR,8aS)-8a-methyl-octahydro-1H-2-benzopyran.sdf"			"(4aR,8aS)-8a-methyl-octahydro-1H-2-benzopyran.sdf"	RS	RS	61 OK	cip	RS	gibberellin_3D_new.mol	RRSSSSRS	RS
+"addMikko(43,""R/(R)-bromo(chloro)fluoromethane_01.sdf"",""R"")"	#VALUE!	43	(R)-bromo(chloro)fluoromethane_01.sdf			(R)-bromo(chloro)fluoromethane_01.sdf	R	R	63 OK	cip	RS	"(1S,5R,8S,12S,13R,15S)-12-methyl-14-oxa-18-thiahexacyclo[blabla]octadecan-8-ol.sdf"	SRSSSR	RS
+"addMikko(44,""SP/(R)-methanesulfinylbenzene.mol"",""R"")"	#VALUE!	44	(R)-methanesulfinylbenzene.mol			(R)-methanesulfinylbenzene.mol	R	SP	64 OK	cip	MP	"(Sa)-6,6'-dibromobiphenyl-2,2'-dicarboxylic_acid.mol"	PP	MP
+"addMikko(45,""SP/(R)-methyl(phenyl)ethylphospane.mol"",""R"")"	#VALUE!	45	(R)-methyl(phenyl)ethylphospane.mol			(R)-methyl(phenyl)ethylphospane.mol	R	SP	65 OK	cip	MP	"(3sa,4S,5R)-1,4-dibromo-3-[bromo(fluoro)methyl]-4-fluorobuta-1,2-diene.mol"	ppSR	MP
+"addMikko(46,""R/(R)-N-ethyl-N-methyl-N-propylanilinium_3d.sdf"",""R"")"	#VALUE!	46	(R)-N-ethyl-N-methyl-N-propylanilinium_3d.sdf			(R)-N-ethyl-N-methyl-N-propylanilinium_3d.sdf	R	R	67 OK	cip	RSEZ	test2.mol	RZZRZZRZZ	RSEZ
+"addMikko(47,""SP/(S)-(methylsulfinyl)ethane.mol"",""S"")"	#VALUE!	47	(S)-(methylsulfinyl)ethane.mol			(S)-(methylsulfinyl)ethane.mol	S	SP	68 OK	cip	RSEZ	test3.mol	SZZSZZSZZ	RSEZ
+"addMikko(48,""SP/(S)-(O-methyl_benzenesulfonothioate).mol"",""R"")"	#VALUE!	48	(S)-(O-methyl_benzenesulfonothioate).mol			(S)-(O-methyl_benzenesulfonothioate).mol	R	SP	69 OK	cip	RSEZ	rule_3_with_axial_chirality_8R_3d.mol	ZREEZEZZZEZ	RSEZ
+"addMikko(49,""S/(S)-bromo(chloro)fluoromethane_01.sdf"",""S"")"	#VALUE!	49	(S)-bromo(chloro)fluoromethane_01.sdf			(S)-bromo(chloro)fluoromethane_01.sdf	S	S	70 OK	cip	NN	ZINC71780520.sdf	EE	NN
+"addMikko(50,""S/(S)-bromo(chloro)fluoromethane_02.sdf"",""S"")"	#VALUE!	50	(S)-bromo(chloro)fluoromethane_02.sdf			(S)-bromo(chloro)fluoromethane_02.sdf	S	S	71 OK	cip	NN	ZINC71780516.sdf	EE	NN
+"addMikko(51,""S/(S)-bromo(chloro)fluoromethane_03.sdf"",""R"")"	#VALUE!	51	(S)-bromo(chloro)fluoromethane_03.sdf			(S)-bromo(chloro)fluoromethane_03.sdf	R	S	72 OK	cip	NN	ZINC20754358.sdf	EESS	NN
+"addMikko(52,""S/(S)-bromo(chloro)fluoromethane_04.sdf"",""S"")"	#VALUE!	52	(S)-bromo(chloro)fluoromethane_04.sdf			(S)-bromo(chloro)fluoromethane_04.sdf	S	S	73 OK	cip	NN	ZINC61991202.sdf	S	NN
+"addMikko(53,""S/(S)-bromo(chloro)fluoromethane_05.sdf"",""S"")"	#VALUE!	53	(S)-bromo(chloro)fluoromethane_05.sdf			(S)-bromo(chloro)fluoromethane_05.sdf	S	S	74 OK	cip	NN	ZINC74233042.sdf	R	NN
+"addMikko(54,""S/(S)-bromo(chloro)fluoromethane_06.sdf"",""S"")"	#VALUE!	54	(S)-bromo(chloro)fluoromethane_06.sdf			(S)-bromo(chloro)fluoromethane_06.sdf	S	S	75 OK	cip	NN	ZINC63608989.sdf	R	NN
+"addMikko(55,""S/(S)-cyclobutyl(cyclopropyl)methanol_2D.mol"",""S"")"	#VALUE!	55	(S)-cyclobutyl(cyclopropyl)methanol_2D.mol			(S)-cyclobutyl(cyclopropyl)methanol_2D.mol	S	S	76 OK	cip	EZ	"(2Z,7S,11E)-dichlorotrideca-2,11-dien-7-ol_3d.mol"	ZZSEE	EZ
+"addMikko(56,""S/(S)-cyclobutyl(cyclopropyl)methanol_3D.mol"",""S"")"	#VALUE!	56	(S)-cyclobutyl(cyclopropyl)methanol_3D.mol			(S)-cyclobutyl(cyclopropyl)methanol_3D.mol	S	S	77 OK	cip	EZ	"(2Z,7R,11E)-trideca-2,11-dien-7-ol_3d.mol"	EERZZ	EZ
+"addMikko(57,""SP/(S)-methyl(phenyl)ethylphospane_oxide.mol"",""S"")"	#VALUE!	57	(S)-methyl(phenyl)ethylphospane_oxide.mol			(S)-methyl(phenyl)ethylphospane_oxide.mol	S	SP	78 OK	cip	EZ	"(2E,5Z)-hepta-2,5-dien-4-ol-new.mol"	EESZZ	EZ
+"addMikko(58,""MP/(Sa)-6,6'-dibromobiphenyl-2,2'-dicarboxylic_acid.mol"",""PP"")"	#VALUE!	58	"(Sa)-6,6'-dibromobiphenyl-2,2'-dicarboxylic_acid.mol"			"(Sa)-6,6'-dibromobiphenyl-2,2'-dicarboxylic_acid.mol"	PP	MP	79 OK	cip	EZ	deb.mol	EEEE	EZ
+"addMikko(59,""RS/_1R,2R_-2-__S_-chloro_fluoro_methyl_cyclohexan-1- ol.sdf"",""RRS"")"	#VALUE!	59	"_1R,2R_-2-__S_-chloro_fluoro_methyl_cyclohexan-1- ol.sdf"			"_1R,2R_-2-__S_-chloro_fluoro_methyl_cyclohexan-1- ol.sdf"	RRS	RS	168 OK	cip	R	(2R)-2-{bis[(1R)-1-hydroxyethyl]amino}-2-{[(1R)-1-hydroxyethyl][(1S)-1-hydroxyethyl]amino}acetic_acid_3d.sdf	RRRSR	R
+"addMikko(60,""RS/_2R,3R_-3-methylpentan-2-ol.sdf"",""RR"")"	#VALUE!	60	"_2R,3R_-3-methylpentan-2-ol.sdf"			"_2R,3R_-3-methylpentan-2-ol.sdf"	RR	RS	169 OK	cip	R	(R)-bromo(chloro)fluoromethane_01.sdf	R	R
+"addMikko(61,""RS/_2R,3S_-3-methylpentan-2-ol.sdf"",""SR"")"	#VALUE!	61	"_2R,3S_-3-methylpentan-2-ol.sdf"			"_2R,3S_-3-methylpentan-2-ol.sdf"	SR	RS	170 OK	cip	R	(R)-N-ethyl-N-methyl-N-propylanilinium_3d.sdf	R	R
+"addMikko(62,""S/1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol_3d_noH.mol"",""S"")"	#VALUE!	62	"1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol_3d_noH.mol"			"1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol_3d_noH.mol"	S	S	86 OK	cip	EZ	"(1R,2E,3S,4E)-2,4-bis(chloromethylidene)cyclobutane-1,3-diol.mol"	SEREEE	EZ
+"addMikko(63,""EZ/2Z-but-2-ene.mol"",""ZZ"")"	#VALUE!	63	2Z-but-2-ene.mol			2Z-but-2-ene.mol	ZZ	EZ	87 OK	cip	SP	(S)-(O-methyl_benzenesulfonothioate).mol	R	SP
+"addMikko(64,""EZ/2Z-but-2-ene_3D.mol"",""ZZ"")"	#VALUE!	64	2Z-but-2-ene_3D.mol			2Z-but-2-ene_3D.mol	ZZ	EZ	88 OK	cip	SP	(S)-methyl(phenyl)ethylphospane_oxide.mol	S	SP
+"addMikko(65,""EZ/2Z-but-2-ene_with_H.mol"",""ZZ"")"	#VALUE!	65	2Z-but-2-ene_with_H.mol			2Z-but-2-ene_with_H.mol	ZZ	EZ	89 OK	cip	SP	"(1R,2r,3S)-(bromofluoromethylsulfinyl)bromofluoromethane.mol"	rRS	SP
+"addMikko(66,""RS/beta-eudesmol.sdf"",""SRR"")"	#VALUE!	66	beta-eudesmol.sdf			beta-eudesmol.sdf	SRR	RS	90 OK	cip	SP	(S)-(methylsulfinyl)ethane.mol	S	SP
+"addMikko(67,""RS/beta-eudesmol_3d.sdf"",""SRR"")"	#VALUE!	67	beta-eudesmol_3d.sdf			beta-eudesmol_3d.sdf	SRR	RS	91 OK	cip	R	(1R)-1-cycloproply-2-methylpropan-1-ol_2D.mol	R	R
+"addMikko(68,""RS/gibberellin_3D_new.mol"",""RRSSSSRS"")"	#VALUE!	68	gibberellin_3D_new.mol			gibberellin_3D_new.mol	RRSSSSRS	RS	96 OK	cip	R	(3R)-pent-1-en-3-ol_3D.mol	R	R
+"addMikko(69,""RS/Mata_fig7_I_R.mol"",""RSSSRRRRRSR"")"	#VALUE!	69	Mata_fig7_I_R.mol			Mata_fig7_I_R.mol	RSSSRRRRRSR	RS	98 OK	cip	S	"1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol-new.mol"	S	S
+"addMikko(70,""RS/Mata_fig7_II_R.mol"",""RSSRRRRRRSSSR"")"	#VALUE!	70	Mata_fig7_II_R.mol			Mata_fig7_II_R.mol	RSSRRRRRRSSSR	RS	97 OK	cip	R	R.sdf	R	R
+"addMikko(71,""RS/one-R-one-S.sdf"",""RS"")"	#VALUE!	71	one-R-one-S.sdf			one-R-one-S.sdf	RS	RS	99 OK	cip	S	"1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol_3d_noH.mol"	S	S
+"addMikko(72,""R/R.sdf"",""R"")"	#VALUE!	72	R.sdf			R.sdf	R	R	101 OK	cip	S	(S)-cyclobutyl(cyclopropyl)methanol_3D.mol	S	S
+"addMikko(73,""RSEZ/rule_3_with_axial_chirality_8R_3d.mol"",""ZREEZEZZZEZ"")"	#VALUE!	73	rule_3_with_axial_chirality_8R_3d.mol			rule_3_with_axial_chirality_8R_3d.mol	ZREEZEZZZEZ	RSEZ	124 OK	cip	R	(2R)-2-{bis[(1R)-1-hydroxyethyl]amino}-2-{[(1R)-1-hydroxyethyl][(1S)-1-hydroxyethyl]amino}acetic_acid_3d.sdf	RRRSR	R
+"addMikko(74,""S/S.sdf"",""S"")"	#VALUE!	74	S.sdf			S.sdf	S	S	125 OK	cip	SP	(S)-(O-methyl_benzenesulfonothioate).mol	R	SP
+"addMikko(75,""RS/two_pairs_of_enantiomeric_ligands.mol"",""SSRSR"")"	#VALUE!	75	two_pairs_of_enantiomeric_ligands.mol			two_pairs_of_enantiomeric_ligands.mol	SSRSR	RS	126 OK	cip	SP	(S)-methyl(phenyl)ethylphospane_oxide.mol	S	SP
+"addMikko(76,""RS/ZINC02144165.sdf"",""S"")"	#VALUE!	76	ZINC02144165.sdf			ZINC02144165.sdf	S	RS	127 OK	cip	SP	"(1R,2r,3S)-(bromofluoromethylsulfinyl)bromofluoromethane.mol"	rRS	SP
+"addMikko(77,""RS/ZINC02508208.sdf"",""SSS"")"	#VALUE!	77	ZINC02508208.sdf			ZINC02508208.sdf	SSS	RS	128 OK	cip	SP	(S)-(methylsulfinyl)ethane.mol	S	SP
+"addMikko(78,""NN/ZINC20754358.sdf"",""EESS"")"	#VALUE!	78	ZINC20754358.sdf			ZINC20754358.sdf	EESS	NN	129 OK	cip	SP	(R)-methanesulfinylbenzene.mol	R	SP
+"addMikko(79,""NN/ZINC61991202.sdf"",""S"")"	#VALUE!	79	ZINC61991202.sdf			ZINC61991202.sdf	S	NN	130 OK	cip	SP	(R)-methyl(phenyl)ethylphospane.mol	R	SP
+"addMikko(80,""NN/ZINC63608989.sdf"",""R"")"	#VALUE!	80	ZINC63608989.sdf			ZINC63608989.sdf	R	NN	164 OK	cip	R	(1R)-1-cycloproply-2-methylpropan-1-ol_3D.mol	R	R
+"addMikko(81,""NN/ZINC71780516.sdf"",""EE"")"	#VALUE!	81	ZINC71780516.sdf			ZINC71780516.sdf	EE	NN	165 OK	cip	R	(2R)-2-hydroxybut-3-enal_3D.mol	R	R
+"addMikko(82,""NN/ZINC71780520.sdf"",""EE"")"	#VALUE!	82	ZINC71780520.sdf			ZINC71780520.sdf	EE	NN	166 OK	cip	R	(2R)-butan-2-ol_3d.mol	R	R
+"addMikko(83,""NN/ZINC74233042.sdf"",""R"")"	#VALUE!	83	ZINC74233042.sdf			ZINC74233042.sdf	R	NN	167 OK	cip	R	(3R)-pent-1-en-3-ol_3D.mol	R	R
+						#N/A	#N/A	#N/A	6 OK	cip	RS	"(1r,4r)-1,4-dimethylcyclohexane.mol"	rr	RS
+						#N/A	#N/A	#N/A	7 OK	cip	RS	"(1r,4r)-4-bromo-4-methylcyclohexan-1-amine.mol"	rr	RS
+						#N/A	#N/A	#N/A	11 OK	cip	RS	"(2R,3s,4S,6R)-2,6-dichloro-5-[(1R)-1-chloroethyl]-3-[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"	RsSRSR	RS
+						#N/A	#N/A	#N/A	15 OK	cip	RS	"(2R,3s,4S,6R)-2,6-dichloro-5-[(1R)-1-chloroethyl]-3-[(1S)-1-chloroethyl]heptan-4-ol_2d.sdf"	RsSRSR	RS
+						#N/A	#N/A	#N/A	16 OK	cip	RS	"(2R,3s,4S,6R)-2,6-dichloro-5-[(1R)-1-chloroethyl]-3-[(1S)-1-chloroethyl]heptan-4-ol_3d.sdf"	RsSRSR	RS
+						#N/A	#N/A	#N/A	33 OK	cip	RS	"(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_2d.sdf"	RSRRR	RS
+						#N/A	#N/A	#N/A	34 OK	cip	RS	"(2R,3R,4R,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.sdf"	RSRRR	RS
+						#N/A	#N/A	#N/A	47 OK	cip	RS	"(1S,5R)-bicyclo[3.1.0]hex-2-ene_2D.mol"	SR	RS
+						#N/A	#N/A	#N/A	49 OK	cip	RS	"(2R,3S,4R,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_2D.mol"	SRRSR	RS
+									3 OK	cip	RS	"(1r,3r)-cyclobutane-1,3-diol.mol"	rr	RS
+								#N/A	1 OK	cip	RS	ZINC02508208.sdf	SSS	RS
+								#N/A	21 OK	cip	RS	Mata_fig7_I_R.mol	RSSSRRRRRSR	RS
+								#N/A	30 OK	cip	RS	"(1R,2R,3S,4S,5R,6R)-1,2,3,4,5,6-hexachlorocyclohexane.mol"	RRSSRR	RS
+								#N/A	36 OK	cip	RS	two_pairs_of_enantiomeric_ligands.mol	SSRSR	RS
+								#N/A	40 OK	cip	RS	"(2R,3R,4S,5S,6R)-2,3,4,5,6-pentachloroheptanedioic_acid_3d.mol"	RSSRR	RS
+								#N/A	52 OK	cip	RS	"(2R,3S,4S,5R,6S)-3-(2-bromoethyl)-1-chloro-2,6,7-trifluoro-5-(2-iodoethyl)heptan-4-ol_3D.mol"	SRSSR	RS
+								#N/A	54 OK	cip	RS	"(4aR,8aS)-8a-methyl-octahydro-1H-2-benzopyran.sdf"	RS	RS
+								#N/A	56 OK	cip	RS	"_1R,2R_-2-__S_-chloro_fluoro_methyl_cyclohexan-1- ol.sdf"	RRS	RS
+								#N/A	58 OK	cip	RS	"_2R,3S_-3-methylpentan-2-ol.sdf"	SR	RS
+								#N/A	62 OK	cip	RS	test7S.mol	RRSSR	RS
+								#N/A	66 OK	cip	RSEZ	test1.mol	SEER	RSEZ
+								#N/A	80 OK	cip	EZ	2Z-but-2-ene.mol	ZZ	EZ
+								#N/A	81 OK	cip	EZ	2Z-but-2-ene_3D.mol	ZZ	EZ
+								#N/A	82 OK	cip	EZ	2Z-but-2-ene_with_H.mol	ZZ	EZ
+								#N/A	83 OK	cip	EZ	"(1E,3E)-1,3-diethylidenecyclobutane.mol"	EEEE	EZ
+								#N/A	84 OK	cip	EZ	"(2Z,5Z,7S,8Z,11Z)-9-[(2Z)-but-2-en-1-yl]-5-[(2E)-but-2-en-1-yl]trideca-2,5,8,11-tetraen-7-ol_3d.mol"	EEZZSZZZZZZ	EZ
+								#N/A	85 OK	cip	EZ	"(2Z,7R,11E)-trideca-2,11-dien-7-ol_3d.mol"	EERZZ	EZ
+								#N/A	92 OK	cip	R	(1R)-1-cycloproply-2-methylpropan-1-ol_3D.mol	R	R
+								#N/A	93 OK	cip	R	(2R)-2-hydroxybut-3-enal_3D.mol	R	R
+								#N/A	94 OK	cip	R	(2R)-butan-2-ol_3d.mol	R	R
+								#N/A	95 OK	cip	R	(3R)-pent-1-en-3-ol_2D.mol	R	R
+								#N/A	100 OK	cip	S	(S)-cyclobutyl(cyclopropyl)methanol_2D.mol	S	S
+								#N/A	102 OK	cip	S	S.sdf	S	S
+									171 OK	cip	R	R.sdf	R	R
+									172 OK	cip	S	"1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol-new.mol"	S	S
+									173 OK	cip	S	"1-(bicyclo[2.2.2]octan-1-yl)-1-[1,5-dicyclopropyl-3(2-cyclopropylethyl)-pentan-3-yl]methan-1-ol_3d_noH.mol"	S	S
+									174 OK	cip	S	(S)-bromo(chloro)fluoromethane_01.sdf	S	S
+									175 OK	cip	S	(S)-bromo(chloro)fluoromethane_02.sdf	S	S
+									176 OK	cip	S	(S)-bromo(chloro)fluoromethane_03.sdf	R	S
+									177 OK	cip	S	(S)-bromo(chloro)fluoromethane_04.sdf	S	S
+									178 OK	cip	S	(S)-bromo(chloro)fluoromethane_05.sdf	S	S
+									179 OK	cip	S	(S)-bromo(chloro)fluoromethane_06.sdf	S	S
+									180 OK	cip	S	(S)-cyclobutyl(cyclopropyl)methanol_2D.mol	S	S
+									181 OK	cip	S	(S)-cyclobutyl(cyclopropyl)methanol_3D.mol	S	S
+									182 OK	cip	S	(S)-methyl(phenyl)ethylphospane_oxide.mol	S	S
+									183 OK	cip	S	S.sdf	S	S
+									183 OK	cip	RS	gibberellin.mol	RRSSSSRS	RS

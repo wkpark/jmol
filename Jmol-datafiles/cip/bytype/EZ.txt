@@ -1,0 +1,18 @@
+#Jmol messes up 2D->3D (2Z,7S,11E)-dichlorotrideca-2,11-dien-7-ol_2d.mol//ZZSEE
+# note, this was supposed to be a test of E/Z -- 3,11-dichloro, not 2,11-dichloro
+(2Z,7S,11E)-dichlorotrideca-2,11-dien-7-ol_3d.mol//ZZSEE
+#Jmol messes up 2D->3D (2Z,7R,11E)-trideca-2,11-dien-7-ol_2d.mol//ZZREE
+(2Z,7R,11E)-trideca-2,11-dien-7-ol_3d.mol//EERZZ
+(2E,5Z)-hepta-2,5-dien-4-ol-new.mol//EESZZ
+deb.mol//EEEE
+2Z-but-2-ene.mol//ZZ
+2Z-but-2-ene_3D.mol//ZZ
+2Z-but-2-ene_with_H.mol//ZZ
+(1E,3E)-1,3-diethylidenecyclobutane.mol//EEEE
+#rule3_2d.mol -- see (1R,2E,3S,4E)-2,4-bis(chloromethylidene)cyclobutane-1,3-diol.mol
+#Jmol messes up 2D->3D (2Z,5Z,7S,8Z,11Z)-9-[(2Z)-but-2-en-1-yl]-5-[(2E)-but-2-en-1-yl]trideca-2,5,8,11-tetraen-7-ol_2d.mol//EEZZSZZZZZZ
+(2Z,5Z,7S,8Z,11Z)-9-[(2Z)-but-2-en-1-yl]-5-[(2E)-but-2-en-1-yl]trideca-2,5,8,11-tetraen-7-ol_3d.mol//EEZZSZZZZZZ
+#Jmol messes up 2D->3D (2Z,7R,11E)-trideca-2,11-dien-7-ol_2d.mol//ZZREE
+(2Z,7R,11E)-trideca-2,11-dien-7-ol_3d.mol//EERZZ
+(1R,2E,3S,4E)-2,4-bis(chloromethylidene)cyclobutane-1,3-diol.mol//SEREEE
+

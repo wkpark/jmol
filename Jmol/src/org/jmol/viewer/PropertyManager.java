@@ -1161,8 +1161,11 @@ public class PropertyManager implements JmolPropertyManager {
     boolean asJSON = type.equalsIgnoreCase("JSON") || type.equalsIgnoreCase("CD");
     SB mol = new SB();
     ModelSet ms = vwr.ms;
+    BS bsAtoms = BSUtil.copy(bs);
+    BS bsModels = vwr.ms.getModelBS(bsAtoms, true);
     if (!isXYZ && !asJSON) {
-      mol.append(isModelKit ? "Jmol Model Kit" : FileManager.fixDOSName(vwr.fm.getFullPathName(false)));
+      String title = vwr.ms.getFrameTitle(bsModels.nextSetBit(0));      
+      mol.append(title != null ? title.replace('\n',' ') : isModelKit ? "Jmol Model Kit" : FileManager.fixDOSName(vwr.fm.getFullPathName(false)));
       String version = Viewer.getJmolVersion();
       mol.append("\n__Jmol-").append(version.substring(0, 2));
       int cMM, cDD, cYYYY, cHH, cmm;
@@ -1193,7 +1196,6 @@ public class PropertyManager implements JmolPropertyManager {
       mol.append("\nJmol version ").append(Viewer.getJmolVersion())
           .append(" EXTRACT: ").append(Escape.eBS(bs)).append("\n");
     }
-    BS bsAtoms = BSUtil.copy(bs);
     Atom[] atoms = ms.at;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1))
       if (doTransform && atoms[i].isDeleted())
@@ -1202,7 +1204,6 @@ public class PropertyManager implements JmolPropertyManager {
     if (!asXYZVIB && bsAtoms.isEmpty())
       return "";
     boolean isOK = true;
-    BS bsModels = vwr.ms.getModelBS(bsAtoms, true);
     if (ms.trajectory != null && !allTrajectories)
       ms.trajectory.selectDisplayed(bsModels);
     Quat q = (doTransform ? vwr.tm.getRotationQ() : null);

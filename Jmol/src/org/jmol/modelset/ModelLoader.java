@@ -1444,13 +1444,39 @@ public final class ModelLoader {
     }
   }
 
+  /**
+   * set the z based on a cos relationship to the y axis. Specifically,
+   *
+   *   theta = acos(v.dot.v0)
+   * 
+   *   z = 0.8 * sin(4 theta)
+   * so:
+   * 
+   *    theta     4 theta
+   * y  0           0 
+   * x  pi/2       2 pi
+   * -y pi         4 pi         
+   * -x pi/2       2 pi
+   * 
+   * y   -1/4  -pi/4
+   * x   +1/4   pi/4
+   * -y  -1/4   3pi/4
+   * -x  +1/4  -pi/4
+   * 
+   *  
+   * @param atomRef
+   * @param atom2
+   * @param v
+   * @param v0
+   * @param v1
+   */
   private static void setAtom2dZ(Atom atomRef, Atom atom2, V3 v, V3 v0, V3 v1) {
     v.sub2(atom2, atomRef);
     v.z = 0;
     v.normalize();
     v1.cross(v0, v);
     double theta = Math.acos(v.dot(v0));
-    atom2.z = atomRef.z + (float) (0.8f * Math.sin(4 * theta));
+    atom2.z = atomRef.z + (float) (0.8f * Math.sin(4*theta));
   }
 
   ///////////////  shapes  ///////////////

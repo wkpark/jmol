@@ -228,6 +228,10 @@ public class SticksRenderer extends FontLineShapeRenderer {
 
     int mask = 0;
     switch (bondOrder) {
+    case Edge.BOND_STEREO_NEAR:
+    case Edge.BOND_STEREO_FAR:
+      bondOrder = 1;
+      //$FALL-THROUGH$
     case 1:
     case 2:
     case 3:

@@ -1993,7 +1993,7 @@ public class CIPChirality {
           continue;
         int abs = Math.abs(score);
         if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
-          Logger.info(ai.dots() + "compareDeep sub " + ai + " " + bi + ": " + score);
+          Logger.info(ai.dots() + "compareDeep sub " + ai + " " + bi + ": " + score + "/" + finalScore);
         if (abs < absScore) {
           absScore = abs;
           finalScore = score;
@@ -3008,8 +3008,8 @@ public class CIPChirality {
         }
       }
       a.ties = null;
-      if (Logger.debugging)
-        Logger.info("cloning " + this + " as " + a);
+//      if (Logger.debugging)
+//        Logger.info("cloning " + this + " as " + a);
       return a;
 
     }

@@ -5,21 +5,29 @@
 // 5/21/2017 4:57:14 PM -- adds AY-236.193,194,195,196 spiro
 // 5/27/2017 10:26:49 AM -- finalized - full validation    
 
-sourcedir = "cip" // local version
-
+//sourcedir = "cip" // local version
 sourcedir = "https://www.stolaf.edu/people/hansonr/jmol/cip"
 
 
 // Check a set of Jmol 3D files -- first line includes "CIP:xxxxx;"
 
 function checkCIP(info, n) {
+  if (0 + info > 0) {
+    n = info
+    info = thisSDF
+  }
   thisSDF = info
   var first = (n ? n : info.first)
   var last = (n ? n : info.last)
   for (var i = first; i <= last; i++) {
     if (info.skip & i) continue
+//    load @{info.sdffile} @i
+//    var bb = _M.molData.ref_pname_pin
     var f = sourceDir + "/testSuites/"+info.id+"/" + info.id + "_" + (("000" + i)%-3) + ".mol";
     checkrs(f, 1, "*")
+//    var rs = {chirality != ""}.label("%i%[chirality]").join(" ")
+//    frame title @{"CIP:" + rs + "; BB:" + bb + ";"}
+//    write coord @_modelFile
   }
 }
 
@@ -73,20 +81,14 @@ function checkRS(fname, n, key, isQuiet) {
     n = 1;
   var doCheck = !!key
   var a = 0;
+  fname = fname.replace("://",":/")
   if (fname.find("//")) {
     fname = fname.split("//")
-    switch (fname.length) {
-      case 2:
-      key = fname[2]
-      fname = fname[1]
-      break;
-      case 3:
-      // http://
-      key = fname[3] 
-      fname = fname[1] + "//" + fname[2]
-    }
-    doCheck = key;
+    key = fname[2]
+    fname = fname[1]
+    doCheck = key
   }
+  fname = fname.replace(":/", "://")
   if (thisN && (nOK + 1) != thisN) {
    nOK++;
    return;
@@ -114,7 +116,7 @@ function checkRS(fname, n, key, isQuiet) {
     
   var rs = {selected}.label("%[chirality]").join("")
   var isok = true
-  print " " + doCheck + " key=" + key + " found=" + rs 
+  var isjmol = false
   if (doCheck) {
     var ref = ""
     if (docheck != key) {
@@ -122,12 +124,15 @@ function checkRS(fname, n, key, isQuiet) {
         // accepts data in various forms
         ref = _M.molData["chiral_atoms"].replace("\n","").replace(" ","") + _M.molData["stereounits"] + _M.molData["stereo"]
       } else if (_modelTitle.find("CIP:")) {
-          ref = _modelTitle.split("CIP:")[2].split(";")[1]
+        ref = _modelTitle.split("CIP:")[2].split(";")[1]
+        isjmol = true
       }
     }
     if (ref) {
       rs = ""
-      if (ref.find("focus:")) {
+      if (isjmol){
+        rs = {selected}.label("%i%[chirality]").join(" ")
+      } else if (ref.find("focus:")) {
         // MY64
         var tokens = ref.split("focus:");
         ref = ""
@@ -178,6 +183,7 @@ function checkRS(fname, n, key, isQuiet) {
       } else {
         var s = "" + n + "??\t" + fname + "\t // found " + rs + "; should be " + key
         print s
+//        ans = "yes"
         ans = prompt(s.replace("\t"," ") + " \n\n continue?", "yes")
       }
       if (ans != "yes") quit 
@@ -191,35 +197,6 @@ function checkRS(fname, n, key, isQuiet) {
 }
 
 ///// older code for extracting from SDF files
-
-// check selected models in a multi-model 2D- or 3D-SDF file
-
-function checkRSDF(info, n) {
-  thisSDF = info
-  var first = (n ? n : info.first)
-  var last = (n ? n : info.last)
-  for (var i = first; i <= last; i++) {
-    if (info.skip & i) continue
-    var f,pt,issdf,bb
-    var fix = (info.override ? info.override["" + i] : "")
-    if (fix.find("@3D ") == 1) {
-      if (dowrite) {
-        load @{info.sdffile} i
-        bb = _M.molData.ref_pname_pin
-      }
-      f = info.prefix3d + i + ".mol"
-      fix = fix.split("@3D ")[2]
-      pt = 1
-      issdf = false
-    } else {
-      f = info.sdffile
-      issdf = true
-      pt = i
-    }
-    var f = f + (fix ? "//" + fix : "")
-    checkrs(f, pt, "*")
-  }
-}
 
 function findSDF(info, what) {
   if (!what) {
@@ -242,6 +219,29 @@ function findSDF(info, what) {
   }
   print "" + found.length + " found for " + what + ": " + format("json", ivals) 
 }
+
+function bhtest(info, n) {
+  // bhtest 3
+  // bhtest MV64 3
+  if (info) {
+    if (!n) {
+      n = info
+      info = ""
+    }
+  }
+  checkCIP((info ? info : thisSDF),n)
+  label %a;background labels yellow
+  refresh
+  select *
+  //set loglevel 6
+  print _M.molData
+  print {*}.chirality.join(",").trim(",")
+  //print {*}.chirality.pivot
+  print {*}.find("SMILES")
+  showRS
+}
+
+
 /////////////////////////////////////////////////////////////////////
 //
 // structures from a multi-model SDF file that may have stereochemistry annotations
@@ -313,6 +313,7 @@ if (ans == "yes") {
 // full test run
 
 checkCIP(AY236)
+quit
 checkCIP(MV116)
 checkCIP(MV64)
 checkRdir("bytype/centres", "*")

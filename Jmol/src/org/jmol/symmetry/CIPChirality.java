@@ -1486,7 +1486,8 @@ public class CIPChirality {
       if (Logger.debugging) {
         if (sphere < MAX_PATH) // Logger
           myPath = (parent != null ? parent.myPath + "-" : "") + this; // Logger
-        Logger.info("new CIPAtom " + myPath);
+        if (Logger.debuggingHigh)
+          Logger.info("new CIPAtom " + myPath);
       }
       return this;
     }
@@ -1681,7 +1682,7 @@ public class CIPChirality {
         priorities[i] = 0;
       }
 
-      if (Logger.debugging) {
+      if (Logger.debuggingHigh) {
         Logger.info(root + "---sortSubstituents---" + this);
         for (int i = 0; i < 4; i++) { // Logger
           Logger.info(getRuleName() + ": " + this + "[" + i + "]="
@@ -1816,7 +1817,7 @@ public class CIPChirality {
           break;
         }
       }
-      if ((Logger.debugging) && atoms[2].atom != null && atoms[2].elemNo != 1) {
+      if ((Logger.debuggingHigh) && atoms[2].atom != null && atoms[2].elemNo != 1) {
         Logger.info(dots() + atom + " nPriorities = " + nPriorities);
         for (int i = 0; i < 4; i++) { // Logger
           Logger.info(dots() + myPath + "[" + i + "]=" + atoms[i] + " "
@@ -1986,20 +1987,20 @@ public class CIPChirality {
       int finalScore = (nAtoms == 0 ? B_WINS : TIED), absScore = Integer.MAX_VALUE;
       for (int i = 0; i < nAtoms; i++) {
         CIPAtom ai = atoms[i], bi = b.atoms[i];
-        if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
+        if (Logger.debuggingHigh && ai.isHeavy() && bi.isHeavy())
           Logger.info(ai.dots() + "compareDeep sub " + this + "." + ai + " " + b + "." + bi);
         int score = ai.breakTie(bi, sphere + 1);
         if (score == TIED)
           continue;
         int abs = Math.abs(score);
-        if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
-          Logger.info(ai.dots() + "compareDeep sub " + ai + " " + bi + ": " + score + "/" + finalScore);
         if (abs < absScore) {
+          if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
+            Logger.info(ai.dots() + "compareDeep sub " + ai + " " + bi + ": " + score + "/" + finalScore);
           absScore = abs;
           finalScore = score;
         }
       }
-      if (Logger.debugging)
+      if (Logger.debuggingHigh)
         Logger.info(dots() + "compareDeep " + this + " " + b + ": " + finalScore);
       return finalScore;
     }
@@ -2173,7 +2174,7 @@ public class CIPChirality {
           auxEZ = STEREO_BOTH_EZ;
       }
       alkeneParent.auxEZ = auxEZ;
-      if (Logger.debugging)
+      if (Logger.debuggingHigh)
         Logger.info("getZaux " + alkeneParent + " " + auxEZ);
       return auxEZ;
     }
@@ -2227,7 +2228,7 @@ public class CIPChirality {
       CIPAtom thisAtom = this, newSub, oldParent = fromAtom, oldSub = newParent;
       // create path back to root
       while (oldParent.parent != null && oldParent.parent.atoms[0] != null) {
-        if (Logger.debugging)
+        if (Logger.debuggingHigh)
           Logger.info("path:" + oldParent.parent + "->" + oldParent);
         path.addLast(oldParent = oldParent.parent);
       }
@@ -2265,7 +2266,7 @@ public class CIPChirality {
                                           CIPAtom newSub) {
       for (int i = 0; i < 4; i++)
         if (atoms[i] == oldSub || newParent == null && atoms[i].atom == null) {
-          if (Logger.debugging)
+          if (Logger.debuggingHigh)
             Logger.info("reversed: " + newParent + "->" + this + "->" + newSub);
           parent = newParent;
           atoms[i] = newSub;

@@ -1520,42 +1520,62 @@ public class SV extends T implements JSONEncodable {
 
   /**
    * 
-   * Script variables are pushed after cloning, because
-   * the name comes with them when we do otherwise
-   * they are not mutable anyway. We do want to have actual
+   * Script variables are pushed after cloning, because the name comes with them
+   * when we do otherwise they are not mutable anyway. We do want to have actual
    * references to points, lists, and associative arrays
-   * 
+   * @param mapKey
    * @param value
    *        null to pop
-   * @param mapKey
+   * 
    * @return array
    */
-  public SV pushPop(SV value, SV mapKey) {
-    if (mapKey != null) {
+  public SV pushPop(SV mapKey, SV value) {
+    if (mapKey == null) {
+      Map<String, SV> m = getMap();
+      if (m == null) {
+        Lst<SV> x = getList();
+        if (value == null || x == null) {
+          // array.pop()
+          return (x == null || x.size() == 0 ? newS("") : x.removeItemAt(x
+              .size() - 1));
+        }
+        // array.push(value)
+        x.addLast(newI(0).setv(value));
+      } else {
+        if (value == null) {
+          // assocArray.pop()
+          m.clear();   // new Jmol 14.18
+        } else {
+          Map<String, SV> m1 = value.getMap();
+          if (m1 != null)
+            m.putAll(m1);  // new Jmol 14.18
+          // assocArray.push(value)
+        }
+      }
+    } else {
       Map<String, SV> m = getMap();
       if (value == null) {
         SV v = null;
         if (m == null) {
+          // array.pop(i)
           Lst<SV> lst = getList();
           int len = lst.size();
           int i = iValue(mapKey) - 1;
           if (i < 0)
-              i += len;
+            i += len;
           if (i >= 0 && i < len) {
             v = lst.removeItemAt(i);
           }
         } else {
+          // assocArray.pop(key)
           v = m.remove(mapKey.asString());
         }
         return (v == null ? newS("") : v);
       }
-      if (m != null)
+      if (m != null) {
+        //assocArray.push(key,value)
         m.put(mapKey.asString(), newI(0).setv(value));
-    } else {
-      Lst<SV> x = getList();
-      if (value == null || x == null)
-        return (x == null || x.size() == 0 ? newS("") : x.removeItemAt(x.size() - 1));
-      x.addLast(newI(0).setv(value));
+      }
     }
     return this;
   }

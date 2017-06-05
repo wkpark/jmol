@@ -1477,7 +1477,8 @@ public class ModelSet extends BondCollection {
   }
 
   public void setInfo(int modelIndex, Object key, Object value) {
-    am[modelIndex].auxiliaryInfo.put((String) key, value);
+    if (modelIndex >= 0 && modelIndex < mc)
+      am[modelIndex].auxiliaryInfo.put((String) key, value);
   }
 
   public Object getInfo(int modelIndex, String key) {

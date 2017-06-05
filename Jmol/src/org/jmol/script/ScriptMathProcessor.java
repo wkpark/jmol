@@ -1150,6 +1150,12 @@ public class ScriptMathProcessor {
       return addXBool(SV.isLike(x1, x2));
     case T.plus:
       switch (x1.tok) {
+      case T.hash:
+        Map<String, SV> ht = new Hashtable<String, SV>((Map<String, SV>) x1.value);
+        Map<String, SV> map = x2.getMap();
+        if (map != null)
+          ht.putAll(map); // new Jmol 14.18
+        return addX(SV.getVariableMap(ht));
       case T.integer:
         if (!isDecimal(x2))
           return addXInt(x1.intValue + x2.asInt());

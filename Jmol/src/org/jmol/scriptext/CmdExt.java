@@ -4323,9 +4323,13 @@ public class CmdExt extends ScriptExt {
                 + "///");
             filter = null;
           }
-          if (msg == null)
+          if (msg == null) {
+            int level = Logger.getLogLevel();
+            Logger.setLogLevel(4);
             msg = (tok == T.smiles ? vwr.getSmiles(null) : vwr
                 .getOpenSmiles(null));
+            Logger.setLogLevel(level);
+          }
         } catch (Exception ex) {
           msg = ex.getMessage();
         }
@@ -4438,6 +4442,9 @@ public class CmdExt extends ScriptExt {
       checkLength(2 + filterLen);
       if (!chk)
         msg = vwr.getAllSettings(null);
+      break;
+    case T.title:
+      msg = vwr.getFrameTitle();
       break;
     case T.url:
       // in a new window

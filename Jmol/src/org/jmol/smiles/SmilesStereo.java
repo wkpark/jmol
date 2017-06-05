@@ -545,17 +545,13 @@ public class SmilesStereo {
       Logger.debug("checking stereochemistry...");
 
     //for debugging, first try SET DEBUG
-    //for (int i = 0; i < ac; i++) {
-    //  SmilesAtom sAtom = patternAtoms[i];
-    //  System.out.print(sAtom + "=");
-    //}
-    //System.out.println("");
-    //for (int i = 0; i < ac; i++) {
-    //  SmilesAtom sAtom = patternAtoms[i];
-    //  JmolSmilesNode atom0 = jmolAtoms[sAtom.getMatchingAtom()];
-    //  System.out.print(atom0.getIndex() + "-");
-    //}
-    //System.out.println("");
+//System.out.println("");
+//for (int i = 0; i < search.ac; i++) {
+//  SmilesAtom sAtom = search.patternAtoms[i];
+//  Node atom0 = sAtom.getMatchingAtom();
+//  System.out.print(atom0.getIndex() + (sAtom.stereo != null ? "@" : "") + "-");
+//}
+//System.out.println("");
 
     for (int i = 0; i < search.ac; i++) {
       SmilesAtom pAtom = search.patternAtoms[i];
@@ -577,8 +573,8 @@ public class SmilesStereo {
       if (haveTopo && sAtom0.getChiralClass() != chiralClass)
         return false;
       if (Logger.debugging)
-        Logger.debug("...type " + chiralClass + " for pattern atom " + pAtom
-            + " " + atom0);
+        Logger.debug("...type " + chiralClass + " for pattern atom \n " + pAtom
+            + "\n " + atom0);
       switch (chiralClass) {
       case POLYHEDRAL:
         if (pAtom.stereo.isNot)
@@ -950,14 +946,16 @@ public class SmilesStereo {
    * @return 1 for "@", 2 for "@@"
    */
   static int getHandedness(SimpleNode a, SimpleNode b, SimpleNode c, SimpleNode pt, VTemp v) {
-    float d = Measure.getNormalThroughPoints((P3) a, (P3) b, (P3) c, v.vTemp, v.vA);    
-//    int atat = (distanceToPlane(v.vTemp, d, (P3) pt) > 0 ? 1 : 2);
+    float d = Measure.getNormalThroughPoints((P3) a, (P3) b, (P3) c, v.vTemp, v.vA);
+    //int atat = (Measure.distanceToPlaneV(v.vTemp, d, (P3) pt) > 0 ? 1 : 2);
 //    System.out.println("$ draw p1 " + P3.newP((P3)a) +" color red '"+a+" [2]'");
 //    System.out.println("$ draw p2 " + P3.newP((P3)b) +"  color green '"+b+" [3]'");
 //    System.out.println("$ draw p3 " + P3.newP((P3)c) +"  color blue '"+c+" [4]'");
 //    System.out.println("$ draw p " + P3.newP((P3)a) +" " + P3.newP((P3)b) +" " + P3.newP((P3)c) +"" );
 //    System.out.println("$ draw v vector {" + P3.newP((P3)pt) +"}  " + v.vTemp+" '"+ (atat==2 ? "@@" : "@")+ pt + " [1]' color " + (atat == 2 ? "white" : "yellow"));
-    return (Measure.distanceToPlaneV(v.vTemp, d, (P3) pt) > 0 ? 1 : 2);
+    d = Measure.distanceToPlaneV(v.vTemp, d, (P3) pt);
+//    System.out.println("# " + d);
+    return (d > 0 ? 1 : 2);
   }
 
   private static void getPlaneNormals(P3 atom1, P3 atom2, P3 atom3,

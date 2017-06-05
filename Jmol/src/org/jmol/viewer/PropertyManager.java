@@ -1218,7 +1218,6 @@ public class PropertyManager implements JmolPropertyManager {
         bsBonds = getCovalentBondsForAtoms(ms.bo, ms.bondCount, bsTemp);
         if (!(isOK = addMolFile(i, mol, bsTemp, bsBonds, false, false, noAromatic, q)))
           break;
-        mol.append("$$$$\n");
       }
     } else if (isXYZ) {
       LabelToken[] tokensXYZ = LabelToken.compile(vwr,
@@ -1314,6 +1313,7 @@ public class PropertyManager implements JmolPropertyManager {
     int nBonds = bsBonds.cardinality();
     if (!asV3000 && !asJSON && (nAtoms > 999 || nBonds > 999))
       return false;
+    boolean asSDF = (iModel >= 0);
     ModelSet ms = vwr.ms;
     int[] atomMap = new int[ms.ac];
     P3 pTemp = new P3();
@@ -1354,15 +1354,31 @@ public class PropertyManager implements JmolPropertyManager {
     else {
       mol.append("M  END\n");
     }
-    if (!asJSON && !asV3000) {
+    if (asSDF) {
+      try {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> molData = (Map<String, Object>) vwr.ms.getInfo(iModel, "molData");
       float[] pc = ms.getPartialCharges();
       if (pc != null) {
-        mol.append("> <JMOL_PARTIAL_CHARGES>\n").appendI(nAtoms)
-            .appendC('\n');
+        if (molData == null)
+          molData = new Hashtable<String, Object>();
+        SB sb = new SB();
+        sb.appendI(nAtoms).appendC('\n');
         for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
             .nextSetBit(i + 1))
-          mol.appendI(++n).append(" ").appendF(pc[i]).appendC('\n');
+          sb.appendI(++n).append(" ").appendF(pc[i]).appendC('\n');
+        molData.put("jmol_partial_charges",   sb.toString());
       }
+      for (String key: molData.keySet()) {
+        Object o = molData.get(key);
+        if (o instanceof SV)
+          o = ((SV)o).asString();
+        mol.append("> <" + key.toUpperCase() + ">\n").append(PT.trim(o.toString(), "\n")).append("\n\n");
+      }
+      } catch (Throwable e) {
+        // ignore
+      }
+      mol.append("$$$$\n");
     }
     return true;
   }

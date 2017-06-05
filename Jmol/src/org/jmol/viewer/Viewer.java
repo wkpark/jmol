@@ -8972,10 +8972,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     SV p = pickedList.pushPop(null, null);
     // don't allow double click
     if (p.tok == T.bitset)
-      pickedList.pushPop(p, null);
+      pickedList.pushPop(null, p);
     if (p.tok != T.bitset || !((BS) p.value).get(atomIndex))
-      pickedList.pushPop(SV.newV(T.bitset, BSUtil.newAndSetBit(atomIndex)),
-          null);
+      pickedList.pushPop(null,
+          SV.newV(T.bitset, BSUtil.newAndSetBit(atomIndex)));
   }
   
   /**

@@ -29,10 +29,9 @@ import java.util.Map;
 
 import javajs.util.PT;
 
-import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Elements;
 import org.jmol.util.Logger;
 
 /**
@@ -131,37 +130,30 @@ public class MolReader extends AtomSetCollectionReader {
   }
 
   private void processMolSdHeader() throws Exception {
-    /* 
-     * obviously we aren't being this strict, but for the record:
-     *  
-     * from ctfile.pdf (October 2003):
-     * 
-     * Line 1: Molecule name. This line is unformatted, but like all 
-     * other lines in a molfile may not extend beyond column 80. 
-     * If no name is available, a blank line must be present.
-     * Caution: This line must not contain any of the reserved 
-     * tags that identify any of the other CTAB file types 
-     * such as $MDL (RGfile), $$$$ (SDfile record separator), 
-     * $RXN (rxnfile), or $RDFILE (RDfile headers). 
-     * 
-     * Line 2: This line has the format:
-     * IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
-     * (FORTRAN: A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6-> )
-     * User's first and last initials (l), program name (P), 
-     * date/time (M/D/Y,H:m), dimensional codes (d), scaling factors (S, s), 
-     * energy (E) if modeling program input, internal 
-     * registry number (R) if input through MDL form. A blank line can be 
-     * substituted for line 2. If the internal registry number is more than 
-     * 6 digits long, it is stored in an M REG line (described in Chapter 3). 
-     * 
-     * Line 3: A line for comments. If no comment is entered, a blank line 
-     * must be present.
-     */
-
+    // We aren't being this strict. Line definitions are from ctfile.pdf (October 2003)
     String header = "";
+    // Line 1: Molecule name. This line is unformatted, but like all 
+    // other lines in a molfile may not extend beyond column 80. 
+    // If no name is available, a blank line must be present.
+    // Caution: This line must not contain any of the reserved 
+    // tags that identify any of the other CTAB file types 
+    // such as $MDL (RGfile), $$$$ (SDfile record separator), 
+    // $RXN (rxnfile), or $RDFILE (RDfile headers). 
+    // 
     String thisDataSetName = line.trim();
-    header += line + "\n";
     asc.setCollectionName(thisDataSetName);
+
+    header += line + "\n";
+
+    // Line 2: This line has the format:
+    // IIPPPPPPPPMMDDYYHHmmddSSssssssssssEEEEEEEEEEEERRRRRR
+    // (FORTRAN: A2<--A8--><---A10-->A2I2<--F10.5-><---F12.5--><-I6-> )
+    // User's first and last initials (l), program name (P), 
+    // date/time (M/D/Y,H:m), dimensional codes (d), scaling factors (S, s), 
+    // energy (E) if modeling program input, internal 
+    // registry number (R) if input through MDL form. A blank line can be 
+    // substituted for line 2. If the internal registry number is more than 
+    // 6 digits long, it is stored in an M REG line (described in Chapter 3). 
     rd();
     if (line == null)
       return;
@@ -173,15 +165,14 @@ public class MolReader extends AtomSetCollectionReader {
       appendLoadNote("This model is 2D. Its 3D structure has not been generated.");
     }
     asc.setInfo("dimension", dimension);
-    //line 3: comment
+    
+    // Line 3: A line for comments. If no comment is entered, a blank line 
+    // must be present.
     rd();
     if (line == null)
       return;
     line = line.trim();
     header += line + "\n";
-    if (line.length() != 0) {
-      thisDataSetName += ": " + line;
-    }
     Logger.info(header);
     checkCurrentLineForScript();
     asc.setInfo("fileHeader", header);
@@ -277,7 +268,6 @@ public class MolReader extends AtomSetCollectionReader {
 
     // read V2000 user data
 
-    Atom[] atoms = asc.atoms;
     Map<String, String> molData = new Hashtable<String, String>();
     rd();
     while (line != null && line.indexOf("$$$$") != 0) {
@@ -312,18 +302,26 @@ public class MolReader extends AtomSetCollectionReader {
     rd();
   }
 
+  /**
+   * Read the SDF data with name in lower case
+   * 
+   * @param molData
+   * @throws Exception
+   */
   private void readMolData(Map<String, String> molData) throws Exception {
     Atom[] atoms = asc.atoms;
+    // "> <xxx>" becomes "xxx"
+    // "> yyy <xxx> zzz" becomes "yyy <xxx> zzz"
     String dataName = PT.trim(line, "> <").toLowerCase();
     String data = "";
     float[] fdata = null;
-    while (rd() != null && line.indexOf("$$$$") != 0
-        && line.indexOf(">") != 0) {
+    // officially, we need a terminating blank line, and $$$$ could be data,
+    // but here we do not allow $$$$ due to Jmol legacy writing of JMOL_PARTIAL_CHARGES
+    while (rd() != null && !line.equals("$$$$")
+        && line.length() > 0)
       data += line + "\n";
-      continue;
-    }
     data = PT.trim(data, "\n");
-    Logger.info(dataName + ":" + data.replace('\n', '|'));
+    Logger.info(dataName + ":" + PT.esc(data));
     molData.put(dataName, data);
     if (dataName.toUpperCase().contains("_PARTIAL_CHARGES")) {
       try {

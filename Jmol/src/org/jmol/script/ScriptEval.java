@@ -5176,6 +5176,8 @@ public class ScriptEval extends ScriptExpr {
           isRange = true;
           break;
         case T.property:
+          if (modelIndex < 0 && (modelIndex = vwr.am.cmi) < 0)
+            return;
           propName = paramAsStr(++i);
           SV sv = setVariable(++i, -1, "", false);
           if (sv != null && !chk) {
@@ -5185,8 +5187,9 @@ public class ScriptEval extends ScriptExpr {
             }
             prop = SV.oValue(sv);
           }
-          i = slen;
-          break;
+          if (!chk)
+            vwr.ms.setInfo(modelIndex, propName, prop);
+          return;
         default:
           frameControl(offset);
           return;
@@ -5256,11 +5259,6 @@ public class ScriptEval extends ScriptExpr {
       }
     }
 
-    if (propName != null) {
-      if (modelIndex >= 0)
-        vwr.ms.setInfo(modelIndex, propName, prop);
-      return;
-    }
     if (!isPlay && !isRange || modelIndex >= 0)
       vwr.setCurrentModelIndexClear(modelIndex, false);
     if (isPlay && nFrames == 2 || isRange || isHyphen) {

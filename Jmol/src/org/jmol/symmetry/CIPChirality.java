@@ -161,7 +161,7 @@ import org.jmol.viewer.JC;
  * node to the root node.
  * 
  * 
- * Rationale: Giving the distance of the duplicated atom introduces a Kekule
+ * Rationale: Using only the distance of the duplicated atom (ii) introduces a Kekule
  * bias, which is not acceptable.
  * 
  * @author Bob Hanson hansonr@stolaf.edu

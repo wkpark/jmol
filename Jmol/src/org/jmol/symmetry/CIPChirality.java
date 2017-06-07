@@ -2615,9 +2615,8 @@ public class CIPChirality {
               subRS = "";
               break;
             case NOT_RELEVANT:
-              s = "";
+              // a and b are different priorities - we need to check to see if we have a chiral branch node
               isBranch = true;
-              adj = TIED;
               break;
             case DIASTEREOMERIC_A_WINS:
             case DIASTEREOMERIC_B_WINS:
@@ -2682,7 +2681,7 @@ public class CIPChirality {
           if (ret != null)
             ret[0] = this;
         }
-        if (!isBranch || adj == A_WINS || adj == B_WINS) {
+        if (!isBranch || adj == A_WINS || adj == B_WINS || adj == NOT_RELEVANT) {
           if (isAlkene) {
             if (!isBranch && alkeneChild != null) {
               // must be alkeneParent 
@@ -2731,7 +2730,7 @@ public class CIPChirality {
             // if adj is 1 or -1, then we check for one fewer priorities because
             // it means we had two groups that were either enantiomers or diasteriomers
 
-            if (isBranch) {
+            if (isBranch && adj != NOT_RELEVANT) {
               // if here, adj is A_WINS (-1), or B_WINS (1) 
               // we check based on A winning, but then reverse it if B actually won
               switch (checkPseudoHandedness(mataList, null)) {

@@ -108,6 +108,8 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
+ * 6/8/2017 Jmol 14.18.2 removed unnecessary presort for Rule 1b
+ * 
  * 5/27/17 Jmol 14.17.2 fully interfaced using SimpleNode and SimpleEdge
  * 
  * 5/27/17 Jmol 14.17.1 fully validated; simplified code; 978 lines
@@ -419,8 +421,12 @@ public class CIPChirality {
 
   V3 vNorm = new V3(), vNorm2 = new V3(), vTemp = new V3();
 
+  boolean allowRule1bAlkenes = true;
+
   public CIPChirality() {
-    // for reflection 
+    // for reflection
+    System.out.println("TESTING ALLOWRULE1B");
+    allowRule1bAlkenes = false;
   }
 
   /**
@@ -1466,7 +1472,7 @@ public class CIPChirality {
       if (parent == null) {
         // original atom
         bsPath.set(atomIndex);
-      } else if (sp2Duplicate && isKekuleAmbiguous) {
+      } else if (sp2Duplicate && (!allowRule1bAlkenes || isKekuleAmbiguous)) {
         // *** Rule 1b Jmol amendment ***
       } else if (atom == root.atom) {
         // pointing to original atom
@@ -1881,13 +1887,13 @@ public class CIPChirality {
       if (isTerminal != b.isTerminal)
         return (isTerminal ? B_WINS : A_WINS) * (sphere + 1);
 
-      // Rule 1b requires a special presort to ensure that all duplicate atoms 
-      // are in the right order -- first by element number and then by root distance.
-
-      if (currentRule == RULE_1b) {
-        preSortRule1b();
-        b.preSortRule1b();
-      }
+// not necessary after all     // Rule 1b requires a special presort to ensure that all duplicate atoms 
+//      // are in the right order -- first by element number and then by root distance.
+//
+//      if (currentRule == RULE_1b && false) {
+//        preSortRule1b();
+//        b.preSortRule1b();
+//      }
 
       // Phase I -- shallow check only
       //
@@ -1914,27 +1920,27 @@ public class CIPChirality {
       return compareDeeply(b, sphere);
     }
 
-    /**
-     * Sort duplicate nodes of the same element by root distance, from closest
-     * to root to furthest.
-     * 
-     */
-    private void preSortRule1b() {
-      CIPAtom a1, a2;
-      for (int i = 0; i < 3; i++) {
-        if (!(a1 = atoms[i]).isDuplicate)
-          continue;
-        for (int j = i + 1; j < 4; j++) {
-          if (!(a2 = atoms[j]).isDuplicate || a1.elemNo != a2.elemNo
-              || a1.rootDistance <= a2.rootDistance)
-            continue;
-          atoms[i] = a2;
-          atoms[j] = a1;
-          j = 4;
-          i = -1;
-        }
-      }
-    }
+//    /**
+//     * Sort duplicate nodes of the same element by root distance, from closest
+//     * to root to furthest.
+//     * 
+//     */
+//    private void preSortRule1b() {
+//      CIPAtom a1, a2;
+//      for (int i = 0; i < 3; i++) {
+//        if (!(a1 = atoms[i]).isDuplicate)
+//          continue;
+//        for (int j = i + 1; j < 4; j++) {
+//          if (!(a2 = atoms[j]).isDuplicate || a1.elemNo != a2.elemNo
+//              || a1.rootDistance <= a2.rootDistance)
+//            continue;
+//          atoms[i] = a2;
+//          atoms[j] = a1;
+//          j = 4;
+//          i = -1;
+//        }
+//      }
+//    }
 
     /**
      * Just checking for hydrogen.
@@ -1994,10 +2000,10 @@ public class CIPChirality {
           continue;
         int abs = Math.abs(score);
         if (abs < absScore) {
-          if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
-            Logger.info(ai.dots() + "compareDeep sub " + ai + " " + bi + ": " + score + "/" + finalScore);
           absScore = abs;
           finalScore = score;
+          if (Logger.debugging && ai.isHeavy() && bi.isHeavy())
+            Logger.info(ai.dots() + "compareDeep sub " + ai + " " + bi + ": " + score);
         }
       }
       if (Logger.debuggingHigh)
@@ -2112,7 +2118,8 @@ public class CIPChirality {
 
     private int checkRule1b(CIPAtom b) {
       return b.isDuplicate != isDuplicate ? TIED
-          : b.rootDistance != rootDistance ? (b.rootDistance > rootDistance ? A_WINS
+          : !allowRule1bAlkenes && (b.isAlkene || b.isAlkene) ? TIED :   
+            b.rootDistance != rootDistance ? (b.rootDistance > rootDistance ? A_WINS
               : B_WINS)
               : TIED;
     }

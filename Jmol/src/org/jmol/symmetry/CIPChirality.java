@@ -425,8 +425,8 @@ public class CIPChirality {
 
   public CIPChirality() {
     // for reflection
-    System.out.println("TESTING ALLOWRULE1B");
-    allowRule1bAlkenes = false;
+    //System.out.println("TESTING ALLOWRULE1B");
+    //allowRule1bAlkenes = false;
   }
 
   /**
@@ -773,7 +773,7 @@ public class CIPChirality {
    *        tracks all atoms in this molecular unit
    */
   private void getSmallRings(SimpleNode atom, BS bs) {
-    root = new CIPAtom().create(atom, null, false, false);
+    root = new CIPAtom().create(atom, null, false, false, false);
     addSmallRings(root, bs);
   }
 
@@ -800,7 +800,7 @@ public class CIPChirality {
           || (atom2 = bond.getOtherNode(a.atom)).getCovalentBondCount() == 1
           || a.parent != null && atom2 == a.parent.atom)
         continue;
-      CIPAtom r = a.addAtom(pt++, atom2, false, false);
+      CIPAtom r = a.addAtom(pt++, atom2, false, false, false);
       if (r.isDuplicate)
         r.updateRingList();
     }
@@ -968,7 +968,7 @@ public class CIPChirality {
     boolean isChiral = false, isAlkene = false;
     try {
       if (cipAtom == null) {
-        cipAtom = new CIPAtom().create(atom, null, false, isAlkene);
+        cipAtom = new CIPAtom().create(atom, null, false, isAlkene, false);
         int nSubs = atom.getCovalentBondCount(), elemNo = atom.getElementNumber();
         isAlkene = (nSubs == 3 && elemNo <= 10 && !cipAtom.isTrigonalPyramidal); // (IUPAC 2013.P-93.2.4)
         if (nSubs != (parent == null ? 4 : 3)
@@ -1071,10 +1071,10 @@ public class CIPChirality {
    */
   private int setBondChirality(SimpleNode a, SimpleNode pa, SimpleNode pb, SimpleNode b,
                                boolean isAxial, int ruleMax) {
-    CIPAtom a1 = new CIPAtom().create(a, null, false, true);
+    CIPAtom a1 = new CIPAtom().create(a, null, false, true, false);
     int atop = getAlkeneEndTopPriority(a1, pa, isAxial, ruleMax);
     int ruleA = currentRule;
-    CIPAtom b2 = new CIPAtom().create(b, null, false, true);
+    CIPAtom b2 = new CIPAtom().create(b, null, false, true, false);
     int btop = getAlkeneEndTopPriority(b2, pb, isAxial, ruleMax);
     int ruleB = currentRule;
     int c = (atop >= 0 && btop >= 0 ? getEneChirality(b2.atoms[btop], b2, a1,
@@ -1127,7 +1127,7 @@ public class CIPChirality {
                                       int ruleMax) {
     a.canBePseudo = a.isAxialRoot = isAxial;
     return getAtomChiralityLimited(a.atom, a,
-        new CIPAtom().create(pa, null, false, true), ruleMax) - 1;
+        new CIPAtom().create(pa, null, false, true, false), ruleMax) - 1;
   }
 
   /**
@@ -1429,10 +1429,11 @@ public class CIPChirality {
      * @param parent
      * @param isDuplicate
      * @param isAlkene
+     * @param isParentBond TODO
      * @return this
      */
     CIPAtom create(SimpleNode atom, CIPAtom parent, boolean isDuplicate,
-                   boolean isAlkene) {
+                   boolean isAlkene, boolean isParentBond) {
       this.id = ++ptID;
       this.parent = parent;
       if (atom == null)
@@ -1481,8 +1482,8 @@ public class CIPChirality {
         rootSubstituent.spiroEnd = parent;
       } else if (bsPath.get(atomIndex)) {
         isDuplicate = true;
-        rootDistance = rootSubstituent.htPathPoints.get(
-            Integer.valueOf(atomIndex)).intValue();
+        rootDistance = (isParentBond ? parent.sphere : rootSubstituent.htPathPoints.get(
+            Integer.valueOf(atomIndex)).intValue());
       } else {
         bsPath.set(atomIndex);
         rootSubstituent.htPathPoints.put(Integer.valueOf(atomIndex),
@@ -1492,8 +1493,7 @@ public class CIPChirality {
       if (Logger.debugging) {
         if (sphere < MAX_PATH) // Logger
           myPath = (parent != null ? parent.myPath + "-" : "") + this; // Logger
-        if (Logger.debuggingHigh)
-          Logger.info("new CIPAtom " + myPath);
+        Logger.info("new CIPAtom " + myPath);
       }
       return this;
     }
@@ -1583,20 +1583,20 @@ public class CIPChirality {
         // from here on, isTerminal indicates an error condition
         switch (order) {
         case 3:
-          if (addAtom(pt++, other, isParentBond, false) == null) {
+          if (addAtom(pt++, other, isParentBond, false, isParentBond) == null) {
             isTerminal = true;
             return false;
           }
           //$FALL-THROUGH$
         case 2:
-          if (addAtom(pt++, other, order != 2 || isParentBond, order == 2) == null) {
+          if (addAtom(pt++, other, order != 2 || isParentBond, order == 2, isParentBond) == null) {
             isTerminal = true;
             return false;
           }
           //$FALL-THROUGH$
         case 1:
           if (!isParentBond
-              && addAtom(pt++, other, order != 1 && elemNo <= 10, false) == null) {
+              && addAtom(pt++, other, order != 1 && elemNo <= 10, false, false) == null) {
             isTerminal = true;
             return false;
           }
@@ -1610,7 +1610,7 @@ public class CIPChirality {
       isTerminal = (pt == 0);
       nAtoms = pt;
       for (; pt < atoms.length; pt++)
-        atoms[pt] = new CIPAtom().create(null, this, true, false);
+        atoms[pt] = new CIPAtom().create(null, this, true, false, false);
 
       // Do an initial very shallow atom-only Rule 1 sort using a.compareTo(b)
 
@@ -1646,7 +1646,7 @@ public class CIPChirality {
      * @param isAlkene
      * @return new atom or null
      */
-    CIPAtom addAtom(int i, SimpleNode other, boolean isDuplicate, boolean isAlkene) {
+    CIPAtom addAtom(int i, SimpleNode other, boolean isDuplicate, boolean isAlkene, boolean isParentBond) {
       if (i >= atoms.length) {
         if (Logger.debugging)
           Logger.info(" too many bonds on " + atom);
@@ -1664,7 +1664,7 @@ public class CIPChirality {
         }
       }
       return atoms[i] = new CIPAtom()
-          .create(other, this, isDuplicate, isAlkene);
+          .create(other, this, isDuplicate, isAlkene, isParentBond);
     }
 
     /**
@@ -1887,13 +1887,23 @@ public class CIPChirality {
       if (isTerminal != b.isTerminal)
         return (isTerminal ? B_WINS : A_WINS) * (sphere + 1);
 
-// not necessary after all     // Rule 1b requires a special presort to ensure that all duplicate atoms 
-//      // are in the right order -- first by element number and then by root distance.
-//
-//      if (currentRule == RULE_1b && false) {
-//        preSortRule1b();
-//        b.preSortRule1b();
-//      }
+      // Rule 1b requires a special presort to ensure that all duplicate atoms 
+      // are in the right order -- first by element number and then by root distance.
+      // Otherwise we are liable to have an a-b alignment such as the following
+      // when we have SMARTS C1...C=C1 
+      //
+      //     a         b
+      //   C        C
+      //   (C-alk)  (C-ring)
+      //   (C-ring) (C-alk)
+      //   H        H
+      //
+      // see bh64.65
+
+      if (currentRule == RULE_1b) {
+        preSortRule1b();
+        b.preSortRule1b();
+      }
 
       // Phase I -- shallow check only
       //
@@ -1920,27 +1930,29 @@ public class CIPChirality {
       return compareDeeply(b, sphere);
     }
 
-//    /**
-//     * Sort duplicate nodes of the same element by root distance, from closest
-//     * to root to furthest.
-//     * 
-//     */
-//    private void preSortRule1b() {
-//      CIPAtom a1, a2;
-//      for (int i = 0; i < 3; i++) {
-//        if (!(a1 = atoms[i]).isDuplicate)
-//          continue;
-//        for (int j = i + 1; j < 4; j++) {
-//          if (!(a2 = atoms[j]).isDuplicate || a1.elemNo != a2.elemNo
-//              || a1.rootDistance <= a2.rootDistance)
-//            continue;
-//          atoms[i] = a2;
-//          atoms[j] = a1;
-//          j = 4;
-//          i = -1;
-//        }
-//      }
-//    }
+    /**
+     * Sort duplicate nodes of the same element by root distance, from closest
+     * to root to furthest.
+     * 
+     */
+    private void preSortRule1b() {
+      CIPAtom a1, a2;
+      for (int i = 0; i < 3; i++) {
+        if (!(a1 = atoms[i]).isDuplicate)
+          continue;
+        if (Logger.debuggingHigh)
+          Logger.info("presort1b: " + i + " " + a1.myPath);
+        for (int j = i + 1; j < 4; j++) {
+          if (!(a2 = atoms[j]).isDuplicate || a1.elemNo != a2.elemNo
+              || a1.rootDistance <= a2.rootDistance)
+            continue;
+          atoms[i] = a2;
+          atoms[j] = a1;
+          j = 4;
+          i = -1;
+        }
+      }
+    }
 
     /**
      * Just checking for hydrogen.
@@ -2243,7 +2255,7 @@ public class CIPChirality {
       for (int i = 0, n = path.size(); i < n; i++) {
         oldParent = path.get(i);
         newSub = (oldParent == null ? new CIPAtom().create(null, this, true,
-            isAlkene) : (CIPAtom) oldParent.clone());
+            isAlkene, false) : (CIPAtom) oldParent.clone());
         newSub.sphere = thisAtom.sphere + 1;
         thisAtom.replaceParentSubstituent(oldSub, newParent, newSub);
         if (i > 0 && thisAtom.isAlkene && !thisAtom.isAlkeneAtom2) {
@@ -2914,8 +2926,8 @@ public class CIPChirality {
       CIPAtom atom1;
       // critical here that we do NOT include the tied branches
       atom1 = (CIPAtom) clone();
-      atom1.atoms[ia] = new CIPAtom().create(null, atom1, false, false);
-      atom1.atoms[ib] = new CIPAtom().create(null, atom1, false, false);
+      atom1.atoms[ia] = new CIPAtom().create(null, atom1, false, false, false);
+      atom1.atoms[ib] = new CIPAtom().create(null, atom1, false, false, false);
       atom1.addReturnPath(null, this);
       // We are guaranteed that only RULE_1a is necessary, because one of our
       // paths goes all the way back to the root, without a duplicate atom, and any
@@ -3024,8 +3036,8 @@ public class CIPChirality {
     @Override
     public String toString() {
       return (atom == null ? "<null>" : "[" + currentRule + "." + sphere + ","
-          + rootDistance + "." + id + "." + atom.getAtomName()
-          + (isDuplicate ? "*" : "") + "]");
+          + id + "." + atom.getAtomName()
+          + (isDuplicate ? "*(" + rootDistance + ")": "") + "]");
     }
 
   }

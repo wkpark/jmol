@@ -3967,7 +3967,11 @@ public class CmdExt extends ScriptExt {
       } else if (data == "CIF" || data == "SDF" || data == "MOL" || data == "MOL67" || data == "V2000"
           || data == "V3000" || data == "CD" || data == "JSON" || data == "XYZ"
           || data == "XYZRN" || data == "XYZVIB" || data == "CML") {
-        data = vwr.getModelExtract("selected", isCoord, false, data);
+        BS selected = vwr.bsA(), bsModel;
+        msg = " (" + selected.cardinality() + " atoms)";
+        if (vwr.am.cmi >= 0 && !selected.equals(bsModel = vwr.getModelUndeletedAtomsBitSet(vwr.am.cmi)))
+          msg += "\nNote! Selected atom set " + selected + " is not the same as the current model " + bsModel;
+        data = vwr.getModelExtract(selected, isCoord, false, data);
         if (data.startsWith("ERROR:"))
           bytes = data;
       } else if (data == "CFI") {
@@ -4113,14 +4117,14 @@ public class CmdExt extends ScriptExt {
     params.put("width", Integer.valueOf(width));
     params.put("height", Integer.valueOf(height));
     params.put("nVibes", Integer.valueOf(nVibes));
-    msg = vwr.processWriteOrCapture(params);
-    if (msg == null)
-      msg = "canceled";
-    if (isImage && msg.startsWith("OK"))
-      msg += "; width=" + width + "; height=" + height;
+    String ret = vwr.processWriteOrCapture(params);
+    if (ret == null)
+      ret = "canceled";
+    if (isImage && ret.startsWith("OK"))
+      ret += "; width=" + width + "; height=" + height;
     if (timeMsg)
       showString(Logger.getTimerMsg("write", 0));
-    return writeMsg(msg);
+    return writeMsg(ret + (msg == null ? "" : msg));
   }
 
   public Lst<Object> prepareBinaryOutput(SV tvar) {

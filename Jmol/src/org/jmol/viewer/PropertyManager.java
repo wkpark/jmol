@@ -23,8 +23,16 @@
  */
 package org.jmol.viewer;
 
-import javajs.J2SIgnoreImport;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
+import javajs.J2SIgnoreImport;
 import javajs.util.AU;
 import javajs.util.BArray;
 import javajs.util.Base64;
@@ -39,15 +47,6 @@ import javajs.util.SB;
 import javajs.util.V3;
 import javajs.util.XmlUtil;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolPropertyManager;
@@ -58,18 +57,18 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
-import org.jmol.modelsetbio.BioModel;
 import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
+import org.jmol.modelsetbio.BioModel;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.shape.Shape;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
+import org.jmol.util.Edge;
 import org.jmol.util.Elements;
 import org.jmol.util.Escape;
-import org.jmol.util.Edge;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
 import org.jmol.viewer.binding.Binding;
@@ -1148,10 +1147,8 @@ public class PropertyManager implements JmolPropertyManager {
       return getModelCif(bs);
     if (type.equalsIgnoreCase("CML"))
       return getModelCml(bs, Integer.MAX_VALUE, true, doTransform, allTrajectories);
-    
     if (type.equals("PDB") || type.equals("PQR"))
       return getPdbAtomData(bs, null, type.equals("PQR"), doTransform, allTrajectories);
-    
     boolean asV3000 = type.equalsIgnoreCase("V3000");
     boolean asSDF = type.equalsIgnoreCase("SDF");
     boolean noAromatic = type.equalsIgnoreCase("MOL");
@@ -1165,7 +1162,10 @@ public class PropertyManager implements JmolPropertyManager {
     BS bsModels = vwr.ms.getModelBS(bsAtoms, true);
     if (!isXYZ && !asJSON) {
       String title = vwr.ms.getFrameTitle(bsModels.nextSetBit(0));      
-      mol.append(title != null ? title.replace('\n',' ') : isModelKit ? "Jmol Model Kit" : FileManager.fixDOSName(vwr.fm.getFullPathName(false)));
+      title = (title != null ? title.replace('\n',' ') : isModelKit ? "Jmol Model Kit" : FileManager.fixDOSName(vwr.fm.getFullPathName(false)));
+      if (title.length() > 80)
+        title = title.substring(0, 77) + "...";
+      mol.append(title);
       String version = Viewer.getJmolVersion();
       mol.append("\n__Jmol-").append(version.substring(0, 2));
       int cMM, cDD, cYYYY, cHH, cmm;
@@ -1308,19 +1308,24 @@ public class PropertyManager implements JmolPropertyManager {
   }
 
   private boolean addMolFile(int iModel, SB mol, BS bsAtoms, BS bsBonds,
-                             boolean asV3000, boolean asJSON, boolean noAromatic, Quat q) {
+                             boolean asV3000, boolean asJSON,
+                             boolean noAromatic, Quat q) {
     int nAtoms = bsAtoms.cardinality();
     int nBonds = bsBonds.cardinality();
     if (!asV3000 && !asJSON && (nAtoms > 999 || nBonds > 999))
       return false;
     boolean asSDF = (iModel >= 0);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> molData = (asSDF ? (Map<String, Object>) vwr.ms
+        .getInfo(iModel, "molData") : null);
     ModelSet ms = vwr.ms;
     int[] atomMap = new int[ms.ac];
     P3 pTemp = new P3();
     if (asV3000) {
       mol.append("  0  0  0  0  0  0            999 V3000");
     } else if (asJSON) {
-       mol.append("{\"mol\":{\"createdBy\":\"Jmol "+ Viewer.getJmolVersion() + "\",\"a\":[");
+      mol.append("{\"mol\":{\"createdBy\":\"Jmol " + Viewer.getJmolVersion()
+          + "\",\"a\":[");
     } else {
       PT.rightJustify(mol, "   ", "" + nAtoms);
       PT.rightJustify(mol, "   ", "" + nBonds);
@@ -1330,57 +1335,90 @@ public class PropertyManager implements JmolPropertyManager {
       mol.append("\n");
     if (asV3000) {
       mol.append("M  V30 BEGIN CTAB\nM  V30 COUNTS ").appendI(nAtoms)
-          .append(" ").appendI(nBonds).append(" 0 0 0\n").append(
-              "M  V30 BEGIN ATOM\n");
+          .append(" ").appendI(nBonds).append(" 0 0 0\n")
+          .append("M  V30 BEGIN ATOM\n");
     }
+    Object o = (molData == null ? null : molData.get("atom_value_name"));
+    if (o instanceof SV)
+      o = ((SV) o).asString();
+    int valueType = (o == null ? T.nada : T.getTokFromName("" + o));
+    SB atomValues = (valueType == T.nada ? null : new SB());
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
         .nextSetBit(i + 1))
-      getAtomRecordMOL(iModel, ms, mol, atomMap[i] = ++n, ms.at[i], q, pTemp, asV3000,
-          asJSON);
+      getAtomRecordMOL(iModel, ms, mol, atomMap[i] = ++n, ms.at[i], q, pTemp,
+          asV3000, asJSON, atomValues, valueType);
     if (asV3000) {
       mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
     } else if (asJSON) {
       mol.append("],\"b\":[");
-    }
+    } 
     for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds
         .nextSetBit(i + 1))
       getBondRecordMOL(mol, ++n, ms.bo[i], atomMap, asV3000, asJSON, noAromatic);
-    // 21 21 0 0 0
     if (asV3000) {
       mol.append("M  V30 END BOND\nM  V30 END CTAB\n");
     }
     if (asJSON)
       mol.append("]}}");
     else {
+      if (atomValues != null && atomValues.length() > 0)
+        mol.append(atomValues.toString());
       mol.append("M  END\n");
     }
     if (asSDF) {
       try {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> molData = (Map<String, Object>) vwr.ms.getInfo(iModel, "molData");
-      float[] pc = ms.getPartialCharges();
-      if (pc != null) {
-        if (molData == null)
-          molData = new Hashtable<String, Object>();
-        SB sb = new SB();
-        sb.appendI(nAtoms).appendC('\n');
-        for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
-            .nextSetBit(i + 1))
-          sb.appendI(++n).append(" ").appendF(pc[i]).appendC('\n');
-        molData.put("jmol_partial_charges",   sb.toString());
-      }
-      for (String key: molData.keySet()) {
-        Object o = molData.get(key);
-        if (o instanceof SV)
-          o = ((SV)o).asString();
-        mol.append("> <" + key.toUpperCase() + ">\n").append(PT.trim(o.toString(), "\n")).append("\n\n");
-      }
+        float[] pc = ms.getPartialCharges();
+        if (pc != null) {
+          if (molData == null)
+            molData = new Hashtable<String, Object>();
+          SB sb = new SB();
+          sb.appendI(nAtoms).appendC('\n');
+          for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
+              .nextSetBit(i + 1))
+            sb.appendI(++n).append(" ").appendF(pc[i]).appendC('\n');
+          molData.put("jmol_partial_charges", sb.toString());
+        }
+        for (String key : molData.keySet()) {
+          o = molData.get(key);
+          if (o instanceof SV)
+            o = ((SV) o).asString();
+          mol.append("> <" + key.toUpperCase() + ">\n");
+          output80CharWrap(mol, o.toString(), 80);
+          mol.append("\n\n");
+        }
       } catch (Throwable e) {
         // ignore
       }
       mol.append("$$$$\n");
     }
     return true;
+  }
+
+  /**
+   * 
+   * @param mol
+   * @param data
+   * @param maxN 80 for multi-line wrap; something smaller for single line output
+   */
+  private void output80CharWrap(SB mol, String data, int maxN) {
+    if (maxN < 80)
+      data = PT.rep(data, "\n", "|");
+    String[] lines = PT.split(PT.trim(PT.rep(data, "\n\n", "\n"), "\n"), "\n");
+    for (int i = 0; i < lines.length; i++)
+      outputLines(mol, lines[i], maxN);
+  }
+
+  private void outputLines(SB mol, String data, int maxN) {
+    boolean done = false;    
+    for (int  i = 0, n = data.length(); i < n && !done; i += 80) {
+      mol.append(data.substring(i, Math.min(i + maxN, n)));
+      if (!(done = (maxN != 80)) && i + 80 < n)
+        mol.append("+");
+      mol.append("\n");
+    }
+
+    // TODO
+    
   }
 
   private static BS getCovalentBondsForAtoms(Bond[] bonds, int bondCount, BS bsAtoms) {
@@ -1421,9 +1459,15 @@ public class PropertyManager implements JmolPropertyManager {
    */
 
   private void getAtomRecordMOL(int iModel, ModelSet ms, SB mol, int n, Atom a, Quat q,
-                                P3 pTemp, boolean asV3000, boolean asJSON) {
-    //   -0.9920    3.2030    9.1570 Cl  0  0  0  0  0
-    //    3.4920    4.0920    5.8700 Cl  0  0  0  0  0
+                                P3 pTemp, boolean asV3000, boolean asJSON, SB atomValues, int tokValue) {
+    //https://cactus.nci.nih.gov/chemical/structure/caffeine/file?format=sdf&get3d=true
+    //__Jmol-14_06161707413D 1   1.00000     0.00000     0
+    //Jmol version 14.19.1  2017-06-12 00:33 EXTRACT: ({0:23})
+    // 24 25  0  0  0  0              1 V2000
+    //    1.3120   -1.0479    0.0025 N   0  0  0  0  0  0
+    //    2.2465   -2.1762    0.0031 C   0  0  0  0  0  0
+    //    1.7906    0.2081    0.0011 C   0  0  0  0  0  0
+    //xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
     //012345678901234567890123456789012
     getPointTransf(iModel, ms, a, q, pTemp);
     int elemNo = a.getElementNumber();
@@ -1453,7 +1497,7 @@ public class PropertyManager implements JmolPropertyManager {
       mol.append("\"x\":").appendF(a.x).append(",\"y\":").appendF(a.y)
           .append(",\"z\":").appendF(a.z).append("}");
     } else {
-      mol.append(PT.sprintf("%10.5p%10.5p%10.5p", "p", o));
+      mol.append(PT.sprintf("%10.4p%10.4p%10.4p", "p", o));
       mol.append(" ").append(sym);
       if (sym.length() == 1)
         mol.append(" ");
@@ -1463,6 +1507,33 @@ public class PropertyManager implements JmolPropertyManager {
       PT.rightJustify(mol, "  ", "" + iso);
       PT.rightJustify(mol, "   ", "" + (charge == 0 ? 0 : 4 - charge));
       mol.append("  0  0  0  0\n");
+
+      String label = (atomValues == null || asV3000 ? null : 
+        getAtomPropertyAsString(a, tokValue));
+      if (label != null && (label = label.trim()).length() > 0) {
+        String sn = "   " + n + " ";
+        atomValues.append("V  ").append(sn.substring(sn.length() - 4));
+        output80CharWrap(atomValues, label, 73);
+      }
+    }
+  }
+
+  private P3 ptTemp;
+  private String getAtomPropertyAsString(Atom a, int tok) {
+    switch (tok & T.PROPERTYFLAGS) {
+    case T.intproperty:
+      int i = a.atomPropertyInt(tok);
+      return (tok == T.color ? PT.trim(Escape.escapeColor(i),"[x]").toUpperCase() : "" + i);
+    case T.strproperty:
+      return a.atomPropertyString(vwr, tok);
+    case T.floatproperty:
+      float f = a.atomPropertyFloat(vwr, tok, null);
+      return (Float.isNaN(f) ? null : "" + f);
+    default: // point property
+      if (ptTemp == null)
+        ptTemp = new P3();
+      a.atomPropertyTuple(vwr, tok, ptTemp);
+      return  (ptTemp == null ? null : ptTemp.toString());
     }
   }
 

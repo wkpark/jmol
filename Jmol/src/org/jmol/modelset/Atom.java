@@ -497,7 +497,8 @@ public class Atom extends Point3fi implements Node {
   int getTargetValence() {
     switch (getElementNumber()) {
     case 6: //C
-    case 14: //Si      
+    case 14: //Si
+    case 32: // Ge
       return 4;
     case 5:  // B
     case 7:  // N

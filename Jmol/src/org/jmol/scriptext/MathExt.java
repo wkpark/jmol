@@ -2114,26 +2114,17 @@ public class MathExt {
     // file("myfile.xyz")
     // load("myfile.png",true)
     // load("myfile.txt",1000)
-    // load("myfil.xyz",0,true)
+    // load("myfile.xyz",0,true)
+    // load("myfile.json","JSON")
+    // load("myfile.json","JSON", true)
 
-    String file;
-    int nBytesMax = -1;
-    boolean asBytes = false;
-    boolean async = vwr.async;
-    switch (args.length) {
-    case 3:
-      async = SV.bValue(args[2]);
-      //$FALL-THROUGH$
-    case 2:
-      nBytesMax = (args[1].tok == T.integer ? args[1].asInt() : -1);
-      asBytes = args[1].tok == T.on;
-      //$FALL-THROUGH$
-    case 1:
-      file = FileManager.fixDOSName(SV.sValue(args[0]));
-      break;
-    default:
+    if (args.length < 1 || args.length > 3)
       return false;
-    }
+    String file = FileManager.fixDOSName(SV.sValue(args[0]));
+    boolean asBytes = (args.length > 1 && args[1].tok == T.on);
+    boolean async = (vwr.async || args.length > 2 && args[args.length - 1].tok == T.on);
+    int nBytesMax = (args.length > 1 && args[1].tok == T.integer ? args[1].asInt() : -1);
+    boolean asJSON = (args.length > 1 && args[1].asString().equalsIgnoreCase("JSON"));
     if (asBytes)
       return mp.addXMap(vwr.fm.getFileAsMap(file));
     boolean isQues = file.startsWith("?");
@@ -2148,8 +2139,9 @@ public class MathExt {
       // The evaluation will be repeated up to this point, so for example,
       // x = (i++) + load("?") would increment i twice.
     }
-    return mp.addXStr(isFile ? vwr.fm.getFilePath(file, false, false) : vwr
-        .getFileAsString4(file, nBytesMax, false, false, true, "script"));
+    String str = isFile ? vwr.fm.getFilePath(file, false, false) : vwr
+        .getFileAsString4(file, nBytesMax, false, false, true, "script");
+    return (asJSON ? mp.addXObj(vwr.parseJSON(str)) : mp.addXStr(str));
   }
 
   private boolean evaluateMath(ScriptMathProcessor mp, SV[] args, int tok) {

@@ -83,6 +83,8 @@ public class MolReader extends AtomSetCollectionReader {
   protected boolean allow2D = true;
   private int iatom0;
   private V3000Rdr vr;
+  private int atomCount;
+  private String[] atomData;
 
   @Override
   public void initializeReader() throws Exception {
@@ -100,8 +102,9 @@ public class MolReader extends AtomSetCollectionReader {
         continuing = false;
         return false;
       }
-    } else if (line.equals("M  END"))
+    } else if (line.equals("M  END")) {
       return true;
+    }
     if (doGetModel(++modelNumber, null)) {
       iatom0 = asc.ac;
       processMolSdHeader();
@@ -200,6 +203,7 @@ public class MolReader extends AtomSetCollectionReader {
   // xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
 
   private void readAtomsAndBonds(int ac, int bc) throws Exception {
+    atomCount  = ac;
     for (int i = 0; i < ac; ++i) {
       rd();
       int len = line.length();
@@ -247,10 +251,16 @@ public class MolReader extends AtomSetCollectionReader {
       addMolAtom(iAtom, isotope, elementSymbol, charge, x, y, z);
     }
 
+    rd();
+    if (line.startsWith("V  ")) {
+      readAtomValues();
+    }      
+
     // read bonds
 
     for (int i = 0; i < bc; ++i) {
-      rd();
+      if (i > 0)
+        rd();
       String iAtom1, iAtom2;
       int stereo = 0;
       iAtom1 = line.substring(0, 3).trim();
@@ -268,7 +278,7 @@ public class MolReader extends AtomSetCollectionReader {
 
     // read V2000 user data
 
-    Map<String, String> molData = new Hashtable<String, String>();
+    Map<String, Object> molData = new Hashtable<String, Object>();
     rd();
     while (line != null && line.indexOf("$$$$") != 0) {
       if (line.indexOf(">") == 0) {
@@ -281,10 +291,40 @@ public class MolReader extends AtomSetCollectionReader {
       }
       rd();
     }
+    if (atomData != null) {
+      Object atomValueName = molData.get("atom_value_name");
+      molData.put(atomValueName == null ? "atom_values" : atomValueName.toString(), atomData);
+    }
     if (!molData.isEmpty())
       asc.setModelInfoForSet("molData", molData, asc.iSet);
   }
 
+  /**
+   * Read all V  nnn lines as string data; user can adapt as needed.
+   * 
+   * @throws Exception
+   */
+  private void readAtomValues() throws Exception {
+    atomData = new String[atomCount];
+    for (int i = atomData.length; --i >= 0;)
+      atomData[i] = "";
+    while (line.indexOf("V  ") == 0) {
+     int iAtom = parseIntAt(line, 3);
+     if (iAtom < 1 || iAtom > atomCount) {
+       Logger.error("V  nnn does not evalute to a valid atom number: " + iAtom);
+       return;
+     }
+     String s = line.substring(6).trim();
+     atomData[iAtom - 1] = s;
+     rd(); 
+    }
+  }
+
+  /**
+   * Read all M  ISO  lines. These are absolute isotope numbers.
+   * 
+   * @throws Exception
+   */
   private void readIsotopes() throws Exception {
     int n = parseIntAt(line, 6);
     try {
@@ -308,7 +348,7 @@ public class MolReader extends AtomSetCollectionReader {
    * @param molData
    * @throws Exception
    */
-  private void readMolData(Map<String, String> molData) throws Exception {
+  private void readMolData(Map<String, Object> molData) throws Exception {
     Atom[] atoms = asc.atoms;
     // "> <xxx>" becomes "xxx"
     // "> yyy <xxx> zzz" becomes "yyy <xxx> zzz"

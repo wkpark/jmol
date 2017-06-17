@@ -467,7 +467,9 @@ public class SmilesGenerator {
           SimpleNode atomA = atom12[j];
           Edge[] bb = ((Node) atomA).getEdges();
           for (int b = 0; b < bb.length; b++) {
-            if (bb[b].getCovalentOrder() != 1 || bb[b].getOtherNode(atomA).getElementNumber() == 1)
+            SimpleNode other;
+            if (bb[b].getCovalentOrder() != 1 || (other = bb[b].getOtherNode(atomA)).getElementNumber() == 1
+                && other.getIsotopeNumber() == 1)
               continue;
             edges[j][edgeCount++] = bb[b];
             if (getBondStereochemistry(bb[b], atomA) != '\0') {

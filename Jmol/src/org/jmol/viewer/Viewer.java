@@ -7057,8 +7057,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       g.antialiasImages = TF;
       return;
     }
-    if (isChanged)
+    if (isChanged) {
+      resizeImage(0, 0, false, false, true); // for antialiasdisplay
       refresh(3, "Viewer:setAntialias()");
+    }
 //    resizeImage(0, 0, false, false, true);
   }
 

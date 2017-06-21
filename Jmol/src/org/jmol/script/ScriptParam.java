@@ -705,6 +705,7 @@ abstract public class ScriptParam extends ScriptError {
         break;
       switch (tok) {
       case T.comma:
+      case T.minus: // T.minus (int)-0  -- introduced in ScriptCompiler because we have no -0 in JavaScript and sometimes we want 3-0 as an expression 3 -0  to mean "3 to 0"
       case T.leftbrace:
       case T.rightbrace:
       case T.string:

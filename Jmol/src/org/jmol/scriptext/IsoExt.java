@@ -1144,11 +1144,11 @@ public class IsoExt extends ScriptExt {
     boolean isHomo = (getToken(index).tok == T.homo);
     int offset = (isHomo ? 0 : 1);
     int tok = tokAt(++index);
-    if (tok == T.integer && intParameter(index) < 0)
+    if (tok == T.integer && ((String) e.st[index].value).charAt(0) == '-') // could be '-0'
       offset += intParameter(index);
     else if (tok == T.plus)
       offset += intParameter(++index);
-    else if (tok == T.minus)
+    else if (tok == T.minus) // - <space> n
       offset -= intParameter(++index);
     return offset;
   }

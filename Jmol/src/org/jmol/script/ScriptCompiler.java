@@ -1379,8 +1379,9 @@ public class ScriptCompiler extends ScriptTokenParser {
           return ERROR(ERROR_badContext, (String) tokenCommand.value);
         tokenAt(0).intValue = f.pt0; // copy
       }
-      if (val == 0 && intString.equals("-0"))
-        addTokenToPrefix(T.tokenMinus);
+// BAD IDEA! Just check the string for this!
+  // if (val == 0 && intString.equals("-0"))
+  //      addTokenToPrefix(T.tokenMinus);
       addNumber(T.integer, val, intString);
       return CONTINUE;
     }

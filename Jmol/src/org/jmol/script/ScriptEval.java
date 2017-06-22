@@ -5925,6 +5925,8 @@ public class ScriptEval extends ScriptExpr {
         if (q != null) {
           if (tok == T.best && !(isMolecular = isSelected)) // yes, setting isMolecular here.
             q = q.div(vwr.tm.getRotationQ());
+          if (q.q0 == 0 && isSpin)
+            q.q0 = 1e-10f;
           rotAxis.setT(q.getNormal());
           endDegrees = q.getTheta();
         }

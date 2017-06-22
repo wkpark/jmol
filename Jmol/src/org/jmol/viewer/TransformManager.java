@@ -2351,13 +2351,15 @@ public class TransformManager {
   public void setCenterAt(int relativeTo, P3 pt) {
     P3 pt1 = P3.newP(pt);
     switch (relativeTo) {
+    case T.absolute:
+      break;
     case T.average:
       pt1.add(vwr.ms.getAverageAtomPoint());
       break;
     case T.boundbox:
       pt1.add(vwr.getBoundBoxCenter());
       break;
-    case T.absolute:
+    default:
       pt1.setT(rotationCenterDefault);
       break;
     }

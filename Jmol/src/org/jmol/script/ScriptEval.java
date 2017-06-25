@@ -5819,7 +5819,10 @@ public class ScriptEval extends ScriptExpr {
     int direction = 1;
     int tok;
     Quat q = null;
+    boolean qGT180 = false;
     boolean helicalPath = false;
+    boolean isDegreesPerSecond = false;
+    boolean isSeconds = false;
     Lst<P3> ptsB = null;
     BS bsCompare = null;
     P3 invPoint = null;
@@ -5876,25 +5879,32 @@ public class ScriptEval extends ScriptExpr {
           // rotate spin BRANCH <DihedralList> [seconds]
           if (degreesPerSecond == PT.FLOAT_MIN_SAFE) {
             degreesPerSecond = floatParameter(i);
-            continue;
           } else if (endDegrees == Float.MAX_VALUE) {
             endDegrees = degreesPerSecond;
             degreesPerSecond = floatParameter(i);
-            continue;
+          } else {
+            invArg();
           }
         } else {
           // rotate ... [endDegrees]
           // rotate ... [endDegrees] [degreesPerSecond]
           if (endDegrees == Float.MAX_VALUE) {
             endDegrees = floatParameter(i);
-            continue;
           } else if (degreesPerSecond == PT.FLOAT_MIN_SAFE) {
             degreesPerSecond = floatParameter(i);
             isSpin = true;
-            continue;
+          } else {
+            invArg();
           }
         }
-        invArg();
+        if (i == slen - 2 && (tokAt(i + 1) == T.misc || tokAt(i + 1) == T.string)) {
+          String s = paramAsStr(++i).toLowerCase();
+          if (s.equals("dps")) {
+            isDegreesPerSecond = true;
+          } else if (s.equals("sec")) {
+            isSeconds = true;
+          }
+        }
         break;
       case T.minus:
         direction = -1;
@@ -5925,8 +5935,9 @@ public class ScriptEval extends ScriptExpr {
         if (q != null) {
           if (tok == T.best && !(isMolecular = isSelected)) // yes, setting isMolecular here.
             q = q.div(vwr.tm.getRotationQ());
-          if (q.q0 == 0 && isSpin)
+          if (q.q0 == 0)
             q.q0 = 1e-10f;
+          qGT180 = (q.q0 < 0);
           rotAxis.setT(q.getNormal());
           endDegrees = q.getTheta();
         }
@@ -5945,7 +5956,8 @@ public class ScriptEval extends ScriptExpr {
             return;
           pts = new P3[3];
           for (int j = 0; j < 3; j++)
-            pts[j] = vwr.ms.getAtomSetCenter(SV.getBitSet(lst.get(n - 3 + j), false));
+            pts[j] = vwr.ms.getAtomSetCenter(SV.getBitSet(lst.get(n - 3 + j),
+                false));
         } else if (isArrayParameter(i + 1)) {
           pts = getPointArray(++i, -1, false);
           i = iToken;
@@ -5960,7 +5972,7 @@ public class ScriptEval extends ScriptExpr {
         if (n < 3)
           return;
         q = Quat.getQuaternionFrame(pts[n - 3], pts[n - 2], pts[n - 1]);
-        q = Quat.new4(1,0,0,0).mulQ(q.inv().div(vwr.tm.getRotationQ()));
+        q = Quat.new4(1, 0, 0, 0).mulQ(q.inv().div(vwr.tm.getRotationQ()));
         rotAxis.setT(q.getNormal());
         endDegrees = q.getTheta();
         break;
@@ -6008,8 +6020,8 @@ public class ScriptEval extends ScriptExpr {
         int symop = intParameter(++i);
         if (chk)
           continue;
-        Map<String, Object> info = vwr.getSymTemp().getSpaceGroupInfo(
-            vwr.ms, null, -1);
+        Map<String, Object> info = vwr.getSymTemp().getSpaceGroupInfo(vwr.ms,
+            null, -1);
         Object[] op = (info == null ? null : (Object[]) info.get("operations"));
         if (symop == 0 || op == null || op.length < Math.abs(symop))
           invArg();
@@ -6104,12 +6116,23 @@ public class ScriptEval extends ScriptExpr {
       if (bsAtoms == null)
         bsAtoms = bsCompare;
     }
+    if (isSpin && qGT180) {
+      endDegrees = (endDegrees >= 0 ? 360 : -360) - endDegrees;
+      rotAxis.scale(-1);
+    }
+    if (q != null && !isSeconds && !isDegreesPerSecond) {
+      isDegreesPerSecond = (degreesPerSecond > 0);
+      isSeconds = !isDegreesPerSecond;
+    }
     float rate = (degreesPerSecond == PT.FLOAT_MIN_SAFE ? 10
         : endDegrees == Float.MAX_VALUE ? degreesPerSecond
-            : (degreesPerSecond < 0) == (endDegrees > 0) ?
-            // -n means number of seconds, not degreesPerSecond
-            -endDegrees / degreesPerSecond
-                : degreesPerSecond);
+            : isDegreesPerSecond ? degreesPerSecond
+                : isSeconds ? (endDegrees < 0 ? -1 : 1) * Math.abs(endDegrees / degreesPerSecond)
+                    : (degreesPerSecond < 0) == (q == null ? endDegrees > 0
+                        : true) ?
+                    // -n means number of seconds, not degreesPerSecond
+                    -endDegrees / degreesPerSecond
+                        : degreesPerSecond);
 
     if (dihedralList != null) {
       if (!isSpin) {

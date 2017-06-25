@@ -768,7 +768,10 @@ public class Symmetry implements SymmetryInterface {
     CIPChirality cip = getCIPChirality(vwr);
     BS bsAtropisomer = null, bsHelixM = null, bsHelixP = null;
     try {
-      bsAtropisomer = vwr.getSmartsMatch("a-a", bsAtoms);
+// four ortho groups required:      bsAtropisomer = vwr.getSmartsMatch("[!H](.t3:-20,20)a1(.t3).[!H](.t1:-20,20)a(.t1)a1(.t1)(.t2:-20,20)(.t3)(.t4:-20,20)-{a}2(.t1)(.t2)(.t3)(.t4)a(.t2)[!H](.t2).a2(.t4)[!H](.t4)", bsAtoms);
+// three ortho groups required:     bsAtropisomer = vwr.getSmartsMatch("[!H](.t3:-20,20)a1(.t3).[!H](.t1:-20,20)a(.t1){a}1(.t1)(.t2:-20,20)(.t3)-{a}(.t1)(.t2)(.t3)a(.t2)[!H](.t2)", bsAtoms);
+// one ortho group on each ring required:
+      bsAtropisomer = vwr.getSmartsMatch("[!H](.t1:-20,20)a{a(.t2:-20,20)-a}a[!H]", bsAtoms);
       bsHelixM = vwr.getSmartsMatch("A{a}(.t:-10,-40)a(.t:-10,-40)aaa", bsAtoms);
       bsHelixP = vwr.getSmartsMatch("A{a}(.t:10,40)a(.t:10,40)aaa", bsAtoms);
     } catch (Exception e) {

@@ -2286,17 +2286,24 @@ public class CIPChirality {
       // resolved as "r" or "s" 
       // but generally we will want to process this as "R" and "S"
       // note that this analysis cannot be done ahead of time
+      
       String aStr = rule4List[ia].substring(1), bStr = rule4List[ib]
           .substring(1);
       boolean haveRSOptions = false, isRule5 = (currentRule == RULE_5);
       String sa = "", sb = "";
       if (atoms[ia].nextChiralBranch != null) {
         sa = atoms[ia].nextChiralBranch.getMataList(getFirstRef(aStr), isRule5);
+        haveRSOptions = (sa.indexOf("|") >= 0);
       }
       if (atoms[ib].nextChiralBranch != null) {
         sb = atoms[ib].nextChiralBranch.getMataList(getFirstRef(bStr), isRule5);
+        if (haveRSOptions != (sb.indexOf("|") >= 0)) {
+          // P-92.5.2.1.i check -- one ref beats two refs 
+          // this is a convenience check only, actually, as the
+          // ligand with two refs is guaranteed to lose to the one with one ref.
+          return (haveRSOptions ? B_WINS : A_WINS);
+        }
       }
-      haveRSOptions = (sa.indexOf("|") >= 0 || sb.indexOf("|") >= 0);
       if (haveRSOptions) {
         aStr += "|" + sa;
         bStr += "|" + sb;
@@ -2724,16 +2731,22 @@ public class CIPChirality {
               //if (ret != null)
               //ret[0] = null;
             } else {
-              // if here, adj is TIED (0) or
+              // if here, adj is TIED (0) or NOT_RELEVANT
               CIPAtom atom1 = (CIPAtom) clone();
               if (atom1.setNode()) {
                 atom1.addReturnPath(null, this);
-                atom1.sortToRule(RULE_3);
-                rs = atom1.checkHandedness();
-                s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
-                if (Logger.debugging)
-                  Logger.info("AUX " + s + " for " + atom1.myPath);
-                parent.addMataRef(sphere, priority, rs);
+                int rule = atom1.sortToRule(RULE_5);
+                if (rule != TIED) {
+                  rs = atom1.checkHandedness();
+                  s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
+                  if (atom1.isPseudo) {
+                    s = s.toLowerCase();
+                  } else {
+                    parent.addMataRef(sphere, priority, rs);
+                  }
+                  if (Logger.debugging)
+                    Logger.info("AUX " + s + " for " + atom1.myPath);
+                }
               }
             }
             auxChirality = s;
@@ -2762,10 +2775,18 @@ public class CIPChirality {
       return isChiral;
     }
 
-    private void sortToRule(int maxRule) {
+    /**
+     * Sort for auxiliary chirality determination
+     * 
+     * @param maxRule
+     * @return TIED or deciding rule RULE_1a - RULE_5
+     */
+    private int sortToRule(int maxRule) {
       for (int i = RULE_1a; i <= maxRule; i++)
-        if (sortByRule(i))
-          return;
+        if (sortByRule(i)) {
+          return (isPseudo ? RULE_5 : i);
+        }
+      return TIED;
     }
 
     private boolean isChiralSequence(String ssub) {
@@ -2802,7 +2823,7 @@ public class CIPChirality {
     }
 
     /**
-     * Check for enantiomeric strings such as S;R; or SR
+     * Check for enantiomeric strings such as SSR/RRS
      * 
      * @param i1
      * @param i2
@@ -2817,18 +2838,25 @@ public class CIPChirality {
       int n = rs1.length();
       if (n != rs2.length())
         return NOT_RELEVANT;
-      if (rs1.equals(rs2))
+      
+      if (atoms[i1].nextChiralBranch != null)
+        return  NOT_RELEVANT;
+      
+      if (rs1.equals(rs2)) {
+        
+        
+        // this is tricky, because we could have
+        //     R            S
+        //    /            /
+        // --~    and   --~
+        //    \            \ 
+        //     R            S
+        
         return TIED;
+      }
       String rs = rs1 + rs2;
       //System.out.println("compareRule4aIsomers:" + rs1 + " vs. " + rs2);
       boolean haveRS = (rs.indexOf("R") >= 0 || rs.indexOf("S") >= 0);
-      if ((rs.indexOf("r") >= 0 || rs.indexOf("s") >= 0)) {
-        // consider Rule 4a here -- Sr beats R~ BH64_014
-          if (rs1.endsWith("~"))
-            return (DIASTEREOMERIC_B_WINS);
-          if (rs2.endsWith("~"))
-            return (DIASTEREOMERIC_A_WINS);
-      }
       rs = (haveRS ? "~RS" : "~rs");
       if (haveRS) {
         rs1 = PT.replaceAllCharacters(rs1, "rs", "~");

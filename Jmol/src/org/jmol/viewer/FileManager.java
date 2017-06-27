@@ -669,6 +669,9 @@ public class FileManager implements BytePoster {
       if (Rdr.isGzipS(bis))
         bis = Rdr.getUnzippedInputStream(vwr.getJzt(), bis);
       // if we have a subFileList, we don't want to return the stream for the zip file itself
+      else if (Rdr.isBZip2S(bis))
+        bis = Rdr.getUnzippedInputStreamBZip2(vwr.getJzt(), bis);
+      // if we have a subFileList, we don't want to return the stream for the zip file itself
       if (forceInputStream && subFileList == null)
         return bis;
       if (Rdr.isCompoundDocumentS(bis)) {

@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import javajs.J2SIgnoreImport;
 import javajs.api.GenericZipInputStream;
 import javajs.api.GenericZipTools;
+import javajs.api.Interface;
 import javajs.api.ZInputStream;
 
 import java.util.Map;
@@ -41,6 +42,9 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.tools.bzip2.CBZip2InputStreamFactory;
+import org.jmol.viewer.Viewer;
 
 
 /**
@@ -281,6 +285,11 @@ public class ZipTools implements GenericZipTools {
   @Override
   public InputStream newGZIPInputStream(InputStream is) throws IOException {
     return new BufferedInputStream(new GZIPInputStream(is, 512));
+  }
+
+  @Override
+  public InputStream newBZip2InputStream(InputStream is) throws IOException {
+    return new BufferedInputStream(((CBZip2InputStreamFactory) Interface.getInterface("org.apache.tools.bzip2.CBZip2InputStreamFactory")).getStream(is));
   }
 
   @Override

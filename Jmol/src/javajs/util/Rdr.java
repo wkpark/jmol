@@ -152,9 +152,18 @@ public class Rdr implements GenericLineReader {
         && (bytes[7] & 0xFF) == 0xE1);
   }
 
+  public static boolean isBZip2S(InputStream is) {
+    return isBZip2B(getMagic(is, 3));
+  }
+
   public static boolean isGzipS(InputStream is) {
     return isGzipB(getMagic(is, 2));
   }
+
+  public static boolean isBZip2B(byte[] bytes) {    
+    return (bytes != null && bytes.length >= 3  // BZh
+        && (bytes[0] & 0xFF) == 0x42 && (bytes[1] & 0xFF) == 0x5A  && (bytes[2] & 0xFF) == 0x68);
+}
 
   public static boolean isGzipB(byte[] bytes) {    
       return (bytes != null && bytes.length >= 2 
@@ -268,6 +277,14 @@ public class Rdr implements GenericLineReader {
       bis = new BufferedInputStream(jzt.newGZIPInputStream(bis));
     return bis;
   }
+
+  public static BufferedInputStream getUnzippedInputStreamBZip2(GenericZipTools jzt,
+                                                                BufferedInputStream bis) throws IOException  {
+    while (isBZip2S(bis))
+      bis = new BufferedInputStream(jzt.newBZip2InputStream(bis));
+    return bis;
+  }
+
 
   /**
    * Allow for base64-encoding check.

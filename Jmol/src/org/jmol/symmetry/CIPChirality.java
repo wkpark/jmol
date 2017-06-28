@@ -27,35 +27,40 @@ import org.jmol.viewer.JC;
  * 
  * Features include:
  * 
- *  - deeply validated 
- *  
- *  - implemented in Java (Jmol) and JavaScript (JSmol)
- *  
- *  - only two Java classes; roughly 1000 lines
- *  
- *  - efficient, one-pass process for each center using a single finite digraph for all auxiliary descriptors
- *  
- *  - exhaustive processing of all 8 sequence rules (1a, 1b, 2, 3, 4a, 4b, 4c, 5)
- *  
- *  - includes R/S, r/s, M/P (axial, not planar), E/Z
- *  
- *  - covers any-length odd and even cumulenes
- *  
- *  - uses Jmol conformational SMARTS to detect atropisomers and helicenes 
- *  
- *  - covers chiral phosphorus and sulfur, including trigonal pyramidal and tetrahedral
- *  
- *  - properly treats complex combinations of R/S, M/P, and seqCis/seqTrans centers (Rule 4b)
+ * - deeply validated
  * 
- *  - properly treats neutral-species resonance structures using fractional atomic mass and a modified Rule 1b
- *  
- *  - implements CIP spiro rule (BB P-93.5.3.1)
- *  
- *  - detects small rings (fewer than 8 members) and removes E/Z specifications for such
+ * - implemented in Java (Jmol) and JavaScript (JSmol)
  * 
- *  - detects chiral bridgehead nitrogens and E/Z imines and diazines 
- *  
- *  - reports atom descriptor along with the rule that ultimately decided it
+ * - only two Java classes; roughly 1000 lines
+ * 
+ * - efficient, one-pass process for each center using a single finite digraph
+ * for all auxiliary descriptors
+ * 
+ * - exhaustive processing of all 8 sequence rules (1a, 1b, 2, 3, 4a, 4b, 4c, 5)
+ * 
+ * - includes R/S, r/s, M/P (axial, not planar), E/Z
+ * 
+ * - covers any-length odd and even cumulenes
+ * 
+ * - uses Jmol conformational SMARTS to detect atropisomers and helicenes
+ * 
+ * - covers chiral phosphorus and sulfur, including trigonal pyramidal and
+ * tetrahedral
+ * 
+ * - properly treats complex combinations of R/S, M/P, and seqCis/seqTrans
+ * centers (Rule 4b)
+ * 
+ * - properly treats neutral-species resonance structures using fractional
+ * atomic mass and a modified Rule 1b
+ * 
+ * - implements CIP spiro rule (BB P-93.5.3.1)
+ * 
+ * - detects small rings (fewer than 8 members) and removes E/Z specifications
+ * for such
+ * 
+ * - detects chiral bridgehead nitrogens and E/Z imines and diazines
+ * 
+ * - reports atom descriptor along with the rule that ultimately decided it
  * 
  * Primary 236-compound Chapter-9 validation set (AY-236) provided by Andrey
  * Yerin, ACD/Labs (Moscow).
@@ -72,8 +77,9 @@ import org.jmol.viewer.JC;
  * for discussions, Andrey Yerin for discussion and digraph checking.
  * 
  * Many thanks to the members of the BlueObelisk-Discuss group, particularly
- * Mikko Vainio, John Mayfield (aka John May), Wolf Ihlenfeldt, and Egon Willighagen, for
- * encouragement, examples, serious skepticism, and extremely helpful advice.
+ * Mikko Vainio, John Mayfield (aka John May), Wolf Ihlenfeldt, and Egon
+ * Willighagen, for encouragement, examples, serious skepticism, and extremely
+ * helpful advice.
  * 
  * References:
  * 
@@ -109,11 +115,13 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
- * 6/28/17 Jmol 14.19.2 major rewrite of Rule 4b
+ * 6/28/17 Jmol 14.19.2 major rewrite of Rule 4b (962 lines)
  * 
- * 6/25/17 Jmol 14.19.1 minor fixes for Rule 4b and 5 for BH64_012-015; better atropisomer check
+ * 6/25/17 Jmol 14.19.1 minor fixes for Rule 4b and 5 for BH64_012-015; better
+ * atropisomer check
  * 
- * 6/12/2017 Jmol 14.18.2 tested for Rule 1b sphere (AY236.53, 163, 173, 192); 957 lines
+ * 6/12/2017 Jmol 14.18.2 tested for Rule 1b sphere (AY236.53, 163, 173, 192);
+ * 957 lines
  * 
  * 6/8/2017 Jmol 14.18.2 removed unnecessary presort for Rule 1b
  * 
@@ -163,18 +171,55 @@ import org.jmol.viewer.JC;
  * root distance, where "root distance" is defined:
  * 
  * (i) in the case of a duplicate atom for which the atomic number is averaged
- * over two or more atoms in applying Rule 1a, the distance from the duplicate
- * node itself to the root node; and
+ * over two or more atoms in applying Rule 1a (including carbon-only rings such
+ * as phenyl), the distance from the duplicate node itself to the root node; and
  * 
  * (ii) in all other cases, the distance of its corresponding nonduplicated atom
  * node to the root node.
  * 
  * 
- * Rationale: Using only the distance of the duplicated atom (ii) introduces a Kekule
- * bias, which is not acceptable.
+ * Rationale: Using only the distance of the duplicated atom (ii, current
+ * definition) introduces a Kekule bias, which can be illustrated with various
+ * simple models. By moving that distance by one atom (to the duplicate atom
+ * itself), the problem is resolved, because now it does not matter in which
+ * direction the bond is connected; the number is always one more than the
+ * sphere of the central atom.
+ * 
+ * The proposed modification is quite minimal, changing the number for only half
+ * the duplicated aromatic nodes:
+ */
+
+
+  
+ //              //
+ //              \ (ring)
+ // [0]---1---2---3==4
+ // 
+ // 
+ // current:
+ // 
+ //                (4)(3)
+ //                /  /
+ // [0]---1---2---3--4
+ //
+ // 
+ // proposed:
+ // 
+ //                (4)(5)
+ //                /  /
+ // [0]---1---2---3--4
+ //
+ // 
+
+/**
+ * Thus, for all cases, one of the duplicated atoms will have the same root
+ * distance as currently. The other will always be advanced by two spheres.
+ * 
+ * 
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
+
 public class CIPChirality {
 
   //The rules:
@@ -1520,6 +1565,7 @@ public class CIPChirality {
         bsPath.set(atomIndex);
       } else if (sp2Duplicate && (!allowRule1bAlkenes || isKekuleAmbiguous)) {
         // *** Rule 1b Jmol amendment ***
+        // just leaving the rootDistance to be as for other atoms
       } else if (atom == root.atom) {
         // pointing to original atom
         isDuplicate = true;

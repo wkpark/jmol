@@ -45,6 +45,7 @@ import org.jmol.bspt.CubeIterator;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.ModelSet;
+import org.jmol.script.T;
 import org.jmol.util.Escape;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
@@ -767,6 +768,7 @@ public class Symmetry implements SymmetryInterface {
   public void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms) {
     CIPChirality cip = getCIPChirality(vwr);
     BS bsAtropisomer = null, bsHelixM = null, bsHelixP = null;
+    boolean setAuxiliary = vwr.getBoolean(T.testflag1);
     try {
 // four ortho groups required:      bsAtropisomer = vwr.getSmartsMatch("[!H](.t3:-20,20)a1(.t3).[!H](.t1:-20,20)a(.t1)a1(.t1)(.t2:-20,20)(.t3)(.t4:-20,20)-{a}2(.t1)(.t2)(.t3)(.t4)a(.t2)[!H](.t2).a2(.t4)[!H](.t4)", bsAtoms);
 // three ortho groups required:     bsAtropisomer = vwr.getSmartsMatch("[!H](.t3:-20,20)a1(.t3).[!H](.t1:-20,20)a(.t1){a}1(.t1)(.t2:-20,20)(.t3)-{a}(.t1)(.t2)(.t3)a(.t2)[!H](.t2)", bsAtoms);
@@ -777,7 +779,7 @@ public class Symmetry implements SymmetryInterface {
     } catch (Exception e) {
      // ignore
     }
-    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAtropisomer, bsHelixM, bsHelixP);
+    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAtropisomer, bsHelixM, bsHelixP, setAuxiliary);
   }
   
   CIPChirality cip;

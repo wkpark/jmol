@@ -141,7 +141,7 @@ import org.jmol.viewer.JC;
  * code history:
  * 
  * 7/4/17 Jmol 14.20.1 major rewrite to correct and simplify logic; full validation
- *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (908 lines)
+ *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (840 lines)
  * 
  * 6/30/17 Jmol 14.20.1 major rewrite of Rule 4b (999 lines)
  * 
@@ -1627,7 +1627,7 @@ static final int IGNORE = Integer.MIN_VALUE;
             Integer.valueOf(rootDistance));
       }
       this.isDuplicate = isDuplicate;
-      if (Logger.debugging) {
+      if (Logger.debuggingHigh) {
         if (sphere < MAX_PATH) // Logger
           myPath = (parent != null ? parent.myPath + "-" : "") + this; // Logger
         Logger.info("new CIPAtom " + myPath);
@@ -1842,7 +1842,8 @@ static final int IGNORE = Integer.MIN_VALUE;
           switch (a.atom == null ? B_WINS : b.atom == null ? A_WINS
               : prevPrior[i] < prevPrior[j] ? A_WINS
                   : prevPrior[j] < prevPrior[i] ? B_WINS
-                      : (score = (checkRule4List ? checkRule4And5(i, j) : 
+                      : (score = (checkRule4List ? 
+                          checkRule4And5(i, j) : 
                           a.checkPriority(b))) != TIED ? score : 
                             sign(a.breakTie(b, sphere + 1))) {
           case B_WINS:
@@ -2461,8 +2462,8 @@ static final int IGNORE = Integer.MIN_VALUE;
       // then we build ["SrS" and "SrR"]
       // 
 
-      a.generateRule4Paths();
-      b.generateRule4Paths();
+      a.generateRule4Paths(this);
+      b.generateRule4Paths(this);
       
       boolean isRule5 = (currentRule == RULE_5);
       String aref = (isRule5 ? "R" : a.getRule4ReferenceDescriptor());
@@ -2541,10 +2542,11 @@ static final int IGNORE = Integer.MIN_VALUE;
 
     /**
      * Combine all subpaths
+     * @param ignore atom to ignore (parent)
      */
-    void generateRule4Paths() {
+    void generateRule4Paths(CIPAtom ignore) {
       
-      getRule4PriorityPaths("");
+      getRule4PriorityPaths("", ignore.atom);
       rootRule4Paths = new Lst<String[]>();
       appendRule4Paths(this, new String[3]);
       getRule4Counts(rule4Count = new Object[] { null, zero, zero, Integer.valueOf(10000)});
@@ -2566,12 +2568,13 @@ static final int IGNORE = Integer.MIN_VALUE;
      * Recursively build paths to stereocenters to estabish the path priority lexicographically.
      *  
      * @param path
+     * @param ignore atom to ignore (parent)
      */
-    private void getRule4PriorityPaths(String path) {
+    private void getRule4PriorityPaths(String path, SimpleNode ignore) {
       priorityPath = path + (priority + 1);
       for (int i = 0; i < 4; i++)
-        if (rule4List[i] != null)
-          atoms[i].getRule4PriorityPaths(priorityPath);
+        if (rule4List[i] != null && atoms[i].atom != ignore)
+          atoms[i].getRule4PriorityPaths(priorityPath, null);
     }
     
     private void getRule4Counts(Object[] counts) {
@@ -2732,15 +2735,14 @@ static final int IGNORE = Integer.MIN_VALUE;
      * @return collective string, with setting of rule4List
      */
     String createRule4AuxiliaryData(CIPAtom node1, CIPAtom[] ret) {
-      int rs = -1;
       String subRS = "", s = (node1 == null ? "" : "~");
-      boolean isBranch = false, noPseudo = false;
-      int nRS = 0;
       if (atom == null)
         return s;
+      int rs = -1, nRS = 0;
       rule4List = new String[4]; // full list based on atoms[]
-      int[] mataList = new int[4]; //sequential pointers into rule4List
       CIPAtom[] ret1 = new CIPAtom[1];
+      int ruleMax = RULE_5;
+      boolean prevIsChiral = false;
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
         if (a != null)
@@ -2759,322 +2761,126 @@ static final int IGNORE = Integer.MIN_VALUE;
           if (a.nextChiralBranch != null || ssub.indexOf("R") >= 0
               || ssub.indexOf("S") >= 0 || ssub.indexOf("r") >= 0
               || ssub.indexOf("s") >= 0) {
-            mataList[nRS] = i;
             nRS++;
-            subRS += ssub;
+            subRS = ssub;
+            prevIsChiral = true;
+          } else if (i > 0 && priorities[i] == priorities[i - 1]
+              && !prevIsChiral) {
+            // two groups have the same priority, and both have no chirality
+            ruleMax = 3;
           } else {
-            rule4List[i] = null;
+            prevIsChiral = false;
           }
         }
       }
-      int adj = TIED;
+      boolean isBranch = false;
       switch (nRS) {
       case 0:
         subRS = "";
         //$FALL-THROUGH$
       case 1:
+        ruleMax = RULE_3;
         break;
       case 2:
-        if (node1 != null) {
-          // we want to now if these two are enantiomorphic, identical, or diastereomorphic.
-          switch (adj = (compareRule4Isomers(mataList[0], mataList[1]))) {
-          case TIED:
-            // identical
-            isBranch = true;
-            s = "~";
-            subRS = "";
-            break;
-          case DIASTEREOMERIC_A_WINS:
-          case DIASTEREOMERIC_B_WINS:
-            noPseudo = true;
-            adj -= sign(adj); // change to A_WINS or B_WINS
-            //$FALL-THROUGH$
-          case A_WINS:
-          case B_WINS:
-            // enantiomers -- we have an r/s situation
-            // process to determine chirality, but then set ret[0] to be null
-            subRS = "";
-            //$FALL-THROUGH$
-          case CHECK_BRANCH:
-            // a and b are different priorities - we need to check to see if we have a chiral branch node
-            isBranch = true;
-            break;
-          }
-        }
-        break;
       case 3:
-        // We have three different chiral ligands.
-        // Check for exactly one enantiomeric pair among the three groups.
-        //
-        // If we have C{RRS SSR SSR}  
-        //
-        //    {RRS}    e      d     
-        //           {SSR}    d
-        //                  {SRS}  two enantiomers and a diastereomer (r/s)
-        //
-        // AY236.52 (tris-cyclopropyl), AY236.54 (Mata), AY236.148 (PR3)
-        //
-        //TODO:  not fully tested AY236.23?? 192??
-        //
-        // compareRule4Isomers can return TIED for:
-        //
-        //     R            S
-        //    /            /
-        // --~    and   --~
-        //    \            \ 
-        //     R            S
-
-        int irs = 0,
-        jrs = 0,
-        adj0 = TIED;
-        for (int i = 0; i < 2; i++) {
-          for (int j = i + 1; j < 3; j++) {
-            adj0 = (compareRule4Isomers(mataList[i], mataList[j]));
-            switch (adj0) {
-            case A_WINS:
-            case B_WINS:
-              if (adj == TIED) {
-                adj = adj0;
-                irs = i;
-                jrs = j;
-                continue;
-              }
-              i = j = 3;
-              adj = TIED;
-              break;
-            default:
-              break;
-            }
-          }
-        }
-        if (adj != TIED) {
-          mataList[0] = mataList[irs];
-          mataList[1] = mataList[jrs];
-        }
-        //$FALL-THROUGH$
       case 4:
-        s = "";
+        s = "~";
+        subRS = "";
         isBranch = true;
         break;
       }
       if (isBranch) {
-        subRS = "";
         if (ret != null)
           ret[0] = this;
       }
-      if (!isBranch || adj == A_WINS || adj == B_WINS || adj == CHECK_BRANCH) {
-        if (isAlkene) {
-          if (!isBranch && alkeneChild != null) {
-            // must be alkeneParent -- first C of an alkene -- this is where C/T is recorded 
-            boolean isSeqCT = (ret != null && ret[0] == alkeneChild);
-            // All odd cumulenes need to be checked.
-            // If it is an alkene or even cumulene, we must do an auxiliary check 
-            // only if it is not already a defined stereochemistry, because in that
-            // case we have a simple E/Z (c/t), and there is no need to check AND
-            // it does not contribute to the Mata sequence (similar to r/s or m/p).
+      if (isAlkene) {
+        if (!isBranch && alkeneChild != null) {
+          // must be alkeneParent -- first C of an alkene -- this is where C/T is recorded 
+          boolean isSeqCT = (ret != null && ret[0] == alkeneChild);
+          // All odd cumulene s need to be checked.
+          // If it is an alkene or even cumulene, we must do an auxiliary check 
+          // only if it is not already a defined stereochemistry, because in that
+          // case we have a simple E/Z (c/t), and there is no need to check AND
+          // it does not contribute to the Mata sequence (similar to r/s or m/p).
+          //
+          if (!isEvenEne
+              || (auxEZ == STEREO_BOTH_EZ || auxEZ == STEREO_UNDETERMINED)
+              && alkeneChild.bondCount >= 2 && !isKekuleAmbiguous) {
+            rs = getAuxEneWinnerChirality(this, alkeneChild, !isEvenEne, RULE_5);
             //
-            if (!isEvenEne
-                || (auxEZ == STEREO_BOTH_EZ || auxEZ == STEREO_UNDETERMINED)
-                && alkeneChild.bondCount >= 2 && !isKekuleAmbiguous) {
-              rs = getAuxEneWinnerChirality(this, alkeneChild, !isEvenEne,
-                  RULE_5);
-              //
-              // Note that we can have C/T (rule4Type = R/S):
-              // 
-              //    R      x
-              //     \    /
-              //       ==
-              //     /    \
-              //    S      root
-              //
-              // flips sense upon planar inversion; determination was Rule 5.
-              //
-              // Normalize M/P and E/Z to R/S
-              switch (rs) {
-              case STEREO_M:
-              case STEREO_Z:
-                rs = STEREO_R;
-                s = "R";
-                break;
-              case STEREO_P:
-              case STEREO_E:
-                rs = STEREO_S;
-                s = "S";
-                break;
-              }
-              if (rs != NO_CHIRALITY) {
-                auxChirality = s;
-                rule4Type = rs;
-                subRS = "";
-                if (isSeqCT) {
-                  nextChiralBranch = alkeneChild;
-                  ret[0] = this;
-                }
-
-              }
-            }
-          }
-        } else if (node1 != null
-            && (bondCount == 4 && nPriorities >= 3 - Math.abs(adj) || isTrigonalPyramidal
-                && nPriorities >= 2 - Math.abs(adj))) {
-          // if adj is 1 or -1, then we check for one fewer priorities because
-          // it means we had two groups that were either enantiomers or diasteriomers
-
-          if (isBranch && adj != CHECK_BRANCH) {
-            // if here, adj is A_WINS (-1), or B_WINS (1) 
-            // we check based on A winning, but then reverse it if B actually won
-            switch (rule4CheckPseudoHandedness(mataList)) {
-            case STEREO_R:
-              s = (adj == A_WINS ? "r" : "s");
+            // Note that we can have C/T (rule4Type = R/S):
+            // 
+            //    R      x
+            //     \    /
+            //       ==
+            //     /    \
+            //    S      root
+            //
+            // flips sense upon planar inversion; determination was Rule 5.
+            //
+            // Normalize M/P and E/Z to R/S
+            switch (rs) {
+            case STEREO_M:
+            case STEREO_Z:
+              rs = STEREO_R;
+              s = "R";
               break;
-            case STEREO_S:
-              s = (adj == A_WINS ? "s" : "r");
+            case STEREO_P:
+            case STEREO_E:
+              rs = STEREO_S;
+              s = "S";
               break;
             }
-            if (noPseudo) {
-              s = s.toUpperCase(); // Rule 4c or diasteriomers // AY-236.148
-              rule4Type = (s.equals("R") ? STEREO_R : STEREO_S);
-            }
-            subRS = "";
-            //if (ret != null)
-            //ret[0] = null;
-          } else {
-            // if here, adj is TIED (0) or NOT_RELEVANT
-            CIPAtom atom1 = (CIPAtom) clone();
-            if (atom1.setNode()) {
-              atom1.addReturnPath(null, this);
-              atom1.rule4List = rule4List;
-              int rule = atom1.sortToRule(RULE_5);
-              if (rule != TIED) {
-                rs = atom1.checkHandedness();
-                s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
-                if (rule == RULE_5) {
-                  s = s.toLowerCase();
-                } else {
-                  rule4Type = rs;
-                }
+            if (rs != NO_CHIRALITY) {
+              auxChirality = s;
+              rule4Type = rs;
+              subRS = "";
+              if (isSeqCT) {
+                nextChiralBranch = alkeneChild;
+                ret[0] = this;
               }
+
             }
           }
-          auxChirality = s;
         }
+      } else if (isTrigonalPyramidal || bondCount == 4) {
+        // if here, adj is TIED (0) or NOT_RELEVANT
+        CIPAtom atom1 = (CIPAtom) clone();
+        if (atom1.setNode()) {
+          atom1.addReturnPath(null, this);
+          atom1.rule4List = new String[4];
+          for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+              if (atom1.atoms[i] ==  atoms[j]) {
+                atom1.rule4List[i] = rule4List[j];
+                break;
+              }
+            }
+          }
+          //rule4List; //227 needs this commented out; 66 needs this in!
+          int rule = atom1.sortToRule(ruleMax);
+          if (rule == TIED)
+            s = "~";
+          else
+          if (rule != TIED) {
+            rs = atom1.checkHandedness();
+            s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
+            if (rule == RULE_5) {
+              s = s.toLowerCase();
+            } else {
+              rule4Type = rs;
+            }
+          }
+
+        }
+        auxChirality = s;
       }
       if (node1 == null)
         rule4Type = nRS;
       s += subRS;
       if (Logger.debugging && !s.equals("~"))
-        Logger.info("creating aux " + s + " fofr " + this + " = " + myPath);
+        Logger.info("creating aux " + s + " for " + this + " = " + myPath);
       return s;
-    }
-
-    /**
-     * Reverse the path to the parent and check r/s chirality
-     * 
-     * @param iab
-     * @return STEREO_R or STEREO_S
-     * 
-     */
-    private int rule4CheckPseudoHandedness(int[] iab) {
-      int ia = iab[0];
-      int ib = iab[1];
-      CIPAtom atom1;
-      // critical here that we do NOT include the tied branches
-      atom1 = (CIPAtom) clone();
-      atom1.atoms[ia] = new CIPAtom().create(null, atom1, false, false, false);
-      atom1.atoms[ib] = new CIPAtom().create(null, atom1, false, false, false);
-      atom1.addReturnPath(null, this);
-      // We are guaranteed that only RULE_1a is necessary, because one of our
-      // paths goes all the way back to the root, without a duplicate atom, and any
-      // other path reaching that will terminate with a duplicate atom instead.
-      atom1.sortByRule(RULE_1a);
-      // Now add the tied branches at the end; it doesn't matter where they 
-      // go as long as they are together and in order.
-      atom1.atoms[bondCount - 2] = atoms[Math.min(ia, ib)];
-      atom1.atoms[bondCount - 1] = atoms[Math.max(ia, ib)];
-      int rs = atom1.checkHandedness();
-      if (Logger.debugging) {
-        for (int i = 0; i < 4; i++) // Logger
-          Logger.info("pseudo " + rs + " " + priorities[i] + " " + atoms[i].myPath);
-      }
-      return rs;
-    }
-
-    /**
-     * Check for strings such as SSR/RRS
-     * 
-     * @param i1
-     * @param i2
-     * @return NOT_RELEVANT if there is no stereochemistry, TIED if they are
-     *         equal, A_WINS for enantiomer Rxxx, B_WINS for Sxxxx, or IGNORE
-     */
-    private int compareRule4Isomers(int i1, int i2) {
-      String rs1 = rule4List[i1], rs2 = rule4List[i2];
-      if (priorities[i1] != priorities[i2] || atoms[i1].nextChiralBranch != null)
-        return CHECK_BRANCH;
-      int n = rs1.length();
-      if (n != rs2.length())
-        return CHECK_BRANCH;
-      
-      if (rs1.equals(rs2)) {
-        
-        
-        // this is tricky, because we could have
-        //     R            S
-        //    /            /
-        // --~    and   --~
-        //    \            \ 
-        //     R            S
-        
-        return TIED;
-      }
-      String rs = rs1 + rs2;
-      boolean haveRS = (rs.indexOf("R") >= 0 || rs.indexOf("S") >= 0);
-      rs = (haveRS ? "~RS" : "~rs");
-      if (haveRS) {
-        rs1 = PT.replaceAllCharacters(rs1, "rs", "~");
-        rs2 = PT.replaceAllCharacters(rs2, "rs", "~");
-      }
-      int score = checkEnantiomer(rs1, rs2, 0, n, rs);
-      if (score == DIASTEREOMERIC) {
-        switch (compareMataPair(atoms[i1], atoms[i2])) {
-        case A_WINS:
-          return DIASTEREOMERIC_A_WINS;
-        case B_WINS:
-          return DIASTEREOMERIC_B_WINS;
-        }
-      }
-      return score;
-    }
-
-    /**
-     * Check to see if two RS-strings are enantiomeric or not. If enantiomeric,
-     * returns which has higher priority by Rule 4b. Can be used to compare "r"
-     * and "s" as well as "R" and "S"
-     * 
-     * @param rs1
-     * @param rs2
-     * @param m
-     * @param n
-     * @param rs
-     * @return DIASTEREOMERIC, A_WINS, or B_WINS
-     */
-    private int checkEnantiomer(String rs1, String rs2, int m, int n, String rs) {
-      int finalScore = TIED; // not a possible return
-      // "0~~R 0~~S"
-      for (int i = m; i < n; i++) {
-        // a score of 0 means ~ was present for both
-        // a score of 3 means one was R and one was S
-        // any other score indicates diasteriomeric
-        int i1 = rs.indexOf(rs1.charAt(i));
-        int score = i1 + rs.indexOf(rs2.charAt(i));
-        if (score != 0) {
-          if (score != STEREO_BOTH_RS)
-            return DIASTEREOMERIC;
-          if (finalScore == TIED)
-            finalScore = (i1 == STEREO_R ? A_WINS : B_WINS);
-        }
-      }
-      return finalScore;
     }
 
     /**
@@ -3139,9 +2945,10 @@ static final int IGNORE = Integer.MIN_VALUE;
       a.rule4Count = null;
       a.rule4List = null;
       a.rootRule4Paths = null;
-      a.priority = a.rule4Type = 0;
-      a.auxChirality = "~";
-      a.auxEZ = STEREO_UNDETERMINED;
+      a.priority = 0;
+      //a.rule4Type = 0;
+      //a.auxChirality = "~";
+      //a.auxEZ = STEREO_UNDETERMINED;
       for (int i = 0; i < 4; i++)
         if (atoms[i] != null)
           a.atoms[i] = atoms[i];

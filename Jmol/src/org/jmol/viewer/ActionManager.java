@@ -1819,12 +1819,14 @@ public class ActionManager implements EventManager {
     case PICKING_LABEL:
       if (bnd(clickAction, ACTION_pickLabel)) {
         runScript("set labeltoggle {atomindex=" + atomIndex + "}");
-        vwr.setStatusAtomPicked(atomIndex, null, null);
+        vwr.setStatusAtomPicked(atomIndex, "label picked", null);
       }
       return;
     case PICKING_INVERT_STEREO:
-      if (bnd(clickAction, ACTION_assignNew))
+      if (bnd(clickAction, ACTION_assignNew)) {
         vwr.invertRingAt(atomIndex, true);
+        vwr.setStatusAtomPicked(atomIndex, "invert stereo", null);
+      }
       return;
     case PICKING_DELETE_ATOM:
       if (bnd(clickAction, ACTION_deleteAtom)) {
@@ -1991,6 +1993,8 @@ public class ActionManager implements EventManager {
       try {
         BS bs = vwr.getAtomBitSetEval(null, s);
         vwr.select(bs, false, 0, false);
+        vwr.setStatusAtomPicked(-1, "selected: " + Escape.eBS(bs), null);
+
         vwr.refresh(3, "selections set");
       } catch (Exception e) {
         // ignore

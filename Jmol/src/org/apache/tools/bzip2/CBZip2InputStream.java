@@ -116,6 +116,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
      * stream to be the first one after the magic.  Thus callers have
      * to skip the first two bytes. Otherwise this constructor will
      * throw an exception. </p>
+     * @param in 
      *
      * @throws IOException
      *  if the stream content is malformed or an I/O error occurs.
@@ -161,15 +162,13 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         setupBlock();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int read() throws IOException {
-        if (this.in != null) {
-            return read0();
-        } else {
-            throw new IOException("stream closed");
-        }
-    }
+  /** {@inheritDoc} */
+  @Override
+  public int read() throws IOException {
+    if (this.in == null)
+      throw new IOException("stream closed");
+    return read0();
+  }
 
     /*
      * (non-Javadoc)
@@ -267,24 +266,24 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
                 throw new IOException("Empty InputStream");
             }
         } else {
-            int magic0 = this.in.read();
+            int magic0 = readByteAsInt();
             if (magic0 == -1) {
                 return false;
             }
-            int magic1 = this.in.read();
+            int magic1 = readByteAsInt();
             if (magic0 != 'B' || magic1 != 'Z') {
                 throw new IOException("Garbage after a valid BZip2 stream");
             }
         }
 
-        int magic2 = this.in.read();
+        int magic2 = readByteAsInt();
         if (magic2 != 'h') {
             throw new IOException(isFirstStream
                     ? "Stream is not in the BZip2 format"
                     : "Garbage after a valid BZip2 stream");
         }
 
-        int blockSize = this.in.read();
+        int blockSize = readByteAsInt();
         if ((blockSize < '1') || (blockSize > '9')) {
             throw new IOException("Stream is not BZip2 formatted: illegal "
                                   + "blocksize " + (char) blockSize);
@@ -298,65 +297,75 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         return true;
     }
 
-    private void initBlock() throws IOException {
-        char magic0;
-        char magic1;
-        char magic2;
-        char magic3;
-        char magic4;
-        char magic5;
-
-        while (true) {
-            // Get the block magic bytes.
-            magic0 = bsGetUByte();
-            magic1 = bsGetUByte();
-            magic2 = bsGetUByte();
-            magic3 = bsGetUByte();
-            magic4 = bsGetUByte();
-            magic5 = bsGetUByte();
-
-            // If isn't end of stream magic, break out of the loop.
-            if (magic0 != 0x17 || magic1 != 0x72 || magic2 != 0x45
-                    || magic3 != 0x38 || magic4 != 0x50 || magic5 != 0x90) {
-                break;
-            }
-
-            // End of stream was reached. Check the combined CRC and
-            // advance to the next .bz2 stream if decoding concatenated
-            // streams.
-            if (complete()) {
-                return;
-            }
-        }
-
-        if (magic0 != 0x31 || // '1'
-            magic1 != 0x41 || // ')'
-            magic2 != 0x59 || // 'Y'
-            magic3 != 0x26 || // '&'
-            magic4 != 0x53 || // 'S'
-            magic5 != 0x59 // 'Y'
-            ) {
-            this.currentState = EOF;
-            throw new IOException("bad block header");
-        } else {
-            this.storedBlockCRC = bsGetInt();
-            this.blockRandomised = bsR(1) == 1;
-
-            /**
-             * Allocate data here instead in constructor, so we do not
-             * allocate it if the input file is empty.
-             */
-            if (this.data == null) {
-                this.data = new Data(this.blockSize100k);
-            }
-
-            // currBlockNo++;
-            getAndMoveToFrontDecode();
-
-            this.crc.initialiseCRC();
-            this.currentState = START_BLOCK_STATE;
-        }
+    public synchronized int readByteAsInt() throws IOException {
+      /**
+       * @j2sNative
+       * 
+       * return(this.in.readByteAsInt());
+       */
+      {
+        return in.read();
+      }
     }
+
+  private void initBlock() throws IOException {
+    char magic0;
+    char magic1;
+    char magic2;
+    char magic3;
+    char magic4;
+    char magic5;
+
+    while (true) {
+      // Get the block magic bytes.
+      magic0 = bsGetUByte();
+      magic1 = bsGetUByte();
+      magic2 = bsGetUByte();
+      magic3 = bsGetUByte();
+      magic4 = bsGetUByte();
+      magic5 = bsGetUByte();
+
+      // If isn't end of stream magic, break out of the loop.
+      if (magic0 != 0x17 || magic1 != 0x72 || magic2 != 0x45 || magic3 != 0x38
+          || magic4 != 0x50 || magic5 != 0x90) {
+        break;
+      }
+
+      // End of stream was reached. Check the combined CRC and
+      // advance to the next .bz2 stream if decoding concatenated
+      // streams.
+      if (complete()) {
+        return;
+      }
+    }
+
+    if (magic0 != 0x31 || // '1'
+        magic1 != 0x41 || // ')'
+        magic2 != 0x59 || // 'Y'
+        magic3 != 0x26 || // '&'
+        magic4 != 0x53 || // 'S'
+        magic5 != 0x59 // 'Y'
+    ) {
+      this.currentState = EOF;
+      throw new IOException("bad block header");
+    }
+    this.storedBlockCRC = bsGetInt();
+    this.blockRandomised = bsR(1) == 1;
+
+    /**
+     * Allocate data here instead in constructor, so we do not allocate it if
+     * the input file is empty.
+     */
+    if (this.data == null) {
+      this.data = new Data(this.blockSize100k);
+    }
+
+    // currBlockNo++;
+    getAndMoveToFrontDecode();
+
+    this.crc.initialiseCRC();
+    this.currentState = START_BLOCK_STATE;
+  }
 
     private void endBlock() throws IOException {
         this.computedBlockCRC = this.crc.getFinalCRC();
@@ -415,7 +424,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         if (bsLiveShadow < n) {
             final InputStream inShadow = this.in;
             do {
-                int thech = inShadow.read();
+                int thech = readByteAsInt();//inShadow.read();
 
                 if (thech < 0) {
                     throw new IOException("unexpected end of stream");
@@ -437,7 +446,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         int bsBuffShadow = this.bsBuff;
 
         if (bsLiveShadow < 1) {
-            int thech = this.in.read();
+            int thech = readByteAsInt();
 
             if (thech < 0) {
                 throw new IOException("unexpected end of stream");
@@ -462,6 +471,13 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
     /**
      * Called by createHuffmanDecodingTables() exclusively.
+     * @param limit 
+     * @param base 
+     * @param perm 
+     * @param length 
+     * @param minLen 
+     * @param maxLen 
+     * @param alphaSize 
      */
     private static void hbCreateDecodeTables(final int[] limit,
                                              final int[] base,
@@ -588,6 +604,8 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
     /**
      * Called by recvDecodingTables() exclusively.
+     * @param alphaSize 
+     * @param nGroups 
      */
     private void createHuffmanDecodingTables(final int alphaSize,
                                              final int nGroups) {
@@ -617,225 +635,216 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
         }
     }
 
-    private void getAndMoveToFrontDecode() throws IOException {
-        this.origPtr = bsR(24);
-        recvDecodingTables();
+  private void getAndMoveToFrontDecode() throws IOException {
+    this.origPtr = bsR(24);
+    recvDecodingTables();
 
-        final InputStream inShadow = this.in;
-        final Data dataShadow   = this.data;
-        final byte[] ll8        = dataShadow.ll8;
-        final int[] unzftab     = dataShadow.unzftab;
-        final byte[] selector   = dataShadow.selector;
-        final byte[] seqToUnseq = dataShadow.seqToUnseq;
-        final char[] yy         = dataShadow.getAndMoveToFrontDecode_yy;
-        final int[] minLens     = dataShadow.minLens;
-        final int[][] limit     = dataShadow.limit;
-        final int[][] base      = dataShadow.base;
-        final int[][] perm      = dataShadow.perm;
-        final int limitLast     = this.blockSize100k * 100000;
+    final InputStream inShadow = this.in;
+    final Data dataShadow = this.data;
+    final byte[] ll8 = dataShadow.ll8;
+    final int[] unzftab = dataShadow.unzftab;
+    final byte[] selector = dataShadow.selector;
+    final byte[] seqToUnseq = dataShadow.seqToUnseq;
+    final char[] yy = dataShadow.getAndMoveToFrontDecode_yy;
+    final int[] minLens = dataShadow.minLens;
+    final int[][] limit = dataShadow.limit;
+    final int[][] base = dataShadow.base;
+    final int[][] perm = dataShadow.perm;
+    final int limitLast = this.blockSize100k * 100000;
 
-        /*
-          Setting up the unzftab entries here is not strictly
-          necessary, but it does save having to do it later
-          in a separate pass, and so saves a block's worth of
-          cache misses.
-        */
-        for (int i = 256; --i >= 0;) {
-            yy[i] = (char) i;
-            unzftab[i] = 0;
-        }
-
-        int groupNo     = 0;
-        int groupPos    = G_SIZE - 1;
-        final int eob   = this.nInUse + 1;
-        int nextSym     = getAndMoveToFrontDecode0(0);
-        int bsBuffShadow      = this.bsBuff;
-        int bsLiveShadow      = this.bsLive;
-        int lastShadow        = -1;
-        int zt          = selector[groupNo] & 0xff;
-        int[] base_zt   = base[zt];
-        int[] limit_zt  = limit[zt];
-        int[] perm_zt   = perm[zt];
-        int minLens_zt  = minLens[zt];
-
-        while (nextSym != eob) {
-            if ((nextSym == RUNA) || (nextSym == RUNB)) {
-                int s = -1;
-
-                for (int n = 1; true; n <<= 1) {
-                    if (nextSym == RUNA) {
-                        s += n;
-                    } else if (nextSym == RUNB) {
-                        s += n << 1;
-                    } else {
-                        break;
-                    }
-
-                    if (groupPos == 0) {
-                        groupPos    = G_SIZE - 1;
-                        zt          = selector[++groupNo] & 0xff;
-                        base_zt     = base[zt];
-                        limit_zt    = limit[zt];
-                        perm_zt     = perm[zt];
-                        minLens_zt  = minLens[zt];
-                    } else {
-                        groupPos--;
-                    }
-
-                    int zn = minLens_zt;
-
-                    // Inlined:
-                    // int zvec = bsR(zn);
-                    while (bsLiveShadow < zn) {
-                        final int thech = inShadow.read();
-                        if (thech >= 0) {
-                            bsBuffShadow = (bsBuffShadow << 8) | thech;
-                            bsLiveShadow += 8;
-                            continue;
-                        } else {
-                            throw new IOException("unexpected end of stream");
-                        }
-                    }
-                    int zvec = (bsBuffShadow >> (bsLiveShadow - zn)) & ((1 << zn) - 1);
-                    bsLiveShadow -= zn;
-
-                    while (zvec > limit_zt[zn]) {
-                        zn++;
-                        while (bsLiveShadow < 1) {
-                            final int thech = inShadow.read();
-                            if (thech >= 0) {
-                                bsBuffShadow = (bsBuffShadow << 8) | thech;
-                                bsLiveShadow += 8;
-                                continue;
-                            } else {
-                                throw new IOException("unexpected end of stream");
-                            }
-                        }
-                        bsLiveShadow--;
-                        zvec = (zvec << 1) | ((bsBuffShadow >> bsLiveShadow) & 1);
-                    }
-                    nextSym = perm_zt[zvec - base_zt[zn]];
-                }
-
-                final byte ch = seqToUnseq[yy[0]];
-                unzftab[ch & 0xff] += s + 1;
-
-                while (s-- >= 0) {
-                    ll8[++lastShadow] = ch;
-                }
-
-                if (lastShadow >= limitLast) {
-                    throw new IOException("block overrun");
-                }
-            } else {
-                if (++lastShadow >= limitLast) {
-                    throw new IOException("block overrun");
-                }
-
-                final char tmp = yy[nextSym - 1];
-                unzftab[seqToUnseq[tmp] & 0xff]++;
-                ll8[lastShadow] = seqToUnseq[tmp];
-
-                /*
-                  This loop is hammered during decompression,
-                  hence avoid native method call overhead of
-                  System.arraycopy for very small ranges to copy.
-                */
-                if (nextSym <= 16) {
-                    for (int j = nextSym - 1; j > 0;) {
-                        yy[j] = yy[--j];
-                    }
-                } else {
-                    System.arraycopy(yy, 0, yy, 1, nextSym - 1);
-                }
-
-                yy[0] = tmp;
-
-                if (groupPos == 0) {
-                    groupPos    = G_SIZE - 1;
-                    zt          = selector[++groupNo] & 0xff;
-                    base_zt     = base[zt];
-                    limit_zt    = limit[zt];
-                    perm_zt     = perm[zt];
-                    minLens_zt  = minLens[zt];
-                } else {
-                    groupPos--;
-                }
-
-                int zn = minLens_zt;
-
-                // Inlined:
-                // int zvec = bsR(zn);
-                while (bsLiveShadow < zn) {
-                    final int thech = inShadow.read();
-                    if (thech >= 0) {
-                        bsBuffShadow = (bsBuffShadow << 8) | thech;
-                        bsLiveShadow += 8;
-                        continue;
-                    } else {
-                        throw new IOException("unexpected end of stream");
-                    }
-                }
-                int zvec = (bsBuffShadow >> (bsLiveShadow - zn)) & ((1 << zn) - 1);
-                bsLiveShadow -= zn;
-
-                while (zvec > limit_zt[zn]) {
-                    zn++;
-                    while (bsLiveShadow < 1) {
-                        final int thech = inShadow.read();
-                        if (thech >= 0) {
-                            bsBuffShadow = (bsBuffShadow << 8) | thech;
-                            bsLiveShadow += 8;
-                            continue;
-                        } else {
-                            throw new IOException("unexpected end of stream");
-                        }
-                    }
-                    bsLiveShadow--;
-                    zvec = (zvec << 1) | ((bsBuffShadow >> bsLiveShadow) & 1);
-                }
-                nextSym = perm_zt[zvec - base_zt[zn]];
-            }
-        }
-
-        this.last = lastShadow;
-        this.bsLive = bsLiveShadow;
-        this.bsBuff = bsBuffShadow;
+    /*
+      Setting up the unzftab entries here is not strictly
+      necessary, but it does save having to do it later
+      in a separate pass, and so saves a block's worth of
+      cache misses.
+    */
+    for (int i = 256; --i >= 0;) {
+      yy[i] = (char) i;
+      unzftab[i] = 0;
     }
 
-    private int getAndMoveToFrontDecode0(final int groupNo)
-        throws IOException {
-        final InputStream inShadow  = this.in;
-        final Data dataShadow  = this.data;
-        final int zt          = dataShadow.selector[groupNo] & 0xff;
-        final int[] limit_zt  = dataShadow.limit[zt];
-        int zn = dataShadow.minLens[zt];
-        int zvec = bsR(zn);
-        int bsLiveShadow = this.bsLive;
-        int bsBuffShadow = this.bsBuff;
+    int groupNo = 0;
+    int groupPos = G_SIZE - 1;
+    final int eob = this.nInUse + 1;
+    int nextSym = getAndMoveToFrontDecode0(0);
+    int bsBuffShadow = this.bsBuff;
+    int bsLiveShadow = this.bsLive;
+    int lastShadow = -1;
+    int zt = selector[groupNo] & 0xff;
+    int[] base_zt = base[zt];
+    int[] limit_zt = limit[zt];
+    int[] perm_zt = perm[zt];
+    int minLens_zt = minLens[zt];
 
-        while (zvec > limit_zt[zn]) {
+    while (nextSym != eob) {
+      if ((nextSym == RUNA) || (nextSym == RUNB)) {
+        int s = -1;
+
+        for (int n = 1; true; n <<= 1) {
+          if (nextSym == RUNA) {
+            s += n;
+          } else if (nextSym == RUNB) {
+            s += n << 1;
+          } else {
+            break;
+          }
+
+          if (groupPos == 0) {
+            groupPos = G_SIZE - 1;
+            zt = selector[++groupNo] & 0xff;
+            base_zt = base[zt];
+            limit_zt = limit[zt];
+            perm_zt = perm[zt];
+            minLens_zt = minLens[zt];
+          } else {
+            groupPos--;
+          }
+
+          int zn = minLens_zt;
+
+          // Inlined:
+          // int zvec = bsR(zn);
+          while (bsLiveShadow < zn) {
+            final int thech = readByteAsInt();//inShadow.read();
+            if (thech < 0)
+              throw new IOException("unexpected end of stream");
+
+            bsBuffShadow = (bsBuffShadow << 8) | thech;
+            bsLiveShadow += 8;
+            continue;
+          }
+          int zvec = (bsBuffShadow >> (bsLiveShadow - zn)) & ((1 << zn) - 1);
+          bsLiveShadow -= zn;
+
+          while (zvec > limit_zt[zn]) {
             zn++;
             while (bsLiveShadow < 1) {
-                final int thech = inShadow.read();
-
-                if (thech >= 0) {
-                    bsBuffShadow = (bsBuffShadow << 8) | thech;
-                    bsLiveShadow += 8;
-                    continue;
-                } else {
-                    throw new IOException("unexpected end of stream");
-                }
+              final int thech = readByteAsInt();//inShadow.read();
+              if (thech < 0)
+                throw new IOException("unexpected end of stream");
+              bsBuffShadow = (bsBuffShadow << 8) | thech;
+              bsLiveShadow += 8;
+              continue;
             }
             bsLiveShadow--;
             zvec = (zvec << 1) | ((bsBuffShadow >> bsLiveShadow) & 1);
+          }
+          nextSym = perm_zt[zvec - base_zt[zn]];
         }
 
-        this.bsLive = bsLiveShadow;
-        this.bsBuff = bsBuffShadow;
+        final byte ch = seqToUnseq[yy[0]];
+        unzftab[ch & 0xff] += s + 1;
 
-        return dataShadow.perm[zt][zvec - dataShadow.base[zt][zn]];
+        while (s-- >= 0) {
+          ll8[++lastShadow] = ch;
+        }
+
+        if (lastShadow >= limitLast) {
+          throw new IOException("block overrun");
+        }
+      } else {
+        if (++lastShadow >= limitLast) {
+          throw new IOException("block overrun");
+        }
+
+        final char tmp = yy[nextSym - 1];
+        unzftab[seqToUnseq[tmp] & 0xff]++;
+        ll8[lastShadow] = seqToUnseq[tmp];
+
+        /*
+          This loop is hammered during decompression,
+          hence avoid native method call overhead of
+          System.arraycopy for very small ranges to copy.
+        */
+        if (nextSym <= 16) {
+          for (int j = nextSym - 1; j > 0;) {
+            yy[j] = yy[--j];
+          }
+        } else {
+          System.arraycopy(yy, 0, yy, 1, nextSym - 1);
+        }
+
+        yy[0] = tmp;
+
+        if (groupPos == 0) {
+          groupPos = G_SIZE - 1;
+          zt = selector[++groupNo] & 0xff;
+          base_zt = base[zt];
+          limit_zt = limit[zt];
+          perm_zt = perm[zt];
+          minLens_zt = minLens[zt];
+        } else {
+          groupPos--;
+        }
+
+        int zn = minLens_zt;
+
+        // Inlined:
+        // int zvec = bsR(zn);
+        while (bsLiveShadow < zn) {
+          final int thech = readByteAsInt();//inShadow.read();
+          if (thech < 0)
+            throw new IOException("unexpected end of stream");
+          bsBuffShadow = (bsBuffShadow << 8) | thech;
+          bsLiveShadow += 8;
+          continue;
+        }
+        int zvec = (bsBuffShadow >> (bsLiveShadow - zn)) & ((1 << zn) - 1);
+        bsLiveShadow -= zn;
+
+        while (zvec > limit_zt[zn]) {
+          zn++;
+          while (bsLiveShadow < 1) {
+            final int thech = readByteAsInt();//inShadow.read();
+            if (thech <0) 
+              throw new IOException("unexpected end of stream");
+              bsBuffShadow = (bsBuffShadow << 8) | thech;
+              bsLiveShadow += 8;
+              continue;
+          }
+          bsLiveShadow--;
+          zvec = (zvec << 1) | ((bsBuffShadow >> bsLiveShadow) & 1);
+        }
+        nextSym = perm_zt[zvec - base_zt[zn]];
+      }
     }
+
+    this.last = lastShadow;
+    this.bsLive = bsLiveShadow;
+    this.bsBuff = bsBuffShadow;
+  }
+
+  private int getAndMoveToFrontDecode0(final int groupNo) throws IOException {
+    final InputStream inShadow = this.in;
+    final Data dataShadow = this.data;
+    final int zt = dataShadow.selector[groupNo] & 0xff;
+    final int[] limit_zt = dataShadow.limit[zt];
+    int zn = dataShadow.minLens[zt];
+    int zvec = bsR(zn);
+    int bsLiveShadow = this.bsLive;
+    int bsBuffShadow = this.bsBuff;
+
+    while (zvec > limit_zt[zn]) {
+      zn++;
+      while (bsLiveShadow < 1) {
+        final int thech = readByteAsInt();//inShadow.read();
+
+        if (thech < 0)
+          throw new IOException("unexpected end of stream");
+
+        bsBuffShadow = (bsBuffShadow << 8) | thech;
+        bsLiveShadow += 8;
+        continue;
+      }
+      bsLiveShadow--;
+      zvec = (zvec << 1) | ((bsBuffShadow >> bsLiveShadow) & 1);
+    }
+
+    this.bsLive = bsLiveShadow;
+    this.bsBuff = bsBuffShadow;
+
+    return dataShadow.perm[zt][zvec - dataShadow.base[zt][zn]];
+  }
 
     private void setupBlock() throws IOException {
         if (this.data == null) {
@@ -1033,6 +1042,8 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
          * is known.  I don't initialize it at construction time to
          * avoid unnecessary memory allocation when compressing small
          * files.
+         * @param length 
+         * @return int array
          */
         final int[] initTT(int length) {
             int[] ttShadow = this.tt;
@@ -1050,6 +1061,7 @@ public class CBZip2InputStream extends InputStream implements BZip2Constants {
 
     }
 
+    @SuppressWarnings("unused")
     private static void reportCRCError() throws IOException {
         // The clean way would be to throw an exception.
         //throw new IOException("crc error");

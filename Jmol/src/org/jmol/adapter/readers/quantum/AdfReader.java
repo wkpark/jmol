@@ -161,10 +161,15 @@ OR
       if (tokens.length < 5)
         break;
       String symbol = tokens[1];
+      String name = null;
+      if (symbol.indexOf(".") >= 0) {
+        name = symbol;
+        symbol = symbol.substring(0, symbol.indexOf("."));
+      }
       if (JmolAdapter.getElementNumber(symbol) < 1)
         nXX++;
       else
-        addAtomXYZSymName(tokens, pt0, symbol, null);
+        addAtomXYZSymName(tokens, pt0, symbol, name);
     }
   }
 

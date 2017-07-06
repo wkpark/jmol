@@ -13,7 +13,7 @@ public class CBZip2InputStreamFactory {
    * @throws IOException 
    */
   public CBZip2InputStream getStream(InputStream is) throws IOException {
-    is.read(new byte[2]);
+    is.read(new byte[2], 0, 2);
     return new CBZip2InputStream(is);
   }
 

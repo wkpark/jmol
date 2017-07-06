@@ -1574,6 +1574,7 @@ static final int IGNORE = Integer.MIN_VALUE;
      * @param isParentBond
      * @return this
      */
+    @SuppressWarnings("unchecked")
     CIPAtom create(SimpleNode atom, CIPAtom parent, boolean isAlkene,
                    boolean isDuplicate, boolean isParentBond) {
       this.id = ++ptID;
@@ -1599,9 +1600,9 @@ static final int IGNORE = Integer.MIN_VALUE;
         htPathPoints = new Hashtable<Integer, Integer>();
       } else if (parent != null) {
         rootSubstituent = parent.rootSubstituent;
-        htPathPoints = rootSubstituent.htPathPoints;
+        htPathPoints = (Map<Integer, Integer>) ((Hashtable<Integer, Integer>) parent.htPathPoints).clone();
       }
-      this.bsPath = (parent == null ? new BS() : BSUtil.copy(parent.bsPath));
+      bsPath = (parent == null ? new BS() : BSUtil.copy(parent.bsPath));
 
       sp2Duplicate = isDuplicate;
 
@@ -1625,15 +1626,15 @@ static final int IGNORE = Integer.MIN_VALUE;
         rootSubstituent.spiroEnd = parent;
       } else if (bsPath.get(atomIndex)) {
         isDuplicate = true;
-        rootDistance = (isParentBond ? parent.sphere : rootSubstituent.htPathPoints.get(
+        rootDistance = (isParentBond ? parent.sphere : htPathPoints.get(
             Integer.valueOf(atomIndex)).intValue());
       } else {
         bsPath.set(atomIndex);
-        rootSubstituent.htPathPoints.put(Integer.valueOf(atomIndex),
+        htPathPoints.put(Integer.valueOf(atomIndex),
             Integer.valueOf(rootDistance));
       }
       this.isDuplicate = isDuplicate;
-      if (Logger.debuggingHigh) {
+      if (Logger.debugging) {
         if (sphere < MAX_PATH) // Logger
           myPath = (parent != null ? parent.myPath + "-" : "") + this; // Logger
         Logger.info("new CIPAtom " + myPath);
@@ -2026,6 +2027,7 @@ static final int IGNORE = Integer.MIN_VALUE;
       // Two duplicates of the same atom are always tied
       // if they have the same root distance.
 
+//      System.out.println("breaking tie for \n" + this.myPath + "\n" + b.myPath);
       if (isDuplicate && b.isDuplicate && atom == b.atom
           && rootDistance == b.rootDistance)
         return TIED;
@@ -2066,8 +2068,9 @@ static final int IGNORE = Integer.MIN_VALUE;
       //
       // The rules require that we first only look at just the atoms, so OOC beats OOH.
 
-      if ((score = compareShallowly(b, sphere)) != TIED)
+      if ((score = compareShallowly(b, sphere)) != TIED) {
         return score;
+      }
 
       // Phase II -- check deeply using breakTie
       //
@@ -2537,7 +2540,7 @@ static final int IGNORE = Integer.MIN_VALUE;
         
       }
       
-      if (score == A_WINS || score == B_WINS) // Logger
+      if (Logger.debugging && (score == A_WINS || score == B_WINS))
         Logger.info((score == A_WINS ? a : b) + " > " + (score == A_WINS ? b : a) + " by " + reason + "\n"); // Logger
 
       // no tie-breaking for Rules 4b or 5
@@ -2547,25 +2550,30 @@ static final int IGNORE = Integer.MIN_VALUE;
 
     /**
      * Combine all subpaths
-     * @param ignore atom to ignore (parent)
+     * 
+     * @param ignore
+     *        atom to ignore (parent)
      */
     void generateRule4Paths(CIPAtom ignore) {
-      
+
       getRule4PriorityPaths("", ignore.atom);
       rootRule4Paths = new Lst<String[]>();
       appendRule4Paths(this, new String[3]);
-      getRule4Counts(rule4Count = new Object[] { null, zero, zero, Integer.valueOf(10000)});
-      
+      getRule4Counts(rule4Count = new Object[] { null, zero, zero,
+          Integer.valueOf(10000) });
+
       if (Logger.debugging) {
         Logger.info("Rule 4b paths for " + this + "=\n");
-      for (int i = 0; i < rootRule4Paths.size(); i++) { // Logger
-        String s = rootRule4Paths.get(i)[0].toString(); // Logger
-        int prefixLen = rootRule4Paths.get(i)[1].length(); // Logger
-        while (prefixString.length() < prefixLen) // Logger
-          prefixString += prefixString;  // Logger
-        Logger.info(prefixString.substring(0,  prefixLen) + s.substring(prefixLen) + " " + priorityPath);
-      }
-      Logger.info("");
+        for (int i = 0; i < rootRule4Paths.size(); i++) { // Logger
+          String s = rootRule4Paths.get(i)[0].toString(); // Logger
+          int prefixLen = rootRule4Paths.get(i)[1].length(); // Logger
+          while (prefixString.length() < prefixLen)
+            // Logger
+            prefixString += prefixString; // Logger
+          Logger.info(prefixString.substring(0, prefixLen)
+              + s.substring(prefixLen) + " " + priorityPath);
+        }
+        Logger.info("");
       }
     }
     
@@ -2650,8 +2658,7 @@ static final int IGNORE = Integer.MIN_VALUE;
     private String getRule4ReferenceDescriptor() {
       if (rule4Count == null)
         return ("RCM".indexOf(auxChirality) >= 0 ? "R" : "S");
-      int nR = ((Integer) rule4Count[1]).intValue();
-      int nS = ((Integer) rule4Count[2]).intValue();
+      int nR = ((Integer) rule4Count[1]).intValue(), nS = ((Integer) rule4Count[2]).intValue();
       return (nR > nS ? "R" : nR < nS ? "S" : "RS");
     }
 
@@ -2739,9 +2746,8 @@ static final int IGNORE = Integer.MIN_VALUE;
     }
 
     /**
-     * Creates a list of downstream (higher-sphere)
-     * auxiliary chirality designators, starting with
-     * those furthest from the root.
+     * Creates a list of downstream (higher-sphere) auxiliary chirality
+     * designators, starting with those furthest from the root.
      * 
      * @param node1
      *        first node; sphere 1
@@ -2783,10 +2789,10 @@ static final int IGNORE = Integer.MIN_VALUE;
             nRS++;
             subRS = ssub;
             prevIsChiral = true;
-          } else if (!prevIsChiral && priorities[i] == priorities[i - 1]) {
-            // two groups have the same priority, and neither has a stereocenter
-            return "~";
           } else {
+            if (!prevIsChiral && priorities[i] == priorities[i - 1])
+              // two groups have the same priority, and neither has a stereocenter
+              return "~";
             prevIsChiral = false;
           }
         }

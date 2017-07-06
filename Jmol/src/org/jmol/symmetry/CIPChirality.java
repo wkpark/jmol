@@ -140,7 +140,7 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
- * 7/4/17 Jmol 14.20.1 major rewrite to correct and simplify logic; full validation
+ * 7/6/17 Jmol 14.20.1 major rewrite to correct and simplify logic; full validation
  *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (839 lines)
  * 
  * 6/30/17 Jmol 14.20.1 major rewrite of Rule 4b (999 lines)

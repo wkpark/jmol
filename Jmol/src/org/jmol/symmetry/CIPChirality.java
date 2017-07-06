@@ -141,7 +141,7 @@ import org.jmol.viewer.JC;
  * code history:
  * 
  * 7/4/17 Jmol 14.20.1 major rewrite to correct and simplify logic; full validation
- *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (840 lines)
+ *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (839 lines)
  * 
  * 6/30/17 Jmol 14.20.1 major rewrite of Rule 4b (999 lines)
  * 
@@ -1057,33 +1057,33 @@ static final int IGNORE = Integer.MIN_VALUE;
    *        ignored if a is not null (just checking ene end top priority)
    * @param cipAtom
    *        ignored if atom is not null
-   * @param parent
+   * @param parentAtom
    *        null for tetrahedral, other alkene carbon for E/Z
    * 
-   * @return if and E/Z test, [0:none, 1: atoms[0] is higher, 2: atoms[1] is higher]
-   *         otherwise [0:none, 1:R, 2:S] 
+   * @return if and E/Z test, [0:none, 1: atoms[0] is higher, 2: atoms[1] is
+   *         higher] otherwise [0:none, 1:R, 2:S]
    */
   private int getAtomChiralityLimited(SimpleNode atom, CIPAtom cipAtom,
-                                      CIPAtom parent) {
+                                      SimpleNode parentAtom) {
     int rs = NO_CHIRALITY;
-    boolean isAlkeneEndCheck = (atom == null);
     try {
+      boolean isAlkeneEndCheck = (atom == null);
       if (isAlkeneEndCheck) {
-        atom = cipAtom.atom;
+        // This is an alkene end determination.
+        atom = (root = cipAtom).atom;
+        cipAtom.htPathPoints = (cipAtom.parent = new CIPAtom().create(
+            parentAtom, null, true, false, false)).htPathPoints;
       } else {
-        // If this is a root-atom call (not an alkene end determination)
-        // then this is a call to root; we do not know at this point if it 
-        // is an atom we can process or not
-        cipAtom = new CIPAtom().create(atom, null, false, false, false);
+        // This is a root-atom call. We do not know at this point if it 
+        // is an atom we can process or not.
+        root = cipAtom = new CIPAtom().create(atom, null, false, false, false);
         int nSubs = atom.getCovalentBondCount(), elemNo = atom
             .getElementNumber();
-        boolean isSP2 = (nSubs == 3 && elemNo <= 10 && !cipAtom.isTrigonalPyramidal); // (IUPAC 2013.P-93.2.4)
-        if (nSubs != (parent == null ? 4 : 3) - (nSubs == 3 && !isSP2 ? 1 : 0))
+        // P-93.2.4 no double bonds for S=X
+        if (nSubs != 4 - (nSubs != 3 || elemNo <= 10
+            && !cipAtom.isTrigonalPyramidal ? 0 : 1))
           return NO_CHIRALITY;
       }
-      (root = cipAtom).parent = parent;
-      if (parent != null)
-        cipAtom.htPathPoints = parent.htPathPoints;
       currentRule = RULE_1a;
       if (cipAtom.setNode()) {
         for (; currentRule <= RULE_5; currentRule++) {
@@ -1112,10 +1112,10 @@ static final int IGNORE = Integer.MIN_VALUE;
             }
 
             // If this is an alkene end check, we just use STERE_S and STEREO_R as markers
-            
+
             if (isAlkeneEndCheck)
               return (cipAtom.atoms[0].isDuplicate ? 2 : 1);
-            
+
             rs = cipAtom.checkHandedness()
                 | (currentRule == RULE_5 && cipAtom.canBePseudo ? JC.CIP_CHIRALITY_PSEUDO_FLAG
                     : 0);
@@ -1253,8 +1253,7 @@ static final int IGNORE = Integer.MIN_VALUE;
    */
   private int getAlkeneEndTopPriority(CIPAtom a, SimpleNode pa, boolean isAxial) {
     a.canBePseudo = isAxial;
-    return getAtomChiralityLimited(null, a,
-        new CIPAtom().create(pa, null, true, false, false)) - 1;
+    return getAtomChiralityLimited(null, a, pa) - 1;
   }
 
   /**

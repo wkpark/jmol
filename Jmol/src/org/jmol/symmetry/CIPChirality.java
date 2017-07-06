@@ -250,6 +250,12 @@ import org.jmol.viewer.JC;
 
 public class CIPChirality {
 
+  
+  public void xxx() {
+    
+  }
+
+
   //The rules:
   //  
   //  P-92.1.3.1 Sequence Rule 1 has two parts:
@@ -2531,9 +2537,8 @@ static final int IGNORE = Integer.MIN_VALUE;
         
       }
       
-      Logger.info(a
-          + (score == A_WINS ? " > " : score == B_WINS ? " < " : " = ") // Logger
-          + b + " by " + reason + "\n"); // Logger
+      if (score == A_WINS || score == B_WINS) // Logger
+        Logger.info((score == A_WINS ? a : b) + " > " + (score == A_WINS ? b : a) + " by " + reason + "\n"); // Logger
 
       // no tie-breaking for Rules 4b or 5
       
@@ -2565,10 +2570,11 @@ static final int IGNORE = Integer.MIN_VALUE;
     }
     
     /**
-     * Recursively build paths to stereocenters to estabish the path priority lexicographically.
-     *  
+     * Recursively build priority paths to stereocenters as a string.
+     * 
      * @param path
-     * @param ignore atom to ignore (parent)
+     * @param ignore
+     *        atom to ignore (parent)
      */
     private void getRule4PriorityPaths(String path, SimpleNode ignore) {
       priorityPath = path + (priority + 1);
@@ -2577,6 +2583,11 @@ static final int IGNORE = Integer.MIN_VALUE;
           atoms[i].getRule4PriorityPaths(priorityPath, null);
     }
     
+    /**
+     * Track the number of R and S in th.e highest-ranking ligand position.
+     * 
+     * @param counts ["011020...", nR, nS, sphere] 
+     */
     private void getRule4Counts(Object[] counts) {
       if (sphere > ((Integer) counts[3]).intValue())
         return;
@@ -2606,6 +2617,12 @@ static final int IGNORE = Integer.MIN_VALUE;
           atoms[i].getRule4Counts(counts);
     }
     
+    /**
+     * Generate the list of all possible paths to stereocenters that Mata analysis needs.
+     * 
+     * @param rootsub
+     * @param pathInfo
+     */
     private void appendRule4Paths(CIPAtom rootsub, String[] pathInfo) {
       String s0 = (pathInfo[0] == null ? auxChirality : pathInfo[0]);
       if (pathInfo[2] == null)
@@ -2722,10 +2739,9 @@ static final int IGNORE = Integer.MIN_VALUE;
     }
 
     /**
-     * This critical method creates a list of downstream (higher-sphere)
-     * auxiliary chirality designators (R or S) in the correct order specified
-     * by Mata that are passed upstream ultimately to the Sphere-1 root
-     * substituent.
+     * Creates a list of downstream (higher-sphere)
+     * auxiliary chirality designators, starting with
+     * those furthest from the root.
      * 
      * @param node1
      *        first node; sphere 1
@@ -2738,15 +2754,18 @@ static final int IGNORE = Integer.MIN_VALUE;
       String subRS = "", s = (node1 == null ? "" : "~");
       if (atom == null)
         return s;
-      int rs = -1, nRS = 0;
       rule4List = new String[4]; // full list based on atoms[]
+      if (nPriorities == 0 && !isSet) {
+        setNode();
+        if (!isAlkene && !isDuplicate && !isTerminal)
+          sortToRule(RULE_3);
+      }
+      int rs = -1, nRS = 0;
       CIPAtom[] ret1 = new CIPAtom[1];
       int ruleMax = RULE_5;
-      boolean prevIsChiral = false;
+      boolean prevIsChiral = true;
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
-        if (a != null)
-          a.setNode();
         if (a != null && !a.isDuplicate && !a.isTerminal) {
           a.priority = priorities[i];
           ret1[0] = null;
@@ -2764,10 +2783,9 @@ static final int IGNORE = Integer.MIN_VALUE;
             nRS++;
             subRS = ssub;
             prevIsChiral = true;
-          } else if (i > 0 && priorities[i] == priorities[i - 1]
-              && !prevIsChiral) {
-            // two groups have the same priority, and both have no chirality
-            ruleMax = 3;
+          } else if (!prevIsChiral && priorities[i] == priorities[i - 1]) {
+            // two groups have the same priority, and neither has a stereocenter
+            return "~";
           } else {
             prevIsChiral = false;
           }
@@ -2787,11 +2805,9 @@ static final int IGNORE = Integer.MIN_VALUE;
         s = "~";
         subRS = "";
         isBranch = true;
-        break;
-      }
-      if (isBranch) {
         if (ret != null)
           ret[0] = this;
+        break;
       }
       if (isAlkene) {
         if (!isBranch && alkeneChild != null) {
@@ -2851,18 +2867,16 @@ static final int IGNORE = Integer.MIN_VALUE;
           atom1.rule4List = new String[4];
           for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-              if (atom1.atoms[i] ==  atoms[j]) {
+              if (atom1.atoms[i] == atoms[j]) {
                 atom1.rule4List[i] = rule4List[j];
                 break;
               }
             }
           }
-          //rule4List; //227 needs this commented out; 66 needs this in!
           int rule = atom1.sortToRule(ruleMax);
-          if (rule == TIED)
+          if (rule == TIED) {
             s = "~";
-          else
-          if (rule != TIED) {
+          } else {
             rs = atom1.checkHandedness();
             s = (rs == STEREO_R ? "R" : rs == STEREO_S ? "S" : "~");
             if (rule == RULE_5) {
@@ -2871,7 +2885,6 @@ static final int IGNORE = Integer.MIN_VALUE;
               rule4Type = rs;
             }
           }
-
         }
         auxChirality = s;
       }
@@ -2897,18 +2910,15 @@ static final int IGNORE = Integer.MIN_VALUE;
       if (isTerminal || isDuplicate)
         return TIED;
       int isRa = test.indexOf(auxChirality), isRb = test.indexOf(b.auxChirality);
-      return (isRa > isRb + 1 ? 
-          A_WINS 
-          : isRb > isRa + 1 ? 
-              B_WINS 
-              : TIED);
+      return (isRa > isRb + 1 ? A_WINS : isRb > isRa + 1 ? B_WINS : TIED);
     }
 
     /**
      * Determine the ordered CIP winding of this atom. For this, we just take
      * the directed normal through the plane containing the top three
      * substituent atoms and dot that with the vector from any one of them to
-     * the fourth ligand (or the root atom if trigonal pyramidal). If this is positive, we have R.
+     * the fourth ligand (or the root atom if trigonal pyramidal). If this is
+     * positive, we have R.
      * 
      * @return 1 for "R", 2 for "S"
      */
@@ -2946,9 +2956,6 @@ static final int IGNORE = Integer.MIN_VALUE;
       a.rule4List = null;
       a.rootRule4Paths = null;
       a.priority = 0;
-      //a.rule4Type = 0;
-      //a.auxChirality = "~";
-      //a.auxEZ = STEREO_UNDETERMINED;
       for (int i = 0; i < 4; i++)
         if (atoms[i] != null)
           a.atoms[i] = atoms[i];
@@ -2963,7 +2970,6 @@ static final int IGNORE = Integer.MIN_VALUE;
           + (auxChirality == null ? "" : auxChirality)
           + "]");
     }
-
   }
 
 }

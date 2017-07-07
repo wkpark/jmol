@@ -39,11 +39,13 @@ import javajs.util.Base64;
 import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.M4;
+import javajs.util.Measure;
 import javajs.util.OC;
 import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.SB;
+import javajs.util.T3;
 import javajs.util.V3;
 import javajs.util.XmlUtil;
 
@@ -93,6 +95,8 @@ public class PropertyManager implements JmolPropertyManager {
 
   Viewer vwr;
   private Map<String, Integer> map = new Hashtable<String, Integer>();
+  private T3 vNorm;
+  private T3 vTemp;
 
   @Override
   public void setViewer(Viewer vwr) {
@@ -1329,7 +1333,7 @@ public class PropertyManager implements JmolPropertyManager {
     } else {
       PT.rightJustify(mol, "   ", "" + nAtoms);
       PT.rightJustify(mol, "   ", "" + nBonds);
-      mol.append("  0  0  0  0              1 V2000");
+      mol.append("  0  0  0  0            999 V2000");
     }
     if (!asJSON)
       mol.append("\n");
@@ -1503,11 +1507,10 @@ public class PropertyManager implements JmolPropertyManager {
         mol.append(" ");
       if (iso > 0)
         iso -= Elements.getNaturalIsotope(a.getElementNumber());
-      mol.append(" ");
-      PT.rightJustify(mol, "  ", "" + iso);
+      PT.rightJustify(mol, "   ", "" + iso);
       PT.rightJustify(mol, "   ", "" + (charge == 0 ? 0 : 4 - charge));
-      mol.append("  0  0  0  0\n");
-
+      mol.append("  ").append(getAtomParity(a));
+      mol.append("  0  0  0\n");
       String label = (atomValues == null || asV3000 ? null : 
         getAtomPropertyAsString(a, tokValue));
       if (label != null && (label = label.trim()).length() > 0) {
@@ -1517,6 +1520,37 @@ public class PropertyManager implements JmolPropertyManager {
       }
     }
   }
+  private int[] connections;
+
+  private String getAtomParity(Atom a) {
+    if (a.getCovalentBondCount() == 4) {
+      if (connections == null) {
+        connections = new int[4];
+        vTemp = new V3();
+        vNorm = new V3();
+      }
+      Bond[] bonds = a.bonds;
+      int nH = 0;
+      for (int pt = 0, i = bonds.length; --i >= 0;) {
+        if (bonds[i].isCovalent()) {
+          Atom b = bonds[i].getOtherAtom(a);
+          if (b.getAtomicAndIsotopeNumber() == 1)
+            nH++;
+          connections[pt++] = b.i;
+        }
+      }
+      if (nH < 3) {
+        Arrays.sort(connections);
+        Atom[] atoms = vwr.ms.at;
+        Measure.getNormalThroughPoints(atoms[connections[0]],
+            atoms[connections[1]], atoms[connections[2]], vNorm, vTemp);
+        vTemp.sub2(atoms[connections[3]], atoms[connections[0]]);
+        return (vTemp.dot(vNorm) > 0 ? "1" : "2");
+      }
+    }
+    return "0";
+  }
+  
 
   private P3 ptTemp;
   private String getAtomPropertyAsString(Atom a, int tok) {

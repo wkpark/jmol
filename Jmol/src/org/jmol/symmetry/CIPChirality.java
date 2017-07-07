@@ -141,7 +141,7 @@ import org.jmol.viewer.JC;
  * code history:
  * 
  * 7/6/17 Jmol 14.20.1 major rewrite to correct and simplify logic; full validation
- *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (839 lines)
+ *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (837 lines)
  * 
  * 6/30/17 Jmol 14.20.1 major rewrite of Rule 4b (999 lines)
  * 
@@ -251,11 +251,6 @@ import org.jmol.viewer.JC;
 public class CIPChirality {
 
   
-  public void xxx() {
-    
-  }
-
-
   //The rules:
   //  
   //  P-92.1.3.1 Sequence Rule 1 has two parts:
@@ -295,21 +290,27 @@ public class CIPChirality {
   //    An atom or group with descriptor 'R', 'M' and 'seqCis' has priority over its
   //    enantiomorph 'S', 'P' or 'seqTrans', 'seqCis' or 'seqTrans'.
 
+  
+  //
+  // Implementation Notes
+  //
+  //
+
+  
   // "Scoring" a vs. b involves returning 0 (TIE) or +/-n, where n>0 indicates b won, n < 0
-  // indicates a won, and the |a| indicates in which shell the decision was made. 
-  // The basic strategy is to loop through the Sequential Rules 1-5, including all parts 
-  // exhaustively prior to applying another rule. This includes subparts:
+  // indicates a won, and the |n| indicates in which sphere the decision was made. 
+  // The basic strategy is to loop through all eight sequence rules (1a, 1b, 2, 3, 4a, 4b, 4c, and 5) 
+  // in order and exhaustively prior to applying the next rule:
   //
   // Rule 1a (atomic number -- note that this requires an aromaticity check first)
   // Rule 1b (duplicated atom progenitor root-distance check; revised as described above
   //         for aromatic systems.
   // Rule 2  (nominal isotopic mass)
-  // Rule 3  (E/Z not including enantiomorphic seqCis/seqTrans designations)
-  // Rule 4a (chiral precedes pseudochiral precedes nonstereochemical; more of a guideline
-  //         than a sequential rule)
-  // Rule 4b like precedes unlike
-  // Rule 4c r precedes s
-  // Rule 5  R precedes S; M precedes P (final determination of pseudoasymmetry descriptors)
+  // Rule 3  (E/Z, not including enantiomorphic seqCis/seqTrans designations)
+  // Rule 4a (chiral precedes pseudochiral precedes nonstereochemical)
+  // Rule 4b (like precedes unlike)
+  // Rule 4c (r precedes s)
+  // Rule 5  (R precedes S; M precedes P; C precedes T)
   //
   // Some nuances I've learned along the way here, some of which are still being checked:
   //
@@ -322,25 +323,92 @@ public class CIPChirality {
   // 4. Rule 3  requires the concept of "auxiliary" (temporary, digraph-specific) descriptors.
   //            This concept of auxiliary descriptors is the key to not having an analysis
   //            blow up or somehow require complex, impossible iteration.
-  // 5. Rule 4a needs to be addressed exhaustively prior to Rules 4b and 4c. This involves the
+  // 5. Rule 4a needs to be addressed exhaustively prior to Rules 4b and 4c. This involves
   //            the initial generation of all auxiliary descriptors, including r/s and R/S at
   //            branching points. In the course of doing this, all rules, 1-5, must be employed
   //            at these auxiliary centers using the already-created digraph. This rule serves to
   //            avoid the need for Rule 4b for all except the most unusual cases, where, for example,
   //            there are two otherwise identical branches, but one can be identified as S and the
   //            other only r or no-stereo, but not R. Thus, only branches that end up as R/R, R/S, S/S,
-  //            r/r, r/s, s/s, or nst/nst need be investigated by Rule 4b.  
-  // 6. Rule 4b Somehow missed in the discussion is that the reference descriptor is determined
-  //            once and only once for each branch from the center under scrutiny. All Rules 
-  //            preceding Rule 4 can be applied to iterated subsections of a digraph. Not this one,
-  //            nor Rule 5, though. The key is to determine one single "Mata sequence" of R and S descriptors
-  //            for each pair of branches being considered. This same reference carries through all  
-  //            future iterations of the algorithm for that branch.
+  //            r/r, r/s, s/s, or nst/nst comparisons need be investigated by Rule 4b.  
+  // 6. Rule 4b This rule filters out all diastereomorphic differences that do not involve r/s issues.
+  //            Somehow missed in the discussion is that the reference descriptor is determined
+  //            once and only once for each branch from the center under scrutiny. The key is to 
+  //            determine two "Mata sequences" of R and S descriptors, one for each pair of branches being 
+  //            considered. This same reference carries through all future iterations of the algorithm 
+  //            for that branch.
   // 7. Rule 4c Again, this subrule must be invoked only after Rule 4b is completed, and again
-  //            it is only for the root branches, not anywhere else.
-  // 8. Rule 5  Final setting pseudoasymmetry (r/s, m/p) can be done along the same line as Rule 4b,
-  //            but with slightly different sorting criteria.
+  //            it is only for the root branches, not anywhere else. It filters out any remaining
+  //            diastereomorphic differences based on r/s/ns branch assignments.
+  // 8. Rule 5  Final setting of pseudoasymmetry (r/s, m/p) is done along the same line as Rule 4b,
+  //            but in this case by setting the reference descriptor to "R" for both sequences.
   //
+
+  /**
+   * The basic idea is to switch from a tree metaphor to a "twisted strand" or
+   * "thread" metaphor. For example:
+   * 
+   * (a) In Rule 1b, all ring-duplicates terminate on one of the nodes in the
+   * sequence of parent nodes going back to the root. This has nothing to do
+   * with branching.
+   * 
+   * (b) Generation of auxiliary descriptors prior to implementation of Rule 4
+   * must start from the highest sphere, proceeding toward the root. In this
+   * process the path leading back to the root will have no stereodescriptors,
+   * but that does not matter, as its priority is guaranteed to be set by Rule
+   * 1a.
+   * 
+   * (c) All auxiliary nodes can be normalized by labeling them one of
+   * {R,S,r,s}; there is no need to consider them to be C/T (seqCis or
+   * seqTrans), M/P, or m/p, other than to immediately equate that to R/S or
+   * r/s. Note that C/T and M/P must be assigned to the sp2 node closest to the
+   * root.
+   * 
+   * (d) Rule 4b can be analyzed using a "thread" metaphor in a five-step
+   * process:
+   * 
+   * (d1) Generate a set of n threads leading from the root and terminating on
+   * highest-ranking stereogenic centers. All nodes must be included, not just
+   * stereogenic centers.
+   * 
+   * (d2) Determine the reference descriptors.
+   * 
+   * (d3) Sort these threads by priority (including that determined by Rule 4a)
+   * and reference descriptors.
+   * 
+   * (d4) Note that the data can be seen as two n x m matrices, where the rows
+   * are the threads. Now "flatten" the data to produce two 1D sequences of
+   * descriptors by simply reading out the data in column order.
+   * 
+   * (d5) Prioritize these two sequences, looking for the first diastereotopic
+   * difference.
+   * 
+   * (e) Rule 5 processing is just a repeat of Rule 4b processing, where the
+   * reference descriptor is now set to "R".
+   * 
+   * (f) Tests for root-only spiro cases must be done along with each rule's
+   * processing prior to continuing to the next rule. This is done by looking
+   * for situations where there are two sets of matched priorities. These will
+   * be broken by the axial nature of spiro connections.
+   * 
+   * (g) A test for root-only double enantiotopic cases (RSR'S') must be done
+   * after Rule 5, allowing for the possibility for this test to return R/S or
+   * M/P, not just r/s and m/p.
+   * 
+   * Jmol's threads in Step d1 are just strings. Jmol carries out Steps d1 and
+   * d2 simultaneously with auxiliary descriptor generation, tracking the sphere
+   * and priority of all auxiliary descriptors as it generates them. Sorting in
+   * Step d3 is done in Jmol using a simple java Array.sort(); no actual
+   * matrices are involved.
+   * 
+   * Finally, the "like/unlike" business is replaced with a simple
+   * diastereotopic test. Thus, the strings are tested for the first point at
+   * which they are neither the same nor opposites. I like thinking about it
+   * this way because it focuses on what Rule 4b's role -- the identification of
+   * diastereomorphism. Rule 4c takes care of diasteriomorphism related to
+   * enantiomorphic sub-paths; Rule 5 finally takes care of any remaining
+   * enantiomorphic issues.
+   */
 
   // The algorithm:
   // 
@@ -424,7 +492,7 @@ public class CIPChirality {
   static final int DIASTEREOMERIC_B_WINS = 2;
   static final int ENANTIOMERIC_A_WINS = -3;
   static final int ENANTIOMERIC_B_WINS = 3;
-static final int IGNORE = Integer.MIN_VALUE;
+  static final int IGNORE = Integer.MIN_VALUE;
   static final int CHECK_BRANCH = Integer.MIN_VALUE;
 
   static final int STEREO_UNDETERMINED = -1;
@@ -450,7 +518,7 @@ static final int IGNORE = Integer.MIN_VALUE;
   static final int RULE_4c = 7;
   static final int RULE_5  = 8;
 
-  static String prefixString = "..........";
+  static String prefixString = ".........."; // Logger only
   
   static Integer zero = Integer.valueOf(0);
 
@@ -521,7 +589,19 @@ static final int IGNORE = Integer.MIN_VALUE;
 
   V3 vNorm = new V3(), vNorm2 = new V3(), vTemp = new V3();
 
+  /**
+   * a testing flag that when false does not involve alkenes in
+   * duplicate root distance checks; AY236_215 and BH64_002,003,004,009 
+   * all fail if this is set false 
+   */
   boolean allowRule1bAlkenes = true;
+  
+  
+  /**
+   * return auxiliary chirality settings for all atoms when only one atom is
+   * selected and TESTFLAG1 has been set TRUE in Jmol
+   * 
+   */
   boolean setAuxiliary;
 
   public CIPChirality() {
@@ -2161,6 +2241,33 @@ static final int IGNORE = Integer.MIN_VALUE;
     }
 
     /**
+     * Sort for auxiliary chirality determination
+     * 
+     * @param maxRule
+     * @return TIED or deciding rule RULE_1a - RULE_5
+     */
+    private int sortToRule(int maxRule) {
+      for (int i = RULE_1a; i <= maxRule; i++)
+        if (sortByRule(i))
+          return i;
+      return TIED;
+    }
+    
+    /**
+     * Sort by a given rule, preserving currentRule.
+     * 
+     * @param rule
+     * @return true if a decision has been made
+     */
+    private boolean sortByRule(int rule) {
+      int current = currentRule;
+      currentRule = rule;
+      boolean isChiral = sortSubstituents(0);
+      currentRule = current;
+      return isChiral;
+    }
+
+    /**
      * Check this atom "A" vs a challenger "B" against the current rule.
      * 
      * Note that example BB 2013 page 1258, P93.5.2.3 requires that RULE_1b be
@@ -2254,6 +2361,24 @@ static final int IGNORE = Integer.MIN_VALUE;
     }
 
     /**
+     * The result of checking a Mata series of parallel paths may be one of
+     * several values. TIED here probably means something went wrong; IGNORE
+     * means we have two of the same chirality, for example RSRR RSRR. In that
+     * case, we defer to Rule 5. The idea is to handle all such business in
+     * Sphere 1.
+     * 
+     * 
+     * @param i
+     * @param j
+     * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), Integer.MIN_VALUE (IGNORE)
+     */
+    private int checkRule4And5(int i, int j) {
+      return (rule4List[i] == null && rule4List[j] == null ? IGNORE
+          : rule4List[j] == null ? A_WINS : rule4List[i] == null ? B_WINS
+              : compareMataPair(atoms[i], atoms[j]));
+    }
+
+    /**
      * Check auxiliary Z by temporarily setting return path.
      * 
      * This method uses CIPAtom.clone() effectively to create a second
@@ -2336,33 +2461,6 @@ static final int IGNORE = Integer.MIN_VALUE;
       return null;
     }
 
-    /**
-     * Sort for auxiliary chirality determination
-     * 
-     * @param maxRule
-     * @return TIED or deciding rule RULE_1a - RULE_5
-     */
-    private int sortToRule(int maxRule) {
-      for (int i = RULE_1a; i <= maxRule; i++)
-        if (sortByRule(i))
-          return i;
-      return TIED;
-    }
-    
-    /**
-     * Sort by a given rule, preserving currentRule.
-     * 
-     * @param rule
-     * @return true if a decision has been made
-     */
-    private boolean sortByRule(int rule) {
-      int current = currentRule;
-      currentRule = rule;
-      boolean isChiral = sortSubstituents(0);
-      currentRule = current;
-      return isChiral;
-    }
-
 
     /**
      * 
@@ -2419,24 +2517,6 @@ static final int IGNORE = Integer.MIN_VALUE;
           Arrays.sort(atoms);
           break;
         }
-    }
-
-    /**
-     * The result of checking a Mata series of parallel paths may be one of
-     * several values. TIED here probably means something went wrong; IGNORE
-     * means we have two of the same chirality, for example RSRR RSRR. In that
-     * case, we defer to Rule 5. The idea is to handle all such business in
-     * Sphere 1.
-     * 
-     * 
-     * @param i
-     * @param j
-     * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), Integer.MIN_VALUE (IGNORE)
-     */
-    private int checkRule4And5(int i, int j) {
-      return (rule4List[i] == null && rule4List[j] == null ? IGNORE
-          : rule4List[j] == null ? A_WINS : rule4List[i] == null ? B_WINS
-              : compareMataPair(atoms[i], atoms[j]));
     }
 
     /**
@@ -2598,8 +2678,6 @@ static final int IGNORE = Integer.MIN_VALUE;
     private void getRule4Counts(Object[] counts) {
       if (sphere > ((Integer) counts[3]).intValue())
         return;
-      if (setAuxiliary && auxChirality != "~")
-        atom.setCIPChirality(JC.getCIPChiralityCode(auxChirality));
       if (rule4Type > 0) {
         // Accumlate the number of R and S centers of a given cumlative priority
         int val = sign(priorityPath.length() - (counts[0] == null ? 10000 : ((String) counts[0]).length()));
@@ -2719,12 +2797,16 @@ static final int IGNORE = Integer.MIN_VALUE;
     }
 
     /**
-     * Comparison of two strings such as RSSR and SRSS for Rule 4b.
+     * Rule 4b comparison of two strings such as RSSR and SRSS, looking for 
+     * diasteriomeric differences only. A return of IGNORE indicates that
+     * they are either the same or opposites and tells sortSubstituents to
+     * not explore more deeply.
      * 
      * @param aStr
      * @param bStr
      * @param isRSTest
      *        This is just a test for optional pathways, for example: RS|SR
+     *        
      * 
      * 
      * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), Integer.MIN_VALUE (IGNORE)
@@ -2745,8 +2827,9 @@ static final int IGNORE = Integer.MIN_VALUE;
     }
 
     /**
-     * Creates a list of downstream (higher-sphere) auxiliary chirality
-     * designators, starting with those furthest from the root.
+     * By far the most complex of the methods, this method creates a list of
+     * downstream (higher-sphere) auxiliary chirality designators, starting with
+     * those furthest from the root and moving in, toward the root.
      * 
      * @param node1
      *        first node; sphere 1
@@ -2796,7 +2879,7 @@ static final int IGNORE = Integer.MIN_VALUE;
           }
         }
       }
-      boolean isBranch = false;
+      boolean isBranch = (nRS >= 2);
       switch (nRS) {
       case 0:
         subRS = "";
@@ -2809,7 +2892,6 @@ static final int IGNORE = Integer.MIN_VALUE;
       case 4:
         s = "~";
         subRS = "";
-        isBranch = true;
         if (ret != null)
           ret[0] = this;
         break;
@@ -2893,6 +2975,9 @@ static final int IGNORE = Integer.MIN_VALUE;
         }
         auxChirality = s;
       }
+      if (setAuxiliary && auxChirality != "~")
+        atom.setCIPChirality(JC.getCIPChiralityCode(auxChirality));
+
       if (node1 == null)
         rule4Type = nRS;
       s += subRS;

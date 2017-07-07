@@ -140,6 +140,8 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
+ * 7/7/17 Jmol 14.20.1 minor coding efficiencies (833 lines)
+ *  
  * 7/6/17 Jmol 14.20.1 major rewrite to correct and simplify logic; full validation
  *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (836 lines)
  * 
@@ -1153,13 +1155,9 @@ public class CIPChirality {
         atom = (root = cipAtom).atom;
         cipAtom.htPathPoints = (cipAtom.parent = new CIPAtom().create(
             parentAtom, null, true, false, false)).htPathPoints;
-      } else {
-        // This is a root-atom call. We do not know at this point if it 
-        // is an atom we can process or not.
-        root = cipAtom = new CIPAtom().create(atom, null, false, false, false);
-        int nSubs = atom.getCovalentBondCount();
-        // P-93.2.4 no double bonds for S=X and P=X
-        if (nSubs != 4 && !cipAtom.isTrigonalPyramidal)   
+      } else if (!(root = cipAtom = new CIPAtom().create(atom, null, false, false, false)).canBePseudo) {
+        // This is a root-atom call. 
+        // Just checking here that center has 4 covalent bonds or is trigonal pyramidal.
           return NO_CHIRALITY;
       }
       if (cipAtom.setNode()) {
@@ -1583,7 +1581,8 @@ public class CIPChirality {
 
     /**
      * a flag set false in evaluation of Rule 5 to indicate that there was more 
-     * than one R/S decision made, so this center cannot be r/s. 
+     * than one R/S decision made, so this center cannot be r/s; initially just
+     * indicates that the atom has 4 covalent bonds or is trigonal pyriamidal 
      */
     boolean canBePseudo = true;
 
@@ -2943,7 +2942,7 @@ public class CIPChirality {
             }
           }
         }
-      } else if (isTrigonalPyramidal || bondCount == 4) {
+      } else if (canBePseudo) {
         // if here, adj is TIED (0) or NOT_RELEVANT
         CIPAtom atom1 = (CIPAtom) clone();
         if (atom1.setNode()) {

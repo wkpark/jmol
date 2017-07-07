@@ -141,7 +141,7 @@ import org.jmol.viewer.JC;
  * code history:
  * 
  * 7/6/17 Jmol 14.20.1 major rewrite to correct and simplify logic; full validation
- *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (837 lines)
+ *  for 433 structures (many duplicates) in AY236, BH64, MV64, MV116, JM, and L (836 lines)
  * 
  * 6/30/17 Jmol 14.20.1 major rewrite of Rule 4b (999 lines)
  * 
@@ -1157,16 +1157,13 @@ public class CIPChirality {
         // This is a root-atom call. We do not know at this point if it 
         // is an atom we can process or not.
         root = cipAtom = new CIPAtom().create(atom, null, false, false, false);
-        int nSubs = atom.getCovalentBondCount(), elemNo = atom
-            .getElementNumber();
-        // P-93.2.4 no double bonds for S=X
-        if (nSubs != 4 - (nSubs != 3 || elemNo <= 10
-            && !cipAtom.isTrigonalPyramidal ? 0 : 1))
+        int nSubs = atom.getCovalentBondCount();
+        // P-93.2.4 no double bonds for S=X and P=X
+        if (nSubs != 4 && !cipAtom.isTrigonalPyramidal)   
           return NO_CHIRALITY;
       }
-      currentRule = RULE_1a;
       if (cipAtom.setNode()) {
-        for (; currentRule <= RULE_5; currentRule++) {
+        for (currentRule = RULE_1a; currentRule <= RULE_5; currentRule++) {
           if (Logger.debugging)
             Logger.info("-Rule " + getRuleName() + " CIPChirality for "
                 + cipAtom + "-----"); // Logger

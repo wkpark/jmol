@@ -357,12 +357,12 @@ public class MolReader extends AtomSetCollectionReader {
     float[] fdata = null;
     // officially, we need a terminating blank line, and $$$$ could be data,
     // but here we do not allow $$$$ due to Jmol legacy writing of JMOL_PARTIAL_CHARGES
-    while (rd() != null && !line.equals("$$$$")
-        && line.length() > 0)
+    while (rd() != null && !line.equals("$$$$") && line.length() > 0)
       data += line + "\n";
     data = PT.trim(data, "\n");
     Logger.info(dataName + ":" + PT.esc(data));
     molData.put(dataName, data);
+    int ndata = 0;
     if (dataName.toUpperCase().contains("_PARTIAL_CHARGES")) {
       try {
         fdata = PT.parseFloatArray(data);
@@ -373,12 +373,33 @@ public class MolReader extends AtomSetCollectionReader {
           int atomIndex = (int) fdata[pt++] + iatom0 - 1;
           float partialCharge = fdata[pt++];
           atoms[atomIndex].partialCharge = partialCharge;
+          ndata++;
         }
-      } catch (Exception e) {
+      } catch (Throwable e) {
         for (int i = asc.getLastAtomSetAtomIndex(), n = asc.ac; i < n; i++)
           atoms[i].partialCharge = 0;
-        return;
+        Logger.error("error reading " + dataName + " field -- partial charges cleared");
       }
+      Logger.info(ndata + " partial charges read");
+    } else if (dataName.toUpperCase().contains("ATOM_NAMES")) {
+      ndata = 0;
+      try {
+        String[] tokens = PT.getTokens(data);
+        int pt = 0;
+        for (int i = parseIntStr(tokens[pt++]); --i >= 0;) {
+          int iatom;
+          // try to skip over extra stuff if it is not a number 
+          while ((iatom = parseIntStr(tokens[pt++])) == Integer.MIN_VALUE){}
+          int atomIndex = iatom + iatom0 - 1;
+          String name = tokens[pt++];
+          if (!name.equals("."))
+            atoms[atomIndex].atomName = name;
+          ndata++;
+        }
+      } catch (Throwable e) {
+        Logger.error("error reading " + dataName + " field");
+      }
+      Logger.info(ndata + " atom names read");
     }
   }
 

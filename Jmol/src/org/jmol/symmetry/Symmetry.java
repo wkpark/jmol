@@ -24,6 +24,7 @@
 
 package org.jmol.symmetry;
 
+import java.awt.Cursor;
 import java.util.Map;
 
 import javajs.util.Lst;
@@ -766,6 +767,7 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms) {
+    vwr.setCursor(Cursor.WAIT_CURSOR);
     CIPChirality cip = getCIPChirality(vwr);
     BS bsAtropisomer = null, bsHelixM = null, bsHelixP = null;
     boolean setAuxiliary = vwr.getBoolean(T.testflag1);
@@ -780,6 +782,7 @@ public class Symmetry implements SymmetryInterface {
      // ignore
     }
     cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAtropisomer, bsHelixM, bsHelixP, setAuxiliary);
+    vwr.setCursor(Cursor.DEFAULT_CURSOR);
   }
   
   CIPChirality cip;

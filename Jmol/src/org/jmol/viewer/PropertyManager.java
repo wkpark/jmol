@@ -1355,7 +1355,7 @@ public class PropertyManager implements JmolPropertyManager {
       mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
     } else if (asJSON) {
       mol.append("],\"b\":[");
-    } 
+    }
     for (int i = bsBonds.nextSetBit(0), n = 0; i >= 0; i = bsBonds
         .nextSetBit(i + 1))
       getBondRecordMOL(mol, ++n, ms.bo[i], atomMap, asV3000, asJSON, noAromatic);
@@ -1372,16 +1372,27 @@ public class PropertyManager implements JmolPropertyManager {
     if (asSDF) {
       try {
         float[] pc = ms.getPartialCharges();
+        if (molData == null)
+          molData = new Hashtable<String, Object>();
+        SB sb = new SB();
         if (pc != null) {
-          if (molData == null)
-            molData = new Hashtable<String, Object>();
-          SB sb = new SB();
           sb.appendI(nAtoms).appendC('\n');
           for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
               .nextSetBit(i + 1))
             sb.appendI(++n).append(" ").appendF(pc[i]).appendC('\n');
           molData.put("jmol_partial_charges", sb.toString());
         }
+        sb.setLength(0);
+        sb.appendI(nAtoms).appendC('\n');
+        for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
+            .nextSetBit(i + 1)) {
+          String name = ms.at[i].getAtomName().trim();
+          if (name.length() == 0)
+            name = ".";
+          sb.appendI(++n).append(" ")
+              .append(name.replace(' ', '_')).appendC('\n');
+        }
+        molData.put("jmol_atom_names", sb.toString());
         for (String key : molData.keySet()) {
           o = molData.get(key);
           if (o instanceof SV)

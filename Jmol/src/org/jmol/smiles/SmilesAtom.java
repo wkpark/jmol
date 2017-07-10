@@ -852,9 +852,9 @@ public class SmilesAtom extends P3 implements Node {
   }
 
   @Override
-  public int getNominalMass() {
+  public float getMass() {
     // TODO
-    return getAtomicMass();
+    return atomicMass;
   }
 
   @Override
@@ -879,6 +879,5 @@ public class SmilesAtom extends P3 implements Node {
   public P3 getXYZ() {
     return this;
   }
-
 
 }

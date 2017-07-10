@@ -104,8 +104,7 @@ public final class JC {
     return ruleNames[i];
   }
 
-  public static int getCIPChiralityCode(String rs) {
-    char c = (rs.length() == 0 ? 'x' : rs.charAt(0));
+  public static int getCIPChiralityCode(char c) {
     switch (c) {
     case 'Z':
       return CIP_CHIRALITY_Z_FLAG;

@@ -1337,14 +1337,13 @@ public class Atom extends Point3fi implements Node {
     return group.chain.model.ms.getVibCoord(i, ch);
   }
 
-  @Override
-  
   public int getNominalMass() {
     int mass = getIsotopeNumber();
     return (mass > 0 ? mass : Elements.getNaturalIsotope(getElementNumber()));
   }
   
-  private float getMass() {
+  @Override
+  public float getMass() {
     float mass = getIsotopeNumber();
     return (mass > 0 ? mass : Elements.getAtomicMass(getElementNumber()));
   }

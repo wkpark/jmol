@@ -55,7 +55,7 @@ public interface Node extends SimpleNode {
   public void set(float x, float y, float z);
   public int getMoleculeNumber(boolean inModel);
   @Override
-  public int getNominalMass();
+  public float getMass();
 
   
   /**

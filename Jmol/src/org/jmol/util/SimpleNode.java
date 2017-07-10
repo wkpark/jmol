@@ -55,12 +55,12 @@ public interface SimpleNode {
 
   /**
    *
-   * @return the nominal mass -- an integer associated with the most prevalent isotope
+   * @return the mass or, if specified, the mass number
    */
-  int getNominalMass();
+  float getMass();
 
   /**
-   * 
+   *
    * @return the sum of the bond orders for this atom
    */
   int getValence();

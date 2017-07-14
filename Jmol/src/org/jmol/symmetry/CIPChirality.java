@@ -115,7 +115,7 @@ import org.jmol.viewer.JC;
  * CIP-System, MATCH, 21, 1986, 3-31
  * http://match.pmf.kg.ac.rs/electronic_versions/Match21/match21_3-31.pdf
  * 
- * Mata(1993a) Paulina Mata, Ana M. Lobo, Chris Marshall, A.Peter Johnson The
+ * Mata(1993) Paulina Mata, Ana M. Lobo, Chris Marshall, A.Peter Johnson The
  * CIP sequence rules: Analysis and proposal for a revision, Tetrahedron:
  * Asymmetry, Volume 4, Issue 4, April 1993, Pages 657-668
  * 
@@ -140,6 +140,7 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
+ * 7/10/17 Jmol 14.20.2 adding check for C3 and double spiran (CIP 1966 #32 and #33)
  * 7/8/17 Jmol 14.20.2 adding presort for Rules 4a and 4c (test12.mol; 828 lines) 
  * 
  * 7/7/17 Jmol 14.20.1 minor coding efficiencies (833 lines)
@@ -1504,7 +1505,9 @@ public class CIPChirality {
      * pointer to this branch's spiro end atom if it is found to be spiro
      */
 
-    private CIPAtom spiroEnd;
+    private CIPAtom spiroEnd, spiroEnd1;
+    
+    private int nSpiro;
 
     /**
      * Rule 1b hash table that maintains distance of the associated
@@ -1687,7 +1690,15 @@ public class CIPChirality {
         // pointing to original atom
         isDuplicate = true;
         rootDistance = 0;
-        rootSubstituent.spiroEnd = parent;
+        root.nSpiro++;
+        if (rootSubstituent.spiroEnd == null) {
+          rootSubstituent.spiroEnd = parent;
+        } else if (rootSubstituent.spiroEnd.sphere > parent.sphere) {
+          rootSubstituent.spiroEnd1 = rootSubstituent.spiroEnd;
+          rootSubstituent.spiroEnd = parent;
+        } else if (rootSubstituent.spiroEnd1 == null || rootSubstituent.spiroEnd1.sphere > parent.sphere){
+          rootSubstituent.spiroEnd1 = parent;
+        }
       } else if (bsPath.get(atomIndex)) {
         isDuplicate = true;
         rootDistance = (isParentBond ? parent.sphere : htPathPoints.get(
@@ -1882,7 +1893,8 @@ public class CIPChirality {
         if (isTerminal)
           return false;
         for (int i = 0; i < 4; i++)
-          if (rule4List[i] != null && atoms[i].atom != null && !atoms[i].isTerminal)
+          if (rule4List[i] != null && atoms[i].atom != null
+              && !atoms[i].isTerminal)
             atoms[i].sortSubstituents(Integer.MIN_VALUE);
         if (!canBePseudo)
           return false;
@@ -1973,52 +1985,11 @@ public class CIPChirality {
 
         // We do the spiro test first, as it may inform the pseudoasymmetric test.
 
-        if (nPriorities == 2 && priorities[3] == 2) {
-          //
-          // We have priorities [0 0 2 2], possibly being spiro
-          //
-          int end0, end1;
-          if ((end0 = getSpiroType(0)) >= 2 && (end1 = getSpiroType(1)) >= 2
-              && end0 != end1) {
-            //
-            // We are done, because the two spiro ends set both of these ties.
-            //                     a a'b b' (order is already OK)
-            //                     a a'b'b  (needs switching)
-            //
-            // P-93.2.3.2
-            //
-            // We have priorities [0 0 2 2], possibly being spiro
-            //
-            //     b                            b
-            //    /-                            -\
-            //   / -                            - \
-            //  a--C--a'    R                a--C--a'    S
-            //     - /                        \ - 
-            //     -/                          \-
-            //     b'                           b'
-            // 
-            // a==a' and b==b'; order of precedence is set to a > a' > b > b'
-            //
-            // Note that this is really a case of axial chirality. It is the same as:
-            // 
-            //     b'                          a'
-            //     -                           -
-            //     -                           - 
-            //  a--C--b    M                a--C--b    P
-            //     -                           - 
-            //     -                           -
-            //     a'                          b'
-
+        if (nSpiro > 0) {
+          int nprev = checkSpiro();
+          if (nprev == 2)
             nPrioritiesPrev = 2;
-            nPriorities = 4;
-            if (end1 == 2) {
-              CIPAtom a = atoms[2];
-              atoms[2] = atoms[3];
-              atoms[3] = a;
-            }
-          }
         }
-
         if (currentRule == RULE_5 && nPriorities == 4 && nPrioritiesPrev == 2) {
 
           // Rule 5 has decided the issue, but how many decisions did we make?
@@ -2063,6 +2034,96 @@ public class CIPChirality {
       return (nPriorities == bondCount);
     }
 
+    private int checkSpiro() {
+      if (nSpiro >= 42)
+        return -1; // disallow O_h-cubane, which has 42 root termination pathways
+      boolean swap23 = false;
+      int nPrev = 0;
+      if (nPriorities == 1) {
+        // CIP Helv Chim. Acta 1966 #33 -- double spiran
+        // 0-1,2-3 or 0-1,3-2
+        // 0-2,1-3 or 
+        // 0-3,1-2
+        int a2, a3;
+        if ((getSpiroType(0, false)) >= 0 && (a2 = getSpiroType(0, true)) >= 0
+            && (getSpiroType(1, false)) >= 0
+            && (a3 = getSpiroType(1, true)) >= 0
+            && (getSpiroType(2, false)) >= 0 && (getSpiroType(2, true)) >= 0
+            && (getSpiroType(3, false)) >= 0 && (getSpiroType(3, true)) >= 0) {
+          nPriorities = 4;
+          swap23 = (a2 < a3);
+        }
+      } else if (nPriorities == 2) {
+        swap23 = false;
+        switch (priorities[3]) {
+        case 1:
+        case 3:
+          // CIP Helv. Chim. Acta 1966 #32 
+          // [0 1 1 1] or [0 0 0 3]
+          int first = (priorities[3] == 1 ? 1 : 0);
+          int a1 = getSpiroType(first, false);
+          if (a1 >= 0) {
+            // BH64_069, BH64_070
+            int a2 = getSpiroType(a1, false);
+            int a3 = getSpiroType(a2, false);
+            if (a1 != a2 && a2 != a3 && a3 != a1) {
+              nPriorities = 4;
+              swap23 = (a2 > a1);
+            }
+          }
+          break;
+        case 2:
+          //
+          // We have priorities [0 0 2 2], possibly being spiro
+          //
+          int end0,
+          end1;
+          if ((end0 = getSpiroType(0, false)) >= 2
+              && (end1 = getSpiroType(1, false)) >= 2 && end0 != end1) {
+            //
+            // We are done, because the two spiro ends set both of these ties.
+            //                     a a'b b' (order is already OK)
+            //                     a a'b'b  (needs switching)
+            //
+            // P-93.2.3.2
+            //
+            // We have priorities [0 0 2 2], possibly being spiro
+            //
+            //     b                            b
+            //    /-                            -\
+            //   / -                            - \
+            //  a--C--a'    R                a--C--a'    S
+            //     - /                        \ - 
+            //     -/                          \-
+            //     b'                           b'
+            // 
+            // a==a' and b==b'; order of precedence is set to a > a' > b > b'
+            //
+            // Note that this is really a case of axial chirality. It is the same as:
+            // 
+            //     b'                          a'
+            //     -                           -
+            //     -                           - 
+            //  a--C--b    M                a--C--b    P
+            //     -                           - 
+            //     -                           -
+            //     a'                          b'
+
+            nPrev = 2;
+            nPriorities = 4;
+            swap23 = (end1 == 2);
+          }
+          break;
+        }
+      }
+      if (swap23) {
+        CIPAtom a = atoms[2];
+        atoms[2] = atoms[3];
+        atoms[3] = a;
+      }
+      return nPrev;
+    }
+
     /**
      * Find the other end of a loop to root.
      * 
@@ -2070,10 +2131,11 @@ public class CIPChirality {
      * @return pointer to spiro end of atoms[0] -- either 0 (not spiro), 1, 2,
      *         or 3
      */
-    private int getSpiroType(int i0) {
-      if (atoms[i0].spiroEnd != null)
+    private int getSpiroType(int i0, boolean checkEnd1) {
+      CIPAtom a = (i0 < 0 ? null : checkEnd1 ? atoms[i0].spiroEnd1 : atoms[i0].spiroEnd);
+      if (a != null)
         for (int i = 0; i < 4; i++)
-          if (i != i0 && atoms[i0].spiroEnd.atom == atoms[i].atom)
+          if (i != i0 && a.atom == atoms[i].atom)
             return i;
       return -1;
     }
@@ -2551,7 +2613,7 @@ public class CIPChirality {
 
       a.generateRule4Paths(this);
       b.generateRule4Paths(this);
-      
+
       boolean isRule5 = (currentRule == RULE_5);
       char aref = (isRule5 ? 'R' : a.getRule4ReferenceDescriptor());
       char bref = (isRule5 ? 'R' : b.getRule4ReferenceDescriptor());
@@ -2561,67 +2623,57 @@ public class CIPChirality {
 
       int score = TIED;
       String reason = "Rule 4b"; // Logger
-      
+
       while (true) {
 
         // check for RS on only one side
         if ((aref == '?') != (bref == '?')) {
           score = (haveRSOptions ? B_WINS : A_WINS);
-          reason += " RS on only one side";  // Logger
+          reason += " RS on only one side"; // Logger
           break;
         }
 
-        String aStr = (haveRSOptions ? a.flattenRule4Paths('R', isRule5) + "|"
-            + a.flattenRule4Paths('S', isRule5) : a.flattenRule4Paths(
-            aref, isRule5));
-        String bStr = (haveRSOptions ? b.flattenRule4Paths('R', isRule5) + "|"
-            + b.flattenRule4Paths('S', isRule5) : b.flattenRule4Paths(
-            bref, isRule5));
+        String aStr = (haveRSOptions ? a.flattenRule4Paths('R') : a
+            .flattenRule4Paths(aref));
+        String aStr2 = (haveRSOptions ? a.flattenRule4Paths('S') : "");
+        String bStr = (haveRSOptions ? b.flattenRule4Paths('R') : b
+            .flattenRule4Paths(bref));
+        String bStr2 = (haveRSOptions ? b.flattenRule4Paths('S') : "");
 
         // just return string comparison if Rule 5
         if (isRule5) {
           // note that these two strings cannot be different lengths
-          score = sign(aStr.compareTo(bStr));
-          reason = "Rule 5";  // Logger
+          score = sign(haveRSOptions ? (aStr + aStr2).compareTo(bStr + bStr2)
+              : aStr.compareTo(bStr));
+          reason = "Rule 5"; // Logger
           break;
         }
 
-        // check for 
         aStr = cleanRule4Str(aStr);
         bStr = cleanRule4Str(bStr);
+
         if (haveRSOptions) {
-          
-          // Mata(2005) Figure 9
-          // We are trying to ascertain that
-          // R lull                  R luuu
-          // S luuu   is the same as S lull
-          // 
-          // Solution is to SUM all winners. If that is 0, then they are the same.
-          
-          String[] aList = PT.split(aStr, "|"), bList = PT.split(bStr, "|");
-          int minScore = Integer.MAX_VALUE, sumScore = 0;
-          for (int i = aList.length; --i >= 0;) {
-            for (int j = bList.length; --j >= 0;) {
-              score = compareRule4PairStr(aList[i], bList[j], true);
-              sumScore += score;
-              if (score != TIED && Math.abs(score) <= Math.abs(minScore)) {
-                minScore = score;
-              }
-            }
-          }
-          score = (sumScore == TIED ? TIED : minScore < 0 ? A_WINS : B_WINS);
-          break;
+
+          // first find the better of A(R)/A(S) and the better of B(R)/B(S)
+
+          if (compareRule4PairStr(aStr, aStr2 = cleanRule4Str(aStr2), true) > 0)
+            aStr = aStr2;
+          if (compareRule4PairStr(bStr, bStr2 = cleanRule4Str(bStr2), true) > 0)
+            bStr = bStr2;
+
+          // then continue as before
         }
         score = compareRule4PairStr(aStr, bStr, false);
         break;
-        
+
       }
-      
+
       if (Logger.debugging && (score == A_WINS || score == B_WINS))
-        Logger.info((score == A_WINS ? a : b) + " > " + (score == A_WINS ? b : a) + " by " + reason + "\n"); // Logger
+        Logger.info((score == A_WINS ? a : b) + " > "
+            + (score == A_WINS ? b : a) + " by " + reason + "\n"); // Logger
 
       // no tie-breaking for Rules 4b or 5
-      
+
       return (score == TIED ? IGNORE : score);
     }
 
@@ -2747,10 +2799,9 @@ public class CIPChirality {
      * lowest ASCII characater "A" (65).
      * 
      * @param ref
-     * @param isRule5
      * @return a string that can be compared with another using like/unlike
      */ 
-    private String flattenRule4Paths(char ref, boolean isRule5) {
+    private String flattenRule4Paths(char ref) {
       int nPaths = rootRule4Paths.size();
       String[] paths = new String[nPaths];      
       int nMax = 0;

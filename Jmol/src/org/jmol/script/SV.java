@@ -757,6 +757,7 @@ public class SV extends T implements JSONEncodable {
     }
   }
   
+  @SuppressWarnings("cast")
   private static void sValueAddKeys(SB sb, String path, Map<String, SV> ht, String tabs, boolean isEscaped, boolean addValues, int maxLevels, boolean skipEmpty) {
     if (maxLevels < 0)
       return;
@@ -792,6 +793,8 @@ public class SV extends T implements JSONEncodable {
       String key = keys[i];
       sb.append(PT.esc(key)).append("  :");
       SB sb2 = new SB();
+      if (!(ht.get(key) instanceof SV))
+        ht.put(key, SV.getVariable(ht.get(key)));
       SV v = ht.get(key);
       isEscaped = isRawType(v.tok);
       sValueArray(sb2, v, path, tabs, isEscaped, false, addValues, maxLevels, skipEmpty);

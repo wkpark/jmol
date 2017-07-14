@@ -1709,7 +1709,7 @@ public class CIPChirality {
             Integer.valueOf(rootDistance));
       }
       this.isDuplicate = isDuplicate;
-      if (Logger.debugging) {
+      if (Logger.debuggingHigh) {
         if (sphere < MAX_PATH) // Logger
           myPath = (parent != null ? parent.myPath + "-" : "") + this; // Logger
         Logger.info("new CIPAtom " + myPath);
@@ -1883,6 +1883,10 @@ public class CIPChirality {
      * 
      */
     boolean sortSubstituents(int sphere) {
+
+      // runs about 20% faster with this check
+      if (nPriorities == (sphere == 0 ? 4 : 3))
+        return true;
 
       // Note that this method calls breakTie and is called recursively from breakTie.
 

@@ -55,6 +55,8 @@ import org.jmol.viewer.JC;
  * 
  * - deeply validated
  * 
+ * - included revised Rules 1b, and 2. 
+ * 
  * - implemented in Java (Jmol) and JavaScript (JSmol)
  * 
  * - only two Java classes; roughly 1000 lines
@@ -208,6 +210,28 @@ import org.jmol.viewer.JC;
  * definition) introduces a Kekule bias, which can be illustrated with various
  * simple models. By moving that distance to be the sphere of the parent atom of
  * the duplicate, the problem is resolved.
+ * 
+ * Added clarification to Rule 2:
+ * 
+ * Rule 2: Higher mass precedes lower mass, where mass is defined in the 
+ * case of nonduplicate atoms with identified isotopes for elements as 
+ * their exact isotopic mass and, in all other cases, as their 
+ * element's atomic weight.
+ * 
+ * Rationale: BB is not self-consistent, including both "mass number" (in the rule)
+ * and "atomic mass" in the description, where "79Br < Br < 81Br". And again we have the
+ * same Kekule-ambiguous issue as in Rule 1b. The added clarification fixes the Kekule
+ * issue (not using isotope mass number for duplicate atoms), solves the problem 
+ * that F < 19F (though 100% nat. abundance), and is easily programmable. 
+ * 
+ * In Jmol the logic is very simple, actually using the isotope mass number, actually,
+ * but doing two checks:
+ * 
+ * a) if one of five specific isotopes, reverse the test, and
+ * b) if on the list of 100% natural isotopes or one of the non-natural elements, 
+ *    use the average atomic mass. 
+ *    
+ * See CIPAtom.getMass();
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
@@ -1781,7 +1805,7 @@ public class CIPChirality {
 
     private boolean isType(String rule2Type) {
       return PT.isOneOf(
-          ";" + (int) mass + Elements.elementSymbolFromNumber((int) elemNo),
+          (int) mass + Elements.elementSymbolFromNumber((int) elemNo),
           rule2Type);
     }
 
@@ -2016,10 +2040,6 @@ public class CIPChirality {
         Logger.info("---");
       }
 
-      // if this is Rule 4b or 5, then we do a check of the forward-based stereochemical path
-
-      boolean checkRule4List = (rule4List != null && (currentRule == RULE_4b || currentRule == RULE_5));
-
       int loser, score;
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
@@ -2092,9 +2112,9 @@ public class CIPChirality {
         if (currentRule == RULE_5 && nPriorities == 4 && nPrioritiesPrev == 2) {
 
           // Rule 5 has decided the issue, but how many decisions did we make?
-          // If priorities [0 0 2 2] went to [1 2 3 4] then
+          // If priorities [0 0 2 2] went to [0 1 2 3] then
           // we have two Rule-5 decisions -- R,S,R',S'.
-          // In that case, Rule 5 resuls in R/S, not r/s.
+          // In that case, Rule 5 results in R/S, not r/s.
           //
           //     S
           //     -
@@ -2520,7 +2540,11 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int checkRule2(CIPAtom b) {
-      return (b.getMass() == getMass() ? TIED : reverseRule2 == (b.mass > mass) ? A_WINS : B_WINS);
+      System.out.println(getMass() + " vs " + b.getMass() + " " + (b.getMass() == getMass() ? TIED : 
+        (reverseRule2 || b.reverseRule2) == (b.mass > mass) ? A_WINS : B_WINS));
+      
+      return (b.getMass() == getMass() ? TIED : 
+        (reverseRule2 || b.reverseRule2) == (b.mass > mass) ? A_WINS : B_WINS);
     }
 
     /**

@@ -510,6 +510,7 @@ all support for previous versions removed
         <include name="javajs/img/**" />
         <include name="javajs/util/**" />
         <include name="**/org/gennbo/**" />
+        <include name="**/org/apache/**" />
         <include name="**/jmol/**" />
         <exclude name="**/Test*.class" />
         <exclude name="**/jmol/jcamp/**" />

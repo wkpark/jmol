@@ -220,6 +220,10 @@ public class MolReader extends AtomSetCollectionReader {
         elementSymbol = line.substring(31).trim();
       } else {
         elementSymbol = line.substring(31, 34).trim();
+        if (elementSymbol.equals("H1")) {
+          elementSymbol = "H";
+          isotope = 1;
+        }
         if (len >= 39) {
           int code = parseIntRange(line, 36, 39);
           if (code >= 1 && code <= 7)
@@ -227,16 +231,7 @@ public class MolReader extends AtomSetCollectionReader {
           code = parseIntRange(line, 34, 36);
           if (code != 0 && code >= -3 && code <= 4) {
             isotope = JmolAdapter.getNaturalIsotope(JmolAdapter
-                .getElementNumber(elementSymbol));
-            switch (isotope) {
-            case 0:
-              break;
-            case 1:
-              isotope = -code;
-              break;
-            default:
-              isotope += code;
-            }
+                .getElementNumber(elementSymbol)) + code;
           }
           //if (len >= 63) {  this field is not really an atom number. It's for atom-atom mapping in reaction files
           //  iAtom = parseIntRange(line, 60, 63);
@@ -334,7 +329,7 @@ public class MolReader extends AtomSetCollectionReader {
         Atom atom = asc.atoms[ipt + i0 - 1];
         int iso = parseIntAt(line, pt + 4);
         pt += 8;
-        atom.elementSymbol = "" + iso + atom.elementSymbol;
+        atom.elementSymbol = "" + iso + PT.replaceAllCharacters(atom.elementSymbol, "0123456789", "");
       }
     } catch (Throwable e) {
       // ignore error here
@@ -408,11 +403,14 @@ public class MolReader extends AtomSetCollectionReader {
     switch (isotope) {
     case 0:
       break;
-    case -1:
-      elementSymbol = "D";
+    case 1:
+      elementSymbol = "1H";
       break;
-    case -2:
-      elementSymbol = "T";
+    case 2:
+      elementSymbol = "2H";
+      break;
+    case 3:
+      elementSymbol = "3H";
       break;
     default:
       elementSymbol = isotope + elementSymbol;

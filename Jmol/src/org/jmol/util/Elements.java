@@ -202,7 +202,7 @@ public class Elements {
    };
 
    public static int getNaturalIsotope(int elementNumber) {
-     return isotopeMass[elementNumber];
+     return isotopeMass[elementNumber & 0x7F];
    }
 
    public static float getAtomicMass(int i) {

@@ -376,7 +376,8 @@ public class TransformManager {
     if (rotCenter != null)
       moveRotationCenter(rotCenter, true);
 
-    setSpinOff();
+    if (isSpin)
+      setSpinOff();
     setNavOn(false);
 
     if (vwr.headless) {
@@ -448,7 +449,8 @@ public class TransformManager {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
-    setSpinOff();
+    if (isSpin)
+      setSpinOff();
     setNavOn(false);
 
     if (dihedralList == null

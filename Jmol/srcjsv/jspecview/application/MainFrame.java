@@ -231,45 +231,47 @@ public class MainFrame extends JFrame implements JmolSyncInterface,
 	public void awaken(boolean visible) {
 		if (!isEmbedded)
 			return;
-		System.out.println("MAINFRAME visible/awake" + visible + " " + isAwake + " " + jmolDisplay);
-		if (jmolDisplay == null || isAwake == visible)
+		System.out.println("MAINFRAME visible/awake" + visible + " " + isAwake
+				+ " " + jmolDisplay);
+		if (isAwake == visible)
 			return;
-		try {
-      isAwake = visible;
-			Container top = jmolPanel.getTopLevelAncestor(); 
-			if (visible) {
-				jmolDimensionOld = new Dimension(0, 0);
-				jmolDisplay.getSize(jmolDimensionOld);
-				jmolDisplay.setSize(jmolDimensionNew);
-				jmolPanel.remove(jmolDisplay);
-				if (top.getHeight() > JMOL_MIN_HEIGHT) {
-					jmolFrameHeight = top.getHeight();
-					jmolFrameWidth = top.getWidth();
-					top.setSize(jmolFrameWidth, JMOL_MIN_HEIGHT);
+		isAwake = visible;
+		if (jmolDisplay != null)
+			try {
+				Container top = jmolPanel.getTopLevelAncestor();
+				if (visible) {
+					jmolDimensionOld = new Dimension(0, 0);
+					jmolDisplay.getSize(jmolDimensionOld);
+					jmolDisplay.setSize(jmolDimensionNew);
+					jmolPanel.remove(jmolDisplay);
+					if (top.getHeight() > JMOL_MIN_HEIGHT) {
+						jmolFrameHeight = top.getHeight();
+						jmolFrameWidth = top.getWidth();
+						top.setSize(jmolFrameWidth, JMOL_MIN_HEIGHT);
+					}
+					jmolPanel.add(nullPanel);
+					sideSplitPane.setBottomComponent(jmolDisplay);
+					sideSplitPane.setDividerLocation(splitPosition);
+					sideSplitPane.validate();
+					jmolPanel.validate();
+					System.out.println("awakened");
+				} else {
+					sideSplitPane.setBottomComponent(nullPanel);
+					splitPosition = sideSplitPane.getDividerLocation();
+					jmolPanel.add(jmolDisplay);
+					if (top.getHeight() <= JMOL_MIN_HEIGHT) {
+						top.setSize(jmolFrameWidth, jmolFrameHeight);
+					}
+					jmolDisplay.getSize(jmolDimensionNew);
+					jmolDisplay.setSize(jmolDimensionOld);
+					sideSplitPane.validate();
+					jmolPanel.validate();
+					System.out.println("sleeping");
 				}
-				jmolPanel.add(nullPanel);
-				sideSplitPane.setBottomComponent(jmolDisplay);
-				sideSplitPane.setDividerLocation(splitPosition);
-				sideSplitPane.validate();
-				jmolPanel.validate();
-				System.out.println("awakened");
-			} else {
-				sideSplitPane.setBottomComponent(nullPanel);
-				splitPosition = sideSplitPane.getDividerLocation();
-				jmolPanel.add(jmolDisplay);
-				if (top.getHeight() <= JMOL_MIN_HEIGHT) {
-					top.setSize(jmolFrameWidth, jmolFrameHeight);
-				}
-				jmolDisplay.getSize(jmolDimensionNew);
-				jmolDisplay.setSize(jmolDimensionOld);
-				sideSplitPane.validate();
-				jmolPanel.validate();
-        System.out.println("sleeping");
+			} catch (Exception e) {
+				// ignore
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			// ignore
-			e.printStackTrace();
-		}
 		setVisible(visible);
 	}
 

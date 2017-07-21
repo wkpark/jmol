@@ -2171,9 +2171,6 @@ public class CIPChirality {
         //      // 0-1,2-3 or 0-1,3-2
         //      // 0-2,1-3 or 
         //      // 0-3,1-2        
-
-        if (atoms[a].spiroEnd == null)
-          return;
         b = 1;
         swap23 = true; // just the way it has to be
         break;

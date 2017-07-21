@@ -2157,7 +2157,7 @@ public class CIPChirality {
     }
 
     /**
-     * CheckSpiro uses the concept that Mikko Vainio discovered that
+     * CheckSpiro uses the concept that Andrey Yerin suggested that
      * covers all spiro, double spiro, C3-, C3-symmetric cases from CIP(1966).
      * Incredibly simple!
      * 

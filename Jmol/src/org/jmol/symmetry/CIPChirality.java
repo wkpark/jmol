@@ -2192,6 +2192,8 @@ public class CIPChirality {
       default:
         return;
       }
+      if (a.spiroEnd == null)
+        return;
       c3RefIndex = atoms[a].atomIndex;
       if (b >= 0)
         c4RefIndex = atoms[b].atomIndex;

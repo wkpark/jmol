@@ -540,9 +540,9 @@ public class CIPChirality {
   static final int STEREO_BOTH_EZ = STEREO_E | STEREO_Z;
 
   static final int RULE_1a = 1, RULE_1b = 2, RULE_2 = 3, RULE_3 = 4,
-      RULE_4a = 5,
-
-      RULE_4bTEST = 6, RULE_4b = 7, RULE_4c = 8, RULE_5 = 9;
+      RULE_4a = 5, RULE_4bTEST = 6, RULE_4b = 7, RULE_4c = 8, 
+      RULE_5 = 9,
+      RULE_6 = 10;
 
   boolean isRule4TEST = false;
 
@@ -1557,7 +1557,7 @@ public class CIPChirality {
      * pointer to this branch's spiro end atom if it is found to be spiro
      */
 
-    private CIPAtom spiroEnd, spiroEnd1;
+    private CIPAtom spiroEnd;
 
     private int nSpiro;
 
@@ -1681,9 +1681,14 @@ public class CIPChirality {
 
     private BS bsTemp = new BS();
 
-    // flag to reverse the ruling for a few isotope types
+    // flag to reverse the Rule 2 result for a few isotope types
 
     private boolean reverseRule2;
+
+    // flag for C3-symmetry checking reference atom index
+    
+    private int c3RefIndex = -1;
+    private int c4RefIndex = -1;
 
     CIPAtom() {
       // had a problem in JavaScript that the constructor of an inner function cannot
@@ -1753,15 +1758,8 @@ public class CIPChirality {
         isDuplicate = true;
         rootDistance = 0;
         root.nSpiro++;
-        if (rootSubstituent.spiroEnd == null) {
+        if (rootSubstituent.spiroEnd == null)
           rootSubstituent.spiroEnd = parent;
-        } else if (rootSubstituent.spiroEnd.sphere > parent.sphere) {
-          rootSubstituent.spiroEnd1 = rootSubstituent.spiroEnd;
-          rootSubstituent.spiroEnd = parent;
-        } else if (rootSubstituent.spiroEnd1 == null
-            || rootSubstituent.spiroEnd1.sphere > parent.sphere) {
-          rootSubstituent.spiroEnd1 = parent;
-        }
       } else if (bsPath.get(atomIndex)) {
         isDuplicate = true;
         rootDistance = (isParentBond ? parent.sphere : htPathPoints.get(
@@ -1998,7 +1996,7 @@ public class CIPChirality {
      * pseudochirality is also done here.
      * 
      * @param sphere
-     *        current working sphere
+     *        current working sphere; Integer.MIN_VALUE to not break ties
      * @return all priorities assigned
      * 
      */
@@ -2016,13 +2014,22 @@ public class CIPChirality {
         // Just before Rule4a we must sort all substituents without breaking ties
         if (isTerminal)
           return false;
-        for (int i = 0; i < 4; i++)
-          if (rule4List[i] != null && atoms[i].atom != null
-              && !atoms[i].isTerminal)
-            atoms[i].sortSubstituents(Integer.MIN_VALUE);
-        if (!canBePseudo)
-          return false;
+        if (currentRule == RULE_6) {
+          for (int i = 0; i < 4; i++)
+            if (atoms[i] != null && !atoms[i].isDuplicate && atoms[i].atom != null
+                && atoms[i].setNode())
+              atoms[i].sortSubstituents(Integer.MIN_VALUE);          
+        } else {
+          for (int i = 0; i < 4; i++)
+            if (rule4List[i] != null && atoms[i].atom != null
+                && !atoms[i].isTerminal)
+              atoms[i].sortSubstituents(Integer.MIN_VALUE);
+          if (!canBePseudo)
+            return false;
+        }
       }
+      
+      ignoreTies |= (currentRule == RULE_4b || currentRule == RULE_5);
 
       int[] indices = new int[4], prevPrior = new int[4];
       int nPrioritiesPrev = nPriorities;
@@ -2037,7 +2044,7 @@ public class CIPChirality {
           Logger.info(getRuleName() + ": " + this + "[" + i + "]="
               + atoms[i].myPath + " " + Integer.toHexString(prevPrior[i])); // Logger
         }
-        Logger.info("---");
+        Logger.info("---" + nPriorities);
       }
 
       int loser, score;
@@ -2059,7 +2066,7 @@ public class CIPChirality {
                       : (score = checkPriority(a, b, i, j)) != TIED ? score
                           : ignoreTies ? IGNORE : sign(a
                               .breakTie(b, sphere + 1))) {
-          case B_WINS:
+          case B_WINS:  
             loser = i;
             //$FALL-THROUGH$
           case A_WINS:
@@ -2102,14 +2109,10 @@ public class CIPChirality {
         //
         //  P-33.5.3.1 spiro compounds have increased constraints
 
-        // We do the spiro test first, as it may inform the pseudoasymmetric test.
-
-        if (nSpiro > 0) {
-          int nprev = checkSpiro();
-          if (nprev == 2)
-            nPrioritiesPrev = 2;
-        }
-        if (currentRule == RULE_5 && nPriorities == 4 && nPrioritiesPrev == 2) {
+        if (currentRule == RULE_5) {
+          if (nSpiro > 0)
+            checkSpiro();          
+          if (nPriorities == 4 && nPrioritiesPrev == 2) {
 
           // Rule 5 has decided the issue, but how many decisions did we make?
           // If priorities [0 0 2 2] went to [0 1 2 3] then
@@ -2136,7 +2139,7 @@ public class CIPChirality {
           // 
           canBePseudo = false;
         }
-
+        }
       }
       if ((Logger.debuggingHigh) && atoms[2].atom != null
           && atoms[2].elemNo != 1) { // Logger
@@ -2145,7 +2148,7 @@ public class CIPChirality {
           Logger.info(dots() + myPath + "[" + i + "]=" + atoms[i] + " "
               + priorities[i] + " " + Integer.toHexString(priorities[i])); // Logger
         }
-        Logger.info(dots() + "-------");
+        Logger.info(dots() + "-------" + nPriorities);
       }
 
       // We are done if the number of priorities equals the bond count.
@@ -2153,94 +2156,53 @@ public class CIPChirality {
       return (nPriorities == bondCount);
     }
 
-    private int checkSpiro() {
-      if (nSpiro >= 42)
-        return -1; // disallow O_h-cubane, which has 42 root termination pathways
+    /**
+     * CheckSpiro uses the concept that Mikko Vainio discovered that
+     * covers all spiro, double spiro, C3-, C3-symmetric cases from CIP(1966).
+     * Incredibly simple!
+     * 
+     */
+    private void checkSpiro() {
       boolean swap23 = false;
-      int nPrev = 0;
-      if (nPriorities == 1) {
-        // CIP Helv Chim. Acta 1966 #33 -- double spiran
-        // 0-1,2-3 or 0-1,3-2
-        // 0-2,1-3 or 
-        // 0-3,1-2
-        int a2, a3;
-        if ((getSpiroType(0, false)) >= 0 && (a2 = getSpiroType(0, true)) >= 0
-            && (getSpiroType(1, false)) >= 0
-            && (a3 = getSpiroType(1, true)) >= 0
-            && (getSpiroType(2, false)) >= 0 && (getSpiroType(2, true)) >= 0
-            && (getSpiroType(3, false)) >= 0 && (getSpiroType(3, true)) >= 0) {
-          nPriorities = 4;
-          swap23 = (a2 < a3);
-        }
-      } else if (nPriorities == 2) {
-        swap23 = false;
-        switch (priorities[3]) {
-        case 1:
-        case 3:
-          // CIP Helv. Chim. Acta 1966 #32 
-          // [0 1 1 1] or [0 0 0 3]
-          int first = (priorities[3] == 1 ? 1 : 0);
-          int a1 = getSpiroType(first, false);
-          if (a1 >= 0) {
-            // BH64_069, BH64_070
-            int a2 = getSpiroType(a1, false);
-            int a3 = getSpiroType(a2, false);
-            if (a1 != a2 && a2 != a3 && a3 != a1) {
-              nPriorities = 4;
-              swap23 = (a2 > a1);
-            }
-          }
-          break;
-        case 2:
-          //
-          // We have priorities [0 0 2 2], possibly being spiro
-          //
-          int end0,
-          end1;
-          if ((end0 = getSpiroType(0, false)) >= 2
-              && (end1 = getSpiroType(1, false)) >= 2 && end0 != end1) {
-            //
-            // We are done, because the two spiro ends set both of these ties.
-            //                     a a'b b' (order is already OK)
-            //                     a a'b'b  (needs switching)
-            //
-            // P-93.2.3.2
-            //
-            // We have priorities [0 0 2 2], possibly being spiro
-            //
-            //     b                            b
-            //    /-                            -\
-            //   / -                            - \
-            //  a--C--a'    R                a--C--a'    S
-            //     - /                        \ - 
-            //     -/                          \-
-            //     b'                           b'
-            // 
-            // a==a' and b==b'; order of precedence is set to a > a' > b > b'
-            //
-            // Note that this is really a case of axial chirality. It is the same as:
-            // 
-            //     b'                          a'
-            //     -                           -
-            //     -                           - 
-            //  a--C--b    M                a--C--b    P
-            //     -                           - 
-            //     -                           -
-            //     a'                          b'
+      int a = 0, b = -1;
+      switch (nPriorities * 10 + priorities[3]) {
+      case 10:
+        //      // CIP Helv Chim. Acta 1966 #33 -- double spiran
+        //      // 0-1,2-3 or 0-1,3-2
+        //      // 0-2,1-3 or 
+        //      // 0-3,1-2        
 
-            nPrev = 2;
-            nPriorities = 4;
-            swap23 = (end1 == 2);
-          }
-          break;
+        if (atoms[a].spiroEnd == null)
+          return;
+        b = 1;
+        swap23 = true; // just the way it has to be
+        break;
+      case 21:
+      case 23:
+        // CIP Helv. Chim. Acta 1966 #32 
+        // [0 1 1 1] or [0 0 0 3]
+        a = priorities[1];
+        break;
+      case 22:
+        //
+        // We have priorities [0 0 2 2], possibly being spiro
+        //
+        b = getSpiroEnd(0);
+        break;
+      default:
+        return;
+      }
+      c3RefIndex = atoms[a].atomIndex;
+      if (b >= 0)
+        c4RefIndex = atoms[b].atomIndex;
+      if (sortByRule(RULE_6)) {
+        currentRule = RULE_6;
+        if (swap23) {
+          CIPAtom atom = atoms[2];
+          atoms[2] = atoms[3];
+          atoms[3] = atom;
         }
       }
-      if (swap23) {
-        CIPAtom a = atoms[2];
-        atoms[2] = atoms[3];
-        atoms[3] = a;
-      }
-      return nPrev;
     }
 
     /**
@@ -2248,12 +2210,11 @@ public class CIPChirality {
      * 
      * @param i0
      *        index of the spiro starting atom
-     * @return pointer to spiro end of atoms[0] -- either 0 (not spiro), 1, 2,
+     * @return pointer to spiro end of atoms[0] -- either -1 (not spiro), 0, 1, 2,
      *         or 3
      */
-    private int getSpiroType(int i0, boolean checkEnd1) {
-      CIPAtom a = (i0 < 0 ? null : checkEnd1 ? atoms[i0].spiroEnd1
-          : atoms[i0].spiroEnd);
+    private int getSpiroEnd(int i0) {
+      CIPAtom a = atoms[i0].spiroEnd;
       if (a != null)
         for (int i = 0; i < 4; i++)
           if (i != i0 && a.atom == atoms[i].atom)
@@ -2284,7 +2245,6 @@ public class CIPChirality {
       // Two duplicates of the same atom are always tied
       // if they have the same root distance.
 
-      //      System.out.println("breaking tie for \n" + this.myPath + "\n" + b.myPath);
       if (isDuplicate && b.isDuplicate && atom == b.atom
           && rootDistance == b.rootDistance)
         return TIED;
@@ -2392,10 +2352,12 @@ public class CIPChirality {
 
     /**
      * Used in sortSubstituents
-     * 
+     * @param a  
      * @param b
+     * @param i 
+     * @param j 
      * 
-     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), or Integer.MIN_VALUE (IGNORE)
      */
     private int checkPriority(CIPAtom a, CIPAtom b, int i, int j) {
       switch (currentRule) {
@@ -2449,6 +2411,8 @@ public class CIPChirality {
         return false;
       int current = currentRule;
       currentRule = rule;
+      if (rule == RULE_6)
+        sortSubstituents(Integer.MIN_VALUE);
       boolean isChiral = sortSubstituents(0);
       currentRule = current;
       return isChiral;
@@ -2481,13 +2445,21 @@ public class CIPChirality {
       case RULE_4c:
         return checkRules4ac(b, " s r p m");
       case RULE_4bTEST:
-        return (checkRule4Test(b));
+        return checkRule4Test(b);
       case RULE_4b:
       case RULE_5:
-        return TIED; // not carried out here because these need access to a full list of ligands 
+        return TIED; // not carried out here because these need access to a full list of ligands
+      case RULE_6:
+        int score;
+        return ((score = checkRule6(b, root.c3RefIndex)) != TIED ? score : root.c4RefIndex >= 0 ? checkRule6(b, root.c4RefIndex) : score);
       }
     }
-
+    
+    private int checkRule6(CIPAtom b, int refIndex) {
+      return ((atomIndex == refIndex) == (b.atomIndex == refIndex) ? TIED : 
+        atomIndex == refIndex ? A_WINS : B_WINS);
+    }
+    
     private int checkRule4Test(CIPAtom b) {
       // TODO
       boolean isNS = (auxChirality == '~');
@@ -2540,9 +2512,6 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int checkRule2(CIPAtom b) {
-      System.out.println(getMass() + " vs " + b.getMass() + " " + (b.getMass() == getMass() ? TIED : 
-        (reverseRule2 || b.reverseRule2) == (b.mass > mass) ? A_WINS : B_WINS));
-      
       return (b.getMass() == getMass() ? TIED : 
         (reverseRule2 || b.reverseRule2) == (b.mass > mass) ? A_WINS : B_WINS);
     }
@@ -2756,6 +2725,9 @@ public class CIPChirality {
       String reason = "Rule 4b"; // Logger
 
       while (true) {
+        
+        if (aref == '-' && bref == '-')
+          return IGNORE;
 
         // check for RS on only one side
         if ((aref == '?') != (bref == '?')) {
@@ -2924,7 +2896,7 @@ public class CIPChirality {
         return auxChirality;
       int nR = ((Integer) rule4Count[1]).intValue(), nS = ((Integer) rule4Count[2])
           .intValue();
-      return (nR > nS ? 'R' : nR < nS ? 'S' : '?');
+      return (nR > nS ? 'R' : nR < nS ? 'S' : nR == 0 ? '-' : '?');
     }
 
     /**
@@ -3000,12 +2972,12 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), Integer.MIN_VALUE (IGNORE)
      */
     private int compareRule4PairStr(String aStr, String bStr, boolean isRSTest) {
-      if (Logger.debugging)
-        Logger.info(dots() + this.myPath + " Rule 4b comparing " + aStr + " "
-            + bStr);
       int n = aStr.length();
       if (n == 0 || n != bStr.length())
         return TIED;
+      if (Logger.debugging)
+        Logger.info(dots() + this.myPath + " Rule 4b comparing " + aStr + " "
+            + bStr);
       char aref = aStr.charAt(0), bref = bStr.charAt(0);
       for (int c = 1; c < n; c++) {
         boolean alike = (aref == aStr.charAt(c));
@@ -3062,9 +3034,13 @@ public class CIPChirality {
             retThread = rsPath;
             prevIsChiral = true;
           } else {
-            if (!prevIsChiral && priorities[i] == priorities[i - 1])
+            if (!prevIsChiral && priorities[i] == priorities[i - 1]) {
+              if (node1 == null)
+                for (; i >= 0; --i)
+                  rule4List[i] = null;
               // two groups have the same priority, and neither has a stereocenter
               return "~";
+            }
             prevIsChiral = false;
           }
         }
@@ -3096,8 +3072,7 @@ public class CIPChirality {
           // case we have a simple E/Z (c/t), and there is no need to check AND
           // it does not contribute to the Mata sequence (similar to r/s or m/p).
           //
-          if (!isEvenEne
-              || (auxEZ == STEREO_BOTH_EZ || auxEZ == UNDETERMINED)
+          if (!isEvenEne || (auxEZ == STEREO_BOTH_EZ || auxEZ == UNDETERMINED)
               && alkeneChild.bondCount >= 2 && !isKekuleAmbiguous) {
             rs = getAuxEneWinnerChirality(this, alkeneChild, !isEvenEne, RULE_5);
             //
@@ -3191,7 +3166,11 @@ public class CIPChirality {
         return TIED;
       int isRa = test.indexOf(auxChirality), isRb = test
           .indexOf(b.auxChirality);
-      return (isRa > isRb + 1 ? A_WINS : isRb > isRa + 1 ? B_WINS : TIED);
+      return (isRa > isRb + 1 ? 
+          A_WINS : 
+            isRb > isRa + 1 ? 
+                B_WINS 
+                : TIED);
     }
 
     /**

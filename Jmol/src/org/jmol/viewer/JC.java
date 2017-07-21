@@ -99,7 +99,7 @@ public final class JC {
     }
   }
 
-  private static final String[] ruleNames = {"", "1a", "1b", "2", "3", "4a", "4b", "4b", "4c", "5"}; 
+  private static final String[] ruleNames = {"", "1a", "1b", "2", "3", "4a", "4b", "4b", "4c", "5", "6"}; 
   public static String getCIPRuleName(int i) {
     return ruleNames[i];
   }

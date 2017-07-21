@@ -2192,7 +2192,7 @@ public class CIPChirality {
       default:
         return;
       }
-      if (a.spiroEnd == null)
+      if (atoms[a].spiroEnd == null)
         return;
       c3RefIndex = atoms[a].atomIndex;
       if (b >= 0)

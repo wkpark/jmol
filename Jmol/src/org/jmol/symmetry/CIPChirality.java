@@ -145,7 +145,7 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
- * 7/23/17 Jmol 14.20.4 adds Rule 6; rewrite/consolidation of spiro, C3, double spiran code (846 lines)
+ * 7/23/17 Jmol 14.20.4 adds Rule 6; rewrite/consolidate spiro, C3, double spiran code (853 lines)
  * 7/19/17 Jmol 14.20.3 fixing Rule 2 (880 lines)
  * 7/13/17 Jmol 14.20.3 more thorough spiro testing (858 lines) 
  * 7/10/17 Jmol 14.20.2 adding check for C3 and double

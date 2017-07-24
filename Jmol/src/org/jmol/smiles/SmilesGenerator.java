@@ -290,7 +290,7 @@ public class SmilesGenerator {
                                     boolean forceBrackets)
       throws InvalidSmilesException {
 
-    if (!explicitH && atom.getElementNumber() == 1
+    if (!explicitH && atom.getAtomicAndIsotopeNumber() == 1
         && atom.getEdges().length > 0)
       atom = atoms[atom.getBondedAtomIndex(0)]; // don't start with H
     
@@ -309,7 +309,7 @@ public class SmilesGenerator {
       for (int j = bsSelected.nextSetBit(0); j >= 0; j = bsSelected
           .nextSetBit(j + 1)) {
         Node a = atoms[j];
-        if (a.getElementNumber() == 1 && a.getIsotopeNumber() == 0 
+        if (a.getAtomicAndIsotopeNumber() == 1 
             && a.getBondCount() > 0 && a.getBondedAtomIndex(0) != iHypervalent)
           bsSelected.clear(j);
       }
@@ -469,7 +469,7 @@ public class SmilesGenerator {
           for (int b = 0; b < bb.length; b++) {
             SimpleNode other;
             if (bb[b].getCovalentOrder() != 1 || (other = bb[b].getOtherNode(atomA)).getElementNumber() == 1
-                && other.getIsotopeNumber() == 1)
+                && other.getIsotopeNumber() == 0)
               continue;
             edges[j][edgeCount++] = bb[b];
             if (getBondStereochemistry(bb[b], atomA) != '\0') {

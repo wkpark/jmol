@@ -1346,11 +1346,12 @@ public class PropertyManager implements JmolPropertyManager {
     if (o instanceof SV)
       o = ((SV) o).asString();
     int valueType = (o == null ? T.nada : T.getTokFromName("" + o));
-    SB atomValues = (valueType == T.nada ? null : new SB());
+    SB atomValues = (valueType == T.nada && !asSDF ? null : new SB());
     for (int i = bsAtoms.nextSetBit(0), n = 0; i >= 0; i = bsAtoms
-        .nextSetBit(i + 1))
+        .nextSetBit(i + 1)) {
       getAtomRecordMOL(iModel, ms, mol, atomMap[i] = ++n, ms.at[i], q, pTemp,
-          asV3000, asJSON, atomValues, valueType);
+          asV3000, asJSON, atomValues, valueType, asSDF);      
+    }
     if (asV3000) {
       mol.append("M  V30 END ATOM\nM  V30 BEGIN BOND\n");
     } else if (asJSON) {
@@ -1474,7 +1475,8 @@ public class PropertyManager implements JmolPropertyManager {
    */
 
   private void getAtomRecordMOL(int iModel, ModelSet ms, SB mol, int n, Atom a, Quat q,
-                                P3 pTemp, boolean asV3000, boolean asJSON, SB atomValues, int tokValue) {
+                                P3 pTemp, boolean asV3000, boolean asJSON, SB atomValues, 
+                                int tokValue, boolean asSDF) {
     //https://cactus.nci.nih.gov/chemical/structure/caffeine/file?format=sdf&get3d=true
     //__Jmol-14_06161707413D 1   1.00000     0.00000     0
     //Jmol version 14.19.1  2017-06-12 00:33 EXTRACT: ({0:23})
@@ -1488,7 +1490,7 @@ public class PropertyManager implements JmolPropertyManager {
     int elemNo = a.getElementNumber();
     String sym = (a.isDeleted() ? "Xx" : Elements
         .elementSymbolFromNumber(elemNo));
-    int iso = a.getIsotopeNumber();
+    int isotope = a.getIsotopeNumber();
     int charge = a.getFormalCharge();
     Object [] o = new Object[] { pTemp };
     if (asV3000) {
@@ -1496,8 +1498,8 @@ public class PropertyManager implements JmolPropertyManager {
             .append(PT.sprintf(" %12.5p %12.5p %12.5p 0", "p", o));
       if (charge != 0)
         mol.append(" CHG=").appendI(charge);
-      if (iso != 0)
-        mol.append(" MASS=").appendI(iso);
+      if (isotope != 0)
+        mol.append(" MASS=").appendI(isotope);
       mol.append("\n");
     } else if (asJSON) {
       if (n != 1)
@@ -1507,8 +1509,8 @@ public class PropertyManager implements JmolPropertyManager {
         mol.append("\"l\":\"").append(a.getElementSymbol()).append("\",");
       if (charge != 0)
         mol.append("\"c\":").appendI(charge).append(",");
-      if (iso != 0 && iso != Elements.getNaturalIsotope(elemNo))
-        mol.append("\"m\":").appendI(iso).append(",");
+      if (isotope != 0)
+        mol.append("\"m\":").appendI(isotope).append(",");
       mol.append("\"x\":").appendF(a.x).append(",\"y\":").appendF(a.y)
           .append(",\"z\":").appendF(a.z).append("}");
     } else {
@@ -1516,13 +1518,18 @@ public class PropertyManager implements JmolPropertyManager {
       mol.append(" ").append(sym);
       if (sym.length() == 1)
         mol.append(" ");
-      if (iso > 0)
-        iso -= Elements.getNaturalIsotope(a.getElementNumber());
-      PT.rightJustify(mol, "   ", "" + iso);
+      PT.rightJustify(mol, "   ", "" + (isotope > 0 ? isotope - Elements.getNaturalIsotope(a.getElementNumber()) : 0));
+      if (asSDF && isotope > 0) {
+          atomValues.append("M  ISO  1");
+          PT.rightJustify(atomValues, "    ", "" + n);
+          PT.rightJustify(atomValues, "    ", "" + isotope);
+          atomValues.append("\n");
+      }
+
       PT.rightJustify(mol, "   ", "" + (charge == 0 ? 0 : 4 - charge));
       mol.append("  ").append(getAtomParity(a));
       mol.append("  0  0  0\n");
-      String label = (atomValues == null || asV3000 ? null : 
+      String label = (tokValue == T.nada || asV3000 ? null : 
         getAtomPropertyAsString(a, tokValue));
       if (label != null && (label = label.trim()).length() > 0) {
         String sn = "   " + n + " ";

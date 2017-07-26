@@ -145,6 +145,7 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
+ * 7/25/17 Jmol 14.20.4 consolidates all ene determinations; moves auxiliary descriptor generation to prior to Rule 3 (850 lines)
  * 7/23/17 Jmol 14.20.4 adds Rule 6; rewrite/consolidate spiro, C3, double spiran code (853 lines)
  * 7/19/17 Jmol 14.20.3 fixing Rule 2 (880 lines)
  * 7/13/17 Jmol 14.20.3 more thorough spiro testing (858 lines) 
@@ -563,8 +564,10 @@ public class CIPChirality {
 
   static Integer zero = Integer.valueOf(0);
 
-  public String getRuleName() {
-    return JC.getCIPRuleName(currentRule);
+  final static String[] ruleNames = {"", "1a", "1b", "2", "3", "4a", "4b", "4c", "5", "6"}; // Logger only
+  
+  public String getRuleName(int rule) { // Logger only
+    return ruleNames[rule]; // Logger only
   }
 
   /**
@@ -1199,27 +1202,28 @@ public class CIPChirality {
         }
       }
       if (cipAtom.setNode()) {
-        for (currentRule = RULE_1a; currentRule <= RULE_6; currentRule++) {
-          
+        for (currentRule = RULE_1a; currentRule <= RULE_6; currentRule++) {          
           if (Logger.debugging)
-            Logger.info("-Rule " + getRuleName() + " CIPChirality for "
+            Logger.info("-Rule " + getRuleName(currentRule) + " CIPChirality for "
                 + cipAtom + "-----"); // Logger
           switch (currentRule) {
+          case RULE_3:
+            // We need to create auxiliary descriptors PRIOR to Rule 3.
+            cipAtom.createAuxiliaryDescriptors(null, null);
+            break;
           case RULE_4a:
-          case RULE_4c:
-            if (currentRule == RULE_4a) {
-              cipAtom.createRule4AuxiliaryData(null, null);
-              if (cipAtom.rule4Type == 0) {
-                // we can skip Rules 4a - 5 if there are no chirality centers
-                break;
-              }
+            if (cipAtom.rule4Type == 0) {
+              // We can skip Rules 4a - 5 if there are no chirality centers.
+              currentRule = RULE_5;
+              continue;
             }
-            // we need to presort with no tie-breaking for Rules 4
+            //$FALL-THROUGH$
+          case RULE_4c:
+            // We need to presort with no tie-breaking for Rules 4a and 4c.
             cipAtom.sortSubstituents(Integer.MIN_VALUE);
             break;
-          case RULE_5:
-            break;
           case RULE_6:
+            // We only need to do Rule 6 under certain conditions.
             if (!cipAtom.setupRule6(false))
               continue;
             break;
@@ -1279,13 +1283,13 @@ public class CIPChirality {
             }
             if (Logger.debugging)
               Logger.info(atom + " " + JC.getCIPChiralityName(rs) + " by Rule "
-                  + getRuleName() + "\n----------------------------------"); // Logger
+                  + getRuleName(currentRule) + "\n----------------------------------"); // Logger
            return rs;
           }
         }
       }
     } catch (Throwable e) {
-      System.out.println(e + " in CIPChirality");
+      System.out.println(e + " in CIPChirality " + currentRule);
       /**
        * @j2sNative alert(e);
        */
@@ -2029,7 +2033,7 @@ public class CIPChirality {
     boolean sortSubstituents(int sphere) {
 
       // runs about 20% faster with this check
-      if (nPriorities == (sphere == 0 ? 4 : 3))
+      if (nPriorities == (sphere < 1 ? 4 : 3))
         return true;
 
       // Note that this method calls breakTie and is called recursively from breakTie.
@@ -2066,7 +2070,7 @@ public class CIPChirality {
       if (Logger.debuggingHigh) {
         Logger.info(root + "---sortSubstituents---" + this);
         for (int i = 0; i < 4; i++) { // Logger
-          Logger.info(getRuleName() + ": " + this + "[" + i + "]="
+          Logger.info(getRuleName(currentRule) + ": " + this + "[" + i + "]="
               + atoms[i].myPath + " " + Integer.toHexString(prevPrior[i])); // Logger
         }
         Logger.info("---" + nPriorities);
@@ -2304,19 +2308,6 @@ public class CIPChirality {
     }
 
     /**
-     * Sort for auxiliary chirality determination
-     * 
-     * @param maxRule
-     * @return TIED or deciding rule RULE_1a - RULE_5
-     */
-    private int sortToRule(int maxRule, boolean skipRules4And5) {
-      for (int i = RULE_1a; i <= maxRule; i++)
-        if ((!skipRules4And5 || i < RULE_4a || i > RULE_5) &&sortByRule(i))
-          return i;
-      return 0;
-    }
-
-    /**
      * Sort by a given rule, preserving currentRule, which could be 4 or 5
      * 
      * @param rule
@@ -2326,8 +2317,10 @@ public class CIPChirality {
       int current = currentRule;
       currentRule = rule;
       int rule6ref = root.rule6refIndex;
+      if (rule6ref != -1)
+        System.out.println("?????");
       if (rule == RULE_6)
-        setupRule6(true);  
+        setupRule6(true);
       boolean isChiral = sortSubstituents(0);
       root.rule6refIndex = rule6ref;
       currentRule = current;
@@ -2427,56 +2420,29 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int checkRule3(CIPAtom b) {
-      int za, zb;
       return isDuplicate || b.isDuplicate || !parent.isAlkeneAtom2
           || !b.parent.isAlkeneAtom2 || !parent.alkeneParent.isEvenEne
-          || !b.parent.alkeneParent.isEvenEne ? IGNORE
-          : parent == b.parent ? sign(breakTie(b, 0)) : (za = parent
-              .getRule3auxEZ()) < (zb = b.parent.getRule3auxEZ()) ? A_WINS
-              : za > zb ? B_WINS : TIED;
+          || !b.parent.alkeneParent.isEvenEne || parent == b.parent ? TIED
+          : parent.auxEZ < b.parent.auxEZ ? A_WINS
+              : parent.auxEZ > b.parent.auxEZ ? B_WINS : TIED;
     }
 
     /**
-     * Check auxiliary Z by temporarily setting return path.
-     * 
-     * This method uses CIPAtom.clone() effectively to create a second
-     * independent path that is checked without messing up the currently
-     * expanding node graph.
-     * 
-     * Note that one path from the current atom is in reverse - the path back to
-     * the root atom. This must be reconstructed, because until this point we
-     * have not carried out many of the necessary comparisons.
-     * 
-     * @return one of [STEREO_Z, STEREO_E, STEREO_BOTH_EZ]
-     */
-    private int getRule3auxEZ() {
-
-      // "this" is the second atom of the alkene, checked as the parent of one of its ligands, 
-      // as there is no need to do this test until we are on the branch that includes
-      // the atom after the alkene.
-
-      return alkeneParent.auxEZ = (auxEZ != UNDETERMINED ? auxEZ
-          : (auxEZ = getAuxEneWinnerChirality(alkeneParent, this, false, RULE_3)) == NO_CHIRALITY ? (auxEZ = STEREO_BOTH_EZ)
-              : auxEZ);
-    }
-
-    /**
-     * Determine the winner on one end of an alkene or cumulene, accepting a max
-     * rule of RULE_3 or RULE_5, depending upon the application
+     * Determine the winner on one end of an alkene or cumulene
+     * and return also the rule by which that was determined.
      * 
      * @param end1
      * @param end2
      * @param isAxial
-     * @param maxRule
-     *        RULE_3 or RULE_5
+     * @param retRule2 return for rule found for child end (furthest from root)
      * @return one of: {NO_CHIRALITY | STEREO_Z | STEREO_E | STEREO_M |
      *         STEREO_P}
      */
     private int getAuxEneWinnerChirality(CIPAtom end1, CIPAtom end2,
-                                         boolean isAxial, int maxRule) {
-      CIPAtom winner1 = getAuxEneEndWinner(end1, end1.nextSP2, maxRule);
+                                         boolean isAxial, int[] retRule2) {
+      CIPAtom winner1 = getAuxEneEndWinner(end1, end1.nextSP2, null);
       CIPAtom winner2 = (winner1 == null || winner1.atom == null ? null
-          : getAuxEneEndWinner(end2, end2.nextSP2, maxRule));
+          : getAuxEneEndWinner(end2, end2.nextSP2, retRule2));
       return getEneChirality(winner1, end1, end2, winner2, isAxial, false);
     }
 
@@ -2487,36 +2453,31 @@ public class CIPChirality {
      * 
      * @param end
      * @param prevSP2
-     * @param maxRule
+     * @param retRule
+     *        return for deciding rule
      * @return higher-priority atom, or null if they are equivalent
      */
-    private CIPAtom getAuxEneEndWinner(CIPAtom end, CIPAtom prevSP2, int maxRule) {
+    private CIPAtom getAuxEneEndWinner(CIPAtom end, CIPAtom prevSP2,
+                                       int[] retRule) {
       CIPAtom atom1 = (CIPAtom) end.clone();
       if (atom1.parent != prevSP2)
         atom1.addReturnPath(prevSP2, end);
-      else if (maxRule == RULE_5)
-        atom1.rule4List = end.rule4List;
+      atom1.rule4List = end.rule4List;
       CIPAtom a;
-      for (int i = RULE_1a; i <= maxRule; i++)
-        if ((a = atom1.getTopSorted(i)) != null)
-          return (a.atom == null ? null : a);
-      return null;
-    }
-
-    /**
-     * Return top-priority non-sp2-duplicated atom.
-     * 
-     * @param rule
-     * 
-     * @return highest-priority non-duplicated atom
-     */
-    private CIPAtom getTopSorted(int rule) {
-      if (sortByRule(rule))
-        for (int i = 0; i < 4; i++) {
-          CIPAtom a = atoms[i];
-          if (!a.multipleBondDuplicate)
-            return priorities[i] == priorities[i + 1] ? null : atoms[i];
+      for (int rule = RULE_1a; rule <= RULE_6; rule++) {
+        if (atom1.sortByRule(rule)) {
+          for (int i = 0; i < 4; i++) {
+            a = atom1.atoms[i];
+            if (!a.multipleBondDuplicate) {
+              if (atom1.priorities[i] != atom1.priorities[i + 1]) {
+                if (retRule != null)
+                  retRule[0] = rule;
+                return (a.atom == null ? null : a);
+              }
+            }
+          }
         }
+      }
       return null;
     }
 
@@ -2896,30 +2857,25 @@ public class CIPChirality {
      * 
      * @return collective string, with setting of rule4List
      */
-    String createRule4AuxiliaryData(CIPAtom node1, CIPAtom[] ret) {
+    String createAuxiliaryDescriptors(CIPAtom node1, CIPAtom[] ret) {
       String retThread = "";
       char c = '~';
       if (atom == null)
         return "" + c;
-      
       rule4List = new String[4]; // full list based on atoms[]
-      if (nPriorities == 0 && !isSet) {
-        setNode();
-        if (!isAlkene && !isDuplicate && !isTerminal)
-          sortToRule(RULE_3, false);
-      }
+      setNode();
       int rs = -1, nRS = 0;
       CIPAtom[] ret1 = new CIPAtom[1];
       boolean skipRules4And5 = false;
       boolean prevIsChiral = true;
-      // have to allow two same f because could be a C3-symmetric subunit 
-      boolean allowTwoSame = (node1 != null && !isAlkene && nPriorities == 1);
+      // have to allow two same because could be a C3-symmetric subunit 
+      boolean allowTwoSame = (!isAlkene && nPriorities == (node1 == null ? 2 : 1));
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
         if (a != null && !a.isDuplicate && !a.isTerminal) {
           a.priority = priorities[i];
           ret1[0] = null;
-          String rsPath = a.createRule4AuxiliaryData(node1 == null ? a : node1,
+          String rsPath = a.createAuxiliaryDescriptors(node1 == null ? a : node1,
               ret1);
           if (ret1[0] != null) {
             a.nextChiralBranch = ret1[0];
@@ -2934,12 +2890,13 @@ public class CIPChirality {
             retThread = rsPath;
             prevIsChiral = true;
           } else {
-            if (!allowTwoSame && !prevIsChiral && priorities[i] == priorities[i - 1]) {
+            if (!allowTwoSame && !prevIsChiral
+                && priorities[i] == priorities[i - 1]) {
               // actually, I don't think priorities are set yet.
               if (node1 == null) {
                 for (; i >= 0; --i)
                   rule4List[i] = null;
-              // two groups have the same priority, and neither has a stereocenter
+                // two groups have the same priority, and neither has a stereocenter
               }
               return "~";
             }
@@ -2965,18 +2922,18 @@ public class CIPChirality {
         break;
       }
       if (isAlkene) {
-        if (!isBranch && alkeneChild != null) {
-          // must be alkeneParent -- first C of an alkene -- this is where C/T is recorded 
-          boolean isSeqCT = (ret != null && ret[0] == alkeneChild);
+        if (alkeneChild != null) {
+          // must be alkeneParent -- first C of an alkene -- this is where C/T is recorded
           // All odd cumulenes need to be checked.
           // If it is an alkene or even cumulene, we must do an auxiliary check 
           // only if it is not already a defined stereochemistry, because in that
           // case we have a simple E/Z (c/t), and there is no need to check AND
           // it does not contribute to the Mata sequence (similar to r/s or m/p).
           //
-          if (!isEvenEne || (auxEZ == STEREO_BOTH_EZ || auxEZ == UNDETERMINED)
-              && alkeneChild.bondCount >= 2 && !isKekuleAmbiguous) {
-            rs = getAuxEneWinnerChirality(this, alkeneChild, !isEvenEne, RULE_5);
+
+          if (!isEvenEne || (auxEZ == STEREO_BOTH_EZ || auxEZ == UNDETERMINED) && !isKekuleAmbiguous && alkeneChild.bondCount >= 2) {
+            int[] rule2 = (isEvenEne ? new int[1] : null);
+            rs = getAuxEneWinnerChirality(this, alkeneChild, !isEvenEne, rule2);
             //
             // Note that we can have C/T (rule4Type = R/S):
             // 
@@ -2988,28 +2945,44 @@ public class CIPChirality {
             //
             // flips sense upon planar inversion; determination was Rule 5.
             //
-            // Normalize M/P and E/Z to R/S
-            switch (rs) {
-            case STEREO_M:
-            case STEREO_Z:
-              rs = STEREO_R;
-              c = 'R';
-              break;
-            case STEREO_P:
-            case STEREO_E:
-              rs = STEREO_S;
-              c = 'S';
-              break;
-            }
-            if (rs != NO_CHIRALITY) {
-              auxChirality = c;
-              rule4Type = rs;
-              retThread = "";
-              if (isSeqCT) {
-                nextChiralBranch = alkeneChild;
-                ret[0] = this;
-              }
+            // and ALSO we can have c/t here that has not been discovered yet
+            //
+            //
+            //   SR      x
+            //     \    /
+            //       ==
+            //     /    \
+            //   SS      root
 
+            if (rs == NO_CHIRALITY) {
+              auxEZ = alkeneChild.auxEZ = STEREO_BOTH_EZ;
+            } else {
+              if (rule2 != null && rule2[0] != RULE_5) {
+                // This is the case of a 3b issue
+                //System.out.println(this + "root needs 3b " + root + getRuleName(rule2[0]) + " " + rs);
+                auxEZ = alkeneChild.auxEZ = rs;
+              } else if (!isBranch) {
+                // Normalize M/P and E/Z to R/S
+                switch (rs) {
+                case STEREO_M:
+                case STEREO_Z:
+                  rs = STEREO_R;
+                  c = 'R';
+                  break;
+                case STEREO_P:
+                case STEREO_E:
+                  rs = STEREO_S;
+                  c = 'S';
+                  break;
+                }
+                auxChirality = c;
+                rule4Type = rs;
+                retThread = "";
+                if (ret != null && ret[0] == alkeneChild) {
+                  nextChiralBranch = alkeneChild;
+                  ret[0] = this;
+                }
+              }
             }
           }
         }
@@ -3027,8 +3000,11 @@ public class CIPChirality {
               }
             }
           }
-          int rule = atom1.sortToRule(RULE_6, skipRules4And5);
-          if (rule < RULE_1a) {
+          int rule = RULE_1a;
+          for (; rule <= RULE_6; rule++)
+            if ((!skipRules4And5 || rule < RULE_4a || rule > RULE_5) && atom1.sortByRule(rule))
+              break;
+          if (rule > RULE_6) {
             c = '~';
           } else {
             rs = atom1.checkHandedness();
@@ -3149,6 +3125,7 @@ public class CIPChirality {
       a.rule4Count = null;
       a.rule4List = null;
       a.rootRule4Paths = null;
+      a.auxEZ = UNDETERMINED;
       a.priority = 0;
       for (int i = 0; i < 4; i++)
         if (atoms[i] != null)

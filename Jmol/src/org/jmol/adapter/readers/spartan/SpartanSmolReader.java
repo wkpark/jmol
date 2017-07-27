@@ -44,6 +44,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   private boolean isCompoundDocument;
   private boolean inputOnly;
   private boolean espCharges;
+  private boolean natCharges;
   private boolean isInputFirst;
   private boolean iHaveNewDir;
 
@@ -52,7 +53,8 @@ public class SpartanSmolReader extends SpartanInputReader {
     isCompoundDocument = (rd()
         .indexOf("Compound Document File Directory") >= 0);
     inputOnly = checkFilterKey("INPUT");
-    espCharges = !checkFilterKey("MULLIKEN"); // changed default in Jmol 12.1.41, 12.0.38
+    natCharges = checkFilterKey("NATCHAR");
+    espCharges = !natCharges && !checkFilterKey("MULLIKEN"); // changed default in Jmol 12.1.41, 12.0.38
 
   }
 
@@ -256,6 +258,7 @@ public class SpartanSmolReader extends SpartanInputReader {
       return;
     haveCharges = (espCharges
         && asc.setAtomSetCollectionPartialCharges("ESPCHARGES")
+        || natCharges && asc.setAtomSetCollectionPartialCharges("NATCHARGES")
         || asc.setAtomSetCollectionPartialCharges("MULCHARGES")
         || asc.setAtomSetCollectionPartialCharges("Q1_CHARGES") || asc
         .setAtomSetCollectionPartialCharges("ESPCHARGES"));

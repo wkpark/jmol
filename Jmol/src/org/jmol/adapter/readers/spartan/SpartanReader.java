@@ -47,7 +47,7 @@ public class SpartanReader extends BasisFunctionReader {
     String cartesianHeader = "Cartesian Coordinates (Ang";
     if (isSpartanArchive(cartesianHeader)) {
       moData = new Hashtable<String, Object>();
-      SpartanArchive spartanArchive = new SpartanArchive(this, "", null);
+      SpartanArchive spartanArchive = new SpartanArchive(this, "", null, 0);
       int ac = spartanArchive.readArchive(line, true, 0, true);
       if (ac > 0)
         asc.setAtomSetName("Spartan file");

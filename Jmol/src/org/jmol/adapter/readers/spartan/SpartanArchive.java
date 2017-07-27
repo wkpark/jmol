@@ -51,6 +51,7 @@ class SpartanArchive {
   
 
   private int modelCount = 0;
+  private int modelAtomCount = 0;  
   private int ac = 0;
   private String bondData; // not in archive; may or may not have
   private int moCount = 0;
@@ -62,8 +63,9 @@ class SpartanArchive {
   
   private BasisFunctionReader r;
 
-  SpartanArchive(BasisFunctionReader r, String bondData, String endCheck) {
+  SpartanArchive(BasisFunctionReader r, String bondData, String endCheck, int smolAtomCount) {
     initialize(r, bondData);
+    this.modelAtomCount = smolAtomCount;
     this.endCheck = endCheck;
     isSMOL = (endCheck != null);
   }
@@ -130,8 +132,6 @@ class SpartanArchive {
     r.asc.setAtomSetEnergy(tokens[0], value);
   }
 
-  int modelAtomCount;
-  
   private int setInfo(String info) throws Exception {
     //    5  17  11  18   0   1  17   0 RHF      3-21G(d)           NOOPT FREQ
     //    0   1  2   3    4   5   6   7  8        9

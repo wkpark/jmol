@@ -163,10 +163,6 @@ public class SpartanSmolReader extends SpartanInputReader {
         return false;
       } else if (lcline.endsWith("proparc")
           || lcline.endsWith("propertyarchive")) {
-        if (spartanArchive == null) {
-          spartanArchive = new SpartanArchive(this, bondData, endCheck);
-          spartanArchive.modelAtomCount = asc.getAtomSetAtomCount(asc.iSet);
-        }
         readProperties();
         return false;
       } else if (lcline.endsWith("archive")) {
@@ -246,7 +242,7 @@ public class SpartanSmolReader extends SpartanInputReader {
   }
 
   private String readArchive() throws Exception {
-    spartanArchive = new SpartanArchive(this, bondData, endCheck);
+    spartanArchive = new SpartanArchive(this, bondData, endCheck, 0);
     String modelName = readArchiveHeader();
     if (modelName != null)
       modelAtomCount = spartanArchive.readArchive(line, false, asc.ac, false);
@@ -266,10 +262,13 @@ public class SpartanSmolReader extends SpartanInputReader {
   }
 
   private void readProperties() throws Exception {
-    if (spartanArchive == null) {
+    if (modelAtomCount == 0) {
       rd();
       return;
     }
+    if (spartanArchive == null)
+      spartanArchive = new SpartanArchive(this, bondData, endCheck,
+          modelAtomCount);
     spartanArchive.readProperties();
     rd();
     setCharges();

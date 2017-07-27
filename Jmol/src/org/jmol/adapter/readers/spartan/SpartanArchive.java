@@ -130,7 +130,7 @@ class SpartanArchive {
     r.asc.setAtomSetEnergy(tokens[0], value);
   }
 
-  private int modelAtomCount;
+  int modelAtomCount;
   
   private int setInfo(String info) throws Exception {
     //    5  17  11  18   0   1  17   0 RHF      3-21G(d)           NOOPT FREQ

@@ -163,6 +163,10 @@ public class SpartanSmolReader extends SpartanInputReader {
         return false;
       } else if (lcline.endsWith("proparc")
           || lcline.endsWith("propertyarchive")) {
+        if (spartanArchive == null) {
+          spartanArchive = new SpartanArchive(this, bondData, endCheck);
+          spartanArchive.modelAtomCount = asc.getAtomSetAtomCount(asc.iSet);
+        }
         readProperties();
         return false;
       } else if (lcline.endsWith("archive")) {
@@ -170,7 +174,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         return false;
       }
       return true;
-    }
+    } 
     if (line.indexOf("5D shell") >= 0)
       moData.put("calculationType", calculationType = line);
     return true;
@@ -220,7 +224,7 @@ public class SpartanSmolReader extends SpartanInputReader {
         mat[9], mat[10]);
   }
 
-  private String endCheck = "END Directory Entry ";
+  private final static String endCheck = "END Directory Entry ";
   private String title;
 
   SpartanArchive spartanArchive;

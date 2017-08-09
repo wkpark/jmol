@@ -26,6 +26,7 @@
 
 	   JSmol/build_11_fromjmol.xml
 	   JSmol/build_12_fromjspecview.xml 
+	   [eclipse refresh required]
 	   JSmol/build_13_tojs.xml
 	   
 	  jars/JSpecView.jar is created using 

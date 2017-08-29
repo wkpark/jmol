@@ -120,7 +120,7 @@ class SpartanArchive {
     }
     if (haveMOData)
       r.finalizeMOData(r.moData);
-    return ac;
+    return modelAtomCount;
   }
 
   private void readEnergy() throws Exception {

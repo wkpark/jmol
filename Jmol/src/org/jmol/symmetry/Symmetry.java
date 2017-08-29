@@ -653,6 +653,11 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public Map<String, Object> getSpaceGroupInfo(ModelSet modelSet, String sgName, int modelIndex) {
+    if (sgName == null) {
+      Map<String, Object> info = modelSet.getModelAuxiliaryInfo(modelSet.vwr.am.cmi);
+      if (info != null)
+        sgName = (String) info.get("spaceGroup");
+    }
     return getDesc(modelSet).getSpaceGroupInfo(this, modelIndex, sgName, 0, null, null,
         null, 0, -1);
   }

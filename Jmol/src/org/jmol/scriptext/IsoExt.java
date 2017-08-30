@@ -291,6 +291,7 @@ public class IsoExt extends ScriptExt {
     int[] connections = null;
     int iConnect = 0;
     int iArray = -1;
+    SymmetryInterface uc = null;
     for (int i = eval.iToken; i < slen; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -364,7 +365,6 @@ public class IsoExt extends ScriptExt {
       case T.boundbox:
         if (chk)
           break;
-        SymmetryInterface uc = null;
         if (tok == T.unitcell) {
           if (eval.isArrayParameter(i + 1)) {
             P3[] points = eval.getPointArray(i + 1, -1, false);
@@ -418,7 +418,7 @@ public class IsoExt extends ScriptExt {
         }
         break;
       case T.intersection:
-        switch (getToken(++i).tok) {
+        switch (getToken(i+1).tok) {
         case T.unitcell:
         case T.boundbox:
           tokIntersect = eval.theTok;
@@ -627,7 +627,7 @@ public class IsoExt extends ScriptExt {
         if (tokIntersect != 0) {
           if (chk)
             break;
-          Lst<Object> vpc = getPlaneIntersection(tokIntersect, plane, null,
+          Lst<Object> vpc = getPlaneIntersection(tokIntersect, plane, uc,
               intScale / 100f, 0);
           intScale = 0;
           propertyName = "polygon";

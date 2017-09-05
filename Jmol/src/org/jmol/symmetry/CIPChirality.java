@@ -2604,6 +2604,8 @@ public class CIPChirality {
         // just return string comparison if Rule 5
         if (isRule5) {
           // note that these two strings cannot be different lengths
+//          System.out.println("Rule 5 A: " + aStr + aStr2);
+//          System.out.println("Rule 5 B: " + bStr + bStr2);
           score = sign(haveRSOptions ? (aStr + aStr2).compareTo(bStr + bStr2)
               : aStr.compareTo(bStr));
           reason = "Rule 5"; // Logger
@@ -2833,9 +2835,10 @@ public class CIPChirality {
       int n = aStr.length();
       if (n == 0 || n != bStr.length())
         return TIED;
-      if (Logger.debugging)
-        Logger.info(dots() + this.myPath + " Rule 4b comparing " + aStr + " "
-            + bStr);
+      if (Logger.debugging) {
+        Logger.info(dots() + this.myPath + " Rule 4b comparing A: " + aStr);
+        Logger.info(dots() + this.myPath + " Rule 4b comparing B: " + bStr);
+      }
       char aref = aStr.charAt(0), bref = bStr.charAt(0);
       for (int c = 1; c < n; c++) {
         boolean alike = (aref == aStr.charAt(c));

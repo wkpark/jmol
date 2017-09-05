@@ -852,8 +852,9 @@ public class IsoExt extends ScriptExt {
     BS bsModels = vwr.getVisibleFramesBitSet();
     Lst<Object[]> propertyList = new Lst<Object[]>();
     boolean isBeta = false;
+    boolean isNBO = (tokAt(0) == T.nbo); 
     int i0 = 1;
-    if (tokAt(0) == T.nbo) {
+    if (isNBO) {
       // NBO command by itself starts the NBO Server Interface panel
       // NBO OPTIONS include "NOZAP;VIEW"
       boolean isViewOnly = e.optParameterAsString(1).equals("view");
@@ -1050,6 +1051,9 @@ public class IsoExt extends ScriptExt {
       if (propertyList.size() > 0)
         setShapeProperty(iShape, "setProperties", propertyList);
       if (haveMO && !eval.tQuiet) {
+        if (!isNBO) {
+          moNumber = ((Integer) getShapeProperty(iShape, "moNumber")).intValue();
+        }
         showString(T.nameOf(tokAt(0)) + " " + moNumber + " "
             + (isBeta ? "beta " : "") + getShapeProperty(iShape, "message"));
       }
@@ -1203,6 +1207,7 @@ public class IsoExt extends ScriptExt {
         if (isBeta) {
         } else if (moData.containsKey("HOMO")) {
           moNumber = ((Integer) moData.get("HOMO")).intValue() + offset;
+          offset = 0;
         } else {
           moNumber = nOrb;
           for (int i = 0; i < nOrb; i++) {

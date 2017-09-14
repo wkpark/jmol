@@ -34,7 +34,6 @@ import javajs.util.Measure;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
-import javajs.util.SB;
 import javajs.util.V3;
 
 import org.jmol.java.BS;
@@ -148,7 +147,7 @@ import org.jmol.viewer.JC;
  * 
  * 9/14/17 Jmol 14.20.6 switching to Mikko's idea for Rule 4b and 5. Abandons "thread" 
  * idea. Uses breadth-first algorithm for generating bitsets for R and S. 
- * Processing time reduced by 50%. Still could be optimized some.
+ * Processing time reduced by 50%. Still could be optimized some. (829 lines)
  * 
  * 7/25/17 Jmol 14.20.4 consolidates all ene determinations; moves auxiliary
  * descriptor generation to prior to Rule 3 (850 lines) 7/23/17 Jmol 14.20.4
@@ -539,7 +538,7 @@ public class CIPChirality {
   static final String RULE_2_nXX_REV_XX = ";4He;16O;52Cr;96Mo;175Lu;";
 
   static final int NO_CHIRALITY = 0, TIED = 0;
-  static final int A_WINS = -1, B_WINS = 1, AA_WINS = -2, BB_WINS = 2;
+  static final int A_WINS = -1, B_WINS = 1;
 
   static final int IGNORE = Integer.MIN_VALUE;
 
@@ -2132,17 +2131,15 @@ public class CIPChirality {
           // (c) if the current rule decides; if not, then
           // (d) if the tie can be broken in the next sphere
           switch (a.atom == null ? B_WINS : b.atom == null ? A_WINS
-              : prevPriorities[i] < prevPriorities[j] ? AA_WINS
-                  : prevPriorities[j] < prevPriorities[i] ? BB_WINS
+              : prevPriorities[i] < prevPriorities[j] ? A_WINS
+                  : prevPriorities[j] < prevPriorities[i] ? B_WINS
                       : (score = checkPriority(a, b, i, j)) != TIED ? score
                           : ignoreTies ? IGNORE : sign(a
                               .breakTie(b, sphere + 1))) {
-          case BB_WINS:
           case B_WINS:
             loser = i;
             priorities[loser]++;
             break;
-          case AA_WINS:
           case A_WINS:
             priorities[loser]++;
             break;
@@ -2416,7 +2413,6 @@ public class CIPChirality {
         return checkRules4ac(b, " s r p m");
       case RULE_5:
         return checkRule5(b);
-        //        return TIED; // not carried out here because these need access to a full list of ligands
       case RULE_6:
         return checkRule6(b);
       case RULE_RS:

@@ -147,7 +147,7 @@ import org.jmol.viewer.JC;
  * 
  * 9/14/17 Jmol 14.20.6 switching to Mikko's idea for Rule 4b and 5. Abandons "thread" 
  * idea. Uses breadth-first algorithm for generating bitsets for R and S. 
- * Processing time reduced by 50%. Still could be optimized some. (829 lines)
+ * Processing time reduced by 50%. Still could be optimized some. (820 lines)
  * 
  * 7/25/17 Jmol 14.20.4 consolidates all ene determinations; moves auxiliary
  * descriptor generation to prior to Rule 3 (850 lines) 7/23/17 Jmol 14.20.4
@@ -2416,13 +2416,8 @@ public class CIPChirality {
       case RULE_6:
         return checkRule6(b);
       case RULE_RS:
-        return checkRuleRS(b);
+        return rule4Type == b.rule4Type ? TIED : rule4Type == root.rule4Ref ? A_WINS : B_WINS;
       }
-    }
-
-    private int checkRuleRS(CIPAtom b) {
-      return rule4Type == b.rule4Type ? TIED
-          : rule4Type == root.rule4Ref ? A_WINS : B_WINS;
     }
 
     /**

@@ -23,7 +23,6 @@
  */
 package org.jmol.rendersurface;
 
-import org.jmol.script.T;
 
 
 public class PmeshRenderer extends IsosurfaceRenderer {

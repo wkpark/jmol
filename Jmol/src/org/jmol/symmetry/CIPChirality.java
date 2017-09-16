@@ -146,7 +146,7 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
- * 9/16/2017 code simplification (793 lines)
+ * 9/16/2017 code simplification (789 lines)
  * 
  * 9/14/17 Jmol 14.20.6 switching to Mikko's idea for Rule 4b and 5. Abandons "thread" 
  * idea. Uses breadth-first algorithm for generating bitsets for R and S. 
@@ -2383,12 +2383,11 @@ public class CIPChirality {
         return checkRule3(b); // can be IGNORE
       case RULE_4a:
         return checkRules4ac(b, " sr SR PM");
-      case RULE_4b:
-        return checkRule4b(b);
       case RULE_4c:
         return checkRules4ac(b, " s r p m");
+      case RULE_4b:
       case RULE_5:
-        return checkRule5(b);
+        return checkRule4b5(b);
       case RULE_6:
         return checkRule6(b);
       case RULE_RS:
@@ -2474,15 +2473,15 @@ public class CIPChirality {
       return (isRa > isRb + 1 ? A_WINS : isRb > isRa + 1 ? B_WINS : TIED);
     }
 
-    private int checkRule4b(CIPAtom b) {
+    private int checkRule4b5(CIPAtom b) {
+      
+      // this action will be on root atom substituents only
+
       if (isTerminal || b.isTerminal)
         return TIED;
-      // this action will be on the root atom substituents only
-
-      BS bsA = getBS4b();
-      BS bsB = b.getBS4b();
-      //System.out.println("check4b " + this + " " + bsA + " " + b + " " + bsB);
-      BS lu = compareLikeUnlike(bsA, bsB);
+      
+      BS bsA = getBS4b5();
+      BS lu = compareLikeUnlike(bsA, b.getBS4b5());
       return (lu == null ? IGNORE : lu == bsA ? A_WINS : B_WINS);
     }
 
@@ -2496,7 +2495,9 @@ public class CIPChirality {
       return (l < 0 ? null : bsA.get(l) ? bsA : bsB);
     }
 
-    private BS getBS4b() {
+    private BS getBS4b5() {
+      if (currentRule == RULE_5)
+        return bsRS[0];
       if (bsRS == null) {
         bsRS = new BS[2];
         getBS4bBreadth(STEREO_R);
@@ -2536,13 +2537,6 @@ public class CIPChirality {
           }
       }
       currentRule = RULE_4b;
-    }
-
-    private int checkRule5(CIPAtom b) {
-      if (bsRS == null)
-        return TIED;
-      BS lu = compareLikeUnlike(bsRS[0], b.bsRS[0]);
-      return (lu == null ? IGNORE : lu == bsRS[0] ? A_WINS : B_WINS);
     }
 
     private int checkRule6(CIPAtom b) {

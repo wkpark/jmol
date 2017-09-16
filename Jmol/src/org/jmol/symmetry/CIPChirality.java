@@ -4,6 +4,7 @@
  * $Revision$
  *
  * Copyright (C) 2017  The Jmol Development Team
+ * 
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -144,6 +145,8 @@ import org.jmol.viewer.JC;
  * https://iupac.org/projects/project-details/?project_nr=2015-052-1-800
  * 
  * code history:
+ * 
+ * 9/16/2017 code simplification (793 lines)
  * 
  * 9/14/17 Jmol 14.20.6 switching to Mikko's idea for Rule 4b and 5. Abandons "thread" 
  * idea. Uses breadth-first algorithm for generating bitsets for R and S. 
@@ -668,7 +671,6 @@ public class CIPChirality {
    * 
    */
   int rule1bOption = RULE_1b_TEST_OPTION_A_PARENT;
-  //  int rule1bOption = RULE_1b_TEST_OPTION_0_UNCHANGED; AY236.215, BH64.1,2,...
 
   /**
    * return auxiliary chirality settings for all atoms when only one atom is
@@ -676,8 +678,6 @@ public class CIPChirality {
    * 
    */
   boolean setAuxiliary;
-
-//  boolean testingMikkoIdea = true;
 
   protected int rootRule; // Logger
 
@@ -695,7 +695,6 @@ public class CIPChirality {
     lstSmallRings.clear();
     bsKekuleAmbiguous = null;
     bsAtropisomeric = new BS();
-    //testingMikkoIdea = false; 
   }
 
   /**
@@ -1218,6 +1217,7 @@ public class CIPChirality {
           switch (currentRule) {
           case RULE_3:
             // We need to create auxiliary descriptors PRIOR to Rule 3.
+            cipAtom.rootRule4bQueue = new Lst<CIPAtom>();
             cipAtom.createAuxiliaryDescriptors(null, null);
             break;
           case RULE_4a:
@@ -1226,13 +1226,8 @@ public class CIPChirality {
               currentRule = RULE_5;
               continue;
             }
-            cipAtom.sortSubstituents(Integer.MIN_VALUE);
-            break;
+            //$FALL-THROUGH$
           case RULE_4b:
-//            if (!testingMikkoIdea)
-//              break;
-//            cipAtom.sortSubstituents(Integer.MIN_VALUE);
-//            break;
           case RULE_4c:
             // We need to presort with no tie-breaking for Rules 4a, 4b, and 4c.
             cipAtom.sortSubstituents(Integer.MIN_VALUE);
@@ -1610,7 +1605,7 @@ public class CIPChirality {
      * number of root-duplicate atoms (root atom only
      */
 
-    int nRootDuplicates;
+    private int nRootDuplicates;
 
     /**
      * Rule 1b hash table that maintains distance of the associated
@@ -1660,11 +1655,10 @@ public class CIPChirality {
      */
     private boolean isEvenEne = true;
 
-    //// AUXILIARY CHIRALITY for Rules 4 and 5 /////
+    //// AUXILIARY CHIRALITY (SET JUST PRIOR TO RULE 3) /////
 
     /**
-     * already-determined auxiliary chirality E/Z for this atom node; this value
-     * must be cleared after Rule 3 if continuing
+     * auxiliary chirality E/Z for this atom node
      */
     private int auxEZ = UNDETERMINED;
 
@@ -1694,30 +1688,18 @@ public class CIPChirality {
 //    private Object[] rule4Count;
 
     /**
-     * a list that tracks stereochemical paths for this branch section for Mata
-     * analysis in the form of pAAAAA where p is 0-3, the priority up through
-     * Rule 4a, and A is one of R, S, M, P, C, T, r, s, m, p, where C = seqCis;
-     * T = seqTrans; seqcis and seqtrans are irrelevant)
+     * Queue for doing breadth-first scan for RS descriptors in Rule 4b; root only
      * 
      */
-    private String[] rule4List;
 
-//    /**
-//     * a list of string buffers that tracks full-length stereochemical paths for
-//     * the branch's root atom only for Mata analysis in the form of
-//     * p1p2p3XXXXXYYYYZZZZZ where pn is 1-4, the priority up through Rule 4a;
-//     * used for the final flattening of the ligand path for like/unlike analysis
-//     * 
-//     */
-//
-////    private Lst<String[]> rootRule4Paths;
-//
-//    /**
-//     * a list of priorities from the root leading this branch; used to build
-//     * rootRule4Paths
-//     * 
-//     */
-//    private String priorityPath;
+    Lst<CIPAtom> rootRule4bQueue;
+
+    /**
+     * a check for downstream chirality
+     * 
+     */
+
+    private boolean isChiralPath;
 
     /**
      * for the root atom, the number of auxiiary centers; for other atoms, the
@@ -1735,17 +1717,24 @@ public class CIPChirality {
     private boolean reverseRule2;
 
     /**
-     * reference index for Rule 6
-     */
-
-    int rule6refIndex = -1;
-
-    /**
-     * Rule 4b reference chirality (R or s, 1 or 2) Just the first encountered
+     * Rule 4b reference chirality (R or S, 1 or 2); root only
      */
     private int rule4Ref;
 
+    /**
+     * bitsets for tracking R and S for Rule 4b
+     */
+    private BS[] bsRS;
+
+    /**
+     * new atom list after sorting substituents
+     */
     private CIPAtom[] newAtoms;
+
+    /**
+     * reference index for Rule 6
+     */
+    private int rule6refIndex = -1;
 
     CIPAtom() {
       // had a problem in JavaScript that the constructor of an inner function cannot
@@ -2084,8 +2073,7 @@ public class CIPChirality {
         case RULE_4a:
         case RULE_4c:
           for (int i = 0; i < 4; i++)
-            if (rule4List[i] != null && atoms[i].atom != null
-                && !atoms[i].isTerminal)
+            if (atoms[i] != null && atoms[i].isChiralPath)
               atoms[i].sortSubstituents(Integer.MIN_VALUE);
           if (!isSP3)
             return false;
@@ -2116,8 +2104,9 @@ public class CIPChirality {
       if (currentRule == RULE_RS)
         for (int i = 0; i < 4; i++) {
           CIPAtom a = atoms[i];
-          if (!a.isTerminal && a.atom != null && !a.isDuplicate)
-            a.sortSubstituents(sphere);
+          if (a.nextChiralBranch != null) {
+              a.nextChiralBranch.sortSubstituents(sphere);
+          }
         }
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
@@ -2154,15 +2143,12 @@ public class CIPChirality {
       // update nPriorities and all arrays
 
       int[] newPriorities = new int[4];
-      String[] newRule4List = (rule4List == null ? null : new String[4]);
       bsTemp.clearAll(); // track number of priorities
       newAtoms = new CIPAtom[4];
       for (int i = 0; i < 4; i++) {
         int pt = indices[i];
         CIPAtom a = newAtoms[pt] = atoms[i];
         newPriorities[pt] = priorities[i];
-        if (rule4List != null)
-          newRule4List[pt] = rule4List[i];
         if (a.atom != null)
           bsTemp.set(priorities[i]);
       }
@@ -2174,7 +2160,6 @@ public class CIPChirality {
 
       atoms = newAtoms;
       priorities = newPriorities;
-      rule4List = newRule4List;
       nPriorities = bsTemp.cardinality();
       if (Logger.debuggingHigh && atoms[2].atom != null && atoms[2].elemNo != 1) { // Logger
         Logger.info(dots() + atom + " nPriorities = " + nPriorities);
@@ -2337,15 +2322,6 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), or Integer.MIN_VALUE (IGNORE)
      */
     private int checkPriority(CIPAtom a, CIPAtom b, int i, int j) {
-//      if (!testingMikkoIdea) {
-//        switch (currentRule) {
-//        case RULE_4b:
-//        case RULE_5:
-//          return (rule4List[i] == null && rule4List[j] == null ? IGNORE
-//              : rule4List[j] == null ? A_WINS : rule4List[i] == null ? B_WINS
-//                  : compareMataPair(a, b));
-//        }
-//      }
       int score;
       return ((a.atom == null) != (b.atom == null) ? (a.atom == null ? B_WINS
           : A_WINS) : (score = a.checkCurrentRule(b)) == IGNORE ? TIED : score);
@@ -2498,8 +2474,6 @@ public class CIPChirality {
       return (isRa > isRb + 1 ? A_WINS : isRb > isRa + 1 ? B_WINS : TIED);
     }
 
-    private BS bsR, bsS;
-
     private int checkRule4b(CIPAtom b) {
       if (isTerminal || b.isTerminal)
         return TIED;
@@ -2523,39 +2497,27 @@ public class CIPChirality {
     }
 
     private BS getBS4b() {
-      if (bsR == null)
-        bsR = getBS4bBreadth(STEREO_R);
-      if (bsS == null)
-        bsS = getBS4bBreadth(STEREO_S);
-      BS lu = compareLikeUnlike(bsR, bsS);
-      return (lu == null ? bsR : lu);
+      if (bsRS == null) {
+        bsRS = new BS[2];
+        getBS4bBreadth(STEREO_R);
+        getBS4bBreadth(STEREO_S);
+      }
+      BS lu = compareLikeUnlike(bsRS[0], bsRS[1]);
+      return (lu == null ? bsRS[0] : lu);
     }
 
-    private BS getBS4bBreadth(int rs) {
+    private void getBS4bBreadth(int rs) {
       root.rule4Ref = rs;
       currentRule = RULE_RS;
       sortSubstituents(0);
-      BS bs = getBreadthBitSet(rs);
-      currentRule = RULE_4b;
-      return bs;
-    }
-
-    private Lst<CIPAtom> rule4bQueue;
-
-    private BS getBreadthBitSet(int rs) {
-      Lst<CIPAtom> queue = root.rule4bQueue;
-      if (queue == null)
-        queue = root.rule4bQueue = new Lst<CIPAtom>();
-      else
-        queue.clear();
-      int nrs = 0;
-      queue.addLast(this);
-      BS bs = new BS();
+      root.rootRule4bQueue.clear();
+      root.rootRule4bQueue.addLast(this);
+      BS bs = bsRS[rs - 1] = new BS();
       if (rule4Type == rs)
         bs.set(0);
-      nrs = 1;
-      while (queue.size() != 0) {
-        CIPAtom next = queue.removeItemAt(0);
+      int nrs = (rule4Type == NO_CHIRALITY ? 0 : 1);
+      while (root.rootRule4bQueue.size() != 0) {
+        CIPAtom next = root.rootRule4bQueue.removeItemAt(0);
         CIPAtom[] atoms = next.newAtoms;
         if (atoms == null)
           atoms = next.atoms;
@@ -2565,20 +2527,22 @@ public class CIPChirality {
             if (ai == null || ai.atom == null || ai.isTerminal
                 || ai.isDuplicate)
               continue;
-            queue.addLast(ai);
+            root.rootRule4bQueue.addLast(ai);
+            if (ai.rule4Type == 0)
+              continue;
             if (ai.rule4Type == rs)
               bs.set(nrs);
             nrs++;
           }
       }
-      return bs;
+      currentRule = RULE_4b;
     }
 
     private int checkRule5(CIPAtom b) {
-      if (bsR == null || b.bsR == null)
+      if (bsRS == null)
         return TIED;
-      BS lu = compareLikeUnlike(bsR, b.bsR);
-      return (lu == null ? IGNORE : lu == bsR ? A_WINS : B_WINS);
+      BS lu = compareLikeUnlike(bsRS[0], b.bsRS[0]);
+      return (lu == null ? IGNORE : lu == bsRS[0] ? A_WINS : B_WINS);
     }
 
     private int checkRule6(CIPAtom b) {
@@ -2622,7 +2586,6 @@ public class CIPChirality {
       CIPAtom atom1 = (CIPAtom) end.clone();
       if (atom1.parent != prevSP2)
         atom1.addReturnPath(prevSP2, end);
-      atom1.rule4List = end.rule4List;
       CIPAtom a;
       for (int rule = RULE_1a; rule <= RULE_6; rule++) {
         if (atom1.sortByRule(rule)) {
@@ -2698,316 +2661,6 @@ public class CIPChirality {
         }
     }
 
-//    /**
-//     * Chapter 9 Rules 4b and 5: like vs. unlike; for root substituents only.
-//     * 
-//     * (1) Generate full set of branching stereochemical paths (rule4Paths) for
-//     * each ligand.
-//     * 
-//     * (2) Determine the reference descriptor (R, S, or both) for each ligand.
-//     * 
-//     * (3) Flatten each path to one string by traversing the sorted list sphere
-//     * by sphere.
-//     * 
-//     * (4) Compare paths using like/unlike criteria.
-//     * 
-//     * @param a
-//     * @param b
-//     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS), or Integer.MIN_VALUE
-//     *         (IGNORE)
-//     */
-//    private int compareMataPair(CIPAtom a, CIPAtom b) {
-//      // Step 1: Generate paths by building a list of all paths from the root substituent out.
-//      // For example, say we have the following, where (n) is a priority, if necessary:
-//      // 
-//      //          S(1)
-//      //         /
-//      // []--S--r
-//      //         \
-//      //          R(1)
-//      //
-//      // then we build ["SrS" and "SrR"]
-//      // 
-//
-//      a.generateRule4Paths(this);
-//      b.generateRule4Paths(this);
-//
-//      boolean isRule5 = (currentRule == RULE_5);
-//      char aref = (isRule5 ? 'R' : a.getRule4ReferenceDescriptor());
-//      char bref = (isRule5 ? 'R' : b.getRule4ReferenceDescriptor());
-//      boolean haveRSOptions = (aref == '?');
-//      if (Logger.debugging)
-//        Logger.info("reference descriptors are " + aref + " and " + bref);
-//
-//      int score = TIED;
-//      String reason = "Rule 4b"; // Logger
-//
-//      while (true) {
-//
-//        if (aref == '-' && bref == '-')
-//          return IGNORE;
-//
-//        // check for RS on only one side
-//        if ((aref == '?') != (bref == '?')) {
-//          score = (haveRSOptions ? B_WINS : A_WINS);
-//          reason += " RS on only one side"; // Logger
-//          break;
-//        }
-//
-//        String aStr = (haveRSOptions ? a.flattenRule4Paths('R') : a
-//            .flattenRule4Paths(aref));
-//        String aStr2 = (haveRSOptions ? a.flattenRule4Paths('S') : "");
-//        String bStr = (haveRSOptions ? b.flattenRule4Paths('R') : b
-//            .flattenRule4Paths(bref));
-//        String bStr2 = (haveRSOptions ? b.flattenRule4Paths('S') : "");
-//
-//        // just return string comparison if Rule 5
-//        if (isRule5) {
-//          // note that these two strings cannot be different lengths
-//          //          System.out.println("Rule 5 A: " + aStr + aStr2);
-//          //          System.out.println("Rule 5 B: " + bStr + bStr2);
-//          score = sign(haveRSOptions ? (aStr + aStr2).compareTo(bStr + bStr2)
-//              : aStr.compareTo(bStr));
-//          reason = "Rule 5"; // Logger
-//          break;
-//        }
-//
-//        aStr = cleanRule4Str(aStr);
-//        bStr = cleanRule4Str(bStr);
-//
-//        if (haveRSOptions) {
-//
-//          // first find the better of A(R)/A(S) and the better of B(R)/B(S)
-//
-//          if (compareRule4PairStr(aStr, aStr2 = cleanRule4Str(aStr2), true) > 0)
-//            aStr = aStr2;
-//          if (compareRule4PairStr(bStr, bStr2 = cleanRule4Str(bStr2), true) > 0)
-//            bStr = bStr2;
-//
-//          // then continue as before
-//        }
-//        score = compareRule4PairStr(aStr, bStr, false);
-//        break;
-//
-//      }
-//
-//      if (Logger.debugging && (score == A_WINS || score == B_WINS))
-//        Logger.info((score == A_WINS ? a : b) + " > "
-//            + (score == A_WINS ? b : a) + " by " + reason + "\n"); // Logger
-//
-//      // no tie-breaking for Rules 4b or 5
-//
-//      return (score == TIED ? IGNORE : score);
-//    }
-//
-//    /**
-//     * Combine all subpaths
-//     * 
-//     * @param ignore
-//     *        atom to ignore (parent)
-//     */
-//    void generateRule4Paths(CIPAtom ignore) {
-//
-//      getRule4PriorityPaths("", ignore.atom);
-//      rootRule4Paths = new Lst<String[]>();
-//      appendRule4Paths(this, new String[3]);
-//      getRule4Counts(rule4Count = new Object[] { null, zero, zero,
-//          Integer.valueOf(10000) });
-//
-//      if (Logger.debugging) {
-//        Logger.info("Rule 4b paths for " + this + "=\n");
-//        for (int i = 0; i < rootRule4Paths.size(); i++) { // Logger
-//          String s = rootRule4Paths.get(i)[0].toString(); // Logger
-//          int prefixLen = rootRule4Paths.get(i)[1].length(); // Logger
-//          while (prefixString.length() < prefixLen)
-//            // Logger
-//            prefixString += prefixString; // Logger
-//          Logger.info(prefixString.substring(0, prefixLen)
-//              + s.substring(prefixLen) + " " + priorityPath);
-//        }
-//        Logger.info("");
-//      }
-//    }
-//
-//    /**
-//     * Recursively build priority paths to stereocenters as a string.
-//     * 
-//     * @param path
-//     * @param ignore
-//     *        atom to ignore (parent)
-//     */
-//    private void getRule4PriorityPaths(String path, SimpleNode ignore) {
-//      priorityPath = path + (priority + 1);
-//      for (int i = 0; i < 4; i++)
-//        if (rule4List[i] != null && atoms[i].atom != ignore)
-//          atoms[i].getRule4PriorityPaths(priorityPath, null);
-//    }
-
-//    /**
-//     * Track the number of R and S in th.e highest-ranking ligand position.
-//     * 
-//     * @param counts
-//     *        ["011020...", nR, nS, sphere]
-//     */
-//    private void getRule4Counts(Object[] counts) {
-//      if (sphere > ((Integer) counts[3]).intValue())
-//        return;
-//      if (rule4Type > 0) {
-//        // Accumlate the number of R and S centers of a given cumlative priority
-//        int val = sign(priorityPath.length()
-//            - (counts[0] == null ? 10000 : ((String) counts[0]).length()));
-//        if (val == 0)
-//          val = sign(priorityPath.compareTo(counts[0].toString()));
-//        switch (val) {
-//        case -1:
-//          counts[0] = priorityPath;
-//          counts[STEREO_R] = counts[STEREO_S] = zero;
-//          counts[3] = Integer.valueOf(sphere);
-//          //$FALL-THROUGH$
-//        case 0:
-//          counts[rule4Type] = Integer.valueOf(((Integer) counts[rule4Type])
-//              .intValue() + 1);
-//          break;
-//        }
-//        if (Logger.debugging)
-//          Logger.info(this + " addRule4Ref " + sphere + " " + priority + " "
-//              + rule4Type + " " + PT.toJSON("rule4Count", counts)); // Logger
-//      }
-//      for (int i = 0; i < 4; i++)
-//        if (rule4List[i] != null)
-//          atoms[i].getRule4Counts(counts);
-//    }
-//
-//    /**
-//     * Generate the list of all possible paths to stereocenters that Mata
-//     * analysis needs.
-//     * 
-//     * @param rootsub
-//     * @param pathInfo
-//     */
-//    private void appendRule4Paths(CIPAtom rootsub, String[] pathInfo) {
-//      String s0 = (pathInfo[0] == null ? "" + auxChirality : pathInfo[0]);
-//      if (pathInfo[2] == null)
-//        rootsub.rootRule4Paths.addLast(pathInfo = new String[] { s0, "",
-//            priorityPath });
-//      boolean isFirst = true;
-//      for (int i = 0; i < 4; i++)
-//        if (rule4List[i] != null) {
-//          if (isFirst)
-//            pathInfo[2] = priorityPath;
-//          else
-//            rootsub.rootRule4Paths.addLast(pathInfo = new String[] { s0, s0,
-//                priorityPath });
-//          isFirst = false;
-//          pathInfo[0] += rule4List[i];
-//          if (atoms[i].nextChiralBranch != null)
-//            atoms[i].nextChiralBranch.appendRule4Paths(rootsub, pathInfo);
-//        }
-//    }
-//
-//    /**
-//     * rule4Count holds in [1] and [2] the number of R and S descriptors,
-//     * respectively, in the highest ranking sphere with stereochemistry.
-//     * 
-//     * @return "R", "S", or "RS"
-//     */
-//    private char getRule4ReferenceDescriptor() {
-//      if (rule4Count == null)
-//        return auxChirality;
-//      int nR = ((Integer) rule4Count[1]).intValue(), nS = ((Integer) rule4Count[2])
-//          .intValue();
-//      return (nR > nS ? 'R' : nR < nS ? 'S' : nR == 0 ? '-' : '?');
-//    }
-//
-//    /**
-//     * This is the key Mata method -- getting the correct sequence of R and S
-//     * from a set of diastereomorphic paths.
-//     * 
-//     * Given a specific reference descriptor, the task is to sort the paths
-//     * based on priority and reference. We do the sort lexicographically, simply
-//     * using Array.sort(String[]) with our reference atom temporarily given the
-//     * lowest ASCII characater "A" (65).
-//     * 
-//     * @param ref
-//     * @return a string that can be compared with another using like/unlike
-//     */
-//    private String flattenRule4Paths(char ref) {
-//      int nPaths = rootRule4Paths.size();
-//      String[] paths = new String[nPaths];
-//      int nMax = 0;
-//      for (int i = 0; i < nPaths; i++) {
-//        // remove all enantiomorphic descriptors
-//        String path = rootRule4Paths.get(i)[0];
-//        String priorityPath = rootRule4Paths.get(i)[2];
-//        String s = PT.replaceAllCharacters(path, "srctmp", "~");
-//        // remove all 
-//        paths[i] = s = priorityPath + s.replace(ref, 'A');
-//        if (s.length() > nMax)
-//          nMax = s.length();
-//      }
-//      Arrays.sort(paths);
-//      // now remove the priorities
-//      for (int i = 0; i < nPaths; i++) {
-//        paths[i] = PT.replaceAllCharacters(paths[i], "1234", "").replace('A',
-//            ref);
-//        if (Logger.debugging)
-//          Logger.info("Flattened[" + i + "]=" + paths[i]);
-//      }
-//      SB sb = new SB();
-//      String s;
-//      for (int i = 0; i < nMax; i++) {
-//        for (int k = 0; k < nPaths; k++) {
-//          s = paths[k];
-//          sb.append(i < s.length() ? s.substring(i, i + 1) : "~");
-//        }
-//      }
-//      return sb.toString();
-//    }
-//
-//    /**
-//     * Remove all unnecessary characters prior to R/S comparison. Note that at
-//     * this time all C/T and M/P have been changed to R/S already.
-//     * 
-//     * @param aStr
-//     * @return clean RS-only string
-//     */
-//    private String cleanRule4Str(String aStr) {
-//      return (aStr.length() > 1 ? PT.replaceAllCharacters(aStr, "rsmpct~", "")
-//          : aStr);
-//    }
-//
-//    /**
-//     * Rule 4b comparison of two strings such as RSSR and SRSS, looking for
-//     * diasteriomeric differences only. A return of IGNORE indicates that they
-//     * are either the same or opposites and tells sortSubstituents to not
-//     * explore more deeply.
-//     * 
-//     * @param aStr
-//     * @param bStr
-//     * @param isRSTest
-//     *        This is just a test for optional pathways, for example: RS|SR
-//     * 
-//     * 
-//     * 
-//     * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), Integer.MIN_VALUE (IGNORE)
-//     */
-//    private int compareRule4PairStr(String aStr, String bStr, boolean isRSTest) {
-//      int n = aStr.length();
-//      if (n == 0 || n != bStr.length())
-//        return TIED;
-//      if (Logger.debugging) {
-//        Logger.info(dots() + this.myPath + " Rule 4b comparing A: " + aStr);
-//        Logger.info(dots() + this.myPath + " Rule 4b comparing B: " + bStr);
-//      }
-//      char aref = aStr.charAt(0), bref = bStr.charAt(0);
-//      for (int c = 1; c < n; c++) {
-//        boolean alike = (aref == aStr.charAt(c));
-//        if (alike != (bref == bStr.charAt(c)))
-//          return (isRSTest ? c : 1) * (alike ? A_WINS : B_WINS); // COUNT_LINE
-//      }
-//      return (isRSTest ? TIED : IGNORE);
-//    }
-//
     /**
      * By far the most complex of the methods, this method creates a list of
      * downstream (higher-sphere) auxiliary chirality designators, starting with
@@ -3020,12 +2673,11 @@ public class CIPChirality {
      * 
      * @return collective string, with setting of rule4List
      */
-    String createAuxiliaryDescriptors(CIPAtom node1, CIPAtom[] ret) {
-      String retThread = "";
+    boolean createAuxiliaryDescriptors(CIPAtom node1, CIPAtom[] ret) {
+      boolean isChiralPath = false;
       char c = '~';
       if (atom == null)
-        return "" + c;
-      rule4List = new String[4]; // full list based on atoms[]
+        return false;
       setNode();
       int rs = -1, nRS = 0;
       CIPAtom[] ret1 = new CIPAtom[1];
@@ -3038,31 +2690,20 @@ public class CIPChirality {
         CIPAtom a = atoms[i];
         if (a != null && !a.isDuplicate && !a.isTerminal) {
           a.priority = priorities[i];
+          // we use ret1 to pass a reference to the next branch with two or more chiral paths
           ret1[0] = null;
-          String rsPath = a.createAuxiliaryDescriptors(node1 == null ? a
-              : node1, ret1);
-          if (ret1[0] != null) {
-            a.nextChiralBranch = ret1[0];
-            if (ret != null)
-              ret[0] = ret1[0];
-          }
-          rule4List[i] = rsPath;
-          if (a.nextChiralBranch != null || rsPath.indexOf("R") >= 0
-              || rsPath.indexOf("S") >= 0 || rsPath.indexOf("r") >= 0
-              || rsPath.indexOf("s") >= 0) {
+          boolean aIsChiralPath = a.createAuxiliaryDescriptors(
+              node1 == null ? a : node1, ret1);
+          if (ret1[0] != null && ret != null)
+            ret[0] = nextChiralBranch = a.nextChiralBranch;
+          if (a.nextChiralBranch != null || aIsChiralPath) {
             nRS++;
-            retThread = rsPath;
+            isChiralPath = aIsChiralPath;
             prevIsChiral = true;
           } else {
             if (!allowTwoSame && !prevIsChiral
                 && priorities[i] == priorities[i - 1]) {
-              // actually, I don't think priorities are set yet.
-              if (node1 == null) {
-                for (; i >= 0; --i)
-                  rule4List[i] = null;
-                // two groups have the same priority, and neither has a stereocenter
-              }
-              return "~";
+              return false;
             }
             prevIsChiral = false;
           }
@@ -3071,7 +2712,7 @@ public class CIPChirality {
       boolean isBranch = (nRS >= 2);
       switch (nRS) {
       case 0:
-        retThread = "";
+        isChiralPath = false;
         //$FALL-THROUGH$
       case 1:
         skipRules4And5 = true;
@@ -3080,9 +2721,9 @@ public class CIPChirality {
       case 3:
       case 4:
         c = '~';
-        retThread = "";
+        isChiralPath = false;
         if (ret != null)
-          ret[0] = this;
+          ret[0] = nextChiralBranch = this;
         break;
       }
       if (isAlkene) {
@@ -3133,20 +2774,22 @@ public class CIPChirality {
                 case STEREO_Z:
                   rs = STEREO_R;
                   c = 'R';
+                  isChiralPath = true;
                   break;
                 case STEREO_P:
                 case STEREO_E:
                   rs = STEREO_S;
                   c = 'S';
+                  isChiralPath = true;
                   break;
                 }
                 auxChirality = c;
                 rule4Type = rs;
-                retThread = "";
-                if (ret != null && ret[0] == alkeneChild) {
-                  nextChiralBranch = alkeneChild;
-                  ret[0] = this;
-                }
+                // not necessary
+                //                if (ret != null && ret[0] == alkeneChild) {
+                //                  // doesn't work nextChiralBranch = alkeneChild;
+                //                  ret[0] = this;
+                //                }
               }
             }
           }
@@ -3156,15 +2799,6 @@ public class CIPChirality {
         CIPAtom atom1 = (CIPAtom) clone();
         if (atom1.setNode()) {
           atom1.addReturnPath(null, this);
-          atom1.rule4List = new String[4];
-          for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-              if (atom1.atoms[i] == atoms[j]) {
-                atom1.rule4List[i] = rule4List[j];
-                break;
-              }
-            }
-          }
           int rule = RULE_1a;
           for (; rule <= RULE_6; rule++)
             if ((!skipRules4And5 || rule < RULE_4a || rule > RULE_5)
@@ -3174,6 +2808,7 @@ public class CIPChirality {
             c = '~';
           } else {
             rs = atom1.checkHandedness();
+            isChiralPath |= (rs != NO_CHIRALITY);
             c = (rs == STEREO_R ? 'R' : rs == STEREO_S ? 'S' : '~');
             if (rule == RULE_5) {
               c = (c == 'R' ? 'r' : c == 'S' ? 's' : '~');
@@ -3189,11 +2824,10 @@ public class CIPChirality {
 
       if (node1 == null)
         rule4Type = nRS;
-      retThread = c + retThread;
-      if (Logger.debugging && !retThread.equals("~")) {
+      if (Logger.debugging && c != '~') {
         Logger.info("creating aux " + c + " for " + this + " = " + myPath);
       }
-      return retThread;
+      return (this.isChiralPath = isChiralPath);
     }
 
     /**
@@ -3267,13 +2901,10 @@ public class CIPChirality {
       a.priorities = new int[4];
       a.htPathPoints = htPathPoints;
       a.alkeneParent = null;
-//      a.rule4Count = null;
-      a.rule4List = null;
       a.rule4Type = NO_CHIRALITY;
-//      a.rootRule4Paths = null;
       a.auxEZ = UNDETERMINED;
       a.priority = 0;
-      a.bsR = a.bsS = null;
+      a.bsRS = null;
       for (int i = 0; i < 4; i++)
         if (atoms[i] != null)
           a.atoms[i] = atoms[i];

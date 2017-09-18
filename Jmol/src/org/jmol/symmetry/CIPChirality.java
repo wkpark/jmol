@@ -146,7 +146,7 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
- * 9/16/2017 code simplification (789 lines)
+ * 9/17/2017 CIPChirality code simplification (779 lines)
  * 
  * 9/14/17 Jmol 14.20.6 switching to Mikko's idea for Rule 4b and 5. Abandons "thread" 
  * idea. Uses breadth-first algorithm for generating bitsets for R and S. 
@@ -1476,12 +1476,6 @@ public class CIPChirality {
     private int rootDistance;
 
     /**
-     * current priority of this atom, 0-3
-     */
-
-    private int priority;
-
-    /**
      * a flag to prevent finalization of an atom node more than once
      * 
      */
@@ -2084,18 +2078,13 @@ public class CIPChirality {
 
       int[] indices = new int[4];
 
-      int[] prevPriorities = new int[4];
-
-      for (int i = 0; i < 4; i++) {
-        prevPriorities[i] = priorities[i];
-        priorities[i] = 0;
-      }
+      int[] newPriorities = new int[4];
 
       if (Logger.debuggingHigh) {
         Logger.info(root + "---sortSubstituents---" + this);
         for (int i = 0; i < 4; i++) { // Logger
           Logger.info(getRuleName(currentRule) + ": " + this + "[" + i + "]="
-              + atoms[i].myPath + " " + Integer.toHexString(prevPriorities[i])); // Logger
+              + atoms[i].myPath + " " + Integer.toHexString(priorities[i])); // Logger
         }
         Logger.info("---" + nPriorities);
       }
@@ -2120,17 +2109,16 @@ public class CIPChirality {
           // (c) if the current rule decides; if not, then
           // (d) if the tie can be broken in the next sphere
           switch (a.atom == null ? B_WINS : b.atom == null ? A_WINS
-              : prevPriorities[i] < prevPriorities[j] ? A_WINS
-                  : prevPriorities[j] < prevPriorities[i] ? B_WINS
-                      : (score = checkPriority(a, b, i, j)) != TIED ? score
+              : priorities[i] < priorities[j] ? A_WINS
+                  : priorities[j] < priorities[i] ? B_WINS
+                      : (score = checkPriority(a, b)) != TIED ? score
                           : ignoreTies ? IGNORE : sign(a
                               .breakTie(b, sphere + 1))) {
           case B_WINS:
             loser = i;
-            priorities[loser]++;
-            break;
+            //$FALL-THROUGH$
           case A_WINS:
-            priorities[loser]++;
+            newPriorities[loser]++;
             break;
           case TIED:
           case IGNORE:
@@ -2142,24 +2130,25 @@ public class CIPChirality {
 
       // update nPriorities and all arrays
 
-      int[] newPriorities = new int[4];
       bsTemp.clearAll(); // track number of priorities
       newAtoms = new CIPAtom[4];
       for (int i = 0; i < 4; i++) {
         int pt = indices[i];
         CIPAtom a = newAtoms[pt] = atoms[i];
-        newPriorities[pt] = priorities[i];
+        if (currentRule == RULE_RS)
+          continue;
+        priorities[pt] = newPriorities[i];
         if (a.atom != null)
-          bsTemp.set(priorities[i]);
+          bsTemp.set(newPriorities[i]);
       }
 
       if (currentRule == RULE_RS) {
-        priorities = prevPriorities;
+       // priorities = prevPriorities;
         return false;
       }
 
       atoms = newAtoms;
-      priorities = newPriorities;
+      //priorities = newPriorities;
       nPriorities = bsTemp.cardinality();
       if (Logger.debuggingHigh && atoms[2].atom != null && atoms[2].elemNo != 1) { // Logger
         Logger.info(dots() + atom + " nPriorities = " + nPriorities);
@@ -2316,12 +2305,10 @@ public class CIPChirality {
      * 
      * @param a
      * @param b
-     * @param i
-     * @param j
      * 
      * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), or Integer.MIN_VALUE (IGNORE)
      */
-    private int checkPriority(CIPAtom a, CIPAtom b, int i, int j) {
+    private int checkPriority(CIPAtom a, CIPAtom b) {
       int score;
       return ((a.atom == null) != (b.atom == null) ? (a.atom == null ? B_WINS
           : A_WINS) : (score = a.checkCurrentRule(b)) == IGNORE ? TIED : score);
@@ -2683,7 +2670,7 @@ public class CIPChirality {
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
         if (a != null && !a.isDuplicate && !a.isTerminal) {
-          a.priority = priorities[i];
+          //a.priority = priorities[i];
           // we use ret1 to pass a reference to the next branch with two or more chiral paths
           ret1[0] = null;
           boolean aIsChiralPath = a.createAuxiliaryDescriptors(
@@ -2897,18 +2884,16 @@ public class CIPChirality {
       a.alkeneParent = null;
       a.rule4Type = NO_CHIRALITY;
       a.auxEZ = UNDETERMINED;
-      a.priority = 0;
       a.bsRS = null;
       for (int i = 0; i < 4; i++)
-        if (atoms[i] != null)
-          a.atoms[i] = atoms[i];
+        a.atoms[i] = atoms[i];
       return a;
     }
 
     @Override
     public String toString() {
-      return (atom == null ? "<null>" : "[" + currentRule + "." + sphere + "."
-          + priority + "," + id + "." + atom.getAtomName()
+      return (atom == null ? "<null>" : "[" + currentRule + "." + sphere + 
+          "," + id + "." + atom.getAtomName()
           + (isDuplicate ? "*(" + rootDistance + ")" : "")
           + (auxChirality == '~' ? "" : "" + auxChirality) + "]");
     }

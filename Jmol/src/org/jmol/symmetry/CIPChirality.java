@@ -146,7 +146,7 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
- * 9/17/2017 CIPChirality code simplification (779 lines)
+ * 9/19/17 CIPChirality code simplification (778 lines)
  * 
  * 9/14/17 Jmol 14.20.6 switching to Mikko's idea for Rule 4b and 5. Abandons "thread" 
  * idea. Uses breadth-first algorithm for generating bitsets for R and S. 
@@ -2490,6 +2490,8 @@ public class CIPChirality {
         getBS4bBreadth(STEREO_R);
         getBS4bBreadth(STEREO_S);
       }
+      if (Logger.debugging)
+        Logger.info("getBS4b5 " + this + " " + bsRS[0] + bsRS[1]);
       BS lu = compareLikeUnlike(bsRS[0], bsRS[1]);
       return (lu == null ? bsRS[0] : lu);
     }
@@ -2701,7 +2703,6 @@ public class CIPChirality {
       case 2:
       case 3:
       case 4:
-        c = '~';
         isChiralPath = false;
         if (ret != null)
           ret[0] = nextChiralBranch = this;
@@ -2766,16 +2767,11 @@ public class CIPChirality {
                 }
                 auxChirality = c;
                 rule4Type = rs;
-                // not necessary
-                //                if (ret != null && ret[0] == alkeneChild) {
-                //                  // doesn't work nextChiralBranch = alkeneChild;
-                //                  ret[0] = this;
-                //                }
               }
             }
           }
         }
-      } else if (isSP3) {
+      } else if (isSP3 && ret != null) {
         // if here, adj is TIED (0) or NOT_RELEVANT
         CIPAtom atom1 = (CIPAtom) clone();
         if (atom1.setNode()) {
@@ -2879,14 +2875,14 @@ public class CIPChirality {
       }
       a.id = ptID++;
       a.atoms = new CIPAtom[4];
+      for (int i = 0; i < 4; i++)
+        a.atoms[i] = atoms[i];
       a.priorities = new int[4];
       a.htPathPoints = htPathPoints;
       a.alkeneParent = null;
-      a.rule4Type = NO_CHIRALITY;
       a.auxEZ = UNDETERMINED;
+      a.rule4Type = NO_CHIRALITY;
       a.bsRS = null;
-      for (int i = 0; i < 4; i++)
-        a.atoms[i] = atoms[i];
       return a;
     }
 

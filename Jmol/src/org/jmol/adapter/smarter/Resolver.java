@@ -846,9 +846,9 @@ public class Resolver {
 
   private final static String[][] headerContainsRecords =
   { sptRecords, bilbaoContainsRecords, xmlContainsRecords, gaussianContainsRecords, 
-    ampacContainsRecords, mopacContainsRecords, qchemContainsRecords, 
+    ampacContainsRecords, mopacContainsRecords,  
     gamessUKContainsRecords, gamessUSContainsRecords,
-    spartanBinaryContainsRecords, spartanContainsRecords, 
+    spartanBinaryContainsRecords, spartanContainsRecords, qchemContainsRecords, 
     mol2Records, adfContainsRecords, psiContainsRecords,
     nwchemContainsRecords, uicrcifContainsRecords, 
     dgridContainsRecords, crystalContainsRecords, 

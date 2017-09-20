@@ -133,7 +133,10 @@ public class Platform implements GenericPlatform {
 
   @Override
   public void drawImage(Object g, Object img, int x, int y, int width, int height, boolean isDTI) {
-    Display.drawImage(g, img, x, y, width, height);
+    if (isDTI)
+      Display.drawImageDTI(g, img, x, y, width, height);
+    else
+      Display.drawImage(g, img, x, y, width, height);
   }
 
   @Override

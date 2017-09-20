@@ -118,5 +118,21 @@ class Display {
     ((Graphics) g).drawImage((java.awt.Image) img, x, y, width, height, null);
   }
 
+  /**
+   * 
+   * @param g
+   * @param img
+   * @param x
+   * @param y
+   * @param width
+   *        unused in Jmol proper
+   * @param height
+   *        unused in Jmol proper
+   */
+  static void drawImageDTI(Object g, Object img, int x, int y, int width,
+                        int height) {
+    ((Graphics) g).drawImage((java.awt.Image) img, x, y, x == 0 ? width >> 1 : width, height, 0, y, width, height, null);
+  }
+
 
 }

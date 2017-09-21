@@ -138,7 +138,7 @@ public final class JC {
   // note list of RCSB access points: http://www.rcsb.org/pdb/static.do?p=download/http/index.html
   
   public static String[] databases = { 
-    "chebi", "http://www.ebi.ac.uk/chebi/saveStructure.do?defaultImage=true&chebiId=%file%2D%",
+    "chebi", "https://www.ebi.ac.uk/chebi/saveStructure.do?defaultImage=true&chebiId=%file%2D%",
     "aflowbin", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",
     "aflow", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",
     // _#DOCACHE_ flag indicates that the loaded file should be saved in any state in full

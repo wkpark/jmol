@@ -2594,7 +2594,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (tf && inMotion || !haveDisplay || tf
         && (!hoverEnabled && !sm.haveHoverCallback() || am.animationOn))
       return;
-    System.out.println("starthoverwatcher " + tf);
     acm.startHoverWatcher(tf);
   }
 
@@ -9425,7 +9424,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    * @return TRUE if allowed
    */
   public boolean checkMotionRendering(int tok) {
-    System.out.println(">>" + getInMotion(true));
     if (!getInMotion(true) && !tm.spinOn && !tm.vibrationOn && !am.animationOn)
       return true;
     if (g.wireframeRotation)

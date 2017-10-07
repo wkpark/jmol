@@ -595,7 +595,7 @@ public class Minimizer {
     vwr.notifyMinimizationStatus();
     if (doRefresh) {
       updateAtomXYZ();
-      vwr.refresh(3, "minimization step " + currentStep);
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, "minimization step " + currentStep);
     }
     return going;
   }
@@ -611,7 +611,7 @@ public class Minimizer {
     reportEnergy();
     vwr.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
     vwr.notifyMinimizationStatus();
-    vwr.refresh(3, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
+    vwr.refresh(Viewer.REFRESH_SYNC_MASK, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
     Logger.info("minimizer: endMinimization");
 }
 

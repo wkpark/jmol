@@ -1818,7 +1818,7 @@ public class StateCreator extends JmolStateCreator {
       Logger.debug(vwr.htmlName + " syncing with script: " + script);
     // driver is being positioned by another driver -- don't pass on the change
     // driver is being positioned by a mouse movement
-    // format is from above refresh(2, xxx) calls
+    // format is from above refresh(Viewer.REFRESH_SYNC, xxx) calls
     // Mouse: [CommandName] [value1] [value2]
     if (disableSend)
       sm.setSyncDriver(StatusManager.SYNC_DISABLE);

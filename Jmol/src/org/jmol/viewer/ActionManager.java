@@ -86,6 +86,13 @@ public class ActionManager implements EventManager {
   protected Thread hoverWatcherThread;
 
   public void checkHover() {
+    if (zoomTrigger) {
+      zoomTrigger = false;
+      if (vwr.currentCursor == GenericPlatform.CURSOR_ZOOM)
+        vwr.setCursor(GenericPlatform.CURSOR_DEFAULT);
+      vwr.setInMotion(false);
+      return;
+    }
     if (!vwr.getInMotion(true) && !vwr.tm.spinOn && !vwr.tm.navOn
         && !vwr.checkObjectHovered(current.x, current.y)) {
       int atomIndex = vwr.findNearestAtomIndex(current.x, current.y);
@@ -898,7 +905,7 @@ public class ActionManager implements EventManager {
         checkMotionRotateZoom(LEFT_DRAGGED, 0, 0, 0, false);
         return;
       }
-      if (vwr.currentCursor == GenericPlatform.CURSOR_ZOOM)//if (dragSelectedMode)
+      if (vwr.currentCursor == GenericPlatform.CURSOR_ZOOM)
         vwr.setCursor(GenericPlatform.CURSOR_DEFAULT);
       return;
     case Event.PRESSED:
@@ -1055,7 +1062,7 @@ public class ActionManager implements EventManager {
 
     if (isRubberBandSelect(dragWheelAction)) {
       calcRectRubberBand();
-      vwr.refresh(3, "rubberBand selection");
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, "rubberBand selection");
       return;
     }
 
@@ -1135,7 +1142,7 @@ public class ActionManager implements EventManager {
         return;
       mp.traceX = x;
       mp.traceY = y;
-      vwr.refresh(3, "assignNew");
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, "assignNew");
       return;
     }
 
@@ -1372,7 +1379,7 @@ public class ActionManager implements EventManager {
         mp.addPoint(nearestAtomIndex, nearestPoint, false);
       if (mp.haveModified)
         vwr.setPendingMeasurement(mp);
-      vwr.refresh(3, "measurementPending");
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, "measurementPending");
       return;
     }
     setMouseMode();
@@ -1606,6 +1613,7 @@ public class ActionManager implements EventManager {
   //////////// specific actions ////////////////
 
   private MeasurementPending measurementQueued;
+  public boolean zoomTrigger;
 
   private void enterMeasurementMode(int iAtom) {
     vwr.setPicked(-1);
@@ -1646,7 +1654,7 @@ public class ActionManager implements EventManager {
     vwr.setPendingMeasurement(mp = null);
     vwr.setCursor(GenericPlatform.CURSOR_DEFAULT);
     if (refreshWhy != null)
-      vwr.refresh(3, refreshWhy);
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, refreshWhy);
   }
 
   private void getSequence() {
@@ -1693,7 +1701,10 @@ public class ActionManager implements EventManager {
       return;
     setMotion(GenericPlatform.CURSOR_ZOOM, true);
     vwr.zoomByFactor((float) Math.pow(mouseWheelFactor, dz), x, y);
-    vwr.setInMotion(false);
+    moved.setCurrent(current, 0);
+    vwr.setInMotion(true);
+    zoomTrigger = true;
+    startHoverWatcher(true);
   }
 
   
@@ -1995,7 +2006,7 @@ public class ActionManager implements EventManager {
         vwr.select(bs, false, 0, false);
         vwr.setStatusAtomPicked(-1, "selected: " + Escape.eBS(bs), null);
 
-        vwr.refresh(3, "selections set");
+        vwr.refresh(Viewer.REFRESH_SYNC_MASK, "selections set");
       } catch (Exception e) {
         // ignore
       }
@@ -2015,7 +2026,7 @@ public class ActionManager implements EventManager {
         // ACTION_selectToggle
         runScript("selectionHalos on;select selected tog " + s);
     }
-    vwr.refresh(3, "mouseReleased");
+    vwr.refresh(Viewer.REFRESH_SYNC_MASK, "mouseReleased");
   }
 
   private void toggleMeasurement() {

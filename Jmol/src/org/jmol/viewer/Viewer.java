@@ -893,7 +893,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return;
     tm.navigateKey(keyWhere, modifiers);
     if (!tm.vibrationOn && keyWhere != 0)
-      refresh(1, "Viewer:navigate()");
+      refresh(REFRESH_REPAINT, "Viewer:navigate()");
   }
 
   public void move(JmolScriptEvaluator eval, V3 dRot, float dZoom, V3 dTrans,
@@ -948,14 +948,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     // MouseManager.mouseSinglePressDrag
     //if (mouseEnabled)
     tm.zoomBy(pixels);
-    refresh(2, sm.syncingMouse ? "Mouse: zoomBy " + pixels : "");
+    refresh(REFRESH_SYNC, sm.syncingMouse ? "Mouse: zoomBy " + pixels : "");
   }
 
   void zoomByFactor(float factor, int x, int y) {
     // MouseManager.mouseWheel
     //if (mouseEnabled)
     tm.zoomByFactor(factor, x, y);
-    refresh(2, !sm.syncingMouse ? "" : "Mouse: zoomByFactor " + factor
+    refresh(REFRESH_SYNC, !sm.syncingMouse ? "" : "Mouse: zoomByFactor " + factor
         + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y));
   }
 
@@ -963,7 +963,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     // mouseSinglePressDrag
     //if (mouseEnabled)
     tm.rotateXYBy(degX, degY, null);
-    refresh(2, sm.syncingMouse ? "Mouse: rotateXYBy " + degX + " " + degY : "");
+    refresh(REFRESH_SYNC, sm.syncingMouse ? "Mouse: rotateXYBy " + degX + " " + degY : "");
   }
 
   public void spinXYBy(int xDelta, int yDelta, float speed) {
@@ -971,7 +971,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     tm.spinXYBy(xDelta, yDelta, speed);
     if (xDelta == 0 && yDelta == 0)
       return;
-    refresh(2, sm.syncingMouse ? "Mouse: spinXYBy " + xDelta + " " + yDelta
+    refresh(REFRESH_SYNC, sm.syncingMouse ? "Mouse: spinXYBy " + xDelta + " " + yDelta
         + " " + speed : "");
   }
 
@@ -979,7 +979,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     // mouseSinglePressDrag
     //if (mouseEnabled)
     tm.rotateZBy(zDelta, x, y);
-    refresh(2, sm.syncingMouse ? "Mouse: rotateZBy " + zDelta
+    refresh(REFRESH_SYNC, sm.syncingMouse ? "Mouse: rotateZBy " + zDelta
         + (x == Integer.MAX_VALUE ? "" : " " + x + " " + y) : "");
   }
 
@@ -993,7 +993,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     refreshMeasures(true);
     //}
     //TODO: note that sync may not work with set allowRotateSelectedAtoms
-    refresh(2, sm.syncingMouse ? "Mouse: rotateMolecule " + deltaX + " "
+    refresh(REFRESH_SYNC, sm.syncingMouse ? "Mouse: rotateMolecule " + deltaX + " "
         + deltaY : "");
   }
 
@@ -1013,7 +1013,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     // mouseDoublePressDrag, mouseSinglePressDrag
     //if (mouseEnabled)
     tm.translateXYBy(xDelta, yDelta);
-    refresh(2, sm.syncingMouse ? "Mouse: translateXYBy " + xDelta + " "
+    refresh(REFRESH_SYNC, sm.syncingMouse ? "Mouse: translateXYBy " + xDelta + " "
         + yDelta : "");
   }
 
@@ -1021,7 +1021,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public void rotateFront() {
     // deprecated
     tm.resetRotation();
-    refresh(1, "Viewer:rotateFront()");
+    refresh(REFRESH_REPAINT, "Viewer:rotateFront()");
   }
 
   public void translate(char xyz, float x, char type, BS bsAtoms) {
@@ -1056,26 +1056,26 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         break;
       }
     }
-    refresh(1, "Viewer:translate()");
+    refresh(REFRESH_REPAINT, "Viewer:translate()");
   }
 
   void slabByPixels(int pixels) {
     // MouseManager.mouseSinglePressDrag
     tm.slabByPercentagePoints(pixels);
-    refresh(3, "slabByPixels");
+    refresh(REFRESH_SYNC_MASK, "slabByPixels");
   }
 
   void depthByPixels(int pixels) {
     // MouseManager.mouseDoublePressDrag
     tm.depthByPercentagePoints(pixels);
-    refresh(3, "depthByPixels");
+    refresh(REFRESH_SYNC_MASK, "depthByPixels");
 
   }
 
   void slabDepthByPixels(int pixels) {
     // MouseManager.mouseSinglePressDrag
     tm.slabDepthByPercentagePoints(pixels);
-    refresh(3, "slabDepthByPixels");
+    refresh(REFRESH_SYNC_MASK, "slabDepthByPixels");
   }
 
   //  @Override
@@ -1613,7 +1613,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
                                           String[] fileNames, Object reader) {
     String ret = loadModelFromFile(fullPathName, fileName, fileNames, reader,
         false, null, null, null, 0, false);
-    refresh(1, "loadModelFromFileRepaint");
+    refresh(REFRESH_REPAINT, "loadModelFromFileRepaint");
     return ret;
   }
 
@@ -1929,7 +1929,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public String openStringInline(String strModel) {
     // JmolSimpleViewer; JmolFileDropper inline string event
     String ret = openStringInlineParamsAppend(strModel, null, false);
-    refresh(1, "openStringInline");
+    refresh(REFRESH_REPAINT, "openStringInline");
     return ret;
   }
 
@@ -1967,7 +1967,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private String loadInlineScriptRepaint(String strModel, char newLine,
                                          boolean isAppend) {
     String ret = loadInlineScript(strModel, newLine, isAppend, null);
-    refresh(1, "loadInlineScript");
+    refresh(REFRESH_REPAINT, "loadInlineScript");
     return ret;
   }
 
@@ -1994,7 +1994,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (arrayModels == null || arrayModels.length == 0)
       return null;
     String ret = openStringsInlineParamsAppend(arrayModels, new Hashtable<String, Object>(), isAppend);
-    refresh(1, "loadInline String[]");
+    refresh(REFRESH_REPAINT, "loadInline String[]");
     return ret;
   }
 
@@ -2022,7 +2022,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         setLoadParameters(null, isAppend), isAppend);
     String ret = createModelSetAndReturnError(atomSetCollection, isAppend,
         null, new Hashtable<String, Object>());
-    refresh(1, "loadInline");
+    refresh(REFRESH_REPAINT, "loadInline");
     return ret;
   }
 
@@ -2594,6 +2594,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (tf && inMotion || !haveDisplay || tf
         && (!hoverEnabled && !sm.haveHoverCallback() || am.animationOn))
       return;
+    System.out.println("starthoverwatcher " + tf);
     acm.startHoverWatcher(tf);
   }
 
@@ -3267,7 +3268,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         ++motionEventNumber;
       } else {
         startHoverWatcher(true);
-        refresh(3, "vwr setInMotion " + inMotion);
+        refresh(REFRESH_SYNC_MASK, "vwr setInMotion " + inMotion);
       }
     }
   }
@@ -3303,6 +3304,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     }
   }
 
+  public final static int REFRESH_REPAINT = 1;
+  public final static int REFRESH_SYNC = 2;
+  public final static int REFRESH_SYNC_MASK = REFRESH_REPAINT | REFRESH_SYNC;
+  public final static int REFRESH_REPAINT_NO_MOTION_ONLY = 6;
+  public final static int REFRESH_SEND_WEBGL_NEW_ORIENTATION = 7;
+  
   /**
    * initiate a repaint/update sequence if it has not already been requested.
    * invoked whenever any operation causes changes that require new rendering.
@@ -3312,38 +3319,59 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    * 
    * Sequence is as follows:
    * 
-   * 1) RepaintManager.refresh() checks flags and then calls Viewer.repaint() 2)
-   * Viewer.repaint() invokes display.repaint(), provided display is not null
-   * (headless) 3) The system responds with an invocation of
-   * Jmol.update(Graphics g), which we are routing through Jmol.paint(Graphics
-   * g). 4) Jmol.update invokes Viewer.setScreenDimensions(size), which makes
-   * the necessary changes in parameters for any new window size. 5) Jmol.update
-   * invokes Viewer.renderScreenImage(g, size, rectClip) 6)
-   * Viewer.renderScreenImage checks object visibility, invokes render1 to do
+   * 1) RepaintManager.refresh() checks flags and then calls Viewer.repaint()
+   * 
+   * 2) Viewer.repaint() invokes display.repaint(), provided display is not null
+   * (headless)
+   * 
+   * 3) The system responds with an invocation of Jmol.update(Graphics g), which
+   * we are routing through Jmol.paint(Graphics g).
+   * 
+   * 4) Jmol.update invokes Viewer.setScreenDimensions(size), which makes the
+   * necessary changes in parameters for any new window size.
+   * 
+   * 5) Jmol.update invokes Viewer.renderScreenImage(g, size, rectClip)
+   * 
+   * 6) Viewer.renderScreenImage checks object visibility, invokes render1 to do
    * the actual creation of the image pixel map and send it to the screen, and
-   * then invokes repaintView() 7) Viewer.repaintView() invokes
-   * RepaintManager.repaintDone(), to clear the flags and then use notify() to
-   * release any threads holding on wait().
+   * then invokes repaintView()
+   * 
+   * 7) Viewer.repaintView() invokes RepaintManager.repaintDone(), to clear the
+   * flags and then use notify() to release any threads holding on wait().
    * 
    * @param mode
+   * 
+   *        REFRESH_REPAINT: ONLY do a repaint -- no syncing
+   * 
+   *        REFRESH_SYNC: mouse motion requiring synchronization -- not going
+   *        through Eval so we bypass Eval and mainline on the other vwr!
+   *        Also called from j2sApplet.js
+   * 
+   *        REFRESH_REPAINT_SYNC_MASK: same as REFRESH_REPAINT, but not WebGL
+   * 
+   *        REFRESH_NO_MOTION_ONLY: refresh only if not in motion
+   * 
+   *        REFRESH_SEND_WEBGL_NEW_ORIENTATION: send WebGL a "new orientation"
+   *        command at the end of a script using html5applet._refresh()
+   * 
+   * 
    * @param strWhy
+   *        debugging or for passing mouse command when using REFRESH_SYNC
    * 
    */
   @Override
   public void refresh(int mode, String strWhy) {
-    // refresh(1) is used by operations to ONLY do a repaint -- no syncing
-    // refresh(2) indicates this is a mouse motion requiring synchronization
-    //            -- not going through Eval so we bypass Eval and mainline on the other vwr!
-    // refresh(3) same as 1, but not WebGL
-    // refresh(6) is used to do no refresh if in motion
-    // refresh(7) is used to send JavaScript a "new orientation" command
-    //            for example, at the end of a script
-    if (rm == null || !refreshing)
-      return;
-    if (mode == 6 && getInMotion(true))
+    
+    if (rm == null 
+        || !refreshing 
+        || mode == REFRESH_REPAINT_NO_MOTION_ONLY && getInMotion(true)
+        || !isWebGL && mode == REFRESH_SEND_WEBGL_NEW_ORIENTATION)
       return;
     if (isWebGL) {
-      if (mode == 1 || mode == 2 || mode == 7) {
+      switch (mode) {
+      case REFRESH_REPAINT:
+      case REFRESH_SYNC:
+      case REFRESH_SEND_WEBGL_NEW_ORIENTATION:
         tm.finalizeTransformParameters();
 
         /**
@@ -3354,13 +3382,16 @@ public class Viewer extends JmolViewer implements AtomDataServer,
          */
         {
         }
+        if (mode == REFRESH_SEND_WEBGL_NEW_ORIENTATION)
+          return;
+        break;
       }
     } else {
-      if (mode > 0 && mode != 7)
-        rm.repaintIfReady("refresh " + mode + " " + strWhy);
+       rm.repaintIfReady("refresh " + mode + " " + strWhy);
     }
-    if (mode != 7 && mode % 3 != 0 && sm.doSync())
-      sm.setSync(mode == 2 ? strWhy : null);
+    // Q: Why this, since all of these % 3 != 0
+    if (/*mode % REFRESH_SYNC_MASK != 0 && */ sm.doSync())
+      sm.setSync(mode == REFRESH_SYNC ? strWhy : null);
   }
 
   public void requestRepaintAndWait(String why) {
@@ -4174,7 +4205,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (g.modelKitMode) {
       if (ms.isAtomAssignable(atomIndex))
         highlight(BSUtil.newAndSetBit(atomIndex));
-      refresh(3, "hover on atom");
+      refresh(REFRESH_SYNC_MASK, "hover on atom");
       return;
     }
     if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex
@@ -4191,7 +4222,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     setShapeProperty(JC.SHAPE_HOVER, "target", Integer.valueOf(atomIndex));
     hoverText = null;
     hoverAtomIndex = atomIndex;
-    refresh(3, "hover on atom");
+    refresh(REFRESH_SYNC_MASK, "hover on atom");
   }
 
   public void hoverOnPt(int x, int y, String text, String id, T3 pt) {
@@ -4215,7 +4246,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     setShapeProperty(JC.SHAPE_HOVER, "text", text);
     hoverAtomIndex = -1;
     hoverText = text;
-    refresh(3, "hover on point");
+    refresh(REFRESH_SYNC_MASK, "hover on point");
   }
 
   void hoverOff() {
@@ -4235,7 +4266,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       }
       setShapeProperty(JC.SHAPE_HOVER, "specialLabel", null);
       if (isHover)
-        refresh(3, "hover off");
+        refresh(REFRESH_SYNC_MASK, "hover off");
     } catch (Exception e) {
       // ignore
     }
@@ -4253,7 +4284,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     setTainted(true);
   }
 
-  int currentCursor = GenericPlatform.CURSOR_DEFAULT;
+  public int currentCursor = GenericPlatform.CURSOR_DEFAULT;
 
   public void setCursor(int cursor) {
     if (isKiosk || currentCursor == cursor || multiTouch || !haveDisplay)
@@ -5771,7 +5802,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       break;
     case T.visualrange:
       tm.visualRangeAngstroms = value;
-      refresh(1, "set visualRange");
+      refresh(REFRESH_REPAINT, "set visualRange");
       break;
     case T.navigationdepth:
       setNavigationDepthPercent(value);
@@ -5784,7 +5815,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       break;
     case T.cameradepth:
       tm.setCameraDepthPercent(value, false);
-      refresh(1, "set cameraDepth");
+      refresh(REFRESH_REPAINT, "set cameraDepth");
       // transformManager will set global value for us;
       return;
     case T.rotationradius:
@@ -6758,7 +6789,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public void setNavigationDepthPercent(float percent) {
     tm.setNavigationDepthPercent(percent);
-    refresh(1, "set navigationDepth");
+    refresh(REFRESH_REPAINT, "set navigationDepth");
   }
 
   public boolean getShowNavigationPoint() {
@@ -7059,7 +7090,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     }
     if (isChanged) {
       resizeImage(0, 0, false, false, true); // for antialiasdisplay
-      refresh(3, "Viewer:setAntialias()");
+      refresh(REFRESH_SYNC_MASK, "Viewer:setAntialias()");
     }
 //    resizeImage(0, 0, false, false, true);
   }
@@ -7320,7 +7351,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     }
     if (shm.checkObjectDragged(prevX, prevY, x, y, action,
         getVisibleFramesBitSet(), iShape)) {
-      refresh(1, "checkObjectDragged");
+      refresh(REFRESH_REPAINT, "checkObjectDragged");
       if (iShape == JC.SHAPE_DRAW)
         scriptEcho((String) getShapeProperty(JC.SHAPE_DRAW, "command"));
     }
@@ -7596,7 +7627,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       showSelected = true;
       movableBitSet = setMovableBitSet(null, !asAtoms);
       shm.loadShape(JC.SHAPE_HALOS);
-      refresh(6, "moveSelected");
+      refresh(REFRESH_REPAINT_NO_MOTION_ONLY, "moveSelected");
       return;
     }
     if (deltaX == Integer.MAX_VALUE) {
@@ -7604,7 +7635,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         return;
       showSelected = false;
       movableBitSet = null;
-      refresh(6, "moveSelected");
+      refresh(REFRESH_REPAINT_NO_MOTION_ONLY, "moveSelected");
       return;
     }
     if (movingSelected)
@@ -7639,7 +7670,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         }
       }
     }
-    refresh(2, ""); // should be syncing here
+    refresh(REFRESH_SYNC, ""); // should be syncing here
     movingSelected = false;
   }
 
@@ -7656,7 +7687,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       bs.set(b.atom1.i);
     }
     highlight(bs);
-    refresh(3, "highlightBond");
+    refresh(REFRESH_SYNC_MASK, "highlightBond");
   }
 
   public void highlight(BS bs) {
@@ -8632,7 +8663,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   //  void rotateArcBall(int x, int y, float factor) {
   //    tm.rotateArcBall(x, y, factor);
-  //    refresh(2, sm.syncingMouse ? "Mouse: rotateArcBall " + x + " "
+  //    refresh(REFRESH_SYNC, sm.syncingMouse ? "Mouse: rotateArcBall " + x + " "
   //        + y + " " + factor : "");
   //  }
 
@@ -9381,7 +9412,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       break;
     case 2: // trigger, from a timeout thread
       setInMotion(true);
-      refresh(3, "timeoutThread set in motion");
+      refresh(REFRESH_SYNC_MASK, "timeoutThread set in motion");
       break;
     }
   }
@@ -9394,6 +9425,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    * @return TRUE if allowed
    */
   public boolean checkMotionRendering(int tok) {
+    System.out.println(">>" + getInMotion(true));
     if (!getInMotion(true) && !tm.spinOn && !tm.vibrationOn && !am.animationOn)
       return true;
     if (g.wireframeRotation)

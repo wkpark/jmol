@@ -87,6 +87,7 @@ import org.jmol.viewer.JC;
 import org.jmol.viewer.ShapeManager;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.TransformManager;
+import org.jmol.viewer.Viewer;
 import org.jmol.viewer.Viewer.ACCESS;
 
 public class CmdExt extends ScriptExt {
@@ -5149,7 +5150,7 @@ public class CmdExt extends ScriptExt {
         vwr.ms.setAtomNamesAndNumbers(atomIndex, -ac, null);
       vwr.sm.modifySend(atomIndex,
           vwr.ms.at[atomIndex].mi, -1, "OK");
-      vwr.refresh(3, "assignAtom");
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, "assignAtom");
       return;
     }
     Atom atom = vwr.ms.at[atomIndex];
@@ -5179,7 +5180,7 @@ public class CmdExt extends ScriptExt {
           e.fullCommand);
       BS bsAtoms = vwr.ms.assignBond(bondIndex, type);
       if (bsAtoms == null || type == '0')
-        vwr.refresh(3, "setBondOrder");
+        vwr.refresh(Viewer.REFRESH_SYNC_MASK, "setBondOrder");
       else
         vwr.addHydrogens(bsAtoms, false, true);
       vwr.sm.modifySend(bondIndex, modelIndex, -2, "" + type);
@@ -5200,7 +5201,7 @@ public class CmdExt extends ScriptExt {
     vwr.ms.assignAtom(index, ".", true);
     vwr.ms.assignAtom(index2, ".", true);
     vwr.sm.modifySend(index, modelIndex, -2, "OK");
-    vwr.refresh(3, "assignConnect");
+    vwr.refresh(Viewer.REFRESH_SYNC_MASK, "assignConnect");
   }
 
   private String getContext(boolean withVariables) {

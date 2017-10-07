@@ -354,7 +354,7 @@ public class ScriptManager implements JmolScriptManager {
     String strErrorMessage = eval.getErrorMessage();
     String strErrorMessageUntranslated = eval.getErrorMessageUntranslated();
     vwr.setErrorMessage(strErrorMessage, strErrorMessageUntranslated);
-    vwr.refresh(7,"script complete");
+    vwr.refresh(Viewer.REFRESH_SEND_WEBGL_NEW_ORIENTATION,"script complete");
     if (isOK) {
       isScriptQueued = isQueued;
       if (!isQuiet)

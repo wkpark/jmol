@@ -161,7 +161,7 @@ public class DisplayPanel extends JPanel
     setRotateMode();
     if (haveDisplay)
       status.setStatus(2, dimSize.width + " x " + dimSize.height);
-    vwr.refresh(3, "updateSize");
+    vwr.refresh(Viewer.REFRESH_SYNC_MASK, "updateSize");
   }
 
   @Override

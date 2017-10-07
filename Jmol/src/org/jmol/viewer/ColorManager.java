@@ -134,9 +134,8 @@ public class ColorManager {
     // we need to use the byte form here for speed
     switch (pid) {
     case PAL.PALETTE_PROPERTY:
-      float c = colorData[atom.i];
-      return (colorData == null || Float.isNaN(c) || atom.i >= colorData.length ? C.GRAY : ce
-          .getColorIndex(c));
+      return (colorData == null || atom.i >= colorData.length || Float.isNaN(colorData[atom.i]) ? C.GRAY : 
+        ce.getColorIndex(colorData[atom.i]));
     case PAL.PALETTE_NONE:
     case PAL.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference

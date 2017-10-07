@@ -569,10 +569,10 @@ public class StatusManager {
       syncSend("!" + vwr.tm.getMoveToText(minSyncRepeatMs / 1000f, false), "*", 0);
   }
 
-  boolean drivingSync = false;
-  boolean isSynced = false;
-  boolean syncDisabled = false;
-  boolean stereoSync = false;
+  private boolean drivingSync;
+  private boolean isSynced;
+  private boolean syncDisabled;
+  boolean stereoSync;
   
   public final static int SYNC_OFF = 0;
   public final static int SYNC_DRIVER = 1;

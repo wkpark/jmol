@@ -243,7 +243,7 @@ public class Mouse implements GenericMouseInterface {
           break;
         }
         clearKeyBuffer();
-        vwr.refresh(3, "showkey");
+        vwr.refresh(Viewer.REFRESH_SYNC_MASK, "showkey");
         break;
       case 22:
       case 'v': // paste

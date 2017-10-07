@@ -181,7 +181,7 @@ public class SpinThread extends JmolThread {
         if (bsAtoms != null || vwr.g.waitForMoveTo && endDegrees != Float.MAX_VALUE)
             vwr.requestRepaintAndWait("spin thread");
         else
-          vwr.refresh(1, "SpinThread");
+          vwr.refresh(Viewer.REFRESH_REPAINT, "SpinThread");
         if (endDegrees >= 1e10f ? nDegrees/endDegrees > 0.99 
             : !isNav && endDegrees >= 0 ? nDegrees >= endDegrees - 0.001
             : -nDegrees <= endDegrees + 0.001) {

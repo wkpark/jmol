@@ -61,7 +61,7 @@ public class AnimationManager {
       return;
     }
     if (!vwr.tm.spinOn)
-      vwr.refresh(3, "Anim:setAnimationOn");
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, "Anim:setAnimationOn");
     setAnimationRange(-1, -1);
     resumeAnimation();
   }
@@ -75,7 +75,7 @@ public class AnimationManager {
     }
     animationPaused = isPaused;
     if (stopped && !vwr.tm.spinOn)
-      vwr.refresh(3, "Viewer:setAnimationOff");
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, "Viewer:setAnimationOff");
     animation(false);
     //stopModulationThread();
     vwr.setStatusFrameChanged(false, false);

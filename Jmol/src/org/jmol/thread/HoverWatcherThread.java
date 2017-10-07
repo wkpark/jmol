@@ -25,6 +25,8 @@
 
 package org.jmol.thread;
 
+import javajs.api.GenericPlatform;
+
 import org.jmol.viewer.ActionManager;
 import org.jmol.viewer.MouseState;
 import org.jmol.viewer.Viewer;
@@ -72,10 +74,9 @@ public class HoverWatcherThread extends JmolThread {
         break;
       case CHECK1:
         if (moved.is(current)) {
-          // last operation was move
           currentTime = System.currentTimeMillis();
           int howLong = (int) (currentTime - moved.time);
-          if (howLong > hoverDelay && !stopped) {
+          if (howLong > (vwr.acm.zoomTrigger ? 100 : hoverDelay) && !stopped) {
             actionManager.checkHover();
           }
         }

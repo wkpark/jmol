@@ -578,7 +578,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private void apply() {
     rebond();
     save();
-    vwr.refresh(3, "PreferencesDialog:apply()");
+    vwr.refresh(Viewer.REFRESH_SYNC_MASK, "PreferencesDialog:apply()");
   }
 
   void save() {
@@ -615,7 +615,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put(overrides[i], overrides[i+1]);
     }
     initVariables();
-    vwr.refresh(3, "PreferencesDialog:resetDefaults()");
+    vwr.refresh(Viewer.REFRESH_SYNC_MASK, "PreferencesDialog:resetDefaults()");
     updateComponents();
   }
 
@@ -637,7 +637,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     currentProperties.put("marBond", "" + marBond);
     
     vwr.rebond();
-    vwr.refresh(3, "PreferencesDialog:rebond()");
+    vwr.refresh(Viewer.REFRESH_SYNC_MASK, "PreferencesDialog:rebond()");
   }
   
   void initVariables() {
@@ -737,12 +737,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
         vwr.setBooleanProperty("showAxes", isSelected);
-        vwr.refresh(3, "pref.showAxes");
+        vwr.refresh(Viewer.REFRESH_SYNC_MASK, "pref.showAxes");
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
         vwr.setBooleanProperty("showBoundBox", isSelected);
-        vwr.refresh(3, "pref.showBoundingBox");
+        vwr.refresh(Viewer.REFRESH_SYNC_MASK, "pref.showBoundingBox");
         currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.axesOrientationRasmol")) {
         axesOrientationRasmol = isSelected;

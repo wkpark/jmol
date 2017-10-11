@@ -29,13 +29,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import javajs.J2SIgnoreImport;
-import javajs.api.GenericZipInputStream;
-import javajs.api.GenericZipTools;
-import javajs.api.Interface;
-import javajs.api.ZInputStream;
-
 import java.util.Map;
 import java.util.zip.CRC32;
 import java.util.zip.GZIPInputStream;
@@ -43,8 +36,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javajs.J2SIgnoreImport;
+import javajs.api.GenericZipInputStream;
+import javajs.api.GenericZipTools;
+import javajs.api.Interface;
+import javajs.api.ZInputStream;
+
 import org.apache.tools.bzip2.CBZip2InputStreamFactory;
-import org.jmol.viewer.Viewer;
 
 
 /**

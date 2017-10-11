@@ -169,7 +169,7 @@ public class JmolUtil {
     if (subFileList == null)
       subFileList = getSpartanSubfiles(zipDirectory);
     String subFileName = (subFileList == null
-        || subFilePtr >= subFileList.length ? null : subFileList[subFilePtr]);
+        || subFilePtr >= subFileList.length ? (String) htParams.get("SubFileName") : subFileList[subFilePtr]);
     if (subFileName != null
         && (subFileName.startsWith("/") || subFileName.startsWith("\\")))
       subFileName = subFileName.substring(1);
@@ -197,8 +197,9 @@ public class JmolUtil {
       haveManifest = false;
     if (useFileManifest && haveManifest) {
       String path = FileManager.getManifestScriptPath(manifest);
-      if (path != null)
+      if (path != null) {
         return JC.NOTE_SCRIPT_FILE + fileName + path + "\n";
+      }
     }
     Lst<Object> vCollections = new Lst<Object>();
     Map<String, Object> htCollections = (haveManifest ? new Hashtable<String, Object>()

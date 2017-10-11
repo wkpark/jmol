@@ -200,13 +200,40 @@ public class Jmol extends GenericApplet implements JSInterface {
 
   @Override
   protected void doShowDocument(URL url) {
+    String[] surl = PT.split(url.toString(), "?POST?");
+    if (surl.length == 1) {
+      /**
+       * @j2sNative
+       * 
+       *            window.open(surl[0]);
+       * 
+       */
+    {}
+     return;
+      }
+   
+    String f = "<form id=f method=POST action='" + surl[0] + "'>";
+    String[] fields = surl[1].split("&");
+    for (int i = 0; i < fields.length; i++) {
+      String field = fields[i];
+      int pt = field.indexOf("=");
+      String name = field.substring(0, pt);
+      String value = field.substring(pt);
+      if (value.indexOf("\n") >= 0) {
+        f +="<textarea style='display:none' name=" + name + " value=\""+ value +"\"></textarea>";
+      } else {
+        f +="<input type=hidden name=" + name + " value=\""+ value +"\">";
+      }
+    }
+    f += "</form>";
     /**
-     * @j2sNative window.open(url.toString());
+     * @j2sNative
+     * var w=window.open("");w.document.write(f);w.document.getElementById("f").submit();
+     * 
      */
     {
-      System.out.println(url);
+      System.out.println(f + url);
     }
-
   }
 
   @Override

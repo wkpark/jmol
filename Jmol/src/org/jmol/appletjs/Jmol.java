@@ -213,6 +213,8 @@ public class Jmol extends GenericApplet implements JSInterface {
       }
    
     String f = "<form id=f method=POST action='" + surl[0] + "'>";
+    f += "<input type='hidden' name='name' value='nmr-1h-prediction' id='name'>";
+    f += "<input type='submit' value='working...'>";
     String[] fields = surl[1].split("&");
     for (int i = 0; i < fields.length; i++) {
       String field = fields[i];
@@ -220,7 +222,7 @@ public class Jmol extends GenericApplet implements JSInterface {
       String name = field.substring(0, pt);
       String value = field.substring(pt);
       if (value.indexOf("\n") >= 0) {
-        f +="<textarea style='display:none' name=" + name + " value=\""+ value +"\"></textarea>";
+        f +="<textarea style='display:none' name=" + name + ">" + value +"</textarea>";
       } else {
         f +="<input type=hidden name=" + name + " value=\""+ value +"\">";
       }

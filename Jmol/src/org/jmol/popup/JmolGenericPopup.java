@@ -895,7 +895,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   }
 
   private final String[] noZapped = { "surfaceMenu", "measureMenu",
-      "pickingMenu", "computationMenu", "saveMenu", "exportMenu",
+      "pickingMenu", "computationMenu",
       "SIGNEDJAVAcaptureMenuSPECIAL" };
 
   @SuppressWarnings("unchecked")

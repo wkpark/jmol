@@ -146,6 +146,9 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
+ * 10/17/17 Jmol 14.20.10 adds S4 check in Rule 6 and also fixes bug in aux descriptors 
+ * being skipped when two ligands are equivalent for the root (798 lines)
+ * 
  * 9/19/17 CIPChirality code simplification (778 lines)
  * 
  * 9/14/17 Jmol 14.20.6 switching to Mikko's idea for Rule 4b and 5. Abandons "thread" 
@@ -683,7 +686,7 @@ public class CIPChirality {
 
   public CIPChirality() {
     // for reflection
-    System.out.println("TESTING Rule 1b option " + rule1bOption);
+    //System.out.println("TESTING Rule 1b option " + rule1bOption);
   }
 
   /**
@@ -1234,7 +1237,8 @@ public class CIPChirality {
             break;
           case RULE_6:
             // We only need to do Rule 6 under certain conditions.
-            if (!cipAtom.setupRule6(false))
+            rs = cipAtom.setupRule6(false);
+            if (rs == NO_CHIRALITY)
               continue;
             break;
           }
@@ -1242,8 +1246,8 @@ public class CIPChirality {
           // initial call to sortSubstituents does all, recursively
 
           int nPrioritiesPrev = cipAtom.nPriorities;
-          if (cipAtom.sortSubstituents(0)) {
-            if (Logger.debugging) {
+          if (rs == NO_CHIRALITY && cipAtom.sortSubstituents(0)) {
+            if (Logger.debugging && cipAtom.h1Count < 2) {
               Logger.info(currentRule + ">>>>" + cipAtom);
               for (int i = 0; i < cipAtom.bondCount; i++) { // Logger
                 if (cipAtom.atoms[i] != null) // Logger
@@ -1554,7 +1558,7 @@ public class CIPChirality {
      * a count of how many 1H atoms we have found on this atom; used to halt
      * further processing of this atom
      */
-    private int h1Count;
+    int h1Count;
 
     /**
      * the substituents -- up to four supported here at this time
@@ -1587,13 +1591,13 @@ public class CIPChirality {
      * to equivaliencies at a given rule level, these numbers may duplicate and
      * have gaps - for example, [0 2 0 3]
      */
-    int[] priorities = new int[4];
+    int[] oldPriorities, priorities = new int[4];
 
     /**
      * the number of distinct priorities determined for this atom for the
      * current rule; 0-4 for the root atom; 0-3 for all others
      */
-    int nPriorities;
+    int oldNPriorities, nPriorities;
 
     /**
      * number of root-duplicate atoms (root atom only
@@ -1735,20 +1739,52 @@ public class CIPChirality {
       // access this.b$ yet. That assignment is made after construction.
     }
 
-    public boolean setupRule6(boolean isAux) {
+    public int setupRule6(boolean isAux) {
       if (nPriorities > 2
           || (isAux ? countDuplicates(atomIndex) : nRootDuplicates) <= 2)
-        return false;
+        return NO_CHIRALITY;
       // we have more than two root-duplicates and priorities array is one of:
       // [0 0 0 0] CIP Helv Chim. Acta 1966 #33 -- double spiran
+      // [0 0 0 0] CIP 1982 S4
       // [0 0 2 2] P-93.5.3.2 spiro
-      // [0 1 1 1] or [0 0 0 3] CIP Helv. Chim. Acta 1966 #32 -- C3-symmetric 
+      // [0 1 1 1] or [0 0 0 3] CIP Helv. Chim. Acta 1966 #32 -- C3-symmetric
+      boolean checkS4 = (priorities[3] != 1 && !isAux);
       root.rule6refIndex = atoms[priorities[2]].atomIndex;
       // could be priorities[1] as well; just so it is not 0 or 3,
       // as that could be the singlet in the C3-symmetric case.
       // we need to presort again
+      if (checkS4)
+        saveRestorePriorities(false);
       sortSubstituents(Integer.MIN_VALUE);
-      return true;
+      int rs = NO_CHIRALITY;
+      if (!sortSubstituents(0))
+        return NO_CHIRALITY;
+      rs = checkHandedness();
+      if (rs == NO_CHIRALITY || !checkS4) {
+        // update atoms in case this is a chiral auxiliary, which will be tested
+        // against another branch
+        return rs;
+      }
+      // S4 case check is that chirality from atom[1] is the same as
+      // returned for atom[2], because the ordering will be 1 2 3 4 or 2 3 4 1 
+      root.rule6refIndex = atoms[1].atomIndex;
+      saveRestorePriorities(true);
+      sortSubstituents(Integer.MIN_VALUE);
+      sortSubstituents(0);
+      int rs1 = checkHandedness();
+      return rs1 == rs ? rs : NO_CHIRALITY;
+    }
+
+    private void saveRestorePriorities(boolean isRestore) {
+      if (isRestore) {
+        priorities = oldPriorities;
+        nPriorities = oldNPriorities;
+      } else {
+        oldPriorities = Arrays.copyOf(priorities, 4);
+        oldNPriorities = nPriorities;        
+      }
+      for (int i = 0; i < nAtoms; i++)
+          atoms[i].saveRestorePriorities(isRestore);
     }
 
     private int countDuplicates(int index) {
@@ -2020,10 +2056,10 @@ public class CIPChirality {
           Logger.info(" too many bonds on " + atom);
         return null;
       }
-      if (parent == null) {
-        // For top level, we do not allow two 1H atoms.
-        if (other.getIsotopeNumber() == 1) {
-          if (++h1Count > 1) {
+      if (other.getElementNumber() == 1 && other.getIsotopeNumber() == 0) {
+        if (++h1Count > 1) {
+          if (parent == null) {
+            // For top level, we do not allow two 1H atoms.
             if (Logger.debuggingHigh)
               Logger.info(" second H atom found on " + atom);
             return null;
@@ -2080,7 +2116,7 @@ public class CIPChirality {
 
       int[] newPriorities = new int[4];
 
-      if (Logger.debuggingHigh) {
+      if (Logger.debuggingHigh && h1Count < 2) {
         Logger.info(root + "---sortSubstituents---" + this);
         for (int i = 0; i < 4; i++) { // Logger
           Logger.info(getRuleName(currentRule) + ": " + this + "[" + i + "]="
@@ -2135,20 +2171,19 @@ public class CIPChirality {
       for (int i = 0; i < 4; i++) {
         int pt = indices[i];
         CIPAtom a = newAtoms[pt] = atoms[i];
+        if (a.atom != null)
+          bsTemp.set(newPriorities[i]);
         if (currentRule == RULE_RS)
           continue;
         priorities[pt] = newPriorities[i];
-        if (a.atom != null)
-          bsTemp.set(newPriorities[i]);
       }
 
+      // RULE_RS and RULE_6 both stop short of actually setting atom orders
+      // so that their effect is not permanent.
       if (currentRule == RULE_RS) {
-       // priorities = prevPriorities;
         return false;
       }
-
       atoms = newAtoms;
-      //priorities = newPriorities;
       nPriorities = bsTemp.cardinality();
       if (Logger.debuggingHigh && atoms[2].atom != null && atoms[2].elemNo != 1) { // Logger
         Logger.info(dots() + atom + " nPriorities = " + nPriorities);
@@ -2338,9 +2373,8 @@ public class CIPChirality {
       int current = currentRule;
       currentRule = rule;
       int rule6ref = root.rule6refIndex;
-      if (rule == RULE_6)
-        setupRule6(true);
-      boolean isChiral = sortSubstituents(0);
+      boolean isChiral = (rule == RULE_6 ? 
+        setupRule6(true) != NO_CHIRALITY : sortSubstituents(0));
       root.rule6refIndex = rule6ref;
       currentRule = current;
       return isChiral;
@@ -2548,8 +2582,12 @@ public class CIPChirality {
     private int getAuxEneWinnerChirality(CIPAtom end1, CIPAtom end2,
                                          boolean isAxial, int[] retRule2) {
       CIPAtom winner1 = getAuxEneEndWinner(end1, end1.nextSP2, null);
+      if (Logger.debuggingHigh)
+        Logger.info(this + " alkene end winner1 " + winner1);
       CIPAtom winner2 = (winner1 == null || winner1.atom == null ? null
           : getAuxEneEndWinner(end2, end2.nextSP2, retRule2));
+      if (Logger.debuggingHigh)
+        Logger.info(this + " alkene end winners " + winner1 + winner2);
       return getEneChirality(winner1, end1, end2, winner2, isAxial, false);
     }
 
@@ -2667,7 +2705,7 @@ public class CIPChirality {
       boolean skipRules4And5 = false;
       boolean prevIsChiral = true;
       // have to allow two same because could be a C3-symmetric subunit 
-      boolean allowTwoSame = (!isAlkene && nPriorities == (node1 == null ? 2
+      boolean allowTwoSame = (!isAlkene && nPriorities <= (node1 == null ? 2
           : 1));
       for (int i = 0; i < 4; i++) {
         CIPAtom a = atoms[i];
@@ -2722,6 +2760,7 @@ public class CIPChirality {
               && !isKekuleAmbiguous && alkeneChild.bondCount >= 2) {
             int[] rule2 = (isEvenEne ? new int[1] : null);
             rs = getAuxEneWinnerChirality(this, alkeneChild, !isEvenEne, rule2);
+            
             //
             // Note that we can have C/T (rule4Type = R/S):
             // 
@@ -2749,6 +2788,8 @@ public class CIPChirality {
                 // This is the case of a 3b issue
                 //System.out.println(this + "root needs 3b " + root + getRuleName(rule2[0]) + " " + rs);
                 auxEZ = alkeneChild.auxEZ = rs;
+                if (Logger.debuggingHigh)
+                  Logger.info("alkene type " + this + " " + (auxEZ == STEREO_E ? "E" : "Z"));
               } else if (!isBranch) {
                 // Normalize M/P and E/Z to R/S
                 switch (rs) {

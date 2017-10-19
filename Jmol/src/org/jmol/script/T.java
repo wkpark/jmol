@@ -1050,6 +1050,7 @@ public class T {
   public final static int ribbonborder                   = booleanparam | 124;
   public final static int rocketbarrels                  = booleanparam | 125;
   public final static int saveproteinstructurestate      = booleanparam | 126;
+  public final static int scriptnowait                   = booleanparam | 127;
   public final static int scriptqueue                    = booleanparam | 128;
   public final static int selectallmodels                = booleanparam | 130;
   public final static int selecthetero                   = booleanparam | 132;

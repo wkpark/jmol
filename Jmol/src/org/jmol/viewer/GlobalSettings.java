@@ -639,6 +639,15 @@ public class GlobalSettings {
   boolean useNumberLocalization = true;
   public boolean useScriptQueue = true;
   public boolean waitForMoveTo = true; // Jmol 11.9.24
+  /**
+   * 
+   * ensures that ScriptManager.allowJSThreads is false
+   * so that ScriptManager.useThreads() returns false; 
+   * 
+   * Jmol 14.21.1 
+   * 
+   */
+  public boolean scriptNoWait = false;
   float vectorScale = 1f;
   boolean vectorSymmetry = false; // Jmol 12.3.2
   boolean vectorsCentered = false; // Jmol 14.1.14
@@ -981,7 +990,7 @@ public class GlobalSettings {
       + ";preservestate;refreshing;repaintwaitms;rotationradius;selectallmodels"
       + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
       + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent"
-      + ";celshading;celshadingpower;specularpower;stateversion"
+      + ";celshading;celshadingpower;scriptnowait;specularpower;stateversion"
       + ";statusreporting;stereo;stereostate;vibrationperiod"
       + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
       //    saved in the hash table but not considered part of the state:

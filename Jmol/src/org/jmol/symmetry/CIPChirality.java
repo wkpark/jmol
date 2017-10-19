@@ -1772,6 +1772,7 @@ public class CIPChirality {
       sortSubstituents(Integer.MIN_VALUE);
       sortSubstituents(0);
       int rs1 = checkHandedness();
+      //System.out.println("Rule 6 S4  gives " + rs + " " + rs1);
       return rs1 == rs ? rs : NO_CHIRALITY;
     }
 

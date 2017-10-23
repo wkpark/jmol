@@ -392,7 +392,7 @@ public class ScriptEval extends ScriptExpr {
     this.historyDisabled = historyDisabled;
     this.outputBuffer = outputBuffer;
     currentThread = Thread.currentThread();
-    allowJSThreads = allowThreads & !vwr.getBoolean(T.scriptnowait);
+    allowJSThreads = allowThreads & !vwr.getBoolean(T.nodelay);
     this.listCommands = listCommands;
     timeBeginExecution = System.currentTimeMillis();
     executionStopped = executionPaused = false;

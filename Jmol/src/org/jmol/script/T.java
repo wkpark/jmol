@@ -1039,18 +1039,18 @@ public class T {
   public final static int navigationmode                 = booleanparam | 113;
   public final static int navigationperiodic             = booleanparam | 114;
   public final static int nbocharges                     = booleanparam | 115;
-  public final static int partialdots                    = booleanparam | 116; // 12.1.46
-  public final static int pdbaddhydrogens                = booleanparam | 117;
-  public final static int pdbgetheader                   = booleanparam | 118;
-  public final static int pdbsequential                  = booleanparam | 119;
-  public final static int perspectivedepth               = booleanparam | 120;
-  public final static int preservestate                  = booleanparam | 121;
-  public final static int rangeselected                  = booleanparam | 122;
-  public final static int refreshing                     = booleanparam | 123;
-  public final static int ribbonborder                   = booleanparam | 124;
-  public final static int rocketbarrels                  = booleanparam | 125;
-  public final static int saveproteinstructurestate      = booleanparam | 126;
-  public final static int scriptnowait                   = booleanparam | 127;
+  public final static int nodelay                        = booleanparam | 116;
+  public final static int partialdots                    = booleanparam | 117; // 12.1.46
+  public final static int pdbaddhydrogens                = booleanparam | 118;
+  public final static int pdbgetheader                   = booleanparam | 119;
+  public final static int pdbsequential                  = booleanparam | 120;
+  public final static int perspectivedepth               = booleanparam | 121;
+  public final static int preservestate                  = booleanparam | 122;
+  public final static int rangeselected                  = booleanparam | 123;
+  public final static int refreshing                     = booleanparam | 124;
+  public final static int ribbonborder                   = booleanparam | 125;
+  public final static int rocketbarrels                  = booleanparam | 126;
+  public final static int saveproteinstructurestate      = booleanparam | 127;
   public final static int scriptqueue                    = booleanparam | 128;
   public final static int selectallmodels                = booleanparam | 130;
   public final static int selecthetero                   = booleanparam | 132;
@@ -2061,6 +2061,7 @@ public class T {
         "nboCharges",
         "nci",
         "next",
+        "noDelay",
         "noDots",
         "noFill",
         "noMesh",
@@ -3111,6 +3112,7 @@ public class T {
         nbocharges,                         // "nbocharges"
         nci,                                // "nci"
         next,                               // "next"
+        nodelay,
         nodots,                             // "noDots"
         nofill,                             // "noFill"
         nomesh,                             // "noMesh"

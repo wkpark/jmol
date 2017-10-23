@@ -316,6 +316,7 @@ public class GlobalSettings {
     setB("navigationPeriodic", navigationPeriodic);
     setF("navigationSpeed", navigationSpeed);
     setB("nboCharges", nboCharges);
+    setB("noDelay", noDelay);
     setO("nmrPredictFormat", nmrPredictFormat);
     setO("nmrUrlFormat", nmrUrlFormat);
     setB("partialDots", partialDots);
@@ -647,7 +648,7 @@ public class GlobalSettings {
    * Jmol 14.21.1 
    * 
    */
-  public boolean scriptNoWait = false;
+  public boolean noDelay = false;
   float vectorScale = 1f;
   boolean vectorSymmetry = false; // Jmol 12.3.2
   boolean vectorsCentered = false; // Jmol 14.1.14
@@ -986,11 +987,11 @@ public class GlobalSettings {
       + ";jmolinjspecview;legacyautobonding;legacyhaddition;legacyjavafloat"
       + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
       + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
-      + ";pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;platformspeed"
+      + ";nodelay;pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;platformspeed"
       + ";preservestate;refreshing;repaintwaitms;rotationradius;selectallmodels"
       + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
       + ";slabenabled;slab;slabrange;depth;zshade;zshadepower;specular;specularexponent;specularpercent"
-      + ";celshading;celshadingpower;scriptnowait;specularpower;stateversion"
+      + ";celshading;celshadingpower;specularpower;stateversion"
       + ";statusreporting;stereo;stereostate;vibrationperiod"
       + ";unitcellcolor;visualrange;windowcentered;zerobasedxyzrasmol;zoomenabled;mousedragfactor;mousewheelfactor"
       //    saved in the hash table but not considered part of the state:

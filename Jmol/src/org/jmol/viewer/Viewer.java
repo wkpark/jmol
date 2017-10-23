@@ -5268,8 +5268,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.ribbonBorder;
     case T.rocketbarrels:
       return g.rocketBarrels;
-    case T.scriptnowait:
-      return g.scriptNoWait;
+    case T.nodelay:
+      return g.noDelay;
     case T.selectallmodels:
       return g.selectAllModels;
     case T.showhiddenselectionhalos:
@@ -6112,9 +6112,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
-    case T.scriptnowait:
+    case T.nodelay:
       // 14.21.1
-      g.scriptNoWait = value;
+      g.noDelay = value;
       break;
     case T.nbocharges:
       // 14.8.2

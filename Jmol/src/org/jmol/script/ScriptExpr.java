@@ -1733,7 +1733,7 @@ abstract class ScriptExpr extends ScriptParam {
             if (planeRef != null)
               fv = Measure.distanceToPlane(planeRef, atom);
             else
-              fv = atom.distance(ptRef);
+              fv = (atom != ptRef || minmaxtype != T.min ? atom.distance(ptRef) : Float.NaN);
             break;
           default:
             fv = atom.atomPropertyFloat(vwr, tok, ptTemp);

@@ -270,7 +270,7 @@ public class BoxInfo {
     return bbVertices;
   }
   
-  public void setBoundBoxFromCriticalPoints(T3[] points) {
+  public void setBoundBoxFromOABC(T3[] points) {
     P3 origin = P3.newP(points[0]);
     P3 pt111 = new P3();
     for (int i = 0; i < 4; i++)

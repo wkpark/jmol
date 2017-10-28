@@ -1185,7 +1185,7 @@ public class ModelSet extends BondCollection {
     else {
       if (defaultBBox == null)
         defaultBBox = new BoxInfo();
-      defaultBBox.setBoundBoxFromCriticalPoints(bbox);
+      defaultBBox.setBoundBoxFromOABC(bbox);
     }
     return defaultBBox;
   }

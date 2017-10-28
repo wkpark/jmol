@@ -567,6 +567,8 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public SymmetryInterface getUnitCell(T3[] points, boolean setRelative,
                                        String name) {
+    if (points == null)
+      return null;
     unitCell = UnitCell.newP(points, setRelative);
     if (name != null)
       unitCell.name = name;

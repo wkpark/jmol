@@ -16,7 +16,6 @@ import javajs.util.V3;
 import org.jmol.java.BS;
 import org.jmol.modelset.TickInfo;
 import org.jmol.util.BSUtil;
-import org.jmol.util.Escape;
 import org.jmol.util.Edge;
 import org.jmol.util.Logger;
 
@@ -794,7 +793,7 @@ abstract public class ScriptParam extends ScriptError {
     return false;
   }
 
-  public Quat getQuaternionParameter(int i) throws ScriptException {
+  public Quat getQuaternionParameter(int i, BS bsAtoms, boolean divideByCurrent) throws ScriptException {
     switch (tokAt(i)) {
     case T.varray:
       Lst<SV> sv = ((SV) getToken(i)).getList();
@@ -803,8 +802,7 @@ abstract public class ScriptParam extends ScriptError {
         invArg();
       return Quat.newP4(p4);
     case T.best:
-      return (chk ? null : Quat.newP4((P4) Escape.uP(vwr
-          .getOrientationText(T.best, null))));
+      return (chk ? null : (Quat) vwr.getOrientationText(T.best, (divideByCurrent ? "best" : ""), bsAtoms));
     default:
       return Quat.newP4(getPoint4f(i));
     }

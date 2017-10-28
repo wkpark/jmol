@@ -271,6 +271,7 @@ public class XtalSymmetry {
     if (acr.fillRange != null) {
       if (bsAtoms == null)
         asc.bsAtoms = bsAtoms = new BS();
+      acr.forcePacked = true;
       bsAtoms.setBits(firstSymmetryAtom, asc.ac);
       doPackUnitCell = false;
       minXYZ = new P3i();

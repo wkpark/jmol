@@ -527,14 +527,14 @@ public class CmdExt extends ScriptExt {
       case T.unitcell:
         SymmetryInterface unitCell = vwr.getCurrentUnitCell();
         if (unitCell != null) {
-          pts = BoxInfo.getUnitCellPoints(
+          pts = BoxInfo.getCenterABC(
               unitCell.getUnitCellVerticesNoOffset(),
               unitCell.getCartesianOffset());
           break;
         }
         //$FALL-THROUGH$
       case T.boundbox:
-        pts = BoxInfo.getUnitCellPoints(vwr.ms.getBBoxVertices(), null);
+        pts = BoxInfo.getCenterABC(vwr.ms.getBBoxVertices(), null);
         break;
       }
       switch (pts.length) {
@@ -4723,8 +4723,10 @@ public class CmdExt extends ScriptExt {
       break;
     case T.best:
       len = 3;
-      if (!chk && slen == len)
-        msg = vwr.getOrientationText(tokAt(2), null);
+      if (!chk && slen == len) {
+        msg = paramAsStr(2);
+        msg = vwr.getOrientationText(T.getTokFromName(msg.equals("box") ? "volume" : msg.equals("rotation") ? "best" : msg), "best", null).toString();
+      }
       break;
     case T.rotation:
       tok = tokAt(2);
@@ -4736,7 +4738,7 @@ public class CmdExt extends ScriptExt {
     case T.translation:
     case T.moveto:
       if (!chk)
-        msg = vwr.getOrientationText(tok, null);
+        msg = vwr.getOrientationText(tok, null, null).toString();
       break;
     case T.orientation:
       len = 2;
@@ -4748,11 +4750,11 @@ public class CmdExt extends ScriptExt {
       case T.moveto:
       case T.nada:
         if (!chk)
-          msg = vwr.getOrientationText(tok, null);
+          msg = vwr.getOrientationText(tok, null, null).toString();
         break;
       default:
         name = eval.optParameterAsString(2);
-        msg = vwr.getOrientationText(T.name, name);
+        msg = vwr.getOrientationText(T.name, name, null).toString();
       }
       len = slen;
       break;

@@ -651,16 +651,21 @@ public class TransformManager {
     return info;
   }
 
-  String getOrientationText(int type) {
+  String getOrientationText(int type, boolean isBest) {
     switch (type) {
     case T.moveto:
       return getMoveToText(1, false);
     case T.rotation:
-      return getRotationQ().toString();
+      Quat q = getRotationQ();
+      if (isBest)
+        q = q.inv();
+      return q.toString();
     case T.translation:
       SB sb = new SB();
-      truncate2(sb, getTranslationXPercent());
-      truncate2(sb, getTranslationYPercent());
+      float d = getTranslationXPercent();
+      truncate2(sb, (isBest ? -d : d));
+      d = getTranslationYPercent();
+      truncate2(sb, (isBest ? -d : d));
       return sb.toString();
     default:
       return getMoveToText(1, true) + "\n#OR\n" + getRotateZyzText(true);

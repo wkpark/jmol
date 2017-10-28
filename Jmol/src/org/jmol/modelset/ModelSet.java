@@ -3461,95 +3461,124 @@ public class ModelSet extends BondCollection {
       bsModulated = null;
   }
 
-  public String getBoundBoxOrientation(int type, BS bsAtoms) {
+  /**
+   * 
+   * @param type
+   *        volume, best, x, y, z, unitcell
+   * @param bsAtoms
+   * @return quaternion for best rotation or, for volume, string with volume
+   *         \t{dx dy dz}
+   */
+  public Object getBoundBoxOrientation(int type, BS bsAtoms) {
+    float dx = 0, dy = 0, dz = 0;
+    Quat q = null, qBest = null;
     int j0 = bsAtoms.nextSetBit(0);
-    if (j0 < 0)
-      return "{0 0 0 1}";
-    int n = (vOrientations == null ? 0 : vOrientations.length);
-    if (n == 0) {
-      V3[] av = new V3[15 * 15 * 15];
-      n = 0;
-      P4 p4 = new P4();
-      for (int i = -7; i <= 7; i++)
-        for (int j = -7; j <= 7; j++)
-          for (int k = 0; k <= 14; k++, n++)
-            if ((av[n] = V3.new3(i / 7f, j / 7f, k / 14f)).length() > 1)
-              --n;
-      vOrientations = new Quat[n];
-      for (int i = n; --i >= 0;) {
-        float cos = (float) Math.sqrt(1 - av[i].lengthSquared());
-        if (Float.isNaN(cos))
-          cos = 0;
-        p4.set4(av[i].x, av[i].y, av[i].z, cos);
-        vOrientations[i] = Quat.newP4(p4);
+    float vMin = 0;
+    if (j0 >= 0) {
+      int n = (vOrientations == null ? 0 : vOrientations.length);
+      if (n == 0) {
+        V3[] av = new V3[15 * 15 * 15];
+        n = 0;
+        P4 p4 = new P4();
+        for (int i = -7; i <= 7; i++)
+          for (int j = -7; j <= 7; j++)
+            for (int k = 0; k <= 14; k++, n++)
+              if ((av[n] = V3.new3(i / 7f, j / 7f, k / 14f)).length() > 1)
+                --n;
+        vOrientations = new Quat[n];
+        for (int i = n; --i >= 0;) {
+          float cos = (float) Math.sqrt(1 - av[i].lengthSquared());
+          if (Float.isNaN(cos))
+            cos = 0;
+          p4.set4(av[i].x, av[i].y, av[i].z, cos);
+          vOrientations[i] = Quat.newP4(p4);
+        }
       }
-    }
-    P3 pt = new P3();
-    float vMin = Float.MAX_VALUE;
-    Quat q, qBest = null;
-    BoxInfo bBest = null;
-    float v;
-    for (int i = 0; i < n; i++) {
-      q = vOrientations[i];
+      P3 pt = new P3();
+      vMin = Float.MAX_VALUE;
+      BoxInfo bBest = null;
+      float v;
       BoxInfo b = new BoxInfo();
-      b.setMargin(0);
-      for (int j = j0; j >= 0; j = bsAtoms.nextSetBit(j + 1))
-        b.addBoundBoxPoint(q.transform2(at[j], pt));
+      b.setMargin(type == T.volume ? 0 : 0.1f);
+      for (int i = 0; i < n; i++) {
+        q = vOrientations[i];
+        b.reset();
+        for (int j = j0; j >= 0; j = bsAtoms.nextSetBit(j + 1))
+          b.addBoundBoxPoint(q.transform2(at[j], pt));
+        switch (type) {
+        default:
+        case T.volume:
+        case T.best:
+        case T.unitcell:
+          v = (b.bbCorner1.x - b.bbCorner0.x) * (b.bbCorner1.y - b.bbCorner0.y)
+              * (b.bbCorner1.z - b.bbCorner0.z);
+          break;
+        case T.x:
+          v = b.bbCorner1.x - b.bbCorner0.x;
+          break;
+        case T.y:
+          v = b.bbCorner1.y - b.bbCorner0.y;
+          break;
+        case T.z:
+          v = b.bbCorner1.z - b.bbCorner0.z;
+          break;
+        }
+        if (v < vMin) {
+          qBest = q;
+          bBest = b;
+          b = new BoxInfo();
+          b.setMargin(0.1f);
+          vMin = v;
+        }
+      }
       switch (type) {
       default:
+        return qBest;
+      case T.unitcell:
+        P3[] pts = bBest.getBoundBoxVertices();
+        pts = new P3[] {pts[0], pts[4], pts[2], pts[1]};
+        qBest = qBest.inv();
+        for (int i = 0; i < 4; i++) {
+          qBest.transform2(pts[i], pts[i]);
+          if (i > 0)
+            pts[i].sub(pts[0]);
+        }
+        return pts;
       case T.volume:
       case T.best:
-        v = (b.bbCorner1.x - b.bbCorner0.x) * (b.bbCorner1.y - b.bbCorner0.y)
-            * (b.bbCorner1.z - b.bbCorner0.z);
-        break;
-      case T.x:
-        v = b.bbCorner1.x - b.bbCorner0.x;
-        break;
-      case T.y:
-        v = b.bbCorner1.y - b.bbCorner0.y;
-        break;
-      case T.z:
-        v = b.bbCorner1.z - b.bbCorner0.z;
+        // we want dz < dy < dx
+        q = Quat.newQ(qBest);
+        dx = bBest.bbCorner1.x - bBest.bbCorner0.x;
+        dy = bBest.bbCorner1.y - bBest.bbCorner0.y;
+        dz = bBest.bbCorner1.z - bBest.bbCorner0.z;
+        if (dx < dy) {
+          pt.set(0, 0, 1);
+          q = Quat.newVA(pt, 90).mulQ(q);
+          float f = dx;
+          dx = dy;
+          dy = f;
+        }
+        if (dy < dz) {
+          if (dz > dx) {
+            // is dy < dx < dz
+            pt.set(0, 1, 0);
+            q = Quat.newVA(pt, 90).mulQ(q);
+            float f = dx;
+            dx = dz;
+            dz = f;
+          }
+          // is dy < dz < dx
+          pt.set(1, 0, 0);
+          q = Quat.newVA(pt, 90).mulQ(q);
+          float f = dy;
+          dy = dz;
+          dz = f;
+        }
         break;
       }
-      if (v < vMin) {
-        qBest = q;
-        bBest = b;
-        vMin = v;
-      }
     }
-    if (type != T.volume && type != T.best)
-      return qBest.toString();
-    // we want dz < dy < dx
-    q = Quat.newQ(qBest);
-    float dx = bBest.bbCorner1.x - bBest.bbCorner0.x;
-    float dy = bBest.bbCorner1.y - bBest.bbCorner0.y;
-    float dz = bBest.bbCorner1.z - bBest.bbCorner0.z;
-    if (dx < dy) {
-      pt.set(0, 0, 1);
-      q = Quat.newVA(pt, 90).mulQ(q);
-      float f = dx;
-      dx = dy;
-      dy = f;
-    }
-    if (dy < dz) {
-      if (dz > dx) {
-        // is dy < dx < dz
-        pt.set(0, 1, 0);
-        q = Quat.newVA(pt, 90).mulQ(q);
-        float f = dx;
-        dx = dz;
-        dz = f;
-      }
-      // is dy < dz < dx
-      pt.set(1, 0, 0);
-      q = Quat.newVA(pt, 90).mulQ(q);
-      float f = dy;
-      dy = dz;
-      dz = f;
-    }
-    return (type == T.volume ? vMin + "\t{" + dx + " " + dy + " " + dz + "}"
-        : q.getTheta() == 0 ? "{0 0 0 1}" : q.toString());
+    return (type == T.volume ? vMin + "\t{" + dx + " " + dy + " " + dz + "}\t" + bsAtoms
+        : type == T.unitcell ? null : q == null || q.getTheta() == 0 ? new Quat() : q);
   }
 
   public SymmetryInterface getUnitCellForAtom(int index) {

@@ -217,16 +217,21 @@ public class MeshSlicer {
       return faces;
     }
 
+  /**
+   * 
+   * @param points [center a b c]
+   * @return all eight vertices
+   */
   public static P3[] getVerticesFromCriticalPoints(P3[] points) {
     P3[] vertices = new P3[8];
     for (int i = 0; i < 8; i++) {
       vertices[i] = P3.newP(points[0]);
       if ((i & 1) == 1)
-        vertices[i].add(points[1]);
+        vertices[i].add(points[3]);
       if ((i & 2) == 2)
         vertices[i].add(points[2]);
       if ((i & 4) == 4)
-        vertices[i].add(points[3]);
+        vertices[i].add(points[1]);
     }
     return vertices;
   }

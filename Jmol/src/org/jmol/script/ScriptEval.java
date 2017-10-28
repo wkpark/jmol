@@ -5391,7 +5391,7 @@ public class ScriptEval extends ScriptExpr {
         q = (chk ? new Quat() : vwr.ms.getQuaternion(bsCenter.nextSetBit(0),
             vwr.getQuaternionFrame()));
       } else {
-        q = getQuaternionParameter(i);
+        q = getQuaternionParameter(i, null, false);
       }
       i = iToken + 1;
       if (q == null)
@@ -5802,7 +5802,7 @@ public class ScriptEval extends ScriptExpr {
         return;
       }
 
-    BS bsAtoms = null;
+    BS bsAtoms = null, bsBest = null;
     float degreesPerSecond = PT.FLOAT_MIN_SAFE;
     int nPoints = 0;
     float endDegrees = Float.MAX_VALUE;
@@ -5819,7 +5819,6 @@ public class ScriptEval extends ScriptExpr {
     int direction = 1;
     int tok;
     Quat q = null;
-    boolean qGT180 = false;
     boolean helicalPath = false;
     boolean isDegreesPerSecond = false;
     boolean isSeconds = false;
@@ -5833,8 +5832,9 @@ public class ScriptEval extends ScriptExpr {
       case T.define:
       case T.bitset:
       case T.expressionBegin:
+        bsBest = atomExpressionAt(i);
         if (translation != null || q != null || nPoints == 2) {
-          bsAtoms = atomExpressionAt(i);
+          bsAtoms = bsBest;
           ptsB = null;
           isSelected = true;
           break;
@@ -5931,15 +5931,16 @@ public class ScriptEval extends ScriptExpr {
         if (tok == T.quaternion)
           i++;
         haveRotation = true;
-        q = getQuaternionParameter(i);
-        if (q != null) {
-          if (tok == T.best && !(isMolecular = isSelected)) // yes, setting isMolecular here.
-            q = q.div(vwr.tm.getRotationQ());
+        if ((q = getQuaternionParameter(i, bsBest, tok == T.best)) != null) {
           if (q.q0 == 0)
             q.q0 = 1e-10f;
-          qGT180 = (q.q0 < 0);
           rotAxis.setT(q.getNormal());
-          endDegrees = q.getTheta();
+          endDegrees = q.getTheta(); // returns [0-180]
+//          System.out.println(q + " " + rotAxis + " " + endDegrees);
+//          if (q.q0 < 0) {
+            // greater than 180 degrees - we go the other way, in case this is a spin
+         //   endDegrees = -endDegrees;
+//          }
         }
         break;
       case T.plane:
@@ -6115,10 +6116,6 @@ public class ScriptEval extends ScriptExpr {
       isSelected = true;
       if (bsAtoms == null)
         bsAtoms = bsCompare;
-    }
-    if (isSpin && qGT180) {
-      endDegrees = (endDegrees >= 0 ? 360 : -360) - endDegrees;
-      rotAxis.scale(-1);
     }
     if (q != null && !isSeconds && !isDegreesPerSecond) {
       isDegreesPerSecond = (degreesPerSecond > 0);

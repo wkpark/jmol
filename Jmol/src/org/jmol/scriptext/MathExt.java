@@ -2676,7 +2676,7 @@ public class MathExt {
       } else {
         String s = SV.sValue(args[0]);
         Object v = Escape.uP(s.equalsIgnoreCase("best") ? vwr
-            .getOrientationText(T.best, null) : s);
+            .getOrientationText(T.best, "best", null).toString() : s);
         if (!(v instanceof P4))
           return false;
         p4 = (P4) v;

@@ -1138,19 +1138,32 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return getStateCreator().getSpinState(false);
   }
 
-  public String getOrientationText(int type, String name) {
+  /**
+   * 
+   * @param type
+   * @param name
+   * @param bs
+   * @return String or Quat or P3[]
+   */
+  public Object getOrientationText(int type, String name, BS bs) {
     switch (type) {
     case T.volume:
+    case T.unitcell:
     case T.best:
     case T.x:
     case T.y:
     case T.z:
     case T.quaternion:
-      return ms.getBoundBoxOrientation(type, bsA());
+      if (bs == null)
+        bs = bsA();
+      if (bs.isEmpty())
+        return (type == T.volume ? "0" : type == T.unitcell ? null : new Quat());
+      Object q = ms.getBoundBoxOrientation(type, bs);
+      return (name == "best" && type != T.volume ? ((Quat)q).div(tm.getRotationQ()) : q);
     case T.name:
       return stm.getSavedOrientationText(name);
     default:
-      return tm.getOrientationText(type);
+      return tm.getOrientationText(type, name == "best");
     }
   }
 

@@ -365,11 +365,16 @@ public class IsoExt extends ScriptExt {
       case T.boundbox:
         if (chk)
           break;
-        if (tok == T.unitcell) {
+        if (tok == T.boundbox && tokAt(i + 1) == T.best) {
+          tok = T.unitcell;
+        } if (tok == T.unitcell) {
           if (eval.isArrayParameter(i + 1)) {
             P3[] points = eval.getPointArray(i + 1, -1, false);
             uc = vwr.getSymTemp().getUnitCell(points, false, null);
             i = eval.iToken;
+          } else if (tokAt(i + 1) == T.best){
+            i++;
+            uc = vwr.getSymTemp().getUnitCell((P3[]) vwr.getOrientationText(T.unitcell, "array", null), false, null);
           } else {
             uc = vwr.getCurrentUnitCell();
           }
@@ -3615,7 +3620,7 @@ public class IsoExt extends ScriptExt {
       break;
     case T.boundbox:
       eval.iToken = i + 1;
-      data = BoxInfo.getUnitCellPoints(vwr.ms.getBBoxVertices(), null);
+      data = BoxInfo.getCenterABC(vwr.ms.getBBoxVertices(), null);
       break;
     //case Token.slicebox:
     // data = BoxInfo.getCriticalPoints(((JmolViewer)(vwr)).slicer.getSliceVert(), null);
@@ -3629,7 +3634,7 @@ public class IsoExt extends ScriptExt {
         if (tok == T.unitcell)
           invArg();
       } else {
-        pts = BoxInfo.getUnitCellPoints(unitCell.getUnitCellVerticesNoOffset(),
+        pts = BoxInfo.getCenterABC(unitCell.getUnitCellVerticesNoOffset(),
             unitCell.getCartesianOffset());
         int iType = (int) unitCell
             .getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);

@@ -73,7 +73,7 @@ class UnitCell extends SimpleUnitCell {
    * A special constructor for spacially defined unit cells.
    * Not used by readers. 
    * 
-   * @param points [origin, a, b, c]
+   * @param points [origin, Va, Vb, Vc]
    * @param setRelative
    * @return new unit cell
    */

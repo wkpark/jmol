@@ -180,11 +180,11 @@ public class BoxInfo {
    * @param offset
    * @return [center a b c]
    */
-  public final static P3[] getUnitCellPoints(P3[] bbVertices, T3 offset) {
+  public final static P3[] getCenterABC(P3[] bbVertices, T3 offset) {
     P3 center = P3.newP(bbVertices[0]);
-    P3 a = P3.newP(bbVertices[1]);
+    P3 a = P3.newP(bbVertices[4]);
     P3 b = P3.newP(bbVertices[2]);
-    P3 c = P3.newP(bbVertices[4]);
+    P3 c = P3.newP(bbVertices[1]);
     a.sub(center);
     b.sub(center);
     c.sub(center);

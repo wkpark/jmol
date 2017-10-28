@@ -137,7 +137,7 @@ public class MeshSlicer {
     case T.boundbox:
       P3[] box = (P3[]) slabbingObject;
       sb.append("within ").append(Escape.eAP(box));
-      P4[] faces = getBoxFacesFromCriticalPoints(box);
+      P4[] faces = getBoxFacesFromOABC(box);
       for (int i = 0; i < faces.length; i++) {
         getIntersection(0, faces[i], null, null, null, null, null, andCap,
             false, T.plane, isGhost);
@@ -200,42 +200,22 @@ public class MeshSlicer {
     return true;
   }
 
-  private P4[] getBoxFacesFromCriticalPoints(P3[] points) {
+  private P4[] getBoxFacesFromOABC(P3[] oabc) {
       P4[] faces = new P4[6];
       V3 vNorm = new V3();
       V3 vAB = new V3();
-      P3 va = new P3();
-      P3 vb = new P3();
-      P3 vc = new P3();
-      P3[] vertices = getVerticesFromCriticalPoints(points);
+      P3 pta = new P3();
+      P3 ptb = new P3();
+      P3 ptc = new P3();
+      P3[] vertices = BoxInfo.getVerticesFromOABC(oabc);
       for (int i = 0; i < 6; i++) {
-        va.setT(vertices[BoxInfo.facePoints[i].x]);
-        vb.setT(vertices[BoxInfo.facePoints[i].y]);
-        vc.setT(vertices[BoxInfo.facePoints[i].z]);
-        faces[i] = Measure.getPlaneThroughPoints(va, vb, vc, vNorm, vAB, new P4());
+        pta.setT(vertices[BoxInfo.facePoints[i][0]]);
+        ptb.setT(vertices[BoxInfo.facePoints[i][1]]);
+        ptc.setT(vertices[BoxInfo.facePoints[i][2]]);
+        faces[i] = Measure.getPlaneThroughPoints(pta, ptb, ptc, vNorm, vAB, new P4());
       }
       return faces;
     }
-
-  /**
-   * 
-   * @param points [center a b c]
-   * @return all eight vertices
-   */
-  public static P3[] getVerticesFromCriticalPoints(P3[] points) {
-    P3[] vertices = new P3[8];
-    for (int i = 0; i < 8; i++) {
-      vertices[i] = P3.newP(points[0]);
-      if ((i & 1) == 1)
-        vertices[i].add(points[3]);
-      if ((i & 2) == 2)
-        vertices[i].add(points[2]);
-      if ((i & 4) == 4)
-        vertices[i].add(points[1]);
-    }
-    return vertices;
-  }
-
 
   /**
    * @param distance

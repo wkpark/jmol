@@ -3536,7 +3536,7 @@ public class ModelSet extends BondCollection {
         return qBest;
       case T.unitcell:
         P3[] pts = bBest.getBoundBoxVertices();
-        pts = new P3[] {pts[0], pts[4], pts[2], pts[1]};
+        pts = new P3[] {pts[0], pts[BoxInfo.X], pts[BoxInfo.Y], pts[BoxInfo.Z]};
         qBest = qBest.inv();
         for (int i = 0; i < 4; i++) {
           qBest.transform2(pts[i], pts[i]);

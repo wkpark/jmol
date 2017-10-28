@@ -27,7 +27,6 @@ package org.jmol.util;
 
 
 import javajs.util.P3;
-import javajs.util.P3i;
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -38,6 +37,11 @@ import javajs.util.V3;
  */
 public class BoxInfo {
  
+  public final static int X   = 4;
+  public final static int Y   = 2;
+  public final static int Z   = 1;
+  public static final int XYZ = 7;
+
   public final P3 bbCorner0 = new P3();
   public final P3 bbCorner1 = new P3();
   private final P3 bbCenter = new P3();
@@ -79,18 +83,6 @@ public class BoxInfo {
     bbCorner1.set(-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE);
   }
   
-  public P3[] getMyCanonicalCopy(float scale) {
-    return getCanonicalCopy(bbVertices, scale);
-  }
-
-  public final static P3[] getCanonicalCopy(P3[] bbUcPoints, float scale) {
-    P3[] pts = new P3[8];
-    for (int i = 0; i < 8; i++)
-      pts[toCanonical[i]] = P3.newP(bbUcPoints[i]);
-    scaleBox(pts, scale);
-    return pts;
-  }
-  
   public static void scaleBox(P3[] pts, float scale) {
     if (scale == 0 || scale == 1)
       return;
@@ -106,13 +98,9 @@ public class BoxInfo {
     }
   }
 
-  public void setBoundBoxFromOXYZ(P3 o, P3 vx, P3 vy, P3 vz) {
-    // TODO
-    
-  }
-
-
-  // note that this box is NOT the same as for Marching Cubes
+  // unitCubePoints and Edges
+  //  -- constructed in a binary pattern
+  //  -- used for BoundingBox
   //
   //                     Y 
   //                      2 --------6--------- 6                            
@@ -143,36 +131,85 @@ public class BoxInfo {
     P3.new3(1, 1, 0), // 6
     P3.new3(1, 1, 1), // 7
   };
+  
+  /**
+   * 
+   * @param oabc [center a b c]
+   * @return all eight vertices
+   */
+  public final static P3[] getVerticesFromOABC(P3[] oabc) {
+    P3[] vertices = new P3[8];
+    for (int i = 0; i <= XYZ; i++) {
+      vertices[i] = P3.newP(oabc[0]);
+      if ((i & X) == X)
+        vertices[i].add(oabc[1]);
+      if ((i & Y) == Y)
+        vertices[i].add(oabc[2]);
+      if ((i & Z) == Z)
+        vertices[i].add(oabc[3]);
+    }
+    return vertices;
+  }
 
-  public final static P3i[] facePoints = {
-    P3i.new3(4, 0, 6),
-    P3i.new3(4, 6, 5), 
-    P3i.new3(5, 7, 1), 
-    P3i.new3(1, 3, 0),
-    P3i.new3(6, 2, 7), 
-    P3i.new3(1, 0, 5), 
-    
-    P3i.new3(0, 2, 6),
-    P3i.new3(6, 7, 5), 
-    P3i.new3(7, 3, 1), 
-    P3i.new3(3, 2, 0),
-    P3i.new3(2, 3, 7), 
-    P3i.new3(0, 4, 5), 
+  public final static int[][] facePoints = new int[][] {
+    {4, 0, 6},
+    {4, 6, 5}, 
+    {5, 7, 1}, 
+    {1, 3, 0},
+    {6, 2, 7}, 
+    {1, 0, 5}, 
+    {0, 2, 6},
+    {6, 7, 5}, 
+    {7, 3, 1}, 
+    {3, 2, 0},
+    {2, 3, 7}, 
+    {0, 4, 5}, 
   };
 
-  public final static int[] toCanonical = new int[] {0, 3, 4, 7, 1, 2, 5, 6};
+  // canonical
+  //  -- relatively standard clockwise lower, then clockwise upper
+  //  -- used by Triangulator and MarchingCubes
+  //
+  //                      Y 
+  //                       4 --------4--------- 5                           
+  //                      /|                   /|         
+  //                     / |                  / |         
+  //                    /  |                 /  |         
+  //                   7   8                5   |         
+  //                  /    |               /    9         
+  //                 /     |              /     |         
+  //                7 --------6--------- 6      |         
+  //                |      |             |      |         
+  //                |      0 ---------0--|----- 1    X        
+  //                |     /              |     /          
+  //               11    /               10   /           
+  //                |   3                |   1            
+  //                |  /                 |  /             
+  //                | /                  | /              
+  //                3 ---------2-------- 2                
+  //               Z                                       
+  //    
+  //  protected final static P3i[] canonicalVertexOffsets = { 
+  //    P3i.new3(0, 0, 0), //0 pt
+  //    P3i.new3(1, 0, 0), //1 pt + yz
+  //    P3i.new3(1, 0, 1), //2 pt + yz + 1
+  //    P3i.new3(0, 0, 1), //3 pt + 1
+  //    P3i.new3(0, 1, 0), //4 pt + z
+  //    P3i.new3(1, 1, 0), //5 pt + yz + z
+  //    P3i.new3(1, 1, 1), //6 pt + yz + z + 1
+  //    P3i.new3(0, 1, 1)  //7 pt + z + 1 
+  //  };
+  
+  private final static int[] toCanonical = new int[] {0, 3, 4, 7, 1, 2, 5, 6};
 
-  protected final static P3i[] cubeVertexOffsets = { 
-    P3i.new3(0, 0, 0), //0 pt
-    P3i.new3(1, 0, 0), //1 pt + yz
-    P3i.new3(1, 0, 1), //2 pt + yz + 1
-    P3i.new3(0, 0, 1), //3 pt + 1
-    P3i.new3(0, 1, 0), //4 pt + z
-    P3i.new3(1, 1, 0), //5 pt + yz + z
-    P3i.new3(1, 1, 1), //6 pt + yz + z + 1
-    P3i.new3(0, 1, 1)  //7 pt + z + 1 
-  };
-
+  public final static P3[] getCanonicalCopy(P3[] boxPoints, float scale) {
+    P3[] pts = new P3[8];
+    for (int i = 0; i < 8; i++)
+      pts[toCanonical[i]] = P3.newP(boxPoints[i]);
+    scaleBox(pts, scale);
+    return pts;
+  }
+  
   /**
    * Delivers [center a b c] for generation of unit cells from a boundbox
    * 
@@ -180,11 +217,11 @@ public class BoxInfo {
    * @param offset
    * @return [center a b c]
    */
-  public final static P3[] getCenterABC(P3[] bbVertices, T3 offset) {
+  public final static P3[] toOABC(P3[] bbVertices, T3 offset) {
     P3 center = P3.newP(bbVertices[0]);
-    P3 a = P3.newP(bbVertices[4]);
-    P3 b = P3.newP(bbVertices[2]);
-    P3 c = P3.newP(bbVertices[1]);
+    P3 a = P3.newP(bbVertices[X]);
+    P3 b = P3.newP(bbVertices[Y]);
+    P3 c = P3.newP(bbVertices[Z]);
     a.sub(center);
     b.sub(center);
     c.sub(center);
@@ -336,5 +373,7 @@ public class BoxInfo {
   public float getMaxDim() {
     return bbVector.length() * 2;
   }
+
+
 
 }

@@ -399,6 +399,12 @@ class UnitCell extends SimpleUnitCell {
     return t.setFromThermalEquation(Bcart, Escape.eAF(parBorU));
   }
   
+  /**
+   * 
+   * @param scale
+   * @param withOffset
+   * @return points in Triangulator order
+   */
   P3[] getCanonicalCopy(float scale, boolean withOffset) {
     P3[] pts  = new P3[8];
     P3 cell0 = null;

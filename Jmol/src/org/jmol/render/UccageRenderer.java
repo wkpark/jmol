@@ -25,19 +25,17 @@ package org.jmol.render;
 
 //import java.text.NumberFormat;
 
+import javajs.util.DF;
+import javajs.util.Lst;
+import javajs.util.P3;
+import javajs.util.PT;
+
 import org.jmol.api.SymmetryInterface;
 import org.jmol.script.T;
 import org.jmol.shape.Axes;
 import org.jmol.shape.Uccage;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
-
-import javajs.util.DF;
-import javajs.util.Lst;
-import javajs.util.P3;
-import javajs.util.P3i;
-import javajs.util.PT;
-
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.StateManager;
@@ -121,7 +119,7 @@ public class UccageRenderer extends CageRenderer {
     boolean drawAllLines = (isExport || vwr.getObjectMad10(StateManager.OBJ_AXIS1) == 0
         || vwr.getFloat(T.axesscale) < 2 || axisPoints == null);
     P3[] aPoints = axisPoints;
-    P3i[] faces = (hiddenLines ? BoxInfo.facePoints : null);
+    int[][] faces = (hiddenLines ? BoxInfo.facePoints : null);
     if (fset.z == 0) {
       offsetT.setT(cell0);
       unitcell.toCartesian(offsetT, true);

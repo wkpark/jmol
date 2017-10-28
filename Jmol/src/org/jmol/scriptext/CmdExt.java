@@ -527,14 +527,14 @@ public class CmdExt extends ScriptExt {
       case T.unitcell:
         SymmetryInterface unitCell = vwr.getCurrentUnitCell();
         if (unitCell != null) {
-          pts = BoxInfo.getCenterABC(
+          pts = BoxInfo.toOABC(
               unitCell.getUnitCellVerticesNoOffset(),
               unitCell.getCartesianOffset());
           break;
         }
         //$FALL-THROUGH$
       case T.boundbox:
-        pts = BoxInfo.getCenterABC(vwr.ms.getBBoxVertices(), null);
+        pts = BoxInfo.toOABC(vwr.ms.getBBoxVertices(), null);
         break;
       }
       switch (pts.length) {

@@ -47,7 +47,7 @@ public class Triangulator extends TriangleData {
    * unit cell
    * 
    * @param plane  intersecting plane, or null for a full list of all faces
-   * @param vertices the vertices of the box or unit cell 
+   * @param vertices the vertices of the box or unit cell in canonical format
    * @param flags
    *          0 -- polygon int[]  1 -- edges only 2 -- triangles only 3 -- both
    * @return Lst of P3[3] triangles and P3[2] edge lines

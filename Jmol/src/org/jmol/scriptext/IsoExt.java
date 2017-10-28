@@ -1069,8 +1069,7 @@ public class IsoExt extends ScriptExt {
 
 
   @SuppressWarnings("unchecked")
-  private void setNBOType(Map<String, Object> moData, String type,
-                          boolean isBeta) throws ScriptException {
+  private void setNBOType(Map<String, Object> moData, String type) throws ScriptException {
     //         31    32    33    34    35    36    37    38    39    40    41
     int ext = ";AO;  ;PNAO;;NAO; ;PNHO;;NHO; ;PNBO;;NBO; ;PNLMO;NLMO;;MO;  ;NO;"
         .indexOf(";" + type + ";");
@@ -1180,7 +1179,7 @@ public class IsoExt extends ScriptExt {
       error(ScriptError.ERROR_moModelError);
     vwr.checkMenuUpdate();
     if (nboType != null) {
-      setNBOType(moData, nboType, isBeta);
+      setNBOType(moData, nboType);
       if (lc == null && moNumber == Integer.MAX_VALUE)
         return;
     }
@@ -3620,7 +3619,7 @@ public class IsoExt extends ScriptExt {
       break;
     case T.boundbox:
       eval.iToken = i + 1;
-      data = BoxInfo.getCenterABC(vwr.ms.getBBoxVertices(), null);
+      data = BoxInfo.toOABC(vwr.ms.getBBoxVertices(), null);
       break;
     //case Token.slicebox:
     // data = BoxInfo.getCriticalPoints(((JmolViewer)(vwr)).slicer.getSliceVert(), null);
@@ -3634,7 +3633,7 @@ public class IsoExt extends ScriptExt {
         if (tok == T.unitcell)
           invArg();
       } else {
-        pts = BoxInfo.getCenterABC(unitCell.getUnitCellVerticesNoOffset(),
+        pts = BoxInfo.toOABC(unitCell.getUnitCellVerticesNoOffset(),
             unitCell.getCartesianOffset());
         int iType = (int) unitCell
             .getUnitCellInfoType(SimpleUnitCell.INFO_DIMENSIONS);
@@ -3779,7 +3778,7 @@ public class IsoExt extends ScriptExt {
     } else {
       BoxInfo bbox = vwr.ms.getBoxInfo(bs, -Math.abs(distance));
       pts[0] = bbox.getBoundBoxVertices()[0];
-      pts[1] = bbox.getBoundBoxVertices()[7];
+      pts[1] = bbox.getBoundBoxVertices()[BoxInfo.XYZ];
       if (bs.cardinality() == 1)
         v.addLast(vwr.ms.at[bs.nextSetBit(0)]);
     }
@@ -3914,7 +3913,7 @@ public class IsoExt extends ScriptExt {
 
   /**
    * 
-   * @param type
+   * @param type  unitcell or boundbox
    * @param plane
    *        plane to intersect, or null for just the full box
    * @param scale
@@ -3923,7 +3922,6 @@ public class IsoExt extends ScriptExt {
    *        1 -- edges only 2 -- triangles only 3 -- both
    * @return Vector
    */
-  @SuppressWarnings("static-access")
   private Lst<Object> getPlaneIntersection(int type, P4 plane,
                                            SymmetryInterface uc, float scale,
                                            int flags) {
@@ -3935,15 +3933,15 @@ public class IsoExt extends ScriptExt {
       pts = uc.getCanonicalCopy(scale, true);
       break;
     case T.boundbox:
-      pts = vwr.ms.getBoxInfo().getMyCanonicalCopy(scale);
+      pts = BoxInfo.getCanonicalCopy(vwr.ms.getBoxInfo().getBoundBoxVertices(), scale);
       break;
     }
-    Triangulator t = vwr.getTriangulator();
+    Triangulator t = vwr.getTriangulator(); // this instantiation forces reflection to get Triangulator class
     if (plane != null)
       return t.intersectPlane(plane, pts, flags);
     Lst<Object> v = new Lst<Object>();
     v.addLast(pts);
-    v.addLast(t.fullCubePolygon);
+    v.addLast(Triangulator.fullCubePolygon);
     return v;
   }
 

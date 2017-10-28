@@ -26,7 +26,6 @@ package org.jmol.render;
 
 import javajs.util.Measure;
 import javajs.util.P3;
-import javajs.util.P3i;
 
 import org.jmol.java.BS;
 import org.jmol.shape.Bbcage;
@@ -50,7 +49,7 @@ abstract class CageRenderer extends FontLineShapeRenderer {
   
   private P3 pt = new P3();
   
-  protected void renderCage(int mad, P3[] vertices, P3i[] faces,
+  protected void renderCage(int mad, P3[] vertices, int[][] faces,
                         P3[] axisPoints, int firstLine, int allowedEdges0,
                         int allowedEdges1, float scale) {
     //clearBox();
@@ -77,12 +76,12 @@ abstract class CageRenderer extends FontLineShapeRenderer {
       // lines to all other points should be dashed 
       bsSolid = new BS();
       for (int i = 12; --i >= 0;) {
-        P3i face = faces[i];
-        Measure.getNormalThroughPoints(p3Screens[face.x], p3Screens[face.y], p3Screens[face.z], pt1, pt);
+        int[] face = faces[i];
+        Measure.getNormalThroughPoints(p3Screens[face[0]], p3Screens[face[1]], p3Screens[face[2]], pt1, pt);
         if (pt1.z <= 0) {
-          bsSolid.set(face.x);
-          bsSolid.set(face.y);
-          bsSolid.set(face.z);
+          bsSolid.set(face[0]);
+          bsSolid.set(face[1]);
+          bsSolid.set(face[2]);
         }
       }
     }

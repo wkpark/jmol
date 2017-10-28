@@ -472,6 +472,7 @@ all support for previous versions removed
     <unjar dest="${appjars.dir}" src="${lib.dir}/JSpecView.jar"/>
   	<delete dir="${appjars.dir}/javajs" />
   	<delete dir="${appjars.dir}/org/jmol" />
+  	<delete dir="${appjars.dir}/org/apache/tools" />
   	<delete dir="${appjars.dir}/META-INF" />
     <touch file="build/libjars.timestamp"/>
   </target>

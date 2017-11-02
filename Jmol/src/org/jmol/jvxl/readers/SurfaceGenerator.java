@@ -1358,8 +1358,8 @@ public class SurfaceGenerator {
     atomDataServer.fillAtomData(atomData, mode);
   }
 
-  public V3[] getSpanningVectors() {
-    return (surfaceReader.volumeData == null ? null : surfaceReader.volumeData.spanningVectors);
+  public V3[] getOriginVaVbVc() {
+    return (surfaceReader.volumeData == null ? null : surfaceReader.volumeData.oabc);
   }
 
 }

@@ -1804,7 +1804,7 @@ public class ModelSet extends BondCollection {
         pos.scaleAdd2(c, at[i], pos);
       }
     }
-    if (Math.abs(cPos + cNeg) > 0.01f) {
+    if (Math.abs(cPos + cNeg) > 0.015) { // BH Jmol 14.22.2 was 0.01, but PubChem charges are only to 0.01 precision
       Logger.info("Dipole calculation requires balanced charges: " + cPos + " "
           + cNeg);
       return null;

@@ -502,7 +502,7 @@ public class CmdExt extends ScriptExt {
     switch (tokAt(i)) {
     case T.fill:
       htParams.put("packed", Boolean.TRUE);
-      T3[] pts = null;
+      T3[] oabc = null;
       int tok = tokAt(++i);
       switch (tok) {
       case T.unitcell:
@@ -510,13 +510,13 @@ public class CmdExt extends ScriptExt {
         break;
       default:
         if (e.isArrayParameter(i)) {
-          pts = e.getPointArray(i, -1, false);
+          oabc = e.getPointArray(i, -1, false);
           i = e.iToken;
         } else if (isFloatParameter(i)) {
           float d = floatParameter(i);
-          pts = new P3[] { new P3(), P3.new3(d, d, d) };
+          oabc = new P3[] { new P3(), P3.new3(d, d, d) };
         } else {
-          pts = new P3[0];
+          oabc = new P3[0];
           --i;
         }
       }
@@ -527,38 +527,38 @@ public class CmdExt extends ScriptExt {
       case T.unitcell:
         SymmetryInterface unitCell = vwr.getCurrentUnitCell();
         if (unitCell != null) {
-          pts = BoxInfo.toOABC(
+          oabc = BoxInfo.toOABC(
               unitCell.getUnitCellVerticesNoOffset(),
               unitCell.getCartesianOffset());
           break;
         }
         //$FALL-THROUGH$
       case T.boundbox:
-        pts = BoxInfo.toOABC(vwr.ms.getBBoxVertices(), null);
+        oabc = BoxInfo.toOABC(vwr.ms.getBBoxVertices(), null);
         break;
       }
-      switch (pts.length) {
+      switch (oabc.length) {
       case 2:
         // origin and diagonal vector
-        T3 a = pts[1];
-        pts = new T3[] { pts[0], P3.newP(pts[0]), new P3(), new P3() };
-        pts[1].x = a.x;
-        pts[2].y = a.y;
-        pts[3].z = a.z;
+        T3 a = oabc[1];
+        oabc = new T3[] { oabc[0], P3.newP(oabc[0]), new P3(), new P3() };
+        oabc[1].x = a.x;
+        oabc[2].y = a.y;
+        oabc[3].z = a.z;
         break;
       case 3:
         // implicit origin {0 0 0} with three vectors
-        pts = new T3[] { new P3(), pts[0], pts[1], pts[2] };
+        oabc = new T3[] { new P3(), oabc[0], oabc[1], oabc[2] };
         break;
       case 4:
         break;
       default:
         // {0 0 0} with 10x10x10 cell
-        pts = new T3[] { new P3(), P3.new3(10, 0, 0), P3.new3(0, 10, 0),
+        oabc = new T3[] { new P3(), P3.new3(10, 0, 0), P3.new3(0, 10, 0),
             P3.new3(0, 0, 10) };
       }
-      htParams.put("fillRange", pts);
-      sOptions.append(" FILL [" + pts[0] + pts[1] + pts[2] + pts[3] + "]");
+      htParams.put("fillRange", oabc);
+      sOptions.append(" FILL [" + oabc[0] + oabc[1] + oabc[2] + oabc[3] + "]");
       break;
     case T.packed:
       float f = Float.NaN;
@@ -4975,6 +4975,7 @@ public class CmdExt extends ScriptExt {
         if (s == null) {
           boolean isPrimitive = ucname.equals("primitive");
           if (isPrimitive || ucname.equals("reciprocal")) {
+            float scale = (slen == i + 1 ? 1 : tokAt(i + 1) == T.integer ? intParameter(++i) * (float) Math.PI : floatParameter(++i));
             SymmetryInterface u = vwr.getCurrentUnitCell();
             ucname = (u == null ? "" : u.getSpaceGroupName() + " ") + ucname;
             oabc = (u == null ? new P3[] { P3.new3(0, 0, 0), P3.new3(1, 0, 0),
@@ -4986,7 +4987,6 @@ public class CmdExt extends ScriptExt {
               u = vwr.getSymTemp();
             u.toFromPrimitive(true, stype.length() == 0 ? 'P' : stype.charAt(0), oabc);
             if (!isPrimitive) {
-              float scale = (slen == i + 1 ? 1 : tokAt(i + 1) == T.integer ? intParameter(++i) * (float) Math.PI : floatParameter(++i));
               SimpleUnitCell.getReciprocal(oabc, oabc, scale);
             }
             break;

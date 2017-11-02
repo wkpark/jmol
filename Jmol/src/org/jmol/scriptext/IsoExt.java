@@ -369,8 +369,8 @@ public class IsoExt extends ScriptExt {
           tok = T.unitcell;
         } if (tok == T.unitcell) {
           if (eval.isArrayParameter(i + 1)) {
-            P3[] points = eval.getPointArray(i + 1, -1, false);
-            uc = vwr.getSymTemp().getUnitCell(points, false, null);
+            P3[] oabc = eval.getPointArray(i + 1, -1, false);
+            uc = vwr.getSymTemp().getUnitCell(oabc, false, null);
             i = eval.iToken;
           } else if (tokAt(i + 1) == T.best){
             i++;

@@ -85,6 +85,8 @@ public class CifReader extends AtomSetCollectionReader {
 
   GenericCifDataParser parser;
 
+  private boolean isAFLOW;
+  
   private boolean filterAssembly;
   private boolean allowRotations = true;
   private boolean readIdeal = true;
@@ -122,6 +124,7 @@ public class CifReader extends AtomSetCollectionReader {
   protected Map<String, String> htGroup1;
   protected int nAtoms0;
   private int titleAtomSet = 1;
+  private int intTableNo;
 
   @Override
   public void initializeReader() throws Exception {
@@ -291,6 +294,12 @@ public class CifReader extends AtomSetCollectionReader {
         addModelTitle("ID");
       } else if (titleRecords.contains("_" + key + "__")) {
         addModelTitle("TITLE");
+      } else if (key.startsWith("_aflow_")) {
+        isAFLOW = true;
+      } else if (key.equals("_symmetry_int_tables_number")) {
+        intTableNo = parseIntStr(data);
+        rotateHexCell = (isAFLOW && (intTableNo >= 143 && intTableNo <= 194)); // trigonal or hexagonal
+            
       } else {
         processSubclassEntry();
       }
@@ -665,7 +674,10 @@ public class CifReader extends AtomSetCollectionReader {
   private void processCellParameter() throws Exception {
     for (int i = JmolAdapter.cellParamNames.length; --i >= 0;)
       if (key.equals(JmolAdapter.cellParamNames[i])) {
-        setUnitCellItem(i, parseFloatStr(data));
+        float p = parseFloatStr(data);
+        if (rotateHexCell && i == 5 && p == 120)
+          p = -1;
+        setUnitCellItem(i, p);
         return;
       }
   }

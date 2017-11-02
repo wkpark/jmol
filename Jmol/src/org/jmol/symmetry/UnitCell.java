@@ -58,7 +58,16 @@ class UnitCell extends SimpleUnitCell {
   
   private P3[] vertices; // eight corners
   private P3 fractionalOffset;
-  private boolean allFractionalRelative; // specifically used for JmolData
+  /**
+   * this flag TRUE causes an update of matrixCtoFNoOffset each time an offset is changed
+   * so that it is updated and the two stay the same; set true only for JmolData, tensors, and isosurfaceMesh
+   * 
+   * it is no longer clear to me exactly why this is necessary, and perhaps it is not for some of these
+   *  
+   *
+   */
+  private boolean allFractionalRelative;
+  
   protected final P3 cartesianOffset = new P3();
   protected P3 unitCellMultiplier;
   public Lst<String> moreInfo;
@@ -73,25 +82,31 @@ class UnitCell extends SimpleUnitCell {
    * A special constructor for spacially defined unit cells.
    * Not used by readers. 
    * 
-   * @param points [origin, Va, Vb, Vc]
-   * @param setRelative
+   * @param oabc [origin, Va, Vb, Vc]
+   * @param setRelative a flag only set true for IsosurfaceMesh
    * @return new unit cell
    */
-  static UnitCell newP(T3[] points, boolean setRelative) {
+  static UnitCell fromOABC(T3[] oabc, boolean setRelative) {
     UnitCell c = new UnitCell();
-    if (points.length == 3)
-      points = new T3[] { new P3(), points[0], points[1], points[2] };
-    float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, points[1].x,
-        points[1].y, points[1].z, points[2].x, points[2].y, points[2].z,
-        points[3].x, points[3].y, points[3].z };
+    if (oabc.length == 3) // not used
+      oabc = new T3[] { new P3(), oabc[0], oabc[1], oabc[2] };
+    float[] parameters = new float[] { -1, 0, 0, 0, 0, 0, oabc[1].x,
+        oabc[1].y, oabc[1].z, oabc[2].x, oabc[2].y, oabc[2].z,
+        oabc[3].x, oabc[3].y, oabc[3].z };
     c.init(parameters);
     c.allFractionalRelative = setRelative;
     c.initUnitcellVertices();
-    c.setCartesianOffset(points[0]);
+    c.setCartesianOffset(oabc[0]);
     return c;
   }
   
-  public static UnitCell newA(float[] params, boolean setRelative) {
+  /**
+   * 
+   * @param params
+   * @param setRelative only set true for JmolData and tensors
+   * @return a new unit cell
+   */
+  public static UnitCell fromParams(float[] params, boolean setRelative) {
     UnitCell c = new UnitCell();
     c.init(params);
     c.initUnitcellVertices();
@@ -125,7 +140,9 @@ class UnitCell extends SimpleUnitCell {
       matrixFractionalToCartesian.rotTrans(pt);
     } else {
       // use original unit cell
-      matrixCtoFANoOffset.rotTrans(pt);
+      // note that this matrix will be the same as matrixCartesianToFractional
+      // when allFractionalRelative is set true (special cases only)
+      matrixCtoFNoOffset.rotTrans(pt);
       unitize(pt);
       pt.add(offset); 
       matrixFtoCNoOffset.rotTrans(pt);
@@ -179,7 +196,7 @@ class UnitCell extends SimpleUnitCell {
     matrixFractionalToCartesian.m13 = cartesianOffset.y;
     matrixFractionalToCartesian.m23 = cartesianOffset.z;
     if (allFractionalRelative) {
-      matrixCtoFANoOffset.setM4(matrixCartesianToFractional);
+      matrixCtoFNoOffset.setM4(matrixCartesianToFractional);
       matrixFtoCNoOffset.setM4(matrixFractionalToCartesian);
     }
   }
@@ -200,7 +217,7 @@ class UnitCell extends SimpleUnitCell {
     matrixCartesianToFractional.m13 = -fractionalOffset.y;
     matrixCartesianToFractional.m23 = -fractionalOffset.z;
     if (allFractionalRelative) {
-      matrixCtoFANoOffset.setM4(matrixCartesianToFractional);
+      matrixCtoFNoOffset.setM4(matrixCartesianToFractional);
       matrixFtoCNoOffset.setM4(matrixFractionalToCartesian);
     }
     if (!wasOffset && fractionalOffset.lengthSquared() == 0)
@@ -445,7 +462,7 @@ class UnitCell extends SimpleUnitCell {
   private void initUnitcellVertices() {
     if (matrixFractionalToCartesian == null)
       return;
-    matrixCtoFANoOffset = M4.newM4(matrixCartesianToFractional);
+    matrixCtoFNoOffset = M4.newM4(matrixCartesianToFractional);
     matrixFtoCNoOffset = M4.newM4(matrixFractionalToCartesian);
     vertices = new P3[8];
     for (int i = 8; --i >= 0;)
@@ -698,6 +715,9 @@ class UnitCell extends SimpleUnitCell {
    */
   public boolean toFromPrimitive(boolean toPrimitive, char type,
                                        T3[] uc) {
+    
+    // columns are definitions of new coordinates in terms of old
+    
     int offset = uc.length - 3;
     M3 mf;
     switch (type) {
@@ -729,6 +749,14 @@ class UnitCell extends SimpleUnitCell {
         mf = M3.newA9(new float[] { 1/3f,  1/3f, -2/3f, 
                                    -1/3f,  2/3f, -1/3f, 
                                     1/3f,  1/3f,  1/3f});
+        
+        mf = M3.newA9(new float[] { -1/3f,  2/3f, -1/3f, 
+                                    -2/3f,  1/3f, 1/3f, 
+                                     1/3f,  1/3f,  1/3f});
+        
+        mf = M3.newA9(new float[] { 2/3f, -1/3f, -1/3f, 
+                                    1/3f,  1/3f, -2/3f, 
+                                     1/3f,  1/3f,  1/3f});
       break;
     case 'I':
 //      f = new float[] { .5f, .5f, -.5f, -.5f, .5f, .5f, .5f, -.5f, .5f };

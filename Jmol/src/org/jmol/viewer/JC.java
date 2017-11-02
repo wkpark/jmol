@@ -57,9 +57,12 @@ public final class JC {
   public final static int CIP_CHIRALITY_NAME_MASK = 7 << 5; //11100000
   public final static int CIP_CHIRALITY_NAME_OFFSET = 5;
 
-  public final static int CIP_CHIRALITY_Z_FLAG = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_EZ_FLAG;
-  public final static int CIP_CHIRALITY_E_FLAG = CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_EZ_FLAG;
-  
+  public final static int CIP_CHIRALITY_seqCis_FLAG  = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_EZ_FLAG;
+  public final static int CIP_CHIRALITY_seqTrans_FLAG = CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_EZ_FLAG;
+
+  public final static int CIP_CHIRALITY_seqcis_FLAG = CIP_CHIRALITY_seqCis_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
+  public final static int CIP_CHIRALITY_seqtrans_FLAG = CIP_CHIRALITY_seqTrans_FLAG | CIP_CHIRALITY_PSEUDO_FLAG;
+
   public final static int CIP_CHIRALITY_M_FLAG = CIP_CHIRALITY_R_FLAG | CIP_CHIRALITY_AXIAL_FLAG;
   public final static int CIP_CHIRALITY_P_FLAG = CIP_CHIRALITY_S_FLAG | CIP_CHIRALITY_AXIAL_FLAG;
 
@@ -70,9 +73,11 @@ public final class JC {
 
   public static String getCIPChiralityName(int flags) {
     switch (flags) {
-    case CIP_CHIRALITY_Z_FLAG:
+    case CIP_CHIRALITY_seqcis_FLAG:
+    case CIP_CHIRALITY_seqCis_FLAG:
       return "Z";
-    case CIP_CHIRALITY_E_FLAG:
+    case CIP_CHIRALITY_seqtrans_FLAG:
+    case CIP_CHIRALITY_seqTrans_FLAG:
       return "E";
     case CIP_CHIRALITY_M_FLAG:
       return "M";
@@ -107,9 +112,9 @@ public final class JC {
   public static int getCIPChiralityCode(char c) {
     switch (c) {
     case 'Z':
-      return CIP_CHIRALITY_Z_FLAG;
+      return CIP_CHIRALITY_seqcis_FLAG;
     case 'E':
-      return CIP_CHIRALITY_E_FLAG;
+      return CIP_CHIRALITY_seqtrans_FLAG;
     case 'R':
       return CIP_CHIRALITY_R_FLAG;
     case 'S':

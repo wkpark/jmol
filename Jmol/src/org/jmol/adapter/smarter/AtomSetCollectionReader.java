@@ -198,6 +198,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   protected boolean mustFinalizeModelSet;
   protected boolean forcePacked;
   public float packingError = 0.02f;
+  protected boolean rotateHexCell; // aflow CIF reader only
 
 
   // private state variables

@@ -211,7 +211,7 @@ public class VolumeData {
   public float minGrid;
   public float maxGrid;
   public float voxelVolume;
-  public V3[] spanningVectors;
+  public V3[] oabc;
 
   public int getYzCount() {
 
@@ -358,10 +358,10 @@ public class VolumeData {
     origin[0] = volumetricOrigin.x;
     origin[1] = volumetricOrigin.y;
     origin[2] = volumetricOrigin.z;
-    spanningVectors = new V3[4];
-    spanningVectors[0] = V3.newV(volumetricOrigin);
+    oabc = new V3[4];
+    oabc[0] = V3.newV(volumetricOrigin);
     for (int i = 0; i < 3; i++) {
-      V3 v = spanningVectors[i + 1] = new V3();
+      V3 v = oabc[i + 1] = new V3();
       v.scaleAdd2(voxelCounts[i] - 1, volumetricVectors[i], v);
     }
     return setMatrix();

@@ -410,7 +410,7 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public void setUnitCell(float[] unitCellParams, boolean setRelative) {
-    unitCell = UnitCell.newA(unitCellParams, setRelative);
+    unitCell = UnitCell.fromParams(unitCellParams, setRelative);
   }
 
   @Override
@@ -486,7 +486,7 @@ public class Symmetry implements SymmetryInterface {
     if (parBorU == null)
       return null;
     if (unitCell == null)
-      unitCell = UnitCell.newA(new float[] { 1, 1, 1, 90, 90, 90 }, true);
+      unitCell = UnitCell.fromParams(new float[] { 1, 1, 1, 90, 90, 90 }, true);
     return unitCell.getTensor(vwr, parBorU);
   }
 
@@ -564,12 +564,18 @@ public class Symmetry implements SymmetryInterface {
     return unitCell.getUnitCellVectors();
   }
 
+  /**
+   * @param oabc  [ptorigin, va, vb, vc]
+   * @param setRelative a flag only set true for IsosurfaceMesh
+   * @param name
+   * @return this SymmetryInterface
+   */
   @Override
-  public SymmetryInterface getUnitCell(T3[] points, boolean setRelative,
+  public SymmetryInterface getUnitCell(T3[] oabc, boolean setRelative,
                                        String name) {
-    if (points == null)
+    if (oabc == null)
       return null;
-    unitCell = UnitCell.newP(points, setRelative);
+    unitCell = UnitCell.fromOABC(oabc, setRelative);
     if (name != null)
       unitCell.name = name;
     return this;
@@ -710,7 +716,7 @@ public class Symmetry implements SymmetryInterface {
   @Override
   public boolean toFromPrimitive(boolean toPrimitive, char type, T3[] oabc) {
     if (unitCell == null)
-      unitCell = UnitCell.newP(oabc, false);
+      unitCell = UnitCell.fromOABC(oabc, false);
     return unitCell.toFromPrimitive(toPrimitive, type, oabc);
   }
 

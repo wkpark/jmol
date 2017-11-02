@@ -90,6 +90,7 @@ public class SimpleUnitCell {
     return c;
   }
   
+  
   protected void init(float[] params) {
     if (params == null)
       params = new float[] {1, 1, 1, 90, 90, 90};
@@ -97,12 +98,18 @@ public class SimpleUnitCell {
       return;
     unitCellParams = AU.arrayCopyF(params, params.length);
 
+    boolean rotateHex = false; // special gamma = -1 indicates hex rotation for AFLOW
+    
     a = params[0];
     b = params[1];
     c = params[2];
     alpha = params[3];
     beta = params[4];
     gamma = params[5];
+    if (gamma == -1) {
+      rotateHex = true;
+      gamma = 120;
+    }
     
     // (int) Float.NaN == 0 (but not in JavaScript!)
     // supercell
@@ -203,10 +210,18 @@ public class SimpleUnitCell {
       matrixCartesianToFractional = M4.newM4(matrixFractionalToCartesian).invert();
     } else {
       M4 m = matrixFractionalToCartesian = new M4();
-      // 1. align the a axis with x axis
-      m.setColumn4(0, a, 0, 0, 0);
-      // 2. place the b is in xy plane making a angle gamma with a
-      m.setColumn4(1, (float) (b * cosGamma), (float) (b * sinGamma), 0, 0);
+      
+      if (rotateHex) {
+        // 1, 2. align a and b symmetrically about the x axis (AFLOW)
+        m.setColumn4(0, (float) (-b * cosGamma), (float) (-b * sinGamma), 0, 0);
+        // 2. place the b is in xy plane making a angle gamma with a
+        m.setColumn4(1, (float) (-b * cosGamma), (float) (b * sinGamma), 0, 0);
+      } else {
+        // 1. align the a axis with x axis
+        m.setColumn4(0, a, 0, 0, 0);
+        // 2. place the b is in xy plane making a angle gamma with a
+        m.setColumn4(1, (float) (b * cosGamma), (float) (b * sinGamma), 0, 0);
+      }
       // 3. now the c axis,
       // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
       m.setColumn4(2, (float) (c * cosBeta), (float) (c
@@ -215,7 +230,7 @@ public class SimpleUnitCell {
       m.setColumn4(3, 0, 0, 0, 1);
       matrixCartesianToFractional = M4.newM4(matrixFractionalToCartesian).invert();
     }
-    matrixCtoFANoOffset = matrixCartesianToFractional;
+    matrixCtoFNoOffset = matrixCartesianToFractional;
     matrixFtoCNoOffset = matrixFractionalToCartesian;
   }
 
@@ -268,8 +283,9 @@ public class SimpleUnitCell {
     return fractionalOrigin ;
   }
 
-  protected M4 matrixCtoFANoOffset;
+  protected M4 matrixCtoFNoOffset;
   protected M4 matrixFtoCNoOffset;
+  
   public final static int INFO_DIMENSIONS = 6;
   public final static int INFO_GAMMA = 5;
   public final static int INFO_BETA = 4;
@@ -307,7 +323,7 @@ public class SimpleUnitCell {
   public final void toFractional(T3 pt, boolean ignoreOffset) {
     if (matrixCartesianToFractional == null)
       return;
-    (ignoreOffset ? matrixCtoFANoOffset : matrixCartesianToFractional)
+    (ignoreOffset ? matrixCtoFNoOffset : matrixCartesianToFractional)
         .rotTrans(pt);
   }
 

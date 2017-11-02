@@ -554,8 +554,8 @@ public class CIPChirality {
       STEREO_S = JC.CIP_CHIRALITY_S_FLAG;
   static final int STEREO_M = JC.CIP_CHIRALITY_M_FLAG,
       STEREO_P = JC.CIP_CHIRALITY_P_FLAG;
-  static final int STEREO_Z = JC.CIP_CHIRALITY_Z_FLAG,
-      STEREO_E = JC.CIP_CHIRALITY_E_FLAG;
+  static final int STEREO_Z = JC.CIP_CHIRALITY_seqcis_FLAG,
+      STEREO_E = JC.CIP_CHIRALITY_seqtrans_FLAG;
 
   static final int STEREO_BOTH_RS = STEREO_R | STEREO_S; // must be the number 3
   static final int STEREO_BOTH_EZ = STEREO_E | STEREO_Z;
@@ -1219,7 +1219,8 @@ public class CIPChirality {
                 + " CIPChirality for " + cipAtom + "-----"); // Logger
           switch (currentRule) {
           case RULE_3:
-            // We need to create auxiliary descriptors PRIOR to Rule 3.
+            // We need to create auxiliary descriptors PRIOR to Rule 3, 
+            // as seqcis and seqtrans are auxiliary only
             cipAtom.rootRule4bQueue = new Lst<CIPAtom>();
             cipAtom.createAuxiliaryDescriptors(null, null);
             break;
@@ -1365,32 +1366,61 @@ public class CIPChirality {
     if (c != NO_CHIRALITY
         && (isAxial || !bsAtropisomeric.get(a.getIndex())
             && !bsAtropisomeric.get(b.getIndex()))) {
-      if (isAxial && ((ruleA == RULE_5) != (ruleB == RULE_5))) {
-        // only one of the ends may be enantiomeric to make this r or s 
+      if (isAxial && ((ruleA >= RULE_5) != (ruleB >= RULE_5))) {
+        // only one of the ends may be enantiomeric to make this m or p 
         // see AY236.70 and AY236.170
         //
         // Now we must check maxRules. If [5,5], then we have
         // 
-        //    R      R'
-        //     \    /
-        //       ==
-        //     /    \
-        //    S      S'
+        //    R       R'
+        //     \     /
+        //      C=C=C
+        //     /     \
+        //    S       S'
         //
-        // planar flip is unchanged, and this is c/t (ignored here)
+        // planar flip is unchanged, and this is m/p
         // 
         // 
-        //    R      R
-        //     \    /
-        //       ==
-        //     /    \
-        //    S      S
+        //    R       R
+        //     \     /
+        //      C=C=C
+        //     /     \
+        //    S       S
         //
-        // planar flip is unchanged; also c/t (ignored here)
+        // planar flip is unchanged; also m/p
         // 
 
         c |= JC.CIP_CHIRALITY_PSEUDO_FLAG;
-      }
+      } 
+      // could check here for nonaxial enes, but we do not do that in Jmol 
+      // - if neither or both of the ends are enantiomeric,
+      // this is seqcis or seqtrans, otherwise secCis, seqTrans 
+      //
+      // Now we must check maxRules. If [5,5], then we have
+      // 
+      //    R     R'
+      //     \   /
+      //      C=C
+      //     /   \
+      //    S     S'
+      //
+      //    a     c
+      //     \   /
+      //      C=C
+      //     /   \
+      //    b     d
+      //
+      // planar flip is unchanged, and this is seqcis, seqtrans
+      // 
+      //    a     R'
+      //     \   /
+      //      C=C
+      //     /   \
+      //    b     S'
+      //
+      // planar flip is unchanged, and this is seqCis, seqTrans
+      // 
+
       a.setCIPChirality(c | ((ruleA - 1) << JC.CIP_CHIRALITY_NAME_OFFSET));
       b.setCIPChirality(c | ((ruleB - 1) << JC.CIP_CHIRALITY_NAME_OFFSET));
       if (Logger.debugging)
@@ -1748,7 +1778,7 @@ public class CIPChirality {
       // [0 0 0 0] CIP 1982 S4
       // [0 0 2 2] P-93.5.3.2 spiro
       // [0 1 1 1] or [0 0 0 3] CIP Helv. Chim. Acta 1966 #32 -- C3-symmetric
-      boolean checkS4 = (priorities[3] != 1 && !isAux);
+      boolean checkS4 = (nPriorities == 1 && !isAux);
       root.rule6refIndex = atoms[priorities[2]].atomIndex;
       // could be priorities[1] as well; just so it is not 0 or 3,
       // as that could be the singlet in the C3-symmetric case.

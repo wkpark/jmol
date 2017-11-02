@@ -30,7 +30,7 @@ public class MeshSurface {
   }
 
 
-  public V3[] spanningVectors;
+  public V3[] oabc;
 
   public String meshType;
 

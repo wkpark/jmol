@@ -1499,7 +1499,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.insideOut = sg.params.isInsideOut();
     thisMesh.isModelConnected = sg.params.isModelConnected;
     thisMesh.vertexSource = sg.params.vertexSource;
-    thisMesh.spanningVectors = sg.getSpanningVectors();
+    thisMesh.oabc = sg.getOriginVaVbVc();
     thisMesh.calculatedArea = null;
     thisMesh.calculatedVolume = null;
     // from JVXL file:

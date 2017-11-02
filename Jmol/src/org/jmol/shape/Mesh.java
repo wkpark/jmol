@@ -181,7 +181,7 @@ public class Mesh extends MeshSurface {
     showTriangles = false; //as distinct entities
     slabbingObject = null;
     slabOptions = null;
-    spanningVectors = null;    
+    oabc = null;    
     symopNormixes = null;
     title = null;
     unitCell = null;

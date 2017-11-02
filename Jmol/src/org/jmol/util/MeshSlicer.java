@@ -725,7 +725,7 @@ public class MeshSlicer {
    */
   protected void slabBrillouin(P3[] unitCellPoints) {
     MeshSurface m = this.m;
-    T3[] vectors = (unitCellPoints == null ? m.spanningVectors : unitCellPoints);
+    T3[] vectors = (unitCellPoints == null ? m.oabc : unitCellPoints);
     if (vectors == null)
       return;
 

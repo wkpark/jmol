@@ -78,6 +78,8 @@ public interface SymmetryInterface {
 
   public String getSpaceGroupName();
 
+  public void setSpaceGroupName(String name);
+
   public M4 getSpaceGroupOperation(int i);
 
   public String getSpaceGroupOperationCode(int op);
@@ -210,6 +212,8 @@ public interface SymmetryInterface {
 
   public String getLatticeType();
 
+  public void setLatticeType(String type);
+
   public String getIntTableNumber();
 
   Lst<P3> generateCrystalClass(P3 pt0);
@@ -217,5 +221,7 @@ public interface SymmetryInterface {
   void toFractionalM(M4 m);
 
   void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms);
+
+  public Object getConventionalUnitCell(String latticeType);
 
 }

@@ -3,6 +3,7 @@ package org.jmol.adapter.readers.xtal;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
 import javajs.util.Lst;
@@ -37,12 +38,19 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
 
   @Override
   protected void initializeReader() throws Exception {
+    isPrimitive = true;
     readStructure(null);
     continuing = false;
   }
   
   protected void readStructure(String titleMsg) throws Exception {
     title = rd().trim();
+    int pt = title.indexOf("--params");
+    if ((pt = title.indexOf("& ", pt + 1)) >= 0) {
+      //AB3_hR8_155_c_de & a,c/a,x1,y2,y3 --params=4.91608,2.53341483458,0.237,0.43,0.07 & R32
+      latticeType = title.substring(pt + 2, pt + 3);
+      Logger.info("AFLOW lattice:" + latticeType + " title=" + title);
+    }
     readUnitCellVectors();
     readMolecularFormula();
     readCoordinates();
@@ -75,9 +83,9 @@ public class VaspPoscarReader extends AtomSetCollectionReader {
     if (scaleFac != 1)
       for (int i = 0; i < unitCellData.length; i++)
         unitCellData[i] *= scaleFac;
-    addPrimitiveLatticeVector(0, unitCellData, 0);
-    addPrimitiveLatticeVector(1, unitCellData, 3);
-    addPrimitiveLatticeVector(2, unitCellData, 6);
+    addExplicitLatticeVector(0, unitCellData, 0);
+    addExplicitLatticeVector(1, unitCellData, 3);
+    addExplicitLatticeVector(2, unitCellData, 6);
   }
 
   protected String[] elementLabel;

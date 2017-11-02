@@ -108,7 +108,7 @@ public class AimsReader extends AtomSetCollectionReader {
       Logger.warn("more than 3 FHI-aims lattice vectors found with line: "
           + line);
     } else {
-      addPrimitiveLatticeVector(nLatticeVectors++, new float[] {parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3])}, 0);
+      addExplicitLatticeVector(nLatticeVectors++, new float[] {parseFloatStr(tokens[1]), parseFloatStr(tokens[2]), parseFloatStr(tokens[3])}, 0);
       setFractionalCoordinates(nLatticeVectors == 3);
     }
   }

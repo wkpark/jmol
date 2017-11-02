@@ -133,9 +133,9 @@ public class EspressoReader extends AtomSetCollectionReader {
 
   private void setCellParams() throws Exception {
     if (cellParams != null) {
-      addPrimitiveLatticeVector(0, cellParams, 0);
-      addPrimitiveLatticeVector(1, cellParams, 3);
-      addPrimitiveLatticeVector(2, cellParams, 6);
+      addExplicitLatticeVector(0, cellParams, 0);
+      addExplicitLatticeVector(1, cellParams, 3);
+      addExplicitLatticeVector(2, cellParams, 6);
       setSpaceGroupName("P1");
     }
   }

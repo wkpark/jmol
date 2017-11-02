@@ -155,7 +155,7 @@ MERS=(1,2,2)   GNORM=4
           xyz[j + 1] = atom.y;
           xyz[j + 2] = atom.z;
         }
-        addPrimitiveLatticeVector(i, xyz, j);
+        addExplicitLatticeVector(i, xyz, j);
       }
       for (int i = ac; --i >= 0;)
         setAtomCoord(vAtoms.get(i));

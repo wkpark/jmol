@@ -133,9 +133,9 @@ public class XmlQEReader extends XmlReader {
           m[i + 1] *= b;
           m[i + 2] *= c;
         }
-        parent.addPrimitiveLatticeVector(0, m, 0);
-        parent.addPrimitiveLatticeVector(1, m, 3);
-        parent.addPrimitiveLatticeVector(2, m, 6);
+        parent.addExplicitLatticeVector(0, m, 0);
+        parent.addExplicitLatticeVector(1, m, 3);
+        parent.addExplicitLatticeVector(2, m, 6);
         break;
       }
 

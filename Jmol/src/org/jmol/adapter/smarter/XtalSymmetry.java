@@ -207,6 +207,7 @@ public class XtalSymmetry {
         if (readerSymmetry != null)
           setSpaceGroupFrom(readerSymmetry);
         //parameters are counts of unit cells as [a b c]
+        
         applySymmetryLattice();
         if (readerSymmetry != null && filterSymop == null)
           setAtomSetSpaceGroupName(readerSymmetry.getSpaceGroupName());
@@ -249,7 +250,34 @@ public class XtalSymmetry {
     rminx = rminy = rminz = Float.MAX_VALUE;
     rmaxx = rmaxy = rmaxz = -Float.MAX_VALUE;
     P3 pt0 = null;
+    if (acr.latticeType == null)
+      acr.latticeType = symmetry.getLatticeType();
+    if (acr.isPrimitive) {
+      asc.setCurrentModelInfo("isprimitive", Boolean.TRUE);
+      if (!"P".equals(acr.latticeType)) {
+        asc.setCurrentModelInfo("unitcell_conventional", symmetry.getConventionalUnitCell(acr.latticeType));
+      }
+    }
+    if (acr.latticeType != null)
+      asc.setCurrentModelInfo("latticeType", acr.latticeType);
+
+
+    if (acr.fillRange instanceof String && acr.latticeType != null) {
+      
+     String type = (String) acr.fillRange; // conventional or primitive
+     if (type.equals("conventional")) {
+       acr.fillRange = symmetry.getConventionalUnitCell(acr.latticeType);
+     } else if (type.equals("primitive")) {
+       acr.fillRange = symmetry.getUnitCellVectors();
+       symmetry.toFromPrimitive(true, acr.latticeType.charAt(0), (T3[]) acr.fillRange);
+     } else {
+       acr.fillRange = null;
+     }
+     if (acr.fillRange != null)
+       acr.addJmolScript("unitcell " + type);
+    }
     if (acr.fillRange != null) {
+      
       if (bsAtoms == null)
         asc.bsAtoms = bsAtoms = new BS();
       acr.forcePacked = true;
@@ -259,13 +287,13 @@ public class XtalSymmetry {
       maxXYZ = P3i.new3(1, 1, 1);
       P3[] oabc = new P3[4];
       for (int i = 0; i < 4; i++)
-        oabc[i] = P3.newP(acr.fillRange[i]);
+        oabc[i] = P3.newP(((T3[]) acr.fillRange)[i]);
       adjustRangeMinMax(oabc);
       //Logger.info("setting min/max for original lattice to " + minXYZ + " and "
         //  + maxXYZ);
       if (sym2 == null) {
         sym2 = new Symmetry();
-        sym2.getUnitCell(acr.fillRange, false, null);
+        sym2.getUnitCell((T3[]) acr.fillRange, false, null);
       }
       applyAllSymmetry(acr.ms, bsAtoms);
       pt0 = new P3();
@@ -1020,7 +1048,7 @@ public class XtalSymmetry {
     }
     asc.setCurrentModelInfo("symmetryCount",
         Integer.valueOf(operationCount));
-    asc.setCurrentModelInfo("latticeType", symmetry.getLatticeType());
+    asc.setCurrentModelInfo("latticeType", acr.latticeType == null ? "P" : acr.latticeType);
     asc.setCurrentModelInfo("intlTableNo", symmetry.getIntTableNumber());
     if (acr.sgName == null || acr.sgName.indexOf("?") >= 0 || acr.sgName.indexOf("!") >= 0)
       setAtomSetSpaceGroupName(acr.sgName = symmetry.getSpaceGroupName());

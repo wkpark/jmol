@@ -1643,6 +1643,12 @@ class SpaceGroup {
     return n / pts.size();
   }
 
+  public void setName(String name) {
+    this.name = name;
+    if (name.startsWith("HM:"))
+      latticeType = name.substring(3, 4);
+  }
+
 //  private int[] latticeOps;
 //  public int[] getAllLatticeOps() {
 //    // presumes all lattice operations are listed at end of operations list

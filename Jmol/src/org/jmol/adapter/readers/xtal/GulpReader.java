@@ -185,9 +185,9 @@ public class GulpReader extends AtomSetCollectionReader {
     if (sgName != null)
       setSpaceGroupName(isPrimitive ? "P1" : sgName);
     if (isPrimitive && primitiveData != null) {
-      addPrimitiveLatticeVector(0, primitiveData, 0);
-      addPrimitiveLatticeVector(1, primitiveData, 3);
-      addPrimitiveLatticeVector(2, primitiveData, 6);
+      addExplicitLatticeVector(0, primitiveData, 0);
+      addExplicitLatticeVector(1, primitiveData, 3);
+      addExplicitLatticeVector(2, primitiveData, 6);
     } else if (a != 0) {
       if (isSlab) {
         c = -1;

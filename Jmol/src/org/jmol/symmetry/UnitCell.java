@@ -636,7 +636,19 @@ class UnitCell extends SimpleUnitCell {
     return Quat.getQuaternionFrame(null, v, x).inv();
   }
 
+  /**
+   * 
+   * @param def
+   *        String "abc;offset" or M3 or M4 to origin; if String, can be
+   *        preceded by ! for "reverse of". For example,
+   *        "!a-b,-5a-5b,-c;7/8,0,1/8" offset is optional,
+   *        and can be a definition such as "a=3.40,b=4.30,c=5.02,alpha=90,beta=90,gamma=129"
+   * 
+   * @return [origin va vb vc]
+   */
   public T3[] getV0abc(Object def) {
+    if (def instanceof T3[])
+      return (T3[]) def;
     M4 m;
     boolean isRev = false;
     V3[] pts = new V3[4];
@@ -746,31 +758,19 @@ class UnitCell extends SimpleUnitCell {
                                    0,    0,    1});
       break;
     case 'R':
-        mf = M3.newA9(new float[] { 1/3f,  1/3f, -2/3f, 
-                                   -1/3f,  2/3f, -1/3f, 
-                                    1/3f,  1/3f,  1/3f});
-        
-        mf = M3.newA9(new float[] { -1/3f,  2/3f, -1/3f, 
-                                    -2/3f,  1/3f, 1/3f, 
-                                     1/3f,  1/3f,  1/3f});
-        
         mf = M3.newA9(new float[] { 2/3f, -1/3f, -1/3f, 
                                     1/3f,  1/3f, -2/3f, 
                                      1/3f,  1/3f,  1/3f});
       break;
     case 'I':
-//      f = new float[] { .5f, .5f, -.5f, -.5f, .5f, .5f, .5f, -.5f, .5f };
-      mf = M3.newA9(new float[] { -.5f,  .5f,  .5f,  // was y   
-                                   .5f, -.5f,  .5f,  // was z
-                                   .5f,  .5f, -.5f });// was x
-//    : new float[] { 1, 0, 1, 1, 1, 0, 0, 1, 1 })
+      mf = M3.newA9(new float[] { -.5f,  .5f,  .5f,   
+                                   .5f, -.5f,  .5f,
+                                   .5f,  .5f, -.5f });
       break;
     case 'F':
-     // WAS f = new float[] { .5f, .5f, 0, 0, .5f, .5f, .5f, 0, .5f };
       mf = M3.newA9(new float[] { 0,    0.5f, 0.5f, 
                                   0.5f, 0,    0.5f, 
                                   0.5f, 0.5f, 0 });
-//      : new float[] { 1, -1, 1, 1, 1, -1, -1, 1, 1 }) : null);
       break;
     }
     if (!toPrimitive)
@@ -782,6 +782,19 @@ class UnitCell extends SimpleUnitCell {
       toCartesian(p, false);
     }
     return true;
+  }
+
+  /**
+   * return a conventional lattice from a primitive
+   * 
+   * @param latticeType  "A" "B" "C" "R" etc.
+   * @return [origin va vb vc]
+   */
+  public Object getConventionalUnitCell(String latticeType) {
+    T3[] oabc = getUnitCellVectors();
+    if (!latticeType.equals("P"))
+      toFromPrimitive(false, latticeType.charAt(0), oabc);
+    return oabc;
   }
   
 }

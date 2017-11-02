@@ -53,6 +53,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
 
   @Override
   protected void initializeReader() {
+    isPrimitive = true;
     setSpaceGroupName("P1");
     setFractionalCoordinates(true);
     inputOnly = checkFilterKey("INPUT");
@@ -146,7 +147,7 @@ public class VaspOutcarReader extends AtomSetCollectionReader {
     }
     float[] f = new float[3];
     for (int i = 0; i < 3; i++)
-      addPrimitiveLatticeVector(i, fillFloatArray(fixMinus(rd()), 0, f), 0);
+      addExplicitLatticeVector(i, fillFloatArray(fixMinus(rd()), 0, f), 0);
   }
 
   private String fixMinus(String line) {

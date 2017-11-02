@@ -525,6 +525,13 @@ public class CmdExt extends ScriptExt {
         return i;
       switch (tok) {
       case T.unitcell:
+        // load .... FILL UNITCELL [conventional | primitive]
+        String type = paramAsStr(i++).toLowerCase();
+        if (PT.isOneOf(type, ";conventional;primitive;")) {
+          htParams.put("fillRange", type); // "conventional" or "primitive"
+          sOptions.append(" FILL UNITCELL \"" + type + "\"");
+          return i;
+        } 
         SymmetryInterface unitCell = vwr.getCurrentUnitCell();
         if (unitCell != null) {
           oabc = BoxInfo.toOABC(
@@ -4963,29 +4970,53 @@ public class CmdExt extends ScriptExt {
     case T.identifier:
       String s = paramAsStr(i).toLowerCase();
       ucname = s;
-      if (s.indexOf(",") < 0 && !chk) {
-        // parent, standard, conventional, primitive
-        eval.setCurrentCagePts(null, null); // reset
-        if (PT.isOneOf(ucname, ";parent;standard;primitive;")) {
-          newUC = vwr.ms.getInfo(vwr.am.cmi, "unitcell_conventional");
-          if (newUC != null)
-            eval.setCurrentCagePts(vwr.getV0abc(newUC), "" + newUC);
+      if (s.indexOf(",") >= 0 || chk) {
+        newUC = s;
+        break;
+      }
+      String stype = null;
+      // parent, standard, conventional, primitive
+      eval.setCurrentCagePts(null, null);
+      // reset -- presumes conventional, so if it is not, 
+      // _M.unitcell_conventional must be set in the reader.
+
+      newUC = vwr.ms.getInfo(vwr.am.cmi, "unitcell_conventional");
+      if (PT.isOneOf(ucname, ";parent;standard;primitive;")) {
+        if (newUC == null && vwr.ms.getInfo(vwr.am.cmi, "isprimitive") != null) {
+          showString("Cannot convert unit cell when file data is primitive and have no lattice information");
+          return;
         }
+        // unitcell primitive "C"
+        if (ucname.equals("primitive") && tokAt(i + 1) == T.string)
+          stype = paramAsStr(++i).toUpperCase();
+      }
+      if (newUC instanceof T3[]) {
+        // from reader
+        oabc = (T3[]) newUC;
+        stype = (String) vwr.ms.getInfo(vwr.am.cmi, "latticeType");
+      }
+      if (newUC != null)
+        eval.setCurrentCagePts(vwr.getV0abc(newUC), "" + newUC);
+      if (!ucname.equals("conventional")) {
         s = (String) vwr.ms.getInfo(vwr.am.cmi, "unitcell_" + ucname);
         if (s == null) {
           boolean isPrimitive = ucname.equals("primitive");
           if (isPrimitive || ucname.equals("reciprocal")) {
-            float scale = (slen == i + 1 ? 1 : tokAt(i + 1) == T.integer ? intParameter(++i) * (float) Math.PI : floatParameter(++i));
+            float scale = (slen == i + 1 ? 1
+                : tokAt(i + 1) == T.integer ? intParameter(++i)
+                    * (float) Math.PI : floatParameter(++i));
             SymmetryInterface u = vwr.getCurrentUnitCell();
             ucname = (u == null ? "" : u.getSpaceGroupName() + " ") + ucname;
             oabc = (u == null ? new P3[] { P3.new3(0, 0, 0), P3.new3(1, 0, 0),
                 P3.new3(0, 1, 0), P3.new3(0, 0, 1) } : u.getUnitCellVectors());
-            String stype = (String) vwr.getSymTemp()
-                .getSymmetryInfoAtom(vwr.ms, vwr.getFrameAtoms().nextSetBit(0), null, 0, null, null,
-                    null, T.lattice, 0, -1);
+            if (stype == null)
+              stype = (String) vwr.getSymTemp().getSymmetryInfoAtom(vwr.ms,
+                  vwr.getFrameAtoms().nextSetBit(0), null, 0, null, null, null,
+                  T.lattice, 0, -1);
             if (u == null)
               u = vwr.getSymTemp();
-            u.toFromPrimitive(true, stype.length() == 0 ? 'P' : stype.charAt(0), oabc);
+            u.toFromPrimitive(true,
+                stype.length() == 0 ? 'P' : stype.charAt(0), oabc);
             if (!isPrimitive) {
               SimpleUnitCell.getReciprocal(oabc, oabc, scale);
             }
@@ -4994,7 +5025,6 @@ public class CmdExt extends ScriptExt {
         }
         showString(s);
       }
-      newUC = s;
       break;
     case T.isosurface:
     case T.dollarsign:

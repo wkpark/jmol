@@ -115,7 +115,7 @@ public class AbinitReader extends AtomSetCollectionReader {
       return;
     setSpaceGroupName("P1");
     for (int i = 0; i < 3; i++)
-      addPrimitiveLatticeVector(i, cellLattice, i * 3);
+      addExplicitLatticeVector(i, cellLattice, i * 3);
     Atom[] atoms = asc.atoms;
     int i0 = asc.getAtomSetAtomIndex(asc.iSet);
     if (!iHaveFractionalCoordinates)

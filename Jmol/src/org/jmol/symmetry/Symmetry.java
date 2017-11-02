@@ -312,6 +312,12 @@ public class Symmetry implements SymmetryInterface {
   }
 
   @Override
+  public void setSpaceGroupName(String name) {
+    if (spaceGroup != null)
+      spaceGroup.name = name;
+  }
+
+  @Override
   public int getSpaceGroupOperationCount() {
     return (symmetryInfo != null ? symmetryInfo.symmetryOperations.length
         : spaceGroup != null && spaceGroup.finalOperations != null ? spaceGroup.finalOperations.length
@@ -323,6 +329,12 @@ public class Symmetry implements SymmetryInterface {
     return (symmetryInfo != null ? symmetryInfo.latticeType 
         : spaceGroup == null ? "P" 
             : spaceGroup.latticeType);
+  }
+
+  @Override
+  public void setLatticeType(String type) {
+    if (spaceGroup != null)
+      spaceGroup.latticeType = type;
   }
 
   @Override
@@ -802,6 +814,18 @@ public class Symmetry implements SymmetryInterface {
   
   private CIPChirality getCIPChirality(Viewer vwr) {
     return (cip == null ? (cip = ((CIPChirality) Interface.getInterface("org.jmol.symmetry.CIPChirality", vwr, "script"))) : cip);
+  }
+
+  
+  /**
+   * return a conventional lattice from a primitive
+   * 
+   * @param latticeType  "A" "B" "C" "R" etc.
+   * @return [origin va vb vc]
+   */
+  @Override
+  public Object getConventionalUnitCell(String latticeType) {
+    return (unitCell == null || latticeType == null ? null : unitCell.getConventionalUnitCell(latticeType));
   }
 
 }

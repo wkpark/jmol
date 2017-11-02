@@ -38,7 +38,6 @@ import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.Quat;
 import javajs.util.SB;
-import javajs.util.T3;
 import javajs.util.V3;
 
 import org.jmol.api.Interface;
@@ -160,8 +159,10 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   protected int ptLine;
 
   // protected/public state variables
+  
+  protected String latticeType;
   public int[] latticeCells;
-  public T3[] fillRange;
+  public Object fillRange;
   public boolean doProcessLines;
   public boolean iHaveUnitCell;
   public boolean iHaveSymmetryOperators;
@@ -199,6 +200,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   protected boolean forcePacked;
   public float packingError = 0.02f;
   protected boolean rotateHexCell; // aflow CIF reader only
+  protected boolean isPrimitive; // VASP POSCAR reasder
 
 
   // private state variables
@@ -550,7 +552,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     bsFilter = (BS) htParams.get("bsFilter");
     setFilter(null);
-    fillRange = (T3[]) htParams.get("fillRange");
+    fillRange = htParams.get("fillRange");
     if (strSupercell != null) {
       if (!checkFilterKey("NOPACK"))
         forcePacked = true;
@@ -639,9 +641,9 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
         setFractionalCoordinates(true);
       if (fParams.length == 9) {
         // these are vectors
-        addPrimitiveLatticeVector(0, fParams, 0);
-        addPrimitiveLatticeVector(1, fParams, 3);
-        addPrimitiveLatticeVector(2, fParams, 6);
+        addExplicitLatticeVector(0, fParams, 0);
+        addExplicitLatticeVector(1, fParams, 3);
+        addExplicitLatticeVector(2, fParams, 6);
       } else {
         setUnitCell(fParams[0], fParams[1], fParams[2], fParams[3], fParams[4],
             fParams[5]);
@@ -712,7 +714,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   private String previousSpaceGroup;
   private float[] previousUnitCell;
 
-  protected void initializeSymmetry() {
+  protected final void initializeSymmetry() {
     previousSpaceGroup = sgName;
     previousUnitCell = unitCellParams;
     iHaveUnitCell = ignoreFileUnitCell;
@@ -832,7 +834,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     iHaveUnitCell = checkUnitCell(6);
   }
 
-  public void addPrimitiveLatticeVector(int i, float[] xyz, int i0) {
+  public void addExplicitLatticeVector(int i, float[] xyz, int i0) {
     if (ignoreFileUnitCell)
       return;
     if (i == 0)
@@ -888,6 +890,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     }
     if (symmetry == null) // cif file with no symmetry triggers exception on LOAD {1 1 1}
       iHaveUnitCell = false;
+    else
+      symmetry.setSpaceGroupName(sgName);
     return symmetry;
   }
   private void checkUnitCellOffset() {

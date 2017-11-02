@@ -216,9 +216,9 @@ public class MagresReader extends AtomSetCollectionReader {
     cellParams = new float[9];
     for (int i = 0; i < 9; i++)
       cellParams[i] = parseFloatStr(tokens[i + 1]);
-    addPrimitiveLatticeVector(0, cellParams, 0);
-    addPrimitiveLatticeVector(1, cellParams, 3);
-    addPrimitiveLatticeVector(2, cellParams, 6);
+    addExplicitLatticeVector(0, cellParams, 0);
+    addExplicitLatticeVector(1, cellParams, 3);
+    addExplicitLatticeVector(2, cellParams, 6);
     setSpaceGroupName("P1");
     return true;
   }

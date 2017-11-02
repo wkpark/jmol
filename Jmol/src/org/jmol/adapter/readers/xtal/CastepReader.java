@@ -417,7 +417,7 @@ public class CastepReader extends AtomSetCollectionReader {
       lv[0] = abc[i].x;
       lv[1] = abc[i].y;
       lv[2] = abc[i].z;
-      addPrimitiveLatticeVector(i, lv, 0);
+      addExplicitLatticeVector(i, lv, 0);
     }
   }
 

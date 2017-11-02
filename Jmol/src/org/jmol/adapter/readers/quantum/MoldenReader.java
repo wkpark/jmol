@@ -114,9 +114,9 @@ public class MoldenReader extends MopacSlaterReader {
     if (line.startsWith("[CELLAXES]")) {
       float[] f = new float[9];
       fillFloatArray(null, 0, f);
-      addPrimitiveLatticeVector(0, f, 0);
-      addPrimitiveLatticeVector(1, f, 3);
-      addPrimitiveLatticeVector(2, f, 6);
+      addExplicitLatticeVector(0, f, 0);
+      addExplicitLatticeVector(1, f, 3);
+      addExplicitLatticeVector(2, f, 6);
       return true;
     }
     return false;

@@ -44,12 +44,12 @@ package org.jmol.adapter.readers.xtal;
 
 import javajs.util.DF;
 import javajs.util.Lst;
+import javajs.util.M4;
 import javajs.util.PT;
 
 
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.smarter.XtalSymmetry;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -742,9 +742,13 @@ Species   Ion     s      p      d      f     Total  Charge (e)
     }
     boolean isGammaPoint = (qvec.length() == 0);
     float nx = 1, ny = 1, nz = 1;
-    XtalSymmetry xSym = asc.getXSymmetry();
     if (ptSupercell != null && !isOK && !isSecond) {
-      xSym.setSupercellFromPoint(ptSupercell);
+      matSupercell = new M4();
+      matSupercell.m00 = ptSupercell.x;
+      matSupercell.m11 = ptSupercell.y;
+      matSupercell.m22 = ptSupercell.z;
+      matSupercell.m33 = 1;
+      Logger.info("Using supercell \n" + matSupercell);
       nx = ptSupercell.x;
       ny = ptSupercell.y;
       nz = ptSupercell.z;
@@ -753,8 +757,7 @@ Species   Ion     s      p      d      f     Total  Charge (e)
       float dx = (qvec.x == 0 ? 1 : qvec.x) * nx;
       float dy = (qvec.y == 0 ? 1 : qvec.y) * ny;
       float dz = (qvec.z == 0 ? 1 : qvec.z) * nz;
-      
-      if (!isInt(dx) || !isInt(dy) || !isInt(dz))
+      if ((nx != 1 || ny != 1 || nz != 1) && isGammaPoint || !isInt(dx) || !isInt(dy) || !isInt(dz))
         return;
       isOK = true;
     }
@@ -805,7 +808,9 @@ Species   Ion     s      p      d      f     Total  Charge (e)
             t.sub2(atoms[k], atoms[atoms[k].atomSite]);
             // for supercells, fractional coordinates end up
             // in terms of the SUPERCELL and need to be transformed.
-            xSym.rotateToSuperCell(t); 
+            // TODO: UNTESTED
+            if (matSupercell != null)
+              matSupercell.rotTrans(t);
             setPhononVector(data, atoms[k], t, qvec, v);
             asc.addVibrationVectorWithSymmetry(k, v.x, v.y, v.z, true);
           }
@@ -817,6 +822,8 @@ Species   Ion     s      p      d      f     Total  Charge (e)
           + " cm-1 " + qname);
     }
   }
+
+  private M4 matSupercell;
 
   private String getFractionalCoord(V3 qvec) {
     return (symmetry != null && isInt(qvec.x * 12) 

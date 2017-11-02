@@ -44,7 +44,6 @@ import org.jmol.java.BS;
 import org.jmol.symmetry.Symmetry;
 import org.jmol.symmetry.SymmetryOperation;
 import org.jmol.util.BSUtil;
-import org.jmol.util.Logger;
 import org.jmol.util.SimpleUnitCell;
 import org.jmol.util.Tensor;
 import org.jmol.util.Vibration;
@@ -128,28 +127,10 @@ public class XtalSymmetry {
     doCentroidUnitCell = acr.doCentroidUnitCell;
     centroidPacked = acr.centroidPacked;
     filterSymop = acr.filterSymop;
-    if (acr.strSupercell == null)
-      setSupercellFromPoint(acr.ptSupercell);
+    //if (acr.strSupercell == null)
+      //setSupercellFromPoint(acr.ptSupercell);
   }
 
-  private P3 ptSupercell;
-  //private float[] fmatSupercell;
-  private M4 matSupercell;
-
-  public void setSupercellFromPoint(P3 pt) {
-    ptSupercell = pt;
-    if (pt == null) {
-      matSupercell = null;
-      return;
-    }
-    matSupercell = new M4();
-    matSupercell.m00 = pt.x;
-    matSupercell.m11 = pt.y;
-    matSupercell.m22 = pt.z;
-    matSupercell.m33 = 1;
-    Logger.info("Using supercell \n" + matSupercell);
-  }
-  
   private Lst<float[]> trajectoryUnitCells;
   
   private void setUnitCell(float[] info, M3 matUnitCellOrientation,
@@ -334,7 +315,6 @@ public class XtalSymmetry {
     if (bsAtoms != null)
       iAtomFirst = bsAtoms.nextSetBit(iAtomFirst);
     if (rminx == Float.MAX_VALUE) {
-      matSupercell = null;
       supercell = null;
       oabc = null;
     } else {
@@ -570,25 +550,25 @@ public class XtalSymmetry {
     if (doCentroidUnitCell)
       asc.setInfo("centroidMinMax", new int[] { minXYZ.x, minXYZ.y, minXYZ.z,
           maxXYZ.x, maxXYZ.y, maxXYZ.z, (centroidPacked ? 1 : 0) });
-    if (ptSupercell != null) {
-      asc.setCurrentModelInfo("supercell", ptSupercell);
-      switch (dtype) {
-      case 3:
-        // standard
-        minXYZ.z *= (int) Math.abs(ptSupercell.z);
-        maxXYZ.z *= (int) Math.abs(ptSupercell.z);
-        //$FALL-THROUGH$;
-      case 2:
-        // slab or standard
-        minXYZ.y *= (int) Math.abs(ptSupercell.y);
-        maxXYZ.y *= (int) Math.abs(ptSupercell.y);
-        //$FALL-THROUGH$;
-      case 1:
-        // slab, polymer, or standard
-        minXYZ.x *= (int) Math.abs(ptSupercell.x);
-        maxXYZ.x *= (int) Math.abs(ptSupercell.x);
-      }
-    }
+//    if (ptSupercell != null) {
+//      asc.setCurrentModelInfo("supercell", ptSupercell);
+//      switch (dtype) {
+//      case 3:
+//        // standard
+//        minXYZ.z *= (int) Math.abs(ptSupercell.z);
+//        maxXYZ.z *= (int) Math.abs(ptSupercell.z);
+//        //$FALL-THROUGH$;
+//      case 2:
+//        // slab or standard
+//        minXYZ.y *= (int) Math.abs(ptSupercell.y);
+//        maxXYZ.y *= (int) Math.abs(ptSupercell.y);
+//        //$FALL-THROUGH$;
+//      case 1:
+//        // slab, polymer, or standard
+//        minXYZ.x *= (int) Math.abs(ptSupercell.x);
+//        maxXYZ.x *= (int) Math.abs(ptSupercell.x);
+//      }
+//    }
     if (doCentroidUnitCell || doPackUnitCell || symmetryRange != 0
         && maxXYZ.x - minXYZ.x == 1 && maxXYZ.y - minXYZ.y == 1
         && maxXYZ.z - minXYZ.z == 1) {
@@ -1272,11 +1252,6 @@ public class XtalSymmetry {
 
   public void setTimeReversal(int op, int timeRev) {
     symmetry.setTimeReversal(op, timeRev);
-  }
-
-  public void rotateToSuperCell(V3 t) {
-    if (matSupercell != null)
-      matSupercell.rotTrans(t);
   }
 
   private int nVib;

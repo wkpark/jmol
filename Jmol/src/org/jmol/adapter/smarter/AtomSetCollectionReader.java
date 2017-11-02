@@ -556,10 +556,12 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
         forcePacked = true;
     }
     o = htParams.get("supercell");
-    if (o instanceof String)
+    if (o instanceof P3) {
+      P3 s = ptSupercell = (P3) o; // only used by CASTEP phonon reader now
+      strSupercell = ((int) s.x) + "a," +((int) s.y) + "b," + ((int) s.z) + "c"; 
+    } else if (o instanceof String) {
       strSupercell = (String) o;
-    else
-      ptSupercell = (P3) o;
+    }
     // ptFile < 0 indicates just one file being read
     // ptFile >= 0 indicates multiple files are being loaded
     // if the file is not the first read in the LOAD command, then
@@ -1262,8 +1264,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
       moreUnitCellInfo = null;
     }
     finalizeSubclassSymmetry(sym != null);
-    if (sym != null && ptSupercell != null)
-      asc.getXSymmetry().finalizeUnitCell(ptSupercell);
+    //if (sym != null && ptSupercell != null)
+      //asc.getXSymmetry().finalizeUnitCell(ptSupercell);
     initializeSymmetry();
     return sym;
   }

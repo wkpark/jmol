@@ -43,7 +43,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
 
   private int drawEdges;
   private boolean isAll;
-  private boolean frontOnly;
+  private boolean frontOnly, edgesOnly;
   private P3[] screens3f;
   private P3i scrVib;
   private boolean vibs;
@@ -150,14 +150,16 @@ public class PolyhedraRenderer extends ShapeRenderer {
       }
     }
 
-    boolean isSelected = (bsSelected != null && bsSelected.get(iAtom));
+    boolean isSelected = (iAtom >= 0 && bsSelected != null && bsSelected
+        .get(iAtom));
     isAll = (drawEdges == Polyhedra.EDGES_ALL || isSelected);
     frontOnly = (drawEdges == Polyhedra.EDGES_FRONT);
+    edgesOnly = (drawEdges == Polyhedra.EDGES_ONLY);
 
     // no edges to new points when not collapsed
     //int m = (int) ( Math.random() * 24);
     short[] normixes = p.getNormixes();
-    if (!needTranslucent || g3d.setC(colix)) {
+    if ((!needTranslucent || g3d.setC(colix)) && !edgesOnly) {
       if (exportType == GData.EXPORT_CARTESIAN && !p.collapsed) {
         if (meshSurface == null)
           meshSurface = new MeshSurface();
@@ -183,27 +185,29 @@ public class PolyhedraRenderer extends ShapeRenderer {
       }
     }
     // edges are not drawn translucently ever
-    if (isSelected)
-      colix = C.GOLD;
-    else if (p.colixEdge != C.INHERIT_ALL)
-      colix = p.colixEdge;
-    if (g3d.setC(C.getColixTranslucent3(colix, false, 0)))
-      for (int i = planes.length; --i >= 0;) {
-        int[] pl = planes[i];
-        //       if (pl[3] < 0) {
-        drawEdges(normixes[i], sc[pl[0]], sc[pl[1]], sc[pl[2]], -pl[3]);
-        //          break;
-        //        } else {
-        //          drawFace(normixes[i], sc[pl[0]], sc[pl[1]], sc[pl[2]], 3);
-        //          drawFace(normixes[i], sc[pl[0]], sc[pl[2]], sc[pl[3]], 6);
-        //        }
+    if (isAll || frontOnly || edgesOnly) {
+      if (isSelected)
+        colix = C.GOLD;
+      else if (p.colixEdge != C.INHERIT_ALL)
+        colix = p.colixEdge;
+      if (g3d.setC(C.getColixTranslucent3(colix, false, 0)))
+        for (int i = planes.length; --i >= 0;) {
+          int[] pl = planes[i];
+          //       if (pl[3] < 0) {
+          drawEdges(normixes[i], sc[pl[0]], sc[pl[1]], sc[pl[2]], -pl[3]);
+          //          break;
+          //        } else {
+          //          drawFace(normixes[i], sc[pl[0]], sc[pl[1]], sc[pl[2]], 3);
+          //          drawFace(normixes[i], sc[pl[0]], sc[pl[2]], sc[pl[3]], 6);
+          //        }
 
-      }
+        }
+    }
     return needTranslucent;
   }
 
   private void drawEdges(short normix, P3 a, P3 b, P3 c, int edgeMask) {
-    if (isAll || frontOnly && vwr.gdata.isDirectedTowardsCamera(normix)) {
+    if (isAll || edgesOnly || frontOnly && vwr.gdata.isDirectedTowardsCamera(normix)) {
       int d = (g3d.isAntialiased() ? 6 : 3);
       if ((edgeMask & 1) == 1)
         g3d.fillCylinderBits(GData.ENDCAPS_SPHERICAL, d, a, b);

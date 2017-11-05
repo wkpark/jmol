@@ -3352,7 +3352,7 @@ public class CmdExt extends ScriptExt {
         break;
       case T.offset:
         if (!isFloatParameter(i + 1)) {
-          offset = getPoint3f(++i, true);
+          offset = e.centerParameter(++i, null);
           i = eval.iToken;
           ok = true;
           continue;
@@ -3441,6 +3441,7 @@ public class CmdExt extends ScriptExt {
       case T.noedges:
       case T.edges:
       case T.frontedges:
+      case T.edgesonly:
         if (edgeParameterSeen)
           error(ScriptError.ERROR_incompatibleArguments);
         edgeParameterSeen = true;
@@ -4993,8 +4994,9 @@ public class CmdExt extends ScriptExt {
       if (newUC instanceof T3[]) {
         // from reader
         oabc = (T3[]) newUC;
-        stype = (String) vwr.ms.getInfo(vwr.am.cmi, "latticeType");
       }
+      if (stype == null)
+        stype = (String) vwr.ms.getInfo(vwr.am.cmi, "latticeType");
       if (newUC != null)
         eval.setCurrentCagePts(vwr.getV0abc(newUC), "" + newUC);
       if (!ucname.equals("conventional")) {

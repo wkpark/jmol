@@ -3542,6 +3542,9 @@ public class MathExt {
     data[2] = Integer.valueOf(-1);
     if (e.getShapePropertyData(JC.SHAPE_DRAW, "getCenter", data))
       return vwr.getAtomsNearPt(distance, (P3) data[2]);
+    data[1] = Float.valueOf(distance);
+    if (e.getShapePropertyData(JC.SHAPE_POLYHEDRA, "getAtomsWithin", data))
+      return (BS) data[2];
     return new BS();
   }
 

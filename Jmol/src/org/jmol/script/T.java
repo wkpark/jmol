@@ -1178,8 +1178,9 @@ public class T {
   public final static int eccentricity   = misc  | 107;
   public final static int ed             = misc  | 108;
   public final static int edges          = misc  | 109;
-  public final static int energy         = misc  | 110;
-  public final static int error          = misc  | 111;
+  public final static int edgesonly      = misc  | 110;
+  public final static int energy         = misc  | 111;
+  public final static int error          = misc  | 112;
   public final static int facecenteroffset = misc  | 113;
   public final static int fill    = misc  | 114;
   public final static int filter         = misc  | 116;
@@ -2237,6 +2238,7 @@ public class T {
        "eccentricity",
        "ed",
        "edges",
+       "edgesOnly",
        "energy",
        "exitJmol",
        "faceCenterOffset",
@@ -3288,6 +3290,7 @@ public class T {
         eccentricity,                       //        "eccentricity"
         ed,                                 //        "ed"
         edges,                              //        "edges"
+        edgesonly,                          //        "edgesonly" - Polyhedra
         energy,                             //        "energy"
         exitjmol,                           //        "exitJmol"
         facecenteroffset,                   //        "faceCenterOffset"

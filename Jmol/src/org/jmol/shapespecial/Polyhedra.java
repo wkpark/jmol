@@ -48,7 +48,6 @@ import org.jmol.c.PAL;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
-import org.jmol.modelset.Model;
 import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.shape.AtomShape;
@@ -73,6 +72,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
   private final static int EDGES_NONE = 0;
   public final static int EDGES_ALL = 1;
   public final static int EDGES_FRONT = 2;
+  public final static int EDGES_ONLY = 3;
   private final static int MAX_VERTICES = 250;
   private final static int FACE_COUNT_MAX = MAX_VERTICES - 3;
   private final static int MAX_OTHER = MAX_VERTICES + FACE_COUNT_MAX + 1;
@@ -302,6 +302,10 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       drawEdges = EDGES_ALL;
       return;
     }
+    if ("edgesOnly" == propertyName) {
+      drawEdges = EDGES_ONLY;
+      return;
+    }
     if ("frontedges" == propertyName) {
       drawEdges = EDGES_FRONT;
       return;
@@ -499,6 +503,13 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
     if (property == "checkID") {
       return checkID(id);
     }
+    if (property == "getAtomsWithin"){
+      p = findPoly(id, iatom, true);
+      if (p == null)
+        return false;
+      data[2] = getAtomsWithin(p, ((Float) data[1]).floatValue());
+      return true;
+    }
     if (property == "info") {
       // note that this does not set data[1] to null -- see ScriptExpr
       p = findPoly(id, iatom, true);
@@ -588,6 +599,42 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       return true;
     }
     return getPropShape(property, data);
+  }
+
+  private BS getAtomsWithin(Polyhedron p, float offset) {
+    int[][] faces = p.faces;
+    P3[] vertices = p.vertices;
+    P3 center = (p.center == null ? p.centralAtom : p.center);
+    if (p.planes == null) {
+      V3 vNorm = new V3();
+      V3 vAB = new V3();
+      p.planes = new P4[faces.length];
+      for (int iface = faces.length; --iface >= 0;) {
+        P4 plane = p.planes[iface] = new P4();
+        Measure.getPlaneThroughPoints(vertices[faces[iface][0]],
+            vertices[faces[iface][1]], vertices[faces[iface][2]], vNorm, vAB,
+            plane);
+      }
+    }
+    float maxDistance = 0;
+    for (int i = p.nVertices; --i >= 0;) {
+      float d = vertices[i].distance(center);
+      if (d > maxDistance)
+        maxDistance = d;
+    }
+    BS bsAtoms = BSUtil.copy(vwr.getAtomsNearPt(maxDistance + offset, center));
+    Atom[] atoms = vwr.ms.at;
+    for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
+      for (int f = faces.length; --f >= 0;) {
+        System.out.println(Measure.distanceToPlane(p.planes[f], atoms[i]));
+        if (Measure.distanceToPlane(p.planes[f], atoms[i]) > offset + 0.001f) {
+          bsAtoms.clear(i);
+          break;
+        }
+      }
+    }
+  
+    return bsAtoms;
   }
 
   private boolean checkID(String thisID) {
@@ -1425,6 +1472,8 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       appendCmd(s, "polyhedra frontedges");
     else if (drawEdges == EDGES_ALL)
       appendCmd(s, "polyhedra edges");
+    else if (drawEdges == EDGES_ONLY)
+      appendCmd(s, "polyhedra edgesOnly");
     s.append(vwr.getStateCreator().getAtomShapeState(this));
     int ia;
     for (int i = 0; i < polyhedronCount; i++) {

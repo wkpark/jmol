@@ -8,6 +8,7 @@ import javajs.util.Lst;
 import javajs.util.M4;
 import javajs.util.Measure;
 import javajs.util.P3;
+import javajs.util.P4;
 import javajs.util.T3;
 import javajs.util.V3;
 
@@ -46,6 +47,10 @@ public class Polyhedron {
   private float distanceRef;
   private V3[] normals;
   private short[] normixes;
+  
+  P4[] planes; // used only for distance calculation
+  
+  
 
   public String smiles, smarts, polySmiles;
   /**
@@ -125,7 +130,8 @@ public class Polyhedron {
         o = info.get("color");
         colix = C.getColixS(o == null ? "gold" : o.asString());
         o = info.get("colorEdge");
-        colixEdge = C.getColixS(o == null ? "black" : o.asString());
+        if (o != null)
+        colixEdge = C.getColixS(o.asString());
         o = info.get("offset");
         if (o != null)
           offset = P3.newP(SV.ptValue(o));
@@ -244,7 +250,7 @@ public class Polyhedron {
       info.put("id", id);
       info.put("center", P3.newP(center));
       info.put("color", C.getHexCode(colix));
-      info.put("colorEdge", C.getHexCode(colixEdge == 0 ? colix : colixEdge));
+      info.put("colorEdge", C.getHexCode(colixEdge == C.INHERIT_ALL ? colix : colixEdge));
       if (offset != null)
         info.put("offset", offset);
       if (scale != 1)
@@ -472,6 +478,7 @@ public class Polyhedron {
   }
 
   void setOffset(P3 value) {
+    planes = null; // clear all planes
     if (center == null)
       return; // ID  polyhedra only
     P3 v = P3.newP(value);

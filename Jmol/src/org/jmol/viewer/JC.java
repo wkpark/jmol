@@ -194,19 +194,20 @@ public final class JC {
   }
 
   public static String[] macros = {
-    "aflow", "http://aflowlib.mems.duke.edu/users/jmolers/jmol/spt/AFLOW.spt"
+    "aflow", "http://aflowlib.mems.duke.edu/users/jmolers/jmol/spt/AFLOW.spt", "AFLOW macros",
+    "bz", "http://aflowlib.mems.duke.edu/users/jmolers/jmol/spt/bz.spt", "Brillouin Zone/Wigner-Seitz macros"
   };
 
   public static String getMacroList() {
     SB s = new SB();
-    for (int i = 0; i < macros.length; i += 2)
-      s.append(macros[i]).append("\t").append(macros[i + 1]).append("\n");
+    for (int i = 0; i < macros.length; i += 3)
+      s.append(macros[i]).append("\t").append(macros[i + 1]).append("\t").append(macros[i + 1]).append("\n");
     return s.toString();
   }
 
 
   public static String getMacro(String key) {
-    for (int i = 0; i < macros.length; i += 2)
+    for (int i = 0; i < macros.length; i += 3)
       if (macros[i].equals(key))
         return macros[i + 1];
     return null;
@@ -715,7 +716,7 @@ public final class JC {
     "@acyclic amino&!cyclic",
     "@aliphatic ala,gly,ile,leu,val",
     "@aromatic his,phe,trp,tyr",
-    "@cystine within(group, (cys.sg or cyx.sg) and connected(cys.sg or cyx.sg))",
+    "@cystine within(group,(cys,cyx)&atomname=sg&connected((cys,cyx)&atomname=sg))",
 
     "@buried ala,cys,ile,leu,met,phe,trp,val",
     "@surface amino&!buried",

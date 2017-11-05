@@ -313,8 +313,11 @@ public class Symmetry implements SymmetryInterface {
 
   @Override
   public void setSpaceGroupName(String name) {
-    if (spaceGroup != null)
+    if (spaceGroup != null) {
       spaceGroup.name = name;
+      if (spaceGroup.name.startsWith("HM:"))
+        spaceGroup.latticeType = spaceGroup.name.substring(3,4);
+    }
   }
 
   @Override

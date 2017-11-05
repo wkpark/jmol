@@ -233,6 +233,7 @@ public class XtalSymmetry {
   }
 
   private void setAtomSetSpaceGroupName(String spaceGroupName) {
+    symmetry.setSpaceGroupName(spaceGroupName);
     asc.setCurrentModelInfo("spaceGroup", spaceGroupName + "");
   }
 

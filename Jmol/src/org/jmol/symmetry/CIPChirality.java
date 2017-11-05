@@ -146,6 +146,8 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
+ * 11/05/17 Jmol 14.24.1 fixes a problem with seqCis/seqTrans and also with Rule 2 (799 lines)
+ * 
  * 10/17/17 Jmol 14.20.10 adds S4 check in Rule 6 and also fixes bug in aux descriptors 
  * being skipped when two ligands are equivalent for the root (798 lines)
  * 
@@ -540,8 +542,22 @@ public class CIPChirality {
   //  type CIPChirality.java | find "COUNT_LINE"  >> t
   //  type t |find " " /C
 
+  /**
+   * These elements have 100% natural abundance; we will use their isotope mass number instead of their actual average mass, since there is no difference 
+   */
   static final String RULE_2_nXX_EQ_XX = ";9Be;19F;23Na;27Al;31P;45Sc;55Mn;59Co;75As;89Y;93Nb;98Tc;103Rh;127I;133Cs;141Pr;145Pm;159Tb;165Ho;169Tm;197Au;209Bi;209Po;210At;222Rn;223Fr;226Ra;227Ac;231Pa;232Th;and all > U (atomno > 92)";
-  static final String RULE_2_nXX_REV_XX = ";4He;16O;52Cr;96Mo;175Lu;";
+  
+  /**
+   * These elements have an isotope number that is a bit higher than the average
+   * mass, even though their actual isotope mass is a bit lower. We will change
+   * 16 to 15.9, 52 to 51.9, 96 to 95.9, 175 to 174.9 so as to force the unspecified
+   * mass atom to be higher priority than the specified one. 
+   * 
+   * All other isotopes can use their integer isotope mass number instead of looking up
+   * their exact isotope mass.
+   * 
+   */
+  static final String RULE_2_REDUCE_ISOTOPE_MASS_NUMBER = ";16O;52Cr;96Mo;175Lu;";  
 
   static final int NO_CHIRALITY = 0, TIED = 0;
   static final int A_WINS = -1, B_WINS = 1;
@@ -1363,6 +1379,7 @@ public class CIPChirality {
     int ruleB = currentRule;
     int c = (atop >= 0 && btop >= 0 ? getEneChirality(b2.atoms[btop], b2, a1,
         a1.atoms[atop], isAxial, true) : NO_CHIRALITY);
+    System.out.println(a1 + "." + atop + " " + ruleA + "\n" + b2 + " " + btop + " " +ruleB);
     if (c != NO_CHIRALITY
         && (isAxial || !bsAtropisomeric.get(a.getIndex())
             && !bsAtropisomeric.get(b.getIndex()))) {
@@ -1739,12 +1756,6 @@ public class CIPChirality {
     private BS bsTemp = new BS();
 
     /**
-     * flag to reverse the Rule 2 result for a few isotope types
-     */
-
-    private boolean reverseRule2;
-
-    /**
      * Rule 4b reference chirality (R or S, 1 or 2); root only
      */
     private int rule4Ref;
@@ -1915,24 +1926,29 @@ public class CIPChirality {
     }
 
     /**
-     * get the atomic mass only if needed by Rule 2, testing for two special
+     * get the atomic mass only if needed by Rule 2, testing for three special
      * conditions in the case of isotopes:
      * 
-     * 1) since we will use the mass number for the isotope, do we need to
-     * reverse the finding?
+     * If a duplicate, or an isotope that is 100% nat abundant is specified, or
+     * isotopic mass is not specified, just use the average mass.
      * 
-     * 2) if the is a 100% nat. abundance isotope it is the same as the
-     * unlabeled element, so use the average atomic mass instead, just so those
-     * two are equal.
+     * Otherwise, use the integer isotope mass number, taking care in the cases
+     * of 16O, 52Cr, 96Mo, and 175Lu, to reduce this integer by 0.1 so as to put
+     * it in the correct relationship to the element's average mass.
      * 
-     * @return mass or mass surragate
+     * @return mass or mass surrogate
      */
     private float getMass() {
-      if (mass == UNDETERMINED && (mass = atom.getMass()) == (int) mass) {
-        if (isType(RULE_2_nXX_REV_XX))
-          reverseRule2 = true;
-        else if (elemNo > 92 || isType(RULE_2_nXX_EQ_XX))
-          mass = Elements.getAtomicMass((int) elemNo); // just switch to average 
+      if (mass == UNDETERMINED) {
+        if (isDuplicate || (mass = atom.getMass()) != (int) mass
+            || isType(RULE_2_nXX_EQ_XX))
+          return (mass == UNDETERMINED ? mass = Elements.getAtomicMass((int) elemNo)
+              : mass);
+        // for 16O;52Cr;96Mo;175Lu;
+        // adjust integer mass number down just a bit to account
+        // for average mass being slightly higher than actual isotope mass, not lower
+        if (isType(RULE_2_REDUCE_ISOTOPE_MASS_NUMBER))
+          mass -= 0.1f;
       }
       return mass;
     }
@@ -2483,8 +2499,7 @@ public class CIPChirality {
      */
     private int checkRule2(CIPAtom b) {
       return (b.getMass() == getMass() ? TIED
-          : (reverseRule2 || b.reverseRule2) == (b.mass > mass) ? A_WINS
-              : B_WINS);
+          : b.mass > mass ? B_WINS : A_WINS);
     }
 
     /**
@@ -2815,6 +2830,7 @@ public class CIPChirality {
             if (rs == NO_CHIRALITY) {
               auxEZ = alkeneChild.auxEZ = STEREO_BOTH_EZ;
             } else {
+              isChiralPath = true;
               if (rule2 != null && rule2[0] != RULE_5) {
                 // This is the case of a 3b issue
                 //System.out.println(this + "root needs 3b " + root + getRuleName(rule2[0]) + " " + rs);

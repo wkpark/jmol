@@ -879,6 +879,7 @@ public class ScriptEval extends ScriptExpr {
     if (atomExpression instanceof BS)
       return (BS) atomExpression;
     BS bs = new BS();
+    boolean executing = this.executing;
     try {
       pushContext(null, "getAtomBitSet");
       String scr = "select (" + atomExpression + ")";
@@ -893,6 +894,7 @@ public class ScriptEval extends ScriptExpr {
     } catch (Exception ex) {
       Logger.error("getAtomBitSet " + atomExpression + "\n" + ex);
     }
+    this.executing = executing;
     return bs;
   }
 
@@ -2374,9 +2376,6 @@ public class ScriptEval extends ScriptExpr {
       if (!chk)
         vwr.initialize(!isStateScript, false);
       break;
-    case T.invertSelected:
-      cmdInvertSelected();
-      break;
     case T.javascript:
       cmdScript(T.javascript, null, null);
       break;
@@ -2523,6 +2522,7 @@ public class ScriptEval extends ScriptExpr {
     case T.console:
     case T.hbond: // hbond connect
     case T.image:
+    case T.invertSelected:
     case T.stereo:
     case T.macro:
     case T.mapproperty:
@@ -4077,65 +4077,6 @@ public class ScriptEval extends ScriptExpr {
     else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
     vwr.setHoverLabel(strLabel);
-  }
-
-  private void cmdInvertSelected() throws ScriptException {
-    // invertSelected POINT
-    // invertSelected PLANE
-    // invertSelected HKL
-    // invertSelected STEREO {sp3Atom} {one or two groups)
-    // invertSelected ATOM {ring atom sets}
-    P3 pt = null;
-    P4 plane = null;
-    BS bs = null;
-    int iAtom = Integer.MIN_VALUE;
-    int ipt = 1;
-    switch (tokAt(1)) {
-    case T.nada:
-      if (chk)
-        return;
-      bs = vwr.bsA();
-      pt = vwr.ms.getAtomSetCenter(bs);
-      vwr.invertAtomCoordPt(pt, bs);
-      return;
-    case T.stereo:
-    case T.atoms:
-      ipt++;
-      //$FALL-THROUGH$
-    case T.bitset:
-    case T.expressionBegin:
-    case T.define:
-      bs = atomExpressionAt(ipt);
-      if (!isAtomExpression(iToken + 1)) {
-        checkLengthErrorPt(iToken + 1, iToken + 1);
-        if (!chk) {
-          for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
-            vwr.invertRingAt(i, false);
-          }
-        }
-        return;
-      }
-      iAtom = bs.nextSetBit(0);
-      bs = atomExpressionAt(iToken + 1);
-      break;
-    case T.point:
-      pt = centerParameter(2, null);
-      break;
-    case T.plane:
-      plane = planeParameter(1);
-      break;
-    case T.hkl:
-      plane = hklParameter(2);
-      break;
-    }
-    checkLengthErrorPt(iToken + 1, 1);
-    if (plane == null && pt == null && iAtom == Integer.MIN_VALUE)
-      invArg();
-    if (chk)
-      return;
-    if (iAtom == -1)
-      return;
-    vwr.invertSelected(pt, plane, iAtom, bs);
   }
 
   private void cmdLabel(int index, BS bs) throws ScriptException {

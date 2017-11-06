@@ -143,6 +143,9 @@ public class CmdExt extends ScriptExt {
     case T.image:
       image();
       break;
+    case T.invertSelected:
+      invertSelected();
+      break;
     case T.macro:
       macro();
       break;
@@ -2303,6 +2306,68 @@ public class CmdExt extends ScriptExt {
           + ("".equals(id) || id == null ? null : id), false);
   }
   
+  private void invertSelected() throws ScriptException {
+    // invertSelected POINT
+    // invertSelected PLANE
+    // invertSelected HKL
+    // invertSelected STEREO {sp3Atom} {one or two groups)
+    // invertSelected ATOM {ring atom sets}
+    ScriptEval eval = this.e;
+    P3 pt = null;
+    P4 plane = null;
+    BS bs = null;
+    int iAtom = Integer.MIN_VALUE;
+    int ipt = 1;
+    switch (tokAt(1)) {
+    case T.nada:
+      if (chk)
+        return;
+      bs = vwr.bsA();
+      pt = vwr.ms.getAtomSetCenter(bs);
+      vwr.invertAtomCoordPt(pt, bs);
+      return;
+    case T.stereo:
+    case T.atoms:
+      ipt++;
+      //$FALL-THROUGH$
+    case T.bitset:
+    case T.expressionBegin:
+    case T.define:
+      bs = atomExpressionAt(ipt);
+      if (!eval.isAtomExpression(eval.iToken + 1)) {
+        eval.checkLengthErrorPt(eval.iToken + 1, eval.iToken + 1);
+        if (!chk) {
+          for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+            vwr.invertRingAt(i, false);
+          }
+        }
+        return;
+      }
+      iAtom = bs.nextSetBit(0);
+      bs = atomExpressionAt(eval.iToken + 1);
+      break;
+    case T.point:
+      pt = eval.centerParameter(2, null);
+      break;
+    case T.plane:
+      plane = eval.planeParameter(1);
+      break;
+    case T.hkl:
+      plane = eval.hklParameter(2);
+      break;
+    }
+    eval.checkLengthErrorPt(eval.iToken + 1, 1);
+    if (plane == null && pt == null && iAtom == Integer.MIN_VALUE)
+      invArg();
+    if (chk)
+      return;
+    if (iAtom == -1)
+      return;
+    vwr.invertSelected(pt, plane, iAtom, bs);
+  }
+
+
+
   private void mapProperty() throws ScriptException {
     // map {1.1}.straightness  {2.1}.property_x resno
     BS bsFrom, bsTo;

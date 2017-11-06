@@ -774,6 +774,10 @@ public class ModelSet extends BondCollection {
   public void resetMolecules() {
     molecules = null;
     moleculeCount = 0;
+    resetChirality();
+  }
+
+  private void resetChirality() {
     if (haveChirality) {
       int modelIndex = -1;
       for (int i = ac; --i >= 0;) {
@@ -784,7 +788,6 @@ public class ModelSet extends BondCollection {
       }
     }
   }
-
 
   private void deleteModel(int modelIndex, int firstAtomIndex, int nAtoms,
                            BS bsModelAtoms, BS bsBonds) {
@@ -3795,6 +3798,7 @@ public class ModelSet extends BondCollection {
    * @param bsAtoms atoms to switch for the atom option
    */
   public void invertSelected(P3 pt, P4 plane, int iAtom, BS bsAtoms) {
+    resetChirality();
     if (pt != null) {
       for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
         float x = (pt.x - at[i].x) * 2;

@@ -1113,6 +1113,7 @@ all support for previous versions removed
         <include name="javajs/export/**" />
         <include name="javajs/img/**" />
         <include name="javajs/util/**" />
+		<include name="org/apache/tools/**" />
 		<include name="org/jmol/adapter/smarter/**" />
   		<include name="org/jmol/api/**" />
   		<include name="org/jmol/applet/**" />

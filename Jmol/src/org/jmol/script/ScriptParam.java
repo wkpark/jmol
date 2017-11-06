@@ -830,7 +830,7 @@ abstract public class ScriptParam extends ScriptError {
     return slen;
   }
 
-  protected int checkLengthErrorPt(int length, int errorPt)
+  public int checkLengthErrorPt(int length, int errorPt)
       throws ScriptException {
     if (slen != length) {
       iToken = errorPt > 0 ? errorPt : slen;

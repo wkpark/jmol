@@ -169,7 +169,8 @@ public class ModelSet extends BondCollection {
 
   public ShapeManager sm;
 
-  private static float hbondMin = 2.5f;
+  private static float hbondMinRasmol = 2.5f;
+  private static float hbondMaxReal = 3.5f;
   public boolean proteinStructureTainted;
 
   public Hashtable<String, BS> htPeaks;
@@ -2742,10 +2743,10 @@ public class ModelSet extends BondCollection {
     float minAttachedAngle = (float) (vwr.getFloat(T.hbondsangleminimum)
         * Math.PI / 180);
     float hbondMax2 = maxXYDistance * maxXYDistance;
-    float hbondMin2 = hbondMin * hbondMin;
+    float hbondMin2 = hbondMinRasmol * hbondMinRasmol;
     float hxbondMin2 = 1;
-    float hxbondMax2 = (maxXYDistance > hbondMin ? hbondMin2 : hbondMax2);
-    float hxbondMax = (maxXYDistance > hbondMin ? hbondMin : maxXYDistance);
+    float hxbondMax2 = (maxXYDistance > hbondMaxReal ? hbondMaxReal * hbondMaxReal : hbondMax2);
+    float hxbondMax = (maxXYDistance > hbondMaxReal ? hbondMaxReal : maxXYDistance);
     int nNew = 0;
     float d2 = 0;
     V3 v1 = new V3();

@@ -5277,6 +5277,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.pdbSequential;
     case T.preservestate:
       return g.preserveState;
+    case T.refreshing:
+      return refreshing;
     case T.ribbonborder:
       return g.ribbonBorder;
     case T.rocketbarrels:

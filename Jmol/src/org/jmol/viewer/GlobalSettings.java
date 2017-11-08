@@ -984,6 +984,7 @@ public class GlobalSettings {
       + ";bondingversion;contextdepthmax;debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;"
       + ";exportdrivers;exportscale"
       + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
+      + ";hbondsDistanceMaximum;hbondsangleminimum" // added Jmol 14.24.2
       + ";jmolinjspecview;legacyautobonding;legacyhaddition;legacyjavafloat"
       + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
       + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"

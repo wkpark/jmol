@@ -118,7 +118,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
   private boolean useUnitCell;
   private int nPoints;
   private float planarParam;
-  private Map<String, SV> info;
+  private Map<String, Object> info;
   private float distanceRef;
   private int modelIndex;
   private boolean isAuto;
@@ -269,9 +269,9 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
     }
 
     if ("info" == propertyName) {
-      info = (Map<String, SV>) value;
-      centers = (info.containsKey("center") ? null : BSUtil.newAndSetBit(info
-          .get("atomIndex").intValue));
+      info = (Map<String, Object>) value;
+      centers = (info.containsKey("center") ? null : BSUtil.newAndSetBit(((SV) info
+          .get("atomIndex")).intValue));
       iHaveCenterBitSet = (centers != null);
       return;
     }
@@ -732,7 +732,8 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       if (center != null)
         p = validatePolyhedron(center, nPoints);
     } else if (info != null && info.containsKey("id")) {
-      thisID = info.get("id").asString();
+      Object o = info.get("id"); 
+      thisID = (o instanceof SV ? ((SV) o).asString() : o.toString());
       p = new Polyhedron().setInfo(vwr, info, vwr.ms.at);
     }
     if (p != null) {

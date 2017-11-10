@@ -23,6 +23,7 @@
 package org.jmol.bspt;
 
 
+
 import javajs.util.T3;
 
 
@@ -134,5 +135,6 @@ public final class Bspt {
   public CubeIterator allocateCubeIterator() {
     return new CubeIterator(this);
   }
+
 
 }

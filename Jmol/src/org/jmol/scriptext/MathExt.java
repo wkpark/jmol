@@ -31,6 +31,20 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javajs.util.AU;
+import javajs.util.CU;
+import javajs.util.Lst;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.Measure;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.PT;
+import javajs.util.Quat;
+import javajs.util.SB;
+import javajs.util.T3;
+import javajs.util.V3;
+
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolNMRInterface;
@@ -38,8 +52,7 @@ import org.jmol.api.JmolPatternMatcher;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
-import org.jmol.bspt.Bspt;
-import org.jmol.bspt.CubeIterator;
+import org.jmol.bspt.PointIterator;
 import org.jmol.c.VDW;
 import org.jmol.i18n.GT;
 import org.jmol.java.BS;
@@ -55,30 +68,13 @@ import org.jmol.script.ScriptParam;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.ColorEncoder;
-import org.jmol.util.Escape;
 import org.jmol.util.Edge;
+import org.jmol.util.Escape;
+import org.jmol.util.JmolMolecule;
+import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.Point3fi;
 import org.jmol.util.SimpleUnitCell;
-
-import javajs.util.AU;
-import javajs.util.Lst;
-import javajs.util.SB;
-
-import org.jmol.util.JmolMolecule;
-import org.jmol.util.Logger;
-
-import javajs.util.CU;
-import javajs.util.M3;
-import javajs.util.M4;
-import javajs.util.Measure;
-import javajs.util.P3;
-import javajs.util.P4;
-import javajs.util.PT;
-import javajs.util.Quat;
-import javajs.util.T3;
-import javajs.util.V3;
-
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
@@ -1668,7 +1664,7 @@ public class MathExt {
       propertyName = SV.sValue(args[pt++]);
     }
     SV x = null;
-    if (isAtomProperty) {
+    if (isAtomProperty) { // also includes $isosurface1.getProperty
       x = mp.getX();
       switch (x.tok) {
       case T.bitset:
@@ -3416,87 +3412,28 @@ public class MathExt {
       if (args[last].tok == T.varray) {
         // within(dist, pt, [pt1, pt2, pt3...])
         Lst<SV> sv = args[last].getList();
-        Lst<T3> pts = new Lst<T3>();
-        Bspt bspt = new Bspt(3, 0);
-        CubeIterator iter;
-        if (pt != null && Float.isNaN(pt.x)) {
-          // internal comparison
-          Point3fi p;
-          Point3fi[] pt3 = new Point3fi[sv.size()];
-          for (int i = pt3.length; --i >= 0;) {
-            P3 p3 = SV.ptValue(sv.get(i));
-            if (p3 == null)
-              return false;
-            p = new Point3fi();
-            p.setT(p3);
-            p.i = i;
-            pt3[i] = p;
-            bspt.addTuple(p);
-          }
-          iter = bspt.allocateCubeIterator();
-          BS bsp = BSUtil.newBitSet2(0, sv.size());
-          for (int i = pt3.length; --i >= 0;) {
-            iter.initialize(p = pt3[i], distance, false);
-            float d2 = distance * distance;
-            int n = 0;
-            while (iter.hasMoreElements()) {
-              Point3fi pt2 = (Point3fi) iter.nextElement();
-              if (bsp.get(pt2.i) && pt2.distanceSquared(p) <= d2 && (++n > 1))
-                bsp.clear(pt2.i);
-            }
-          }
-
-          for (int i = bsp.nextSetBit(0); i >= 0; i = bsp.nextSetBit(i + 1))
-            pts.addLast(P3.newP(pt3[i]));
-          return mp.addXList(pts);
-
+        P3[] ap3 = new P3[sv.size()];
+        for (int i = ap3.length; --i >= 0;)
+          ap3[i] = SV.ptValue(sv.get(i));
+        P3[] ap31 = null;
+        if (pts1 != null) {
+          ap31 = new P3[pts1.size()];
+          for (int i = ap31.length; --i >= 0;)
+            ap31[i] = SV.ptValue(pts1.get(i));
         }
-        if (distance == 0) {
-          // closest
-          if (pts1 == null) {
-            float d2 = Float.MAX_VALUE;
-            P3 pt3 = null;
-            for (int i = sv.size(); --i >= 0;) {
-              P3 pta = SV.ptValue(sv.get(i));
-              distance = pta.distanceSquared(pt);
-              if (distance < d2) {
-                pt3 = pta;
-                d2 = distance;
-              }
-            }
-            return (pt3 == null ? mp.addXStr("") : mp.addXPt(pt3));
-          }
-          int[] ptsOut = new int[pts1.size()];
-          for (int i = ptsOut.length; --i >= 0;) {
-            float d2 = Float.MAX_VALUE;
-            int imin = -1;
-            pt = SV.ptValue(pts1.get(i));
-            for (int j = sv.size(); --j >= 0;) {
-              P3 pta = SV.ptValue(sv.get(j));
-              distance = pta.distanceSquared(pt);
-              if (distance < d2) {
-                imin = j;
-                d2 = distance;
-              }
-            }
-            ptsOut[i] = imin;
-          }
-          return mp.addXAI(ptsOut);
+        Object[] ret = new Object[1];
+        switch (PointIterator.withinDistPoints(distance, pt, ap3, ap31, ret)) {
+        case T.point:
+          return mp.addXPt((P3) ret[0]);
+        case T.list:
+          return mp.addXList((Lst<?>) ret[0]);
+        case T.array: // 
+          return mp.addXAI((int[]) ret[0]);
+        case T.string: // ""  return
+          return mp.addXStr((String) ret[0]);
+        default:
+          return false; // error return
         }
-        for (int i = sv.size(); --i >= 0;) {
-          P3 ptp = SV.ptValue(sv.get(i));
-          bspt.addTuple(ptp);
-        }
-        iter = bspt.allocateCubeIterator();
-        iter.initialize(pt, distance, false);
-        float d2 = distance * distance;
-        while (iter.hasMoreElements()) {
-          T3 pt2 = iter.nextElement();
-          if (pt2.distanceSquared(pt) <= d2)
-            pts.addLast(pt2);
-        }
-        iter.release();
-        return mp.addXList(pts);
       }
       return mp.addXBs(vwr.getAtomsNearPt(distance, pt));
     }

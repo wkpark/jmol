@@ -22,6 +22,13 @@
  */
 package org.jmol.bspt;
 
+import org.jmol.java.BS;
+import org.jmol.script.T;
+import org.jmol.util.BSUtil;
+import org.jmol.util.Point3fi;
+
+import javajs.util.Lst;
+import javajs.util.P3;
 import javajs.util.T3;
 
 /**
@@ -183,5 +190,5 @@ public class CubeIterator {
         && (dy = Math.abs(t.y - cy)) <= radius
         && (dz = Math.abs(t.z - cz)) <= radius);
   }
-    
+
 }

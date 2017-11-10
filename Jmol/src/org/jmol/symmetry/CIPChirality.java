@@ -1379,7 +1379,7 @@ public class CIPChirality {
     int ruleB = currentRule;
     int c = (atop >= 0 && btop >= 0 ? getEneChirality(b2.atoms[btop], b2, a1,
         a1.atoms[atop], isAxial, true) : NO_CHIRALITY);
-    System.out.println(a1 + "." + atop + " " + ruleA + "\n" + b2 + " " + btop + " " +ruleB);
+    //System.out.println(a1 + "." + atop + " " + ruleA + "\n" + b2 + " " + btop + " " +ruleB);
     if (c != NO_CHIRALITY
         && (isAxial || !bsAtropisomeric.get(a.getIndex())
             && !bsAtropisomeric.get(b.getIndex()))) {
@@ -2180,34 +2180,33 @@ public class CIPChirality {
               a.nextChiralBranch.sortSubstituents(sphere);
           }
         }
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 3; i++) {
         CIPAtom a = atoms[i];
+        boolean aLoses = a.isDuplicate && currentRule > RULE_1b; 
         for (int j = i + 1; j < 4; j++) {
           CIPAtom b = atoms[loser = j];
 
           // Check:
-
+          
           // (a) if one of the atoms is a phantom atom (P-92.1.4.1); if not, then
           // (b) if the prioritiy has already been set; if not, then
           // (c) if the current rule decides; if not, then
           // (d) if the tie can be broken in the next sphere
-          switch (a.atom == null ? B_WINS : b.atom == null ? A_WINS
-              : priorities[i] < priorities[j] ? A_WINS
-                  : priorities[j] < priorities[i] ? B_WINS
-                      : (score = checkPriority(a, b)) != TIED ? score
-                          : ignoreTies ? IGNORE : sign(a
-                              .breakTie(b, sphere + 1))) {
+          switch (b.atom == null || priorities[i] < priorities[j] ? A_WINS
+                  : aLoses || a.atom == null || priorities[j] < priorities[i] ? B_WINS
+                      : (score = a.checkCurrentRule(b)) != TIED  && score != IGNORE || ignoreTies ? score
+                          : sign(a.breakTie(b, sphere + 1))) {
           case B_WINS:
             loser = i;
             //$FALL-THROUGH$
           case A_WINS:
             newPriorities[loser]++;
-            break;
-          case TIED:
+            //$FALL-THROUGH$
           case IGNORE:
-            break;
+          case TIED:
+            indices[loser]++;
+            continue;
           }
-          indices[loser]++;
         }
       }
 
@@ -2269,8 +2268,8 @@ public class CIPChirality {
       // Two duplicates of the same atom are always tied
       // if they have the same root distance.
 
-      if (isDuplicate && b.isDuplicate && atom == b.atom
-          && rootDistance == b.rootDistance)
+      if (isDuplicate && (currentRule > RULE_1b || b.isDuplicate && atom == b.atom
+          && rootDistance == b.rootDistance))
         return TIED;
 
       // Do a duplicate check -- if that is not a TIE we do not have to go any further.
@@ -2308,6 +2307,8 @@ public class CIPChirality {
       // Say we have {O (O) C} and {O O H}
       //
       // The rules require that we first only look at just the atoms, so OOC beats OOH.
+      // But this requires presorting. If we do no presort, then  this next has to come after
+      // the sortSubstituents() calls.
 
       if ((score = compareShallowly(b, sphere)) != TIED) {
         return score;
@@ -2321,7 +2322,8 @@ public class CIPChirality {
 
       sortSubstituents(sphere);
       b.sortSubstituents(sphere);
-      int finalScore = (nAtoms == 0 ? B_WINS : TIED), absScore = Integer.MAX_VALUE;
+      // if not prechecking, must check for nAtoms == 0 and set finalScore in that case to B_WINS * (sphere + 1)
+      int finalScore = TIED, absScore = Integer.MAX_VALUE;
       for (int i = 0; i < nAtoms; i++) {
         CIPAtom ai = atoms[i], bi = b.atoms[i];
         if ((score = ai.breakTie(bi, sphere + 1)) != TIED) {
@@ -2383,20 +2385,6 @@ public class CIPChirality {
     }
 
     /**
-     * Used in sortSubstituents
-     * 
-     * @param a
-     * @param b
-     * 
-     * @return 0 (TIED), -1 (A_WINS), 1 (B_WINS), or Integer.MIN_VALUE (IGNORE)
-     */
-    private int checkPriority(CIPAtom a, CIPAtom b) {
-      int score;
-      return ((a.atom == null) != (b.atom == null) ? (a.atom == null ? B_WINS
-          : A_WINS) : (score = a.checkCurrentRule(b)) == IGNORE ? TIED : score);
-    }
-
-    /**
      * This check is not technically one of those listed in the rules, but it is
      * useful when preparing to check substituents because if one of the atoms
      * has substituents and the other doesn't, we are done -- there is no reason
@@ -2406,7 +2394,7 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int checkIsDuplicate(CIPAtom b) {
-      return b.isDuplicate == isDuplicate ? TIED : b.isDuplicate ? A_WINS
+      return currentRule > RULE_1a || b.isDuplicate == isDuplicate ? TIED : b.isDuplicate ? A_WINS
           : B_WINS;
     }
 

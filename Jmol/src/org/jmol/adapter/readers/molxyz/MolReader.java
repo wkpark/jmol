@@ -253,6 +253,8 @@ public class MolReader extends AtomSetCollectionReader {
 
     // read bonds
 
+    if (bc == 0)
+      asc.setNoAutoBond();
     for (int i = 0; i < bc; ++i) {
       if (i > 0)
         rd();

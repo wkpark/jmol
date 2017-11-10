@@ -5255,6 +5255,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case T.legacyhaddition:
       // aargh -- Some atoms missed before Jmol 13.1.17
       return g.legacyHAddition;
+    case T.legacyjavafloat:
+      return g.legacyJavaFloat;
     case T.loggestures:
       return g.logGestures;
     case T.measureallmodels:

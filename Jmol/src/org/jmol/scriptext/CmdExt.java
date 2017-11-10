@@ -73,6 +73,7 @@ import org.jmol.script.ScriptMathProcessor;
 import org.jmol.script.ScriptParam;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
+import org.jmol.util.BZone;
 import org.jmol.util.BoxInfo;
 import org.jmol.util.C;
 import org.jmol.util.Edge;
@@ -3328,6 +3329,12 @@ public class CmdExt extends ScriptExt {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case T.brillouin:
+        int index = (tokAt(i + 1) == T.integer ? intParameter(++i) : 1);
+        if (!chk)
+          ((BZone) Interface.getInterface("org.jmol.util.BZone", vwr, "script")).setViewer(vwr).createBZ(index, null, false, id, scale);
+        setShapeProperty(JC.SHAPE_POLYHEDRA, "init", Boolean.FALSE);
+        return;
       case T.hash:
         propertyName = "info";
         propertyValue = e.theToken.value;

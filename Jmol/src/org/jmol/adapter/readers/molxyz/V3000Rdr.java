@@ -94,6 +94,8 @@ public class V3000Rdr {
 
   private void readBonds(int bondCount) throws Exception {
     mr.discardLinesUntilContains("BEGIN BOND");
+    if (bondCount == 0)
+      mr.asc.setNoAutoBond();
     for (int i = 0; i < bondCount; ++i) {
       rd();
       int stereo = 0;

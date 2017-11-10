@@ -115,45 +115,49 @@ public class Polyhedron {
     return this;
   }
 
-  Polyhedron setInfo(Viewer vwr, Map<String, SV> info, Atom[] at) {
+  Polyhedron setInfo(Viewer vwr, Map<String, Object> info, Atom[] at) {
     try {
-      SV o;
+      Object o = info.get("id");
       collapsed = info.containsKey("collapsed");
-      id = (info.containsKey("id") ? info.get("id").asString() : null);
+      boolean isSV = (!(o instanceof String));
+      if (o != null)
+        id = (isSV ? ((SV) info.get("id")).asString() : o.toString());
       if (id == null) {
-        centralAtom = at[info.get("atomIndex").intValue];
+        centralAtom = at[((SV)info.get("atomIndex")).intValue];
         modelIndex = centralAtom.mi;
       } else {
-        center = P3.newP(SV.ptValue(info.get("center")));
+        o = info.get("center");
+        center = P3.newP(isSV ? SV.ptValue((SV)o) : (P3) o);
         o = info.get("modelIndex");
-        modelIndex = (o == null ? vwr.am.cmi : o.intValue);
+        modelIndex = (o == null ? vwr.am.cmi : isSV ? ((SV)o).intValue : ((Integer) o).intValue());
         o = info.get("color");
-        colix = C.getColixS(o == null ? "gold" : o.asString());
+        colix = C.getColixS(o == null ? "gold" : isSV ? ((SV)o).asString() : (String) o);
         o = info.get("colorEdge");
         if (o != null)
-        colixEdge = C.getColixS(o.asString());
+        colixEdge = C.getColixS(isSV ? ((SV)o).asString() : o.toString());
         o = info.get("offset");
         if (o != null)
-          offset = P3.newP(SV.ptValue(o));
+          offset = P3.newP(isSV ? SV.ptValue((SV) o) : (P3) o);
         o = info.get("scale");
         if (o != null)
-          scale = SV.fValue(o);
+          scale = (isSV ? SV.fValue((SV) o) : ((Float) o).floatValue());
       }
-      Lst<SV> lst = info.get("vertices").getList();
-      SV vc = info.get("vertexCount");
+      o = info.get("vertices");
+      Lst<?> lst = (isSV ? ((SV) o).getList() : (Lst<?>) o);
+      o = info.get("vertexCount");
       boolean needTriangles = false;
-      if (vc != null) {
-        nVertices = vc.intValue;
+      if (o != null) {
+        nVertices = (isSV ? ((SV) o).intValue : ((Integer) o).intValue());
         vertices = new P3[lst.size()];
-        vc = info.get("r");
-        if (vc != null)
-          distanceRef = vc.asFloat();
+        o = info.get("r");
+        if (o != null)
+          distanceRef = (isSV ? ((SV) o).asFloat() : ((Float) o).floatValue());
       } else {
         nVertices = lst.size();
         vertices = new P3[nVertices + 1];
         if (center == null) {
           // old style
-          vertices[nVertices] = SV.ptValue(info.get("ptRef"));
+          vertices[nVertices] = SV.ptValue((SV)info.get("ptRef"));
         } else {
           // new format involving center, vertices, and faces only
           vertices[nVertices] = center;
@@ -162,13 +166,16 @@ public class Polyhedron {
       }
       // note that nVertices will be smaller than lst.size()
       // because lst will contain the central atom and any collapsed points
-      for (int i = lst.size(); --i >= 0;)
-        vertices[i] = SV.ptValue(lst.get(i));
+      for (int i = lst.size(); --i >= 0;) {
+        o = lst.get(i);
+        vertices[i] = (isSV ? SV.ptValue((SV) o) : (P3) o);
+      }
       o = info.get("elemNos");
       if (o != null) {
-        lst = o.getList();
+        lst = (isSV ? ((SV)o).getList() : (Lst<?>) o);
         for (int i = nVertices; --i >= 0;) {
-          int n = lst.get(i).intValue;
+          o = lst.get(i);
+          int n = (isSV ? ((SV)o).intValue : ((Integer) o).intValue());
           if (n > 0) {
             Point3fi p = new Point3fi();
             p.setT(vertices[i]);
@@ -177,10 +184,10 @@ public class Polyhedron {
           }
         }
       }
-      if (info.containsKey("pointScale"))
-        pointScale = Math.max(0, SV.fValue(info.get("pointScale")));
-      SV faces = info.get("faces");
-      this.faces = toInt2(faces);
+      o = info.get("pointScale");
+      if (o != null)
+        pointScale = Math.max(0, (isSV ? SV.fValue((SV) o) : ((Float) o).floatValue()));
+      this.faces = toInt2(isSV, info.get("faces"));
       o = info.get("triangles");
       if (o == null) {
         if (needTriangles) {
@@ -195,7 +202,7 @@ public class Polyhedron {
           this.faces = null;
         }
       } else {
-        triangles = toInt2(o);        
+        triangles = toInt2(isSV, o);        
       }
       normals = new V3[triangles.length];
       V3 vAB = new V3();
@@ -206,21 +213,26 @@ public class Polyhedron {
             vertices[a[2]], normals[i], vAB);
       }
       o = info.get("bsFlat");
-      bsFlat = (o == null ? new BS() : SV.getBitSet(o, false));
+      bsFlat = (o == null ? new BS() : isSV ? SV.getBitSet((SV)o, false) : (BS) o);
     } catch (Exception e) {
       return null;
     }
     return this;
   }
 
-  private int[][] toInt2(SV o) {
-    Lst<SV> lst = o.getList();
+  private int[][] toInt2(boolean isSV, Object o) {
+    Lst<?> lst = (isSV ? ((SV) o).getList() : (Lst<?>) o);
     int[][] ai = AU.newInt2(lst.size());
     for (int i = ai.length; --i >= 0;) {
-      Lst<SV> lst2 = lst.get(i).getList();
-      int[] a = ai[i] = new int[lst2.size()];
-      for (int j = a.length; --j >= 0;)
-        a[j] = lst2.get(j).intValue;
+      o = lst.get(i);
+      if (isSV) {
+        Lst<SV> lst2 = ((SV)o).getList();
+        int[] a = ai[i] = new int[lst2.size()];
+        for (int j = a.length; --j >= 0;)
+          a[j] = lst2.get(j).intValue;
+      } else {
+        ai[i] = (int[]) o;
+      }
     }
     return ai;
   }

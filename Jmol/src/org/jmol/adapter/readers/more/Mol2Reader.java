@@ -110,6 +110,8 @@ public class Mol2Reader extends ForceFieldReader {
     line += " 0 0 0 0 0 0";
     ac = parseIntStr(line);
     int bondCount = parseInt();
+    if (bondCount == 0)
+      asc.setNoAutoBond();
     int resCount = parseInt();
     rd();//mol_type
     rd();//charge_type

@@ -1345,6 +1345,7 @@ public class T {
   public final static int vertices       = misc  | 370;
   public final static int spacebeforesquare = misc  | 371;
   public final static int width          = misc  | 372;
+  public final static int wigner         = misc  | 373;
 
   // used to be "expression":
   
@@ -2338,6 +2339,7 @@ public class T {
        "variables",
        "vertices",
        "width",
+       "wigner",
   
        // set params
   
@@ -3390,6 +3392,7 @@ public class T {
         variables,                          //        "variables"
         vertices,                           //        "vertices"
         width,                              //        "width"
+        wigner,                             //        "wigner"
 
                 // set params
 

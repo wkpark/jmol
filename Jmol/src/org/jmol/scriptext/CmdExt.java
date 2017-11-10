@@ -3329,8 +3329,11 @@ public class CmdExt extends ScriptExt {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case T.wigner: // Wigner-Seitz; like Brillouin, but not reciprocal lattice, and no inclusion of scale
+        scale = Float.NaN;
+        //$FALL-THROUGH$
       case T.brillouin:
-        int index = (tokAt(i + 1) == T.integer ? intParameter(++i) : 1);
+        int index = (e.theTok == T.wigner ? -1 : (tokAt(i + 1) == T.integer ? intParameter(++i) : 1));
         if (!chk)
           ((BZone) Interface.getInterface("org.jmol.util.BZone", vwr, "script")).setViewer(vwr).createBZ(index, null, false, id, scale);
         setShapeProperty(JC.SHAPE_POLYHEDRA, "init", Boolean.FALSE);

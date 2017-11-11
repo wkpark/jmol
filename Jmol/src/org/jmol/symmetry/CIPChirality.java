@@ -146,7 +146,8 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
- * 11/11/17 Jmol 14.25.1 rewrites Rule 1b in terms of "terminal" rather than "duplicate"
+ * 11/11/17 Jmol 14.25.1 adds "duplicate over terminal" in Rule 1b; streamlined (777 lines)
+ * 
  * 11/05/17 Jmol 14.24.1 fixes a problem with seqCis/seqTrans and also with Rule 2 (799 lines)
  * 
  * 10/17/17 Jmol 14.20.10 adds S4 check in Rule 6 and also fixes bug in aux descriptors 

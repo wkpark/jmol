@@ -146,6 +146,7 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  * 
+ * 11/11/17 Jmol 14.25.1 rewrites Rule 1b in terms of "terminal" rather than "duplicate"
  * 11/05/17 Jmol 14.24.1 fixes a problem with seqCis/seqTrans and also with Rule 2 (799 lines)
  * 
  * 10/17/17 Jmol 14.20.10 adds S4 check in Rule 6 and also fixes bug in aux descriptors 
@@ -581,12 +582,6 @@ public class CIPChirality {
 
   static final int RULE_RS = 99;
 
-  boolean isRule4TEST = false;
-
-  static String prefixString = ".........."; // Logger only
-
-  static Integer zero = Integer.valueOf(0);
-
   final static String[] ruleNames = { "", "1a", "1b", "2", "3", "4a", "4b",
       "4c", "5", "6" }; // Logger only
 
@@ -597,6 +592,11 @@ public class CIPChirality {
   }
 
   /**
+   * set bits RULE_1a - RULE_6 to indicate a need for that rule based on what is in the model
+   */
+  BS bsNeedRule = new BS();
+  
+  /**
    * measure of planarity in a trigonal system, in Angstroms
    * 
    */
@@ -605,7 +605,7 @@ public class CIPChirality {
   /**
    * maximum path to display for debugging only using SET DEBUG in Jmol
    */
-  static final int MAX_PATH = 50;
+  static final int MAX_PATH = 50;  // Logger
 
   /**
    * maximum ring size that can have a double bond with no E/Z designation; also
@@ -617,7 +617,7 @@ public class CIPChirality {
    * incremental pointer providing a unique ID to every CIPAtom for debugging
    * 
    */
-  int ptID;
+  int ptIDLogger;
 
   /**
    * The atom for which we are determining the stereochemistry
@@ -659,46 +659,44 @@ public class CIPChirality {
 
   V3 vNorm = new V3(), vNorm2 = new V3(), vTemp = new V3();
 
-  /**
-   * Rule 1b Option 0: IUPAC 2013
-   */
-  final static int RULE_1b_TEST_OPTION_0_UNCHANGED = 0;
-
-  /**
-   * Rule 1b Option A: assign multiple-bond duplicates to parent sphere
-   */
-  final static int RULE_1b_TEST_OPTION_A_PARENT = 1;
-
-  /**
-   * Rule 1b Option B: assign multiple-bond duplicates to own sphere
-   */
-  final static int RULE_1b_TEST_OPTION_B_SELF = 2;
-
-  /**
-   * Rule 1b Option C: do not consider multiple-bond duplicates in Rule 1b
-   */
-  final static int RULE_1b_TEST_OPTION_C_NONE = 3;
-
-  /**
-   * Rule 1b Option D: assign multiple-bond duplicates to own sphere only if
-   * Kekule-ambiguous
-   */
-  final static int RULE_1b_TEST_OPTION_D_SELF_KEKULE = 4;
-
-  /**
-   * a test for different Rule 1b options.
-   * 
-   */
-  int rule1bOption = RULE_1b_TEST_OPTION_A_PARENT;
+//  /**
+//   * Rule 1b Option 0: IUPAC 2013
+//   */
+//  final static int RULE_1b_TEST_OPTION_0_UNCHANGED = 0;
+//
+//  /**
+//   * Rule 1b Option A: assign multiple-bond duplicates to parent sphere
+//   */
+//  final static int RULE_1b_TEST_OPTION_A_PARENT = 1;
+//
+//  /**
+//   * Rule 1b Option B: assign multiple-bond duplicates to own sphere
+//   */
+//  final static int RULE_1b_TEST_OPTION_B_SELF = 2;
+//
+//  /**
+//   * Rule 1b Option C: do not consider multiple-bond duplicates in Rule 1b
+//   */
+//  final static int RULE_1b_TEST_OPTION_C_NONE = 3;
+//
+//  /**
+//   * Rule 1b Option D: assign multiple-bond duplicates to own sphere only if
+//   * Kekule-ambiguous
+//   */
+//  final static int RULE_1b_TEST_OPTION_D_SELF_KEKULE = 4;
+//
+//  /**
+//   * a test for different Rule 1b options.
+//   * 
+//   */
+//  int rule1bOption = RULE_1b_TEST_OPTION_A_PARENT;
 
   /**
    * return auxiliary chirality settings for all atoms when only one atom is
    * selected and TESTFLAG1 has been set TRUE in Jmol
    * 
    */
-  boolean setAuxiliary;
-
-  protected int rootRule; // Logger
+  boolean setAuxiliary;   // Logger 
 
   public CIPChirality() {
     // for reflection
@@ -710,7 +708,7 @@ public class CIPChirality {
    * 
    */
   private void init() {
-    ptID = 0;
+    ptIDLogger = 0;
     lstSmallRings.clear();
     bsKekuleAmbiguous = null;
     bsAtropisomeric = new BS();
@@ -741,7 +739,7 @@ public class CIPChirality {
     if (bsAtoms.isEmpty())
       return;
     init();
-    this.setAuxiliary = (setAuxiliary && bsAtoms.cardinality() == 1);
+    this.setAuxiliary = (setAuxiliary && bsAtoms.cardinality() == 1);   // Logger
     this.bsAtropisomeric = (bsAtropisomeric == null ? new BS()
         : bsAtropisomeric);
 
@@ -764,7 +762,7 @@ public class CIPChirality {
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
       SimpleNode a = atoms[i];
       a.setCIPChirality(0);
-      ptID = 0;
+      ptIDLogger = 0;
       int c = getAtomChiralityLimited(a, null, null);
       a.setCIPChirality(c == 0 ? JC.CIP_CHIRALITY_NONE : c
           | ((currentRule - 1) << JC.CIP_CHIRALITY_NAME_OFFSET));
@@ -1226,10 +1224,11 @@ public class CIPChirality {
           // Just checking here that center has 4 covalent bonds or is trigonal pyramidal.
           return NO_CHIRALITY;
         }
+        bsNeedRule.clearAll();
+        bsNeedRule.set(RULE_1a);
       }
       if (cipAtom.setNode()) {
         for (currentRule = RULE_1a; currentRule <= RULE_6; currentRule++) {
-          rootRule = currentRule;
           if (Logger.debugging)
             Logger.info("-Rule " + getRuleName(currentRule)
                 + " CIPChirality for " + cipAtom + "-----"); // Logger
@@ -1241,7 +1240,7 @@ public class CIPChirality {
             cipAtom.createAuxiliaryDescriptors(null, null);
             break;
           case RULE_4a:
-            if (cipAtom.rule4Type == 0) {
+            if (!bsNeedRule.get(RULE_4a)) {
               // We can skip Rules 4a - 5 if there are no chirality centers.
               currentRule = RULE_5;
               continue;
@@ -1251,14 +1250,17 @@ public class CIPChirality {
           case RULE_4c:
             // We need to presort with no tie-breaking for Rules 4a, 4b, and 4c.
             cipAtom.sortSubstituents(Integer.MIN_VALUE);
+            //$FALL-THROUGH$
+          case RULE_5:
+            bsNeedRule.set(currentRule);
             break;
           case RULE_6:
             // We only need to do Rule 6 under certain conditions.
-            rs = cipAtom.setupRule6(false);
-            if (rs == NO_CHIRALITY)
-              continue;
+            bsNeedRule.setBitTo(RULE_6, ((rs = cipAtom.setupRule6(false)) != NO_CHIRALITY));
             break;
           }
+          if (!bsNeedRule.get(currentRule))
+            continue;
 
           // initial call to sortSubstituents does all, recursively
 
@@ -1857,13 +1859,15 @@ public class CIPChirality {
     @SuppressWarnings("unchecked")
     CIPAtom create(SimpleNode atom, CIPAtom parent, boolean isAlkene,
                    boolean isDuplicate, boolean isParentBond) {
-      this.id = ++ptID;
+      this.id = ++ptIDLogger;
       this.parent = parent;
       if (atom == null)
         return this;
       this.isAlkene = isAlkene;
       this.atom = atom;
       atomIndex = atom.getIndex();
+      if (atom.getIsotopeNumber() > 0)
+        bsNeedRule.set(RULE_2);
       isKekuleAmbiguous = (bsKekuleAmbiguous != null && bsKekuleAmbiguous
           .get(atomIndex));
       elemNo = (isDuplicate && isKekuleAmbiguous ? parent
@@ -1883,8 +1887,9 @@ public class CIPChirality {
       }
       bsPath = (parent == null ? new BS() : BSUtil.copy(parent.bsPath));
 
-      multipleBondDuplicate = isDuplicate;
-
+      this.isDuplicate = multipleBondDuplicate = isDuplicate;
+      if (isDuplicate)
+        bsNeedRule.set(RULE_3);
       rootDistance = sphere;
       // The rootDistance for a nonDuplicate atom is just its sphere.
       // The rootDistance for a duplicate atom is (by IUPAC) the sphere of its duplicated atom.
@@ -1895,28 +1900,23 @@ public class CIPChirality {
       if (parent == null) {
         // original atom
         bsPath.set(atomIndex);
-      } else if (multipleBondDuplicate
-          && (rule1bOption == RULE_1b_TEST_OPTION_D_SELF_KEKULE
-              && isKekuleAmbiguous || rule1bOption == RULE_1b_TEST_OPTION_B_SELF)) {
-        // just leaving the rootDistance to be as for other atoms
-      } else if (multipleBondDuplicate
-          && rule1bOption == RULE_1b_TEST_OPTION_A_PARENT) {
+//      } else if (multipleBondDuplicate
+//          && (rule1bOption == RULE_1b_TEST_OPTION_D_SELF_KEKULE
+//              && isKekuleAmbiguous || rule1bOption == RULE_1b_TEST_OPTION_B_SELF)) {
+//        // just leaving the rootDistance to be as for other atoms
+      } else if (multipleBondDuplicate //&& rule1bOption == RULE_1b_TEST_OPTION_A_PARENT
+          ) {
         rootDistance--;
-      } else if (atom == root.atom) {
-        // pointing to original atom
-        isDuplicate = true;
-        rootDistance = 0;
-        root.nRootDuplicates++;
       } else if (bsPath.get(atomIndex)) {
-        isDuplicate = true;
-        rootDistance = (isParentBond ? parent.sphere : htPathPoints.get(
-            Integer.valueOf(atomIndex)).intValue());
+        bsNeedRule.setBitTo(RULE_1b, (this.isDuplicate = true));
+        if ((rootDistance = (atom == root.atom ? 0 : isParentBond ? parent.sphere 
+            : htPathPoints.get(Integer.valueOf(atomIndex)).intValue())) == 0) {
+          root.nRootDuplicates++;
+        }
       } else {
         bsPath.set(atomIndex);
-        htPathPoints.put(Integer.valueOf(atomIndex),
-            Integer.valueOf(rootDistance));
+        htPathPoints.put(Integer.valueOf(atomIndex), Integer.valueOf(rootDistance));
       }
-      this.isDuplicate = isDuplicate;
       if (Logger.debuggingHigh) {
         if (sphere < MAX_PATH) // Logger
           myPath = (parent != null ? parent.myPath + "-" : "") + this; // Logger
@@ -2137,7 +2137,7 @@ public class CIPChirality {
 
       boolean ignoreTies = (sphere == Integer.MIN_VALUE);
       if (ignoreTies) {
-        // If this is Rule 4a, 4b, or 4c, or 6, we must presort the full tree without breaking ties
+        // If this is Rule 4a, 4c, or 6, we must presort the full tree without breaking ties
         if (isTerminal)
           return false;
         switch (currentRule) {
@@ -2265,106 +2265,92 @@ public class CIPChirality {
      */
     private int breakTie(CIPAtom b, int sphere) {
 
-      // Two duplicates of the same atom are always tied
-      // if they have the same root distance.
+      // Phase I: Quick check of this atom itself
 
-      if (isDuplicate && (currentRule > RULE_1b || b.isDuplicate && atom == b.atom
-          && rootDistance == b.rootDistance))
+      // return TIED if:
+
+      // a) this is a duplicate, and we are done with Rule 1b
+      // b) two duplicates are of the same node (atom and root distance)
+      // c) one or the other can't be set (because it has too many connections), or
+      // d) both are terminal or both are duplicates (no atoms to check)
+
+      if (isDuplicate
+          && (currentRule > RULE_1b || b.isDuplicate && atom == b.atom
+              && rootDistance == b.rootDistance) || !setNode() || !b.setNode()
+          || isTerminal && b.isTerminal || isDuplicate && b.isDuplicate)
         return TIED;
 
-      // Do a duplicate check -- if that is not a TIE we do not have to go any further.
+      // We are done if one of these is terminal 
+      // (for the next sphere, unless one is a duplicate -- Custer Rule 1b "duplicate > nonduplicate").
+
+      if (isTerminal != b.isTerminal)
+        return (isTerminal ? B_WINS : A_WINS)
+            * (sphere + (b.isDuplicate || isDuplicate ? 0 : 1)); // COUNT_LINE
+
+      // Do a duplicate check.
+
+      // If this is not a TIE, we do not have to go any further.
 
       // NOTE THAT THIS CHECK IS NOT EXPLICIT IN THE RULES
       // BECAUSE DUPLICATES LOSE IN THE NEXT SPHERE, NOT THIS ONE.
       // THE NEED FOR (sphere+1) in AY236.53, 163, 173, 192 SHOWS THAT 
       // SUBRULE 1a MUST BE COMPLETED EXHAUSTIVELY PRIOR TO SUBRULE 1b.
-
-      int score = checkIsDuplicate(b);
-      if (score != TIED)
-        return score * (sphere + 1); // COUNT_LINE
-
-      // return TIED if:
-
-      //  a) one or the other can't be set (because it has too many connections), or
-      //  b) both are terminal or both are duplicates
-
-      if (!setNode() || !b.setNode() || isTerminal && b.isTerminal
-          || isDuplicate && b.isDuplicate)
-        return TIED;
-
-      // We are done if one of these is terminal (for the next sphere, actually).
-
-      if (isTerminal != b.isTerminal)
-        return (isTerminal ? B_WINS : A_WINS) * (sphere + 1); // COUNT_LINE
-
-      // Phase I -- shallow check only
       //
-      // Check to see if any of the three connections to a and b are different.
-      // Note that we do not consider duplicate atoms different from regular atoms here
-      // because we are just looking for atom differences, not substituent differences.
+      // Note that this check must return "N+1", because that is where the actual difference is.
       // This nuance is not clear from the "simplified" digraphs found in Chapter 9. 
       //
       // Say we have {O (O) C} and {O O H}
       //
-      // The rules require that we first only look at just the atoms, so OOC beats OOH.
-      // But this requires presorting. If we do no presort, then  this next has to come after
-      // the sortSubstituents() calls.
+      // The rules require that we first only look at just the atoms, so OOC beats OOH in this sphere,
+      // but there are no atoms to check on (O), so we can do the check here to save time, reporting back
+      // to breatTie that we found a difference, but not in this sphere.
 
-      if ((score = compareShallowly(b, sphere)) != TIED) {
-        return score;
+      int score = (currentRule > RULE_1a ? TIED : unlikeDuplicates(b));
+      if (score != TIED) {
+        return score * (sphere + 1); // COUNT_LINE
       }
 
-      // Phase II -- check deeply using breakTie
+      // Phase II -- shallow check only
       //
-      // OK, so all three are nominally the same.
-      // Now iteratively deep-sort each list based on substituents
-      // and then check them one by one to see if the tie can be broken.
+      // Compare only in the current substitutent sphere. 
+      //
+      // Check to see if any of the three connections to a and b are 
+      // different themselves, without any deeper check.
+      //
+      // This requires that both a annd b have their ligands sorted
+      // at least in a preliminary fashion, using Array.sort() and compareTo()
+      // for Rules 1.
+      // allows us to do this before any new sortSubstituent calls.
+      // But if we do not do a presort, then we have to do those first.
+      // Doing the presort saves considerably on run time.
+
+      for (int i = 0; i < nAtoms; i++)
+        if ((score = atoms[i].checkCurrentRule(b.atoms[i])) != TIED)
+          return score * (sphere + 1); // COUNT_LINE
+
+      // Time to do a full sort of eash ligand, including breaking ties
 
       sortSubstituents(sphere);
       b.sortSubstituents(sphere);
-      // if not prechecking, must check for nAtoms == 0 and set finalScore in that case to B_WINS * (sphere + 1)
-      int finalScore = TIED, absScore = Integer.MAX_VALUE;
-      for (int i = 0; i < nAtoms; i++) {
-        CIPAtom ai = atoms[i], bi = b.atoms[i];
-        if ((score = ai.breakTie(bi, sphere + 1)) != TIED) {
-          int abs = Math.abs(score);
-          if (abs < absScore) {
-            absScore = abs;
-            finalScore = score;
-          }
+
+      // Phase III -- check deeply using re-entrant call to breakTie
+      //
+      // Now iteratively deep-sort each list based on substituents
+      // and then check them one by one to see if the tie can be broken.
+
+      // Note that if not catching duplicates early, we must check for 
+      // nAtoms == 0 and set finalScore in that case to B_WINS * (sphere + 1)
+      // but we are checking for duplicates early in this implementation.
+
+      int finalScore = TIED;
+      for (int i = 0, abs, absScore = Integer.MAX_VALUE; i < nAtoms; i++) {
+        if ((score = atoms[i].breakTie(b.atoms[i], sphere + 1)) != TIED
+            && (abs = Math.abs(score)) < absScore) {
+          absScore = abs;
+          finalScore = score;
         }
       }
       return finalScore;
-    }
-
-    /**
-     * The first part of breaking a tie at the current level. Compare only in
-     * the current substitutent sphere; a preliminary check using the current
-     * rule.
-     * 
-     * @param b
-     * @param sphere
-     *        current working sphere
-     * @return 0 (TIED) or [-1 (A_WINS), or 1 (B_WINS)]*sphereOfSubstituent or
-     *         IGNORE to
-     */
-    private int compareShallowly(CIPAtom b, int sphere) {
-      for (int i = 0; i < nAtoms; i++) {
-        CIPAtom ai = atoms[i];
-        CIPAtom bi = b.atoms[i];
-        int score = ai.checkCurrentRule(bi);
-        switch (score) {
-        case IGNORE:
-          if (currentRule != RULE_4b)
-            continue;
-          return IGNORE;
-        case TIED:
-          continue;
-        default:
-          return score * (sphere + 1); // COUNT_LINE
-        }
-      }
-      return TIED;
     }
 
     /**
@@ -2380,22 +2366,8 @@ public class CIPChirality {
       return (b == null ? A_WINS
           : (atom == null) != (b.atom == null) ? (atom == null ? B_WINS
               : A_WINS) : (score = checkRule1a(b)) != TIED ? score
-              : (score = checkIsDuplicate(b)) != TIED ? score : isDuplicate
-                  && (score = checkRule1b(b)) != TIED ? score : checkRule2(b));
-    }
-
-    /**
-     * This check is not technically one of those listed in the rules, but it is
-     * useful when preparing to check substituents because if one of the atoms
-     * has substituents and the other doesn't, we are done -- there is no reason
-     * to check substituents.
-     * 
-     * @param b
-     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
-     */
-    private int checkIsDuplicate(CIPAtom b) {
-      return currentRule > RULE_1a || b.isDuplicate == isDuplicate ? TIED : b.isDuplicate ? A_WINS
-          : B_WINS;
+              : (score = unlikeDuplicates(b)) != TIED || !isDuplicate ? score
+                    : checkRule1b(b));
     }
 
     /**
@@ -2404,12 +2376,14 @@ public class CIPChirality {
      * @param rule
      * @return true if a decision has been made
      */
-    private boolean sortByRule(int rule) {
+    private boolean auxSort(int rule) {
       int current = currentRule;
       currentRule = rule;
       int rule6ref = root.rule6refIndex;
+      int nDup = root.nRootDuplicates;
       boolean isChiral = (rule == RULE_6 ? 
         setupRule6(true) != NO_CHIRALITY : sortSubstituents(0));
+      root.nRootDuplicates = nDup;
       root.rule6refIndex = rule6ref;
       currentRule = current;
       return isChiral;
@@ -2452,7 +2426,21 @@ public class CIPChirality {
     }
 
     /**
-     * Looking for same atom or ghost atom or element number
+     * This check is not technically one of those listed in the rules, but it is
+     * useful when preparing to check substituents because if one of the atoms
+     * has substituents and the other doesn't, we are done -- there is no reason
+     * to check substituents.
+     * 
+     * 
+     * @param b
+     * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
+     */
+    private int unlikeDuplicates(CIPAtom b) {
+      return b.isDuplicate == isDuplicate ? TIED : isDuplicate ? B_WINS : A_WINS;
+    }
+
+    /**
+     * Looking for phantom atom (atom number 0) or element number
      * 
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
@@ -2464,6 +2452,7 @@ public class CIPChirality {
 
     /**
      * Looking for root distance -- duplicate atoms only.
+     * (We have checked for 
      * 
      * @param b
      * 
@@ -2472,10 +2461,11 @@ public class CIPChirality {
      */
 
     private int checkRule1b(CIPAtom b) {
-      return b.isDuplicate != isDuplicate ? TIED
-          : rule1bOption == RULE_1b_TEST_OPTION_C_NONE
-              && (parent.isAlkene || b.parent.isAlkene) ? TIED : Integer
-              .compare(rootDistance, b.rootDistance);
+      return b.isDuplicate != isDuplicate 
+          ? TIED
+//          : rule1bOption == RULE_1b_TEST_OPTION_C_NONE
+//              && (parent.isAlkene || b.parent.isAlkene) ? TIED 
+          : Integer.compare(rootDistance, b.rootDistance);
     }
 
     /**
@@ -2533,7 +2523,7 @@ public class CIPChirality {
       // this action will be on root atom substituents only
 
       if (isTerminal || b.isTerminal)
-        return TIED;
+        return TIED; // can happen when are checking the two groups on an alkene end
       
       BS bsA = getBS4b5();
       BS lu = compareLikeUnlike(bsA, b.getBS4b5());
@@ -2643,7 +2633,7 @@ public class CIPChirality {
         atom1.addReturnPath(prevSP2, end);
       CIPAtom a;
       for (int rule = RULE_1a; rule <= RULE_6; rule++) {
-        if (atom1.sortByRule(rule)) {
+        if (atom1.auxSort(rule)) {
           for (int i = 0; i < 4; i++) {
             a = atom1.atoms[i];
             if (!a.multipleBondDuplicate) {
@@ -2855,7 +2845,7 @@ public class CIPChirality {
           int rule = RULE_1a;
           for (; rule <= RULE_6; rule++)
             if ((!skipRules4And5 || rule < RULE_4a || rule > RULE_5)
-                && atom1.sortByRule(rule))
+                && atom1.auxSort(rule))
               break;
           if (rule > RULE_6) {
             c = '~';
@@ -2872,11 +2862,12 @@ public class CIPChirality {
         }
         auxChirality = c;
       }
-      if (setAuxiliary && auxChirality != '~')
-        atom.setCIPChirality(JC.getCIPChiralityCode(auxChirality));
+      if (setAuxiliary && auxChirality != '~')   // Logger
+        atom.setCIPChirality(JC.getCIPChiralityCode(auxChirality));   // Logger
 
       if (node1 == null)
-        rule4Type = nRS;
+        bsNeedRule.setBitTo(RULE_4a, nRS > 0);
+        //rule4Type = nRS;
       if (Logger.debugging && c != '~') {
         Logger.info("creating aux " + c + " for " + this + " = " + myPath);
       }
@@ -2949,7 +2940,7 @@ public class CIPChirality {
         a = (CIPAtom) super.clone();
       } catch (CloneNotSupportedException e) {
       }
-      a.id = ptID++;
+      a.id = ptIDLogger++;
       a.atoms = new CIPAtom[4];
       for (int i = 0; i < 4; i++)
         a.atoms[i] = atoms[i];

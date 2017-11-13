@@ -178,7 +178,7 @@ class VolumeDataReader extends SurfaceReader {
                               float minPointsPerAngstrom) {
     int nGrid;
     float d;
-    if (min >= max) {
+    if (min - max >= -0.0001f) {
       min = -10;
       max = 10;
     }

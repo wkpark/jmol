@@ -1766,7 +1766,7 @@ public class CIPChirality {
     /**
      * bitsets for tracking R and S for Rule 4b
      */
-    private BS[] bsRS;
+    private BS[] listRS;
 
     /**
      * new atom list after sorting substituents
@@ -2366,9 +2366,9 @@ public class CIPChirality {
       int score;
       return (b == null ? A_WINS
           : (atom == null) != (b.atom == null) ? (atom == null ? B_WINS
-              : A_WINS) : (score = checkRule1a(b)) != TIED ? score
+              : A_WINS) : (score = compareRule1a(b)) != TIED ? score
               : (score = unlikeDuplicates(b)) != TIED || !isDuplicate ? score
-                    : checkRule1b(b));
+                    : compareRule1b(b));
     }
 
     /**
@@ -2405,24 +2405,25 @@ public class CIPChirality {
       switch (currentRule) {
       default:
       case RULE_1a:
-        return checkRule1a(b);
+        return compareRule1a(b);
       case RULE_1b:
-        return checkRule1b(b);
+        return compareRule1b(b);
       case RULE_2:
-        return checkRule2(b);
+        return compareRule2(b);
       case RULE_3:
-        return checkRule3(b); // can be IGNORE
+        return compareRule3(b); // can be IGNORE
       case RULE_4a:
-        return checkRules4ac(b, " sr SR PM");
-      case RULE_4c:
-        return checkRules4ac(b, " s r p m");
+        return compareRules4ac(b, " sr SR PM");
+      case RULE_RS:
+        return compareRule4bRef(b);
       case RULE_4b:
       case RULE_5:
-        return checkRule4b5(b);
+        // can be terminal when we are checking the two groups on an alkene end
+        return (isTerminal || b.isTerminal ? TIED : compareRule4b5Root(b));    
+      case RULE_4c:
+        return compareRules4ac(b, " s r p m");
       case RULE_6:
-        return checkRule6(b);
-      case RULE_RS:
-        return rule4Type == b.rule4Type ? TIED : rule4Type == root.rule4Ref ? A_WINS : B_WINS;
+        return compareRule6(b);
       }
     }
 
@@ -2446,7 +2447,7 @@ public class CIPChirality {
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    private int checkRule1a(CIPAtom b) {
+    private int compareRule1a(CIPAtom b) {
       return b.atom == null ? A_WINS : atom == null ? B_WINS
           : b.elemNo < elemNo ? A_WINS : b.elemNo > elemNo ? B_WINS : TIED;
     }
@@ -2461,7 +2462,7 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
 
-    private int checkRule1b(CIPAtom b) {
+    private int compareRule1b(CIPAtom b) {
       return b.isDuplicate != isDuplicate 
           ? TIED
 //          : rule1bOption == RULE_1b_TEST_OPTION_C_NONE
@@ -2476,10 +2477,10 @@ public class CIPChirality {
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    private int checkRule2(CIPAtom b) {
-      return (b.getMass() == getMass() ? TIED
-          : b.mass > mass ? B_WINS : A_WINS);
-    }
+    private int compareRule2(CIPAtom b) {
+      return (getMass() == b.getMass() ? TIED
+          : mass > b.mass ? A_WINS : B_WINS);
+}
 
     /**
      * Chapter 9 Rule 3. E/Z.
@@ -2494,7 +2495,7 @@ public class CIPChirality {
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    private int checkRule3(CIPAtom b) {
+    private int compareRule3(CIPAtom b) {
       return isDuplicate || b.isDuplicate || !parent.isAlkeneAtom2
           || !b.parent.isAlkeneAtom2 || !parent.alkeneParent.isEvenEne
           || !b.parent.alkeneParent.isEvenEne || parent == b.parent ? TIED
@@ -2511,7 +2512,7 @@ public class CIPChirality {
      *        String to test against; depends upon subrule being checked
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
-    private int checkRules4ac(CIPAtom b, String test) {
+    private int compareRules4ac(CIPAtom b, String test) {
       if (isTerminal || isDuplicate)
         return TIED;
       int isRa = test.indexOf(auxChirality), isRb = test
@@ -2519,16 +2520,39 @@ public class CIPChirality {
       return (isRa > isRb + 1 ? A_WINS : isRb > isRa + 1 ? B_WINS : TIED);
     }
 
-    private int checkRule4b5(CIPAtom b) {
+    /**
+     * Check for like or unlike the reference descriptor.
+     * 
+     * @param b
+     * @return A_WINS, B_WINS, or TIED
+     */
+    private int compareRule4bRef(CIPAtom b) {
+      return rule4Type == b.rule4Type ? TIED
+          : rule4Type == root.rule4Ref ? A_WINS : B_WINS;
+    }
+
+    private int compareRule4b5Root(CIPAtom b) {
       
       // this action will be on root atom substituents only
 
-      if (isTerminal || b.isTerminal)
-        return TIED; // can happen when are checking the two groups on an alkene end
-      
-      BS bsA = getBS4b5();
-      BS lu = compareLikeUnlike(bsA, b.getBS4b5());
-      return (lu == null ? IGNORE : lu == bsA ? A_WINS : B_WINS);
+      BS bsA = getBestList();
+      BS bsB = b.getBestList();
+      BS best = compareLikeUnlike(bsA, bsB);
+      return (best == null ? IGNORE : best == bsA ? A_WINS : B_WINS);
+    }
+
+    private BS getBestList() {
+      if (currentRule == RULE_5)
+        return listRS[0];
+      if (listRS == null) {
+        listRS = new BS[2];
+        rankAndRead(listRS[0] = new BS(), STEREO_R);
+        rankAndRead(listRS[1] = new BS(), STEREO_S);
+      }
+      if (Logger.debugging)
+        Logger.info("getBS4b5 " + this + " " + listRS[0] + listRS[1]);
+      BS lu = compareLikeUnlike(listRS[0], listRS[1]);
+      return (lu == null ? listRS[0] : lu);
     }
 
     private BS compareLikeUnlike(BS bsA, BS bsB) {
@@ -2541,29 +2565,19 @@ public class CIPChirality {
       return (l < 0 ? null : bsA.get(l) ? bsA : bsB);
     }
 
-    private BS getBS4b5() {
-      if (currentRule == RULE_5)
-        return bsRS[0];
-      if (bsRS == null) {
-        bsRS = new BS[2];
-        getBS4bBreadth(STEREO_R);
-        getBS4bBreadth(STEREO_S);
-      }
-      if (Logger.debugging)
-        Logger.info("getBS4b5 " + this + " " + bsRS[0] + bsRS[1]);
-      BS lu = compareLikeUnlike(bsRS[0], bsRS[1]);
-      return (lu == null ? bsRS[0] : lu);
-    }
-
-    private void getBS4bBreadth(int rs) {
-      root.rule4Ref = rs;
+    /**
+     * A queue-based breadth-first implementation based on  
+     * @param list 
+     * @param ref
+     */
+    private void rankAndRead(BS list, int ref) {
+      root.rule4Ref = ref;
       currentRule = RULE_RS;
       sortSubstituents(0);
       root.rootRule4bQueue.clear();
       root.rootRule4bQueue.addLast(this);
-      BS bs = bsRS[rs - 1] = new BS();
-      if (rule4Type == rs)
-        bs.set(0);
+      if (rule4Type == ref)
+        list.set(0);
       int nrs = (rule4Type == NO_CHIRALITY ? 0 : 1);
       while (root.rootRule4bQueue.size() != 0) {
         CIPAtom next = root.rootRule4bQueue.removeItemAt(0);
@@ -2579,15 +2593,15 @@ public class CIPChirality {
             root.rootRule4bQueue.addLast(ai);
             if (ai.rule4Type == 0)
               continue;
-            if (ai.rule4Type == rs)
-              bs.set(nrs);
+            if (ai.rule4Type == ref)
+              list.set(nrs);
             nrs++;
           }
       }
       currentRule = RULE_4b;
     }
 
-    private int checkRule6(CIPAtom b) {
+    private int compareRule6(CIPAtom b) {
       return ((atomIndex == root.rule6refIndex) == (b.atomIndex == root.rule6refIndex) ? TIED
           : atomIndex == root.rule6refIndex ? A_WINS : B_WINS);
     }
@@ -2950,7 +2964,7 @@ public class CIPChirality {
       a.alkeneParent = null;
       a.auxEZ = UNDETERMINED;
       a.rule4Type = NO_CHIRALITY;
-      a.bsRS = null;
+      a.listRS = null;
       return a;
     }
 

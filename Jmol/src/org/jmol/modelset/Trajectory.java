@@ -73,16 +73,19 @@ public class Trajectory {
     Model[] am = ms.am;
     int baseModelIndex = am[modelIndex].trajectoryBaseIndex;
     am[baseModelIndex].selectedTrajectory = modelIndex;
+    // dcd trajectories should cancel PDB crystal data. Not sure why they were there. Somewhat of a hack
+    isFractional = !ms.getMSInfoB("ignoreUnitCell");
     setAtomPositions(baseModelIndex, modelIndex, steps.get(modelIndex),
         null, 0,
-        (ms.vibrationSteps == null ? null : ms.vibrationSteps.get(modelIndex)), true);    
+        (ms.vibrationSteps == null ? null : ms.vibrationSteps.get(modelIndex)), isFractional);    
     int currentModelIndex = vwr.am.cmi;
     if (currentModelIndex >= 0 && currentModelIndex != modelIndex 
         && am[currentModelIndex].fileIndex == am[modelIndex].fileIndex)
       vwr.setCurrentModelIndexClear(modelIndex, false);
   }
   
-
+  boolean isFractional = true;
+  
   /**
    * A generic way to set atom positions, possibly from trajectories but also
    * possibly from an array. Takes care of all associated issues of changing

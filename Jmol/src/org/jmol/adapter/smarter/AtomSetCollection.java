@@ -1098,6 +1098,7 @@ public class AtomSetCollection {
     for (int i = 0; i < a.trajectoryStepCount; i++)
       trajectorySteps.add(trajectoryStepCount++, a.trajectorySteps.get(i));
     setInfo("trajectorySteps", trajectorySteps);
+    setInfo("ignoreUnitCell", a.atomSetInfo.get("ignoreUnitCell"));
   }
 
 }

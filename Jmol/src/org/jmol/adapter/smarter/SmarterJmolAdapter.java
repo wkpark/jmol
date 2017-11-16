@@ -320,6 +320,8 @@ public class SmarterJmolAdapter extends JmolAdapter {
       // all the htParams[] entries point to the same Hashtable
       result = asc[0];
       try {
+        if (asc.length > 1)
+          asc[0].setInfo("ignoreUnitCell", asc[1].atomSetInfo.get("ignoreUnitCell"));
         result.finalizeTrajectoryAs(
             (Lst<P3[]>) htParams.get("trajectorySteps"),
             (Lst<V3[]>) htParams.get("vibrationSteps"));

@@ -971,7 +971,7 @@ public class ModelSet extends BondCollection {
     if (am[modelIndex].simpleCage != null)
       return am[modelIndex].simpleCage;
     if (unitCells != null && modelIndex < unitCells.length
-        && unitCells[modelIndex].haveUnitCell())
+        && unitCells[modelIndex] != null && unitCells[modelIndex].haveUnitCell())
       return unitCells[modelIndex];
     if (getInfo(modelIndex, "unitCellParams") != null) {
       if (unitCells == null)

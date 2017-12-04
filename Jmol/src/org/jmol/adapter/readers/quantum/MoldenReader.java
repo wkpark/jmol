@@ -202,6 +202,8 @@ public class MoldenReader extends MopacSlaterReader {
     2    0    0    0    0             1.4738648100        1.0095121222          
     3    0    0    0    0             1.4738648100        1.0095121222          
      */
+    
+    nCoef = 0;
     while (rd() != null && line.indexOf("[") < 0) {
       String[] tokens = getTokens();
       if (tokens.length < 7)
@@ -209,6 +211,7 @@ public class MoldenReader extends MopacSlaterReader {
       addSlater(parseIntStr(tokens[0]) - 1, parseIntStr(tokens[1]),
           parseIntStr(tokens[2]), parseIntStr(tokens[3]), parseIntStr(tokens[4]),
           parseFloatStr(tokens[5]), parseFloatStr(tokens[6]));
+      nCoef++;
     }
     setSlaters(false, false);
     //moData.put("isNormalized", Boolean.TRUE);

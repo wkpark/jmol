@@ -107,6 +107,7 @@ public class NWChemReader extends MOReader {
   @Override
   protected boolean checkLine() throws Exception {
 
+    
     if (line.trim().startsWith("NWChem")) {
       // currently only keep track of whether I am in the input module or not.
       inInput = (line.indexOf("NWChem Input Module") >= 0);
@@ -147,6 +148,8 @@ public class NWChemReader extends MOReader {
       return true;
     }
     if (line.indexOf("Output coordinates in ") >= 0) {
+      if (!htMOs.isEmpty())
+        checkMOs();
       if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       equivalentAtomSets++;
@@ -483,6 +486,7 @@ public class NWChemReader extends MOReader {
    **/
   private void readFrequencies() throws Exception {
     int firstFrequencyAtomSetIndex = asc.atomSetCount;
+    int firstVibrationNumber = vibrationNumber;
     String path = "Task " + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR
         + "Frequencies";
 
@@ -500,6 +504,7 @@ public class NWChemReader extends MOReader {
     readLines(3); // step over the line with the numbers
 
     boolean firstTime = true;
+    BS bsIgnore = new BS();
     while (rd() != null && line.indexOf("P.Frequency") >= 0) {
       tokens = PT.getTokensAt(line, 12);
       int frequencyCount = tokens.length;
@@ -514,8 +519,10 @@ public class NWChemReader extends MOReader {
       // assign the frequency values to each atomset's name and property
       for (int i = 0; i < frequencyCount; ++i) {
         ignore[i] = (tokens[i].equals("0.00") || !doGetVibration(++vibrationNumber));
-        if (ignore[i])
+        if (ignore[i]) {
+          bsIgnore.set(vibrationNumber);
           continue;
+        }
         if (!firstTime)
           asc.cloneLastAtomSet();
         firstTime = false;
@@ -530,22 +537,22 @@ public class NWChemReader extends MOReader {
     // the frequencies
     // NB this is not always there: try/catch and possibly set freq value again  
     try {
-      discardLinesUntilContains("Projected Infra Red Intensities");
+      discardLinesUntilContains("Infra Red Intensities");
       readLines(2);
-      for (int i = vibrationNumber, idx = firstFrequencyAtomSetIndex; --i >= 0;) {
+      int idx = firstFrequencyAtomSetIndex;
+      for (int i = firstVibrationNumber; i < vibrationNumber; ++i) {
         if (rd() == null)
           return;
-        if (!doGetVibration(i + 1))
+        if (bsIgnore.get(i))
           continue;
         tokens = getTokens();
         int iset = asc.iSet;
         asc.iSet = idx++;
-        asc.setAtomSetFrequency(null, null, tokens[i], null);
-        asc.setAtomSetModelProperty("IRIntensity", tokens[5]
-            + " KM/mol");
+        asc.setAtomSetModelProperty("IRIntensity", tokens[3] + " au");
         asc.iSet = iset;
       }
     } catch (Exception e) {
+      System.out.println("nwchem infra red issue" + e);
       // If exception was thrown, don't do anything here...
     }
   }
@@ -886,7 +893,7 @@ public class NWChemReader extends MOReader {
     }
     energyUnits = "a.u.";
     setMOData(true);
-    shells = null;
+    //shells = null;
     htMOs.clear();
   }
 

@@ -138,7 +138,7 @@ public final class JC {
   
   public static final String PDB_ANNOTATIONS = ";dssr;rna3d;dom;val;";
 
-  public static final String CACTUS_FILE_TYPES = ";alc;cdxml;cerius;charmm;cif;cml;ctx;gjf;gromacs;hyperchem;jme;maestro;mol;mol2;sybyl2;mrv;pdb;sdf;sdf3000;sln;smiles;xyz;";
+  public static final String CACTUS_FILE_TYPES = ";alc;cdxml;cerius;charmm;cif;cml;ctx;gjf;gromacs;hyperchem;jme;maestro;mol;mol2;sybyl2;mrv;pdb;sdf;sdf3000;sln;smiles;xyz";
 
   // note list of RCSB access points: http://www.rcsb.org/pdb/static.do?p=download/http/index.html
   

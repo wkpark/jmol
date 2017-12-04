@@ -49,6 +49,7 @@ import javajs.util.T3;
 import javajs.util.V3;
 import javajs.util.XmlUtil;
 
+import org.jmol.adapter.writers.QCSchemaWriter;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolPropertyManager;
@@ -1138,7 +1139,7 @@ public class PropertyManager implements JmolPropertyManager {
 
   /**
    * 
-   * V3000, SDF, MOL, JSON, CD, XYZ, XYZVIB, XYZRN, CML, PDB, PQR
+   * V3000, SDF, MOL, JSON, CD, XYZ, XYZVIB, XYZRN, CML, PDB, PQR, QCJSON
    * 
    * MOL67 is MOL with bonds of type 6 or 7 (aromatic single/double)
    * 
@@ -1149,6 +1150,8 @@ public class PropertyManager implements JmolPropertyManager {
     
     if (type.equalsIgnoreCase("CIF"))
       return getModelCif(bs);
+    if (type.equalsIgnoreCase("QCJSON"))
+      return getQCJSON(bs);
     if (type.equalsIgnoreCase("CML"))
       return getModelCml(bs, Integer.MAX_VALUE, true, doTransform, allTrajectories);
     if (type.equals("PDB") || type.equals("PQR"))
@@ -1276,6 +1279,23 @@ public class PropertyManager implements JmolPropertyManager {
     }
     return (isOK ? mol.toString()
         : "ERROR: Too many atoms or bonds -- use V3000 format.");
+  }
+
+  /**
+   * 
+   * EXPERIMENTAL
+   * 
+   * create a QCJSON file -- very preliminary
+   * 
+   * @param bs  ignored
+   * @return JSON string
+   */
+  private String getQCJSON(BS bs) {
+    // bs is ignored here
+    QCSchemaWriter writer = (QCSchemaWriter) Interface.getInterface("org.jmol.adapter.writers.QCSchemaWriter", vwr, "script");
+    writer.set(vwr, null);
+    writer.writeJSON();
+    return writer.toString();
   }
 
   /**

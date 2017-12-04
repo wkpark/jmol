@@ -46,4 +46,16 @@ public class SlaterData {
     this.zeta = zeta;
     this.coef = coef;
   }
+  
+  @Override
+  public String toString() {
+    return "[" + (iAtom + 1) 
+        + "," + x
+        + "," + y
+        + "," + z
+        + "," + r
+        + "," + zeta
+        + "," + coef
+        + "]";
+  }
 }

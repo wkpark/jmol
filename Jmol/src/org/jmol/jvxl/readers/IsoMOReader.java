@@ -373,7 +373,7 @@ class IsoMOReader extends AtomDataReader {
           atomData.firstAtomIndex, (Lst<int[]>) params.moData.get("shells"),
           (float[][]) params.moData.get("gaussians"), dfCoefMaps, null, coef,
           linearCombination, params.isSquaredLinear, coefs,
-          params.moData.get("isNormalized") == null, points);
+          params.moData.get("isNormalized") != Boolean.TRUE, points);
     case Parameters.QM_TYPE_SLATER:
       return ((MOCalculation) q).setupCalculation(volumeData, bsMySelected,
           (String) params.moData.get("calculationType"), atomData.xyz, atomData.atoms,

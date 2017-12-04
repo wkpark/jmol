@@ -70,6 +70,9 @@ public class JaguarReader extends MOReader {
     if (line.startsWith("  basis set:")) {
       moData.put("energyUnits", "");
       moData.put("calculationType", calculationType = line.substring(13).trim());
+      if ("sto-3g".equals(calculationType)) {
+        Logger.error("STO-3G not supported for Jaguar -- unusual SP basis definition.");
+      }
       return true;
     }
     if (line.indexOf("XXXXXShell information") >= 0) { // disabled -- need normalized set
@@ -78,6 +81,7 @@ public class JaguarReader extends MOReader {
     }
 
     if (line.indexOf("Normalized coefficients") >= 0) {
+      if (!"sto-3g".equals(calculationType))
       readBasisNormalized();
       return true;
     }
@@ -86,7 +90,8 @@ public class JaguarReader extends MOReader {
       return true;
     }
     if (line.indexOf("final wvfn") >= 0) {
-      readJaguarMolecularOrbitals();
+      if (shells != null)
+        readJaguarMolecularOrbitals();
       return true;
     }
     if (line.startsWith("  harmonic frequencies in")) {
@@ -267,25 +272,43 @@ public class JaguarReader extends MOReader {
       id = tokens[2];
       int iType = BasisFunctionReader.getQuantumShellTagID(id);
       iFunc = parseIntStr(tokens[3]) - 1;
+      int gPtr = gdata.size();
       if (iFunc == iFuncLast) {
+        sdata[3]++;
+      } else if (iFunc < iFuncLast) {
+        // out of order!
+        for (int i = gdata.size(); --i >= 0;) {
+          if (gdata.get(i)[2] == iFunc) {
+            gPtr = i + 1;
+            break;            
+          }
+        }
+        for (int i = sarray.size(); --i >= 0;) {
+          if (sarray.get(i)[4] == iFunc) {
+            sarray.get(i)[3]++;
+            while (++i < sarray.size()) {
+              sarray.get(i)[2]++;
+            }
+            break;
+          }
+        }
       } else {
-        sdata = new int[] { iAtom, iType, gaussianCount, 0 };
+        sdata = new int[] { iAtom, iType, gaussianCount, 1, iFunc };
         sarray.addLast(sdata);
         iFuncLast = iFunc;
       }
       gaussianCount++;
-      sdata[3]++;
       float z = parseFloatStr(tokens[4]);
       float rCoef = parseFloatStr(tokens[5]);
       if (id.equals("XX"))
         rCoef *= ROOT3;
-      gdata.addLast(new float[] { z, rCoef });
+      gdata.add(gPtr, new float[] { z, rCoef, iFunc});
     }
 
     float[][] garray = AU.newFloat2(gaussianCount);
     for (int i = gdata.size(); --i >= 0;)
       garray[i] = gdata.get(i);
-    moData.put("shells", sarray);
+    moData.put("shells", shells = sarray);
     moData.put("gaussians", garray);
     if (debugging) {
       Logger.debug(sarray.size() + " slater shells read");

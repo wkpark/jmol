@@ -212,7 +212,7 @@ public class MOCalculation extends QuantumCalculation {
     }
   }
 
-  private double c = 1;
+  //private double c = 1;
   @Override
   protected void process() {
     atomIndex = firstAtomOffset - 1;
@@ -221,15 +221,15 @@ public class MOCalculation extends QuantumCalculation {
       // each STO shell is the combination of one or more gaussians
       int nShells = shells.size();
       //Logger.info("Processing " + nShells + " Gaussian  shells");
-      if (c < 0) {
-        c = 0;
-        for (int i = 0; i < nShells; i++)
-          c += normalizeShell(i);
-        //System.out.println("sum[c^2] = " + c + "\t" + Math.sqrt(c));
-        c = Math.sqrt(c);
-        atomIndex = firstAtomOffset - 1;
-        moCoeff = 0;
-      }
+//      if (c < 0) {
+//        c = 0;
+//        for (int i = 0; i < nShells; i++)
+//          c += normalizeShell(i);
+//        //System.out.println("sum[c^2] = " + c + "\t" + Math.sqrt(c));
+//        c = Math.sqrt(c);
+//        atomIndex = firstAtomOffset - 1;
+//        moCoeff = 0;
+//      }
       for (int i = 0; i < nShells; i++)
         processShell(i);
       return;
@@ -268,20 +268,20 @@ public class MOCalculation extends QuantumCalculation {
     return true;
   }
 
-  private double normalizeShell(int iShell) {
-    double c = 0;
-    int[] shell = shells.get(iShell);
-    int basisType = shell[1];
-    gaussianPtr = shell[2];
-    nGaussians = shell[3];
-    doShowShellType = doDebug;
-    //System.out.println(iShell + " basistype is " + basisType);
-    if (!setCoeffs(basisType, false))
-      return 0;
-    for (int i = map.length; --i >= 0;)
-      c += coeffs[i] * coeffs[i];
-    return c;
-  }
+//  private double normalizeShell(int iShell) {
+//    double c = 0;
+//    int[] shell = shells.get(iShell);
+//    int basisType = shell[1];
+//    gaussianPtr = shell[2];
+//    nGaussians = shell[3];
+//    doShowShellType = doDebug;
+//    //System.out.println(iShell + " basistype is " + basisType);
+//    if (!setCoeffs(basisType, false))
+//      return 0;
+//    for (int i = map.length; --i >= 0;)
+//      c += coeffs[i] * coeffs[i];
+//    return c;
+//  }
 
   private int nGaussians;
   private boolean doShowShellType;
@@ -351,6 +351,13 @@ public class MOCalculation extends QuantumCalculation {
     }
   }
   
+  /**
+   * NWCHEM only
+   * 
+   * @param el
+   * @param cpt
+   * @return
+   */
   private double getContractionNormalization(int el, int cpt) {
     double sum;
     double df = (el == 3 ? 15 : el == 2 ? 3 : 1);

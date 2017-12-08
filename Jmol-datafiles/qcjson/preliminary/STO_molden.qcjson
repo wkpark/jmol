@@ -1,0 +1,154 @@
+["QCJSON 0-0-0.Jmol_14.26.1__2017-11-15_21:59",
+{
+	"__jmol_created":"Sun Dec 03 17:30:35 CST 2017",
+	"__jmol_source":"c:/jmol-dev/bobtest/water.molden"
+},
+{
+	"__jmol_block":"Job 1",
+	"metadata":{
+		"__jmol_info":{
+
+		}
+	},
+	"steps":[
+		{
+			"__jmol_block":"Model 1",
+			"topology":{
+				"atoms":{
+					"coords_units":["angstroms",1.8897],
+					"coords":[
+						 0.00000E+0,	 0.00000E+0,	 0.00000E+0,
+						 9.68630E-1,	 0.00000E+0,	 0.00000E+0,
+						-2.34406E-1,	 9.39839E-1,	 0.00000E+0
+					],
+					"symbol":["_RLE_",1,"O",2,"H"],
+					"atom_number":["_RLE_",1,8,2,1]
+
+				}
+			},
+			"molecular_orbitals":{
+				"orbitals":[{
+					"index":1,
+					"occupancy":1.0,
+					"type":"alpha",
+					"energy":-36.51228,
+					"symmetry":"A'",
+					"coefficients":[-0.96414846,-0.049656533,-0.06356255,0.0,-0.17876193,-0.17876193],
+					"spin":"alpha"
+				},{
+					"index":7,
+					"occupancy":1.0,
+					"type":"beta",
+					"energy":-36.51228,
+					"symmetry":"A'",
+					"coefficients":[-0.96414846,-0.049656533,-0.06356255,-0.0,-0.17876193,-0.17876193],
+					"spin":"beta"
+				},{
+					"index":2,
+					"occupancy":1.0,
+					"type":"alpha",
+					"energy":-16.780003,
+					"symmetry":"A'",
+					"coefficients":[-0.0,-0.6282552,0.49080753,0.0,-0.42685083,0.42685083],
+					"spin":"alpha"
+				},{
+					"index":8,
+					"occupancy":1.0,
+					"type":"beta",
+					"energy":-16.780003,
+					"symmetry":"A'",
+					"coefficients":[0.0,-0.6282552,0.49080753,0.0,-0.42685083,0.42685083],
+					"spin":"beta"
+				},{
+					"index":3,
+					"occupancy":1.0,
+					"type":"alpha",
+					"energy":-14.897618,
+					"symmetry":"A'",
+					"coefficients":[0.20492685,-0.51194346,-0.65531015,-0.0,-0.3650256,-0.3650256],
+					"spin":"alpha"
+				},{
+					"index":9,
+					"occupancy":1.0,
+					"type":"beta",
+					"energy":-14.897618,
+					"symmetry":"A'",
+					"coefficients":[0.20492685,-0.51194346,-0.65531015,0.0,-0.3650256,-0.3650256],
+					"spin":"beta"
+				},{
+					"index":4,
+					"occupancy":1.0,
+					"type":"alpha",
+					"energy":-12.920655,
+					"symmetry":"A''",
+					"coefficients":[-0.0,0.0,0.0,-1.0,0.0,0.0],
+					"spin":"alpha"
+				},{
+					"index":10,
+					"occupancy":1.0,
+					"type":"beta",
+					"energy":-12.920655,
+					"symmetry":"A''",
+					"coefficients":[-0.0,0.0,0.0,1.0,0.0,0.0],
+					"spin":"beta"
+				},{
+					"index":5,
+					"occupancy":0.0,
+					"type":"alpha",
+					"energy":4.242756,
+					"symmetry":"A'",
+					"coefficients":[-0.1685901,-0.33830386,-0.43304384,-0.0,0.5786194,0.5786194],
+					"spin":"alpha"
+				},{
+					"index":11,
+					"occupancy":0.0,
+					"type":"beta",
+					"energy":4.242756,
+					"symmetry":"A'",
+					"coefficients":[-0.1685901,-0.33830386,-0.43304384,0.0,0.5786194,0.5786194],
+					"spin":"beta"
+				},{
+					"index":6,
+					"occupancy":0.0,
+					"type":"alpha",
+					"energy":6.4604897,
+					"symmetry":"A'",
+					"coefficients":[0.0,-0.4757036,0.37163067,-0.0,0.563736,-0.563736],
+					"spin":"alpha"
+				},{
+					"index":12,
+					"occupancy":0.0,
+					"type":"beta",
+					"energy":6.4604897,
+					"symmetry":"A'",
+					"coefficients":[-0.0,-0.4757036,0.37163067,0.0,0.563736,-0.563736],
+					"spin":"beta"
+				}],
+				"basis_id":"MOBASIS_1",
+				"orbitals_energy_units":"[\"?\",\"?\"]",
+				"calculation_type":"?",
+				"normalized":false
+			}
+			,
+			"metadata":{
+				"__jmol_info":{
+					"modelNumberDotted":"1.1",
+					"modelNumber":1,
+					"modelFileNumber":1000001,
+					"modelName":"1",
+					"initialAtomCount":3,
+					"initialBondCount":0,
+					"modelIndex":0,
+					"fileType":"molden"
+				}
+			}
+		}
+	],
+	"mo_bases":{
+				"MOBASIS_1":{
+			"slaters":[[1,0,0,0,1,1.55214524269104,0.9776766896247864],[1,1,0,0,0,1.55214524269104,1.6933857202529907],[1,0,1,0,0,1.55214524269104,1.6933857202529907],[1,0,0,1,0,1.55214524269104,1.6933857202529907],[2,0,0,0,0,1.4738647937774658,1.0095120668411255],[3,0,0,0,0,1.4738647937774658,1.0095120668411255]]
+		}
+
+	}
+}
+]

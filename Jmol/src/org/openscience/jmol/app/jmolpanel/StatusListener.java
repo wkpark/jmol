@@ -32,6 +32,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
+import javajs.api.Interface;
 import javajs.util.PT;
 import jspecview.application.MainFrame;
 
@@ -48,10 +49,6 @@ import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.JmolPlugin;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.webexport.WebExport;
-
-import sun.audio.AudioData;
-import sun.audio.AudioDataStream;
-import sun.audio.AudioPlayer;
 
 class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterface {
 
@@ -273,11 +270,9 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
    */
   private void playAudio(String fileName) {
     try {
-      Object ret = vwr.fm.getFileAsBytes(fileName, null);
-      if (ret == null || ret instanceof String) {
-        return;
-      }
-      AudioPlayer.player.start(new AudioDataStream(new AudioData((byte[]) ret)));
+      Object data = vwr.fm.getFileAsBytes(fileName, null);
+      if ((data instanceof byte[]))
+        ((JmolAudio) Interface.getInterface("org.openscience.jmol.jmolpanel.JmolAudio")).playAudio((byte[]) data);
     } catch (Exception e) {
       Logger.info(e.getMessage());
     }

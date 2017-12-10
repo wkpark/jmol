@@ -101,10 +101,10 @@ public class CIPData {
         bsCMinus = match("[a-]");
 
         
-        if (match("[n+1,o+1]").isEmpty() && !bsXAromatic.isEmpty()) {
+        if (!match("[n+1,o+1]").isEmpty() && !bsXAromatic.isEmpty()) {
           // look for key 5-member ring aromatics.
-          bsKekuleAmbiguous.or(match("a=1[n+,o+]=a[n,o]a1"));
-          bsKekuleAmbiguous.or(match("a1=[n+,o+][n,o]a=a1"));
+          bsKekuleAmbiguous.or(match("a1[n+,o+]a[n,o]a1"));
+          bsKekuleAmbiguous.or(match("a1[n+,o+][n,o]aa1"));
         }
         if (!bsCMinus.isEmpty())
           bsKekuleAmbiguous.or(match("a1=a[a-]a=a1"));

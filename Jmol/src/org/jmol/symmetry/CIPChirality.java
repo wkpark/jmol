@@ -632,23 +632,16 @@ public class CIPChirality {
    */
   int currentRule = RULE_1a;
 
-  /**
-   * track small rings for removing E/Z indicators as per IUPAC
-   * 2013.P-93.5.1.4.1
-   */
-  Lst<BS> lstSmallRings = new Lst<BS>();
+//  /**
+//   * track kekule rings for mancude 2013.P-92.1.4.4
+//   */
+//  Lst<BS> lstKekuleRings = new Lst<BS>();
 
-  /**
-   * the aromatic atoms connected by a nonaromatic single bond smarts("a-a")
-   * 
-   */
-  BS bsAtropisomeric;
-
-  /**
-   * needed for Jmol's Rule 1b addition
-   * 
-   */
-  BS bsKekuleAmbiguous;
+//  /**
+//   * needed for Jmol's Rule 1b addition
+//   * 
+//   */
+//  BS bsKekuleAmbiguous;
 
   /**
    * used to determine whether N is potentially chiral - could do this here, of
@@ -710,58 +703,57 @@ public class CIPChirality {
    */
   private void init() {
     ptIDLogger = 0;
-    lstSmallRings.clear();
-    bsKekuleAmbiguous = null;
-    bsAtropisomeric = new BS();
+    //lstKekuleRings.clear();
+    //bsKekuleAmbiguous = null;
   }
 
+  CIPData data;
+  
   /**
    * A more general determination of chirality that involves ultimately all
    * Rules 1-5.
+   * @param data 
    * 
-   * @param atoms
-   *        atoms to process
-   * @param bsAtoms
-   *        bit set of all atoms to process
-   * @param bsAtropisomeric
-   *        bit set of all biphenyl-like connections
-   * @param bsHelixM
-   *        aromatic atoms at the end of a negative helical turn;
-   *        smarts("A{a}(.t:-10,-40)a(.t:-10,-40)aaa")
-   * @param bsHelixP
-   *        aromatic atoms at the end of a positive helical turn;
-   *        smarts("A{a}(.t:10,40)a(.t:10,40)aaa")
-   * @param setAuxiliary
-   *        also set auxiliary (single-atom only)
    */
-  public void getChiralityForAtoms(SimpleNode[] atoms, BS bsAtoms,
-                                   BS bsAtropisomeric, BS bsHelixM,
-                                   BS bsHelixP, boolean setAuxiliary) {
-    if (bsAtoms.isEmpty())
+  public void getChiralityForAtoms(CIPData data) {
+
+// data.atoms
+//        atoms to process
+// data.bsAtoms
+//        bit set of all atoms to process
+// data.bsAtropisomeric
+//        bit set of all biphenyl-like connections
+// data.bsHelixM
+//        aromatic atoms at the end of a negative helical turn;
+//        smarts("A{a}(.t:-10,-40)a(.t:-10,-40)aaa")
+// data.bsHelixP
+//        aromatic atoms at the end of a positive helical turn;
+//        smarts("A{a}(.t:10,40)a(.t:10,40)aaa")
+// data.setAuxiliary
+//        also set auxiliary (single-atom only)
+
+    this.data = data;
+    if (data.bsAtoms.isEmpty())
       return;
     init();
-    this.setAuxiliary = (setAuxiliary && bsAtoms.cardinality() == 1);   // Logger
-    this.bsAtropisomeric = (bsAtropisomeric == null ? new BS()
-        : bsAtropisomeric);
+    this.setAuxiliary = (setAuxiliary && data.bsAtoms.cardinality() == 1);   // Logger
 
     // using BSAtoms here because we need the entire graph,
     // including multiple molecular units (AY-236.93
 
-    BS bs = BSUtil.copy(bsAtoms);
-    lstSmallRings = new Lst<BS>();
-    while (!bs.isEmpty())
-      // COUNT_LINE
-      getSmallRings(atoms[bs.nextSetBit(0)], bs);
-    bsKekuleAmbiguous = getKekule(atoms);
-    bsAzacyclic = getAzacyclic(atoms, bsAtoms);
+//    BS bs = BSUtil.copy(data.bsAtoms);
+//    while (!bs.isEmpty())
+//      getRings(data.atoms[bs.nextSetBit(0)], bs, data.atoms);
+//    bsKekuleAmbiguous = getKekule(data.atoms);
+    bsAzacyclic = getAzacyclic(data.atoms, data.bsAtoms);
 
-    BS bsToDo = BSUtil.copy(bsAtoms);
-    boolean haveAlkenes = preFilterAtomList(atoms, bsToDo);
+    BS bsToDo = BSUtil.copy(data.bsAtoms);
+    boolean haveAlkenes = preFilterAtomList(data.atoms, bsToDo);
 
     // set atom chiralities
 
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
-      SimpleNode a = atoms[i];
+      SimpleNode a = data.atoms[i];
       a.setCIPChirality(0);
       ptIDLogger = 0;
       int c = getAtomChiralityLimited(a, null, null);
@@ -774,9 +766,9 @@ public class CIPChirality {
 
       Lst<int[]> lstEZ = new Lst<int[]>();
       for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1))
-        getAtomBondChirality(atoms[i], lstEZ, bsToDo);
-      if (lstSmallRings.size() > 0 && lstEZ.size() > 0)
-        clearSmallRingEZ(atoms, lstEZ);
+        getAtomBondChirality(data.atoms[i], lstEZ, bsToDo);
+      if (data.lstSmallRings.length > 0 && lstEZ.size() > 0)
+        clearSmallRingEZ(data.atoms, lstEZ);
 
       // Add helicene chiralities -- predetermined using a Jmol SMARTS conformational search.
       //
@@ -785,22 +777,22 @@ public class CIPChirality {
       //
       // Note that indicators are on the first and last aromatic atoms {a}. 
 
-      if (bsHelixM != null)
-        for (int i = bsHelixM.nextSetBit(0); i >= 0; i = bsHelixM
-            .nextSetBit(i + 1))
-          atoms[i].setCIPChirality(STEREO_M);
-
-      if (bsHelixP != null)
-        for (int i = bsHelixP.nextSetBit(0); i >= 0; i = bsHelixP
-            .nextSetBit(i + 1))
-          atoms[i].setCIPChirality(STEREO_P);
+      setStereoFromSmiles(data.bsHelixM, STEREO_M, data.atoms);
+      setStereoFromSmiles(data.bsHelixP, STEREO_P, data.atoms);
     }
 
     if (Logger.debugging) {
-      Logger.info("sp2-aromatic = " + bsKekuleAmbiguous);
-      Logger.info("smallRings = " + PT.toJSON(null, lstSmallRings));
+      Logger.info("sp2-aromatic = " + data.bsKekuleAmbiguous);
+      Logger.info("smallRings = " + PT.toJSON(null, data.lstSmallRings));
     }
 
+  }
+
+  private void setStereoFromSmiles(BS bsHelix, int stereo, SimpleNode[] atoms) {
+    if (bsHelix != null)
+      for (int i = bsHelix.nextSetBit(0); i >= 0; i = bsHelix
+          .nextSetBit(i + 1))
+        atoms[i].setCIPChirality(stereo);
   }
 
   /**
@@ -818,12 +810,12 @@ public class CIPChirality {
     for (int i = bsAtoms.nextSetBit(0); i >= 0; i = bsAtoms.nextSetBit(i + 1)) {
       SimpleNode atom = atoms[i];
       if (atom.getElementNumber() != 7 || atom.getCovalentBondCount() != 3
-          || bsKekuleAmbiguous.get(i))
+          || data.bsKekuleAmbiguous.get(i))
         continue;
       // bridgehead N must be in two rings that have at least three atoms in common.
       Lst<BS> nRings = new Lst<BS>();
-      for (int j = lstSmallRings.size(); --j >= 0;) {
-        BS bsRing = lstSmallRings.get(j);
+      for (int j = data.lstSmallRings.length; --j >= 0;) {
+        BS bsRing = data.lstSmallRings[j];
         if (bsRing.get(i))
           nRings.addLast(bsRing);
       }
@@ -995,66 +987,171 @@ public class CIPChirality {
     return (n > 2 && n <= 10);
   }
 
-  /**
-   * Just six-membered rings with three internal pi bonds or fused rings such as
-   * naphthalene or anthracene. Obviously, this is not a full-fledged Kekule
-   * check, but it will have to do.
-   * 
-   * @param atoms
-   * @return bsKekuleAmbiguous
-   */
-  private BS getKekule(SimpleNode[] atoms) {
-    int nRings = lstSmallRings.size();
-    BS bs = new BS(), bsDone = new BS();
-    for (int i = nRings; --i >= 0;) {
-      if (bsDone.get(i))
-        continue;
-      BS bsRing = lstSmallRings.get(i);
-      if (bsRing.cardinality() != 6) {
-        bsDone.set(i);
-        continue;
-      }
-      int nPI = 0;
-      for (int j = bsRing.nextSetBit(0); j >= 0; j = bsRing.nextSetBit(j + 1)) {
-        SimpleNode a = atoms[j];
-        if (bs.get(a.getIndex())) {
-          nPI++;
-          continue;
-        }
-        int nb = a.getCovalentBondCount();
-        if (nb == 3 || nb == 2) {
-          SimpleEdge[] bonds = a.getEdges();
-          for (int k = bonds.length; --k >= 0;) {
-            SimpleEdge b = bonds[k];
-            if (b.getCovalentOrder() != 2)
-              continue;
-            if (bsRing.get(b.getOtherNode(a).getIndex())) {
-              nPI++;
-              break;
-            }
-          }
-        }
-      }
-      if (nPI == 6) {
-        bs.or(bsRing);
-        bsDone.set(i);
-        i = nRings;
-      }
-    }
-    return bs;
-  }
+//  /**
+//   * Just six-membered rings with three internal pi bonds or fused rings such as
+//   * naphthalene or anthracene. Obviously, this is not a full-fledged Kekule
+//   * check, but it will have to do.
+//   * 
+//   * @param atoms
+//   * @return bsKekuleAmbiguous
+//   */
+//  private BS getKekule(SimpleNode[] atoms) {
+//    
+//    BS bsAll = new BS();
+//    for (int i = data.lstR5a.length; --i >= 0;) {
+//      BS bs = data.lstR5a[i];
+//      lstKekuleRings.addLast(bs);
+//      bsAll.or(bs);        
+//    }
+//    for (int i = data.lstR6a.length; --i >= 0;) {
+//      BS bs = data.lstR6a[i];
+//      lstKekuleRings.addLast(bs);
+//      bsAll.or(bs);        
+//    }
+//    return bsAll;
+//    for (int i = data.lstR6a.length; --i >= 0;) {
+//      lstKekuleRings.addLast(data.lstR6a[i]);
+//  }
+//    if (lstLargeRings.size() > 0) {
+//      for (int j = lstKekuleRings.size(); --j >= 0;) {
+//        BS bsSmall = lstKekuleRings.get(j);
+//        for (int i = lstLargeRings.size(); --i >= 0;) {
+//          bsTest.clearAll();
+//          bsTest.or(bsSmall);
+//          bsTest.and(lstLargeRings.get(i));
+//          if (bsTest.cardinality() > 2)
+//            lstLargeRings.remove(i);
+//        }
+//      }
+//    }
+//    for (int i = lstLargeRings.size(); --i >= 0;) {
+//      lstKekuleRings.addLast(lstLargeRings.get(i));
+//    }
+//
+//    
+//
+//
+//    int nRings = lstKekuleRings.size();
+//    BS bs = new BS(), bsDone = new BS();
+//    for (int i = nRings; --i >= 0;) {
+//      if (bsDone.get(i))
+//        continue;
+//      BS bsRing = lstKekuleRings.get(i);
+//      // note that five-membered rings cannot participate in Kekule business,
+//      // as any changes to bonding will give a non-Mancude systems.
+//      int n = bsRing.cardinality();
+//      switch (n) {
+//      case 6:
+//      case 10:
+//      case 14:
+//        bsDone.set(i);
+//        continue;
+//      }
+//      int nPI = 0;
+//      for (int j = bsRing.nextSetBit(0); j >= 0; j = bsRing.nextSetBit(j + 1)) {
+//        SimpleNode a = atoms[j];
+//        if (bs.get(a.getIndex())) {
+//          nPI++;
+//          continue;
+//        }
+//        int nb = a.getCovalentBondCount();
+//        if (nb == 3 || nb == 2) {
+//          SimpleEdge[] bonds = a.getEdges();
+//          for (int k = bonds.length; --k >= 0;) {
+//            SimpleEdge b = bonds[k];
+//            if (b.getCovalentOrder() != 2)
+//              continue;
+//            if (bsRing.get(b.getOtherNode(a).getIndex())) {
+//              nPI++;
+//              break;
+//            }
+//          }
+//        }
+//      }
+//      if (nPI == n) {
+//        bs.or(bsRing);
+//        bsDone.set(i);
+//        i = nRings;
+//      }
+//    }
+//    return bs;
+//  }
 
-  /**
-   * Run through a minimal graph to find and catalog all rings.
-   * 
-   * @param atom
-   * @param bs
-   *        tracks all atoms in this molecular unit
-   */
-  private void getSmallRings(SimpleNode atom, BS bs) {
-    (root = new CIPAtom().create(atom, null, false, false, false))
-        .addSmallRings(bs);
-  }
+//  /**
+//   * determine if a ring is all SP2. This does not guarantee
+//   * @param bs
+//   * @param nodes
+//   * @return
+//   */
+//  private boolean isAllSP2(BS bs, SimpleNode[] nodes) {
+//    int nCharged = 0;
+//    int nHetero = 0;
+//    int nAtoms = bs.cardinality();
+//    for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
+//      SimpleNode a = nodes[i];
+//      int n = a.getElementNumber();
+//      switch (n) {
+//      case 7:        
+//      case 8:
+//        nHetero++;
+//        //$FALL-THROUGH$
+//      case 6:
+//        // C  3 bonds; 1 double or no double and (-)
+//        // N  3 bonds, no double, or 2 bonds and (1 double, or a (-))
+//        // O  2 bonds, one double, (+) charge
+//        int nDouble = 0;
+//        int nCovalent = a.getCovalentBondCount();
+//        SimpleEdge[] edges =  a.getEdges();
+//        for (int j = 0; j < edges.length; j++)
+//          if (edges[j].getCovalentOrder() == 2)
+//            nDouble++;
+//        int charge = a.getFormalCharge();
+//        if (charge != 0)
+//          nCharged++;
+//        switch (n) {
+//        case 6:
+//          if (nCovalent != 3 || (nDouble - charge != 1))
+//            return false;
+//          break;
+//        case 7:
+//          if (nCovalent == 3 ? !(nDouble == 0 && charge == 0) 
+//            : (nDouble - charge != 1))
+//            return false;
+//          break;
+//        case 8:
+//          if (nCovalent != 2 || nDouble != 1 || charge != 1)
+//            return false;
+//        }
+//        break;
+//      default:
+//        return false;
+//      }
+//    }
+//    switch (nAtoms) {
+//    case 5:
+//      // if an N is charged, we need another hetero atom
+//      if (nHetero % 2 == nCharged % 2)
+//      break;
+//    case 6:
+//      if (nHetero % 2 != nCharged % 2)
+//      break;
+//    default:
+//      break;
+//    }
+//    return true;
+//  }
+
+//  /**
+//   * Run through a minimal graph to find and catalog all rings.
+//   * 
+//   * @param atom
+//   * @param bs
+//   *        tracks all atoms in this molecular unit
+//   */
+//  private void getRings(SimpleNode atom, BS bs, SimpleNode[] nodes) {
+//    (root = new CIPAtom().create(atom, null, false, false, false))
+//        .addSmallRings(bs, nodes);
+//  }
 
   /**
    * Remove E/Z designations for small-rings double bonds (IUPAC
@@ -1064,12 +1161,12 @@ public class CIPChirality {
    * @param lstEZ
    */
   private void clearSmallRingEZ(SimpleNode[] atoms, Lst<int[]> lstEZ) {
-    for (int j = lstSmallRings.size(); --j >= 0;)
-      lstSmallRings.get(j).andNot(bsAtropisomeric);
+    for (int j = data.lstSmallRings.length; --j >= 0;)
+      data.lstSmallRings[j].andNot(data.bsAtropisomeric);
     for (int i = lstEZ.size(); --i >= 0;) {
       int[] ab = lstEZ.get(i);
-      for (int j = lstSmallRings.size(); --j >= 0;) {
-        BS ring = lstSmallRings.get(j);
+      for (int j = data.lstSmallRings.length; --j >= 0;) {
+        BS ring = data.lstSmallRings[j];
         if (ring.get(ab[0]) && ring.get(ab[1])) {
           atoms[ab[0]].setCIPChirality(JC.CIP_CHIRALITY_NONE);
           atoms[ab[1]].setCIPChirality(JC.CIP_CHIRALITY_NONE);
@@ -1114,7 +1211,7 @@ public class CIPChirality {
     int index = atom.getIndex();
     SimpleEdge[] bonds = atom.getEdges();
     int c = NO_CHIRALITY;
-    boolean isAtropic = bsAtropisomeric.get(index);
+    boolean isAtropic = data.bsAtropisomeric.get(index);
     for (int j = bonds.length; --j >= 0;) {
       SimpleEdge bond = bonds[j];
       SimpleNode atom1;
@@ -1122,7 +1219,7 @@ public class CIPChirality {
       if (isAtropic) {
         atom1 = bonds[j].getOtherNode(atom);
         index1 = atom1.getIndex();
-        if (!bsAtropisomeric.get(index1))
+        if (!data.bsAtropisomeric.get(index1))
           continue;
         c = setBondChirality(atom, atom1, atom, atom1, true);
       } else if (bond.getCovalentOrder() == 2) {
@@ -1211,6 +1308,8 @@ public class CIPChirality {
   private int getAtomChiralityLimited(SimpleNode atom, CIPAtom cipAtom,
                                       SimpleNode parentAtom) {
     int rs = NO_CHIRALITY;
+    bsNeedRule.clearAll();
+    bsNeedRule.set(RULE_1a);
     try {
       boolean isAlkeneEndCheck = (atom == null);
       if (isAlkeneEndCheck) {
@@ -1225,8 +1324,6 @@ public class CIPChirality {
           // Just checking here that center has 4 covalent bonds or is trigonal pyramidal.
           return NO_CHIRALITY;
         }
-        bsNeedRule.clearAll();
-        bsNeedRule.set(RULE_1a);
       }
       if (cipAtom.setNode()) {
         for (currentRule = RULE_1a; currentRule <= RULE_6; currentRule++) {
@@ -1384,8 +1481,8 @@ public class CIPChirality {
         a1.atoms[atop], isAxial, true) : NO_CHIRALITY);
     //System.out.println(a1 + "." + atop + " " + ruleA + "\n" + b2 + " " + btop + " " +ruleB);
     if (c != NO_CHIRALITY
-        && (isAxial || !bsAtropisomeric.get(a.getIndex())
-            && !bsAtropisomeric.get(b.getIndex()))) {
+        && (isAxial || !data.bsAtropisomeric.get(a.getIndex())
+            && !data.bsAtropisomeric.get(b.getIndex()))) {
       if (isAxial && ((ruleA >= RULE_5) != (ruleB >= RULE_5))) {
         // only one of the ends may be enantiomeric to make this m or p 
         // see AY236.70 and AY236.170
@@ -1869,10 +1966,12 @@ public class CIPChirality {
       atomIndex = atom.getIndex();
       if (atom.getIsotopeNumber() > 0)
         bsNeedRule.set(RULE_2);
-      isKekuleAmbiguous = (bsKekuleAmbiguous != null && bsKekuleAmbiguous
+      this.isDuplicate = multipleBondDuplicate = isDuplicate;
+      isKekuleAmbiguous = (data.bsKekuleAmbiguous != null && data.bsKekuleAmbiguous
           .get(atomIndex));
-      elemNo = (isDuplicate && isKekuleAmbiguous ? parent
-          .getKekuleElementNumber() : atom.getElementNumber());
+      elemNo = (isDuplicate && isKekuleAmbiguous ? 
+          parent.getKekuleElementNumber() 
+          : atom.getElementNumber());
       bondCount = atom.getCovalentBondCount();
       isSP3 = (bondCount == 4 || bondCount == 3 && !isAlkene
           && (elemNo > 10 || bsAzacyclic != null && bsAzacyclic.get(atomIndex)));
@@ -1888,7 +1987,6 @@ public class CIPChirality {
       }
       bsPath = (parent == null ? new BS() : BSUtil.copy(parent.bsPath));
 
-      this.isDuplicate = multipleBondDuplicate = isDuplicate;
       if (isDuplicate)
         bsNeedRule.set(RULE_3);
       rootDistance = sphere;
@@ -1972,12 +2070,13 @@ public class CIPChirality {
     private float getKekuleElementNumber() {
       SimpleEdge[] edges = atom.getEdges();
       SimpleEdge bond;
-      float ave = 0;
-      int n = 0;
+      float ave = 0;//atom.getElementNumber();
+      int n = 0;//1;
       for (int i = edges.length; --i >= 0;)
         if ((bond = edges[i]).isCovalent()) {
           SimpleNode other = bond.getOtherNode(atom);
-          if (bsKekuleAmbiguous.get(other.getIndex())) {
+          if (data.bsKekuleAmbiguous.get(other.getIndex())) {
+//            System.out.println(this + " adding " + other + " " + ave + " " + n);
             n++;
             ave += other.getElementNumber();
           }
@@ -1985,25 +2084,38 @@ public class CIPChirality {
       return ave / n;
     }
 
-    /**
-     * Create a bit set that gives all the atoms in this ring if it is smaller
-     * than 8.
-     * 
-     */
-    void updateRingList() {
-      BS bsRing = BSUtil.newAndSetBit(atomIndex);
-      CIPAtom p = this;
-      int index = -1;
-      while ((p = p.parent) != null && index != atomIndex)
-        // COUNT_LINE
-        bsRing.set(index = p.atomIndex);
-      if (bsRing.cardinality() <= SMALL_RING_MAX) {
-        for (int i = lstSmallRings.size(); --i >= 0;)
-          if (lstSmallRings.get(i).equals(bsRing))
-            return;
-        lstSmallRings.addLast(bsRing);
-      }
-    }
+    //    /**
+    //     * Create a bit set that gives all the atoms in this ring if it is smaller
+    //     * than 8.
+    //     * 
+    //     */
+    //    void updateRingList(SimpleNode[] nodes) {
+    //      BS bsRing = BSUtil.newAndSetBit(atomIndex);
+    //      CIPAtom p = this;
+    //      int index = -1;
+    //      while ((p = p.parent) != null && index != atomIndex)
+    //        bsRing.set(index = p.atomIndex);
+    //      int n = bsRing.cardinality();
+    //      switch (n) {
+    //      case 14:
+    //      case 10:  
+    //        if (!isAllSP2(bsRing, nodes))
+    //          return;
+    //        for (int i = lstLargeRings.size(); --i >= 0;)
+    //          if (lstLargeRings.get(i).equals(bsRing))
+    //            return;
+    //          lstLargeRings.addLast(bsRing);
+    //        break;
+    //      default:
+    //        if (bsRing.cardinality() <= SMALL_RING_MAX) {
+    //          for (int i = lstSmallRings.size(); --i >= 0;)
+    //            if (lstSmallRings.get(i).equals(bsRing))
+    //              return;
+    //          lstSmallRings.addLast(bsRing);
+    //        }
+    //        break;
+    //      }
+    //    }
 
     /**
      * Set the atom to have substituents.
@@ -2015,6 +2127,7 @@ public class CIPChirality {
       // notice we are setting isSet TRUE here, not just testing it.
       if (isSet || (isSet = true) && isDuplicate)
         return true;
+      int index = atom.getIndex();
       SimpleEdge[] bonds = atom.getEdges();
       int nBonds = bonds.length;
       if (Logger.debuggingHigh)
@@ -2059,12 +2172,28 @@ public class CIPChirality {
         }
       }
       nAtoms = pt;
-      for (; pt < atoms.length; pt++)
-        atoms[pt] = new CIPAtom().create(null, this, false, true, false);
+      switch (pt) {
+      case 2:
+      case 3:
+        // [c-] or [n+0] or [o+0]
+        if (elemNo == 6 && data.bsCMinus.get(index) || data.bsXAromatic.get(index)) {
+          nAtoms++;
+          addAtom(pt++, this.atom, true, false, false);
+        }
+        break;
+
+      }
+      if (pt < 4)
+        for (; pt < atoms.length; pt++)
+          atoms[pt] = new CIPAtom().create(null, this, false, true, false);
 
       // Do an initial very shallow atom-only Rule 1 sort using a.compareTo(b)
 
+      try {
       Arrays.sort(atoms);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       return true;
     }
 
@@ -2448,8 +2577,12 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int compareRule1a(CIPAtom b) {
-      return b.atom == null ? A_WINS : atom == null ? B_WINS
-          : b.elemNo < elemNo ? A_WINS : b.elemNo > elemNo ? B_WINS : TIED;
+      System.out.println(this + " " + this.elemNo + " " + b + b.elemNo);
+      return b.atom == null ? A_WINS 
+          : atom == null ? B_WINS
+          : b.elemNo < elemNo ? A_WINS 
+              : b.elemNo > elemNo ? B_WINS 
+                  : TIED;
     }
 
     /**
@@ -2917,36 +3050,36 @@ public class CIPChirality {
       return (score < 0 ? -1 : score > 0 ? 1 : 0);
     }
 
-    /**
-     * initiate a new CIPAtom for each substituent of atom, and as part of this
-     * process, check to see if a new ring is being formed.
-     * 
-     * @param bs
-     */
-    void addSmallRings(BS bs) {
-      if (atom == null || sphere > SMALL_RING_MAX)
-        return;
-      if (bs != null)
-        bs.clear(atom.getIndex());
-      if (isTerminal || isDuplicate || atom.getCovalentBondCount() > 4)
-        return;
-      SimpleNode atom2;
-      int pt = 0;
-      SimpleEdge[] bonds = atom.getEdges();
-      for (int i = bonds.length; --i >= 0;) {
-        SimpleEdge bond = bonds[i];
-        if (!bond.isCovalent()
-            || (atom2 = bond.getOtherNode(atom)).getCovalentBondCount() == 1
-            || parent != null && atom2 == parent.atom)
-          continue;
-        CIPAtom r = addAtom(pt++, atom2, false, false, false);
-        if (r.isDuplicate)
-          r.updateRingList();
-      }
-      for (int i = 0; i < pt; i++)
-        if (atoms[i] != null)
-          atoms[i].addSmallRings(bs);
-    }
+//    /**
+//     * initiate a new CIPAtom for each substituent of atom, and as part of this
+//     * process, check to see if a new ring is being formed.
+//     * 
+//     * @param bsAtoms
+//     */
+//    void addSmallRings(BS bsAtoms, SimpleNode[] nodes) {
+//      if (atom == null || sphere > SMALL_RING_MAX)
+//        return;
+//      if (bsAtoms != null)
+//        bsAtoms.clear(atom.getIndex());
+//      if (isTerminal || isDuplicate || atom.getCovalentBondCount() > 4)
+//        return;
+//      SimpleNode atom2;
+//      int pt = 0;
+//      SimpleEdge[] bonds = atom.getEdges();
+//      for (int i = bonds.length; --i >= 0;) {
+//        SimpleEdge bond = bonds[i];
+//        if (!bond.isCovalent()
+//            || (atom2 = bond.getOtherNode(atom)).getCovalentBondCount() == 1
+//            || parent != null && atom2 == parent.atom)
+//          continue;
+//        CIPAtom r = addAtom(pt++, atom2, false, false, false);
+//        if (r.isDuplicate)
+//          r.updateRingList(nodes);
+//      }
+//      for (int i = 0; i < pt; i++)
+//        if (atoms[i] != null)
+//          atoms[i].addSmallRings(bsAtoms, nodes);
+//    }
 
     @Override
     public Object clone() {
@@ -2968,12 +3101,12 @@ public class CIPChirality {
       return a;
     }
 
-    @Override
+    @Override 
     public String toString() {
       return (atom == null ? "<null>" : "[" + currentRule + "." + sphere + 
-          "," + id + "." + atom.getAtomName()
+          "," + id + "." + (isDuplicate ? parent.atom : atom).getAtomName()
           + (isDuplicate ? "*(" + rootDistance + ")" : "")
-          + (auxChirality == '~' ? "" : "" + auxChirality) + "]");
+          + (auxChirality == '~' ? "" : "" + auxChirality) + " " + elemNo + "]");
     }
   }
 

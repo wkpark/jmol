@@ -1735,8 +1735,13 @@ public class ModelSet extends BondCollection {
     return 0;
   }
 
+  /**
+   * return cumulative sum of all atoms in molecules containing these atoms
+   * 
+   * @param bs
+   * @return bitset of atoms   
+   */
   public BS getMoleculeBitSet(BS bs) {
-    // returns cumulative sum of all atoms in molecules containing these atoms
     if (moleculeCount == 0)
       getMolecules();
     BS bsResult = BSUtil.copy(bs);

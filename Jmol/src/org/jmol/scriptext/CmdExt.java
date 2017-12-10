@@ -4420,6 +4420,10 @@ public class CmdExt extends ScriptExt {
           }
         } catch (Exception ex) {
           msg = ex.getMessage();
+          if (msg == null) {
+            msg = "";
+          }
+          ex.printStackTrace();
         }
         switch (tok) {
         case T.smiles:

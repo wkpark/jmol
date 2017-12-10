@@ -797,19 +797,8 @@ public class Symmetry implements SymmetryInterface {
   public void calculateCIPChiralityForAtoms(Viewer vwr, BS bsAtoms) {
     vwr.setCursor(Cursor.WAIT_CURSOR);
     CIPChirality cip = getCIPChirality(vwr);
-    BS bsAtropisomer = null, bsHelixM = null, bsHelixP = null;
-    boolean setAuxiliary = vwr.getBoolean(T.testflag1);
-    try {
-// four ortho groups required:      bsAtropisomer = vwr.getSmartsMatch("[!H](.t3:-20,20)a1(.t3).[!H](.t1:-20,20)a(.t1)a1(.t1)(.t2:-20,20)(.t3)(.t4:-20,20)-{a}2(.t1)(.t2)(.t3)(.t4)a(.t2)[!H](.t2).a2(.t4)[!H](.t4)", bsAtoms);
-// three ortho groups required:     bsAtropisomer = vwr.getSmartsMatch("[!H](.t3:-20,20)a1(.t3).[!H](.t1:-20,20)a(.t1){a}1(.t1)(.t2:-20,20)(.t3)-{a}(.t1)(.t2)(.t3)a(.t2)[!H](.t2)", bsAtoms);
-// one ortho group on each ring required:
-      bsAtropisomer = vwr.getSmartsMatch("[!H](.t1:-20,20)a{a(.t2:-20,20)-a}a[!H]", bsAtoms);
-      bsHelixM = vwr.getSmartsMatch("A{a}(.t:-10,-40)a(.t:-10,-40)aaa", bsAtoms);
-      bsHelixP = vwr.getSmartsMatch("A{a}(.t:10,40)a(.t:10,40)aaa", bsAtoms);
-    } catch (Exception e) {
-     // ignore
-    }
-    cip.getChiralityForAtoms(vwr.ms.at, bsAtoms, bsAtropisomer, bsHelixM, bsHelixP, setAuxiliary);
+    CIPData data = ((CIPData) Interface.getInterface("org.jmol.symmetry.CIPData", vwr, "script")).set(vwr, bsAtoms);
+    cip.getChiralityForAtoms(data);
     vwr.setCursor(Cursor.DEFAULT_CURSOR);
   }
   

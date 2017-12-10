@@ -1,6 +1,8 @@
 package org.jmol.util;
 
 
+import org.jmol.java.BS;
+
 import javajs.util.P3;
 
 /**

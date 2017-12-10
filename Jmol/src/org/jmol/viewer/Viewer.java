@@ -9664,6 +9664,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return ms.calculateChiralityForAtoms(bsAtoms, true);
   }
 
+  public BS[] getSubstructureSetArray(String pattern, BS bsSelected, int flags) throws Exception {
+    return getSmilesMatcher().getSubstructureSetArray(pattern, ms.at, ms.ac, bsSelected, null, flags);
+  }
+
 }
 
 

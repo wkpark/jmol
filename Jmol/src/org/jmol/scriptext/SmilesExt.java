@@ -194,10 +194,10 @@ public class SmilesExt {
     if (bsMatch3D == null) {
       // getting a BitSet or BitSet[] from a set of atoms or a pattern.
       boolean isSmarts = ((flags & JC.SMILES_TYPE_SMARTS) == JC.SMILES_TYPE_SMARTS);
+      boolean isOK = true;
       try {
         if (smiles == null) {
-          b = sm.getSubstructureSetArray(pattern, e.vwr.ms.at, e.vwr.ms.ac,
-              bsSelected, null, flags);
+          b = e.vwr.getSubstructureSetArray(pattern, bsSelected, flags);
         } else {
           int[][] map = sm.find(pattern, smiles, (isSmarts ? JC.SMILES_TYPE_SMARTS : JC.SMILES_TYPE_SMILES) 
               | (firstMatchOnly ?  JC.SMILES_FIRST_MATCH_ONLY : 0));
@@ -221,8 +221,6 @@ public class SmilesExt {
         }
       } catch (Exception ex) {
         e.evalError(ex.getMessage(), null);
-        //if (!asAtoms && !isSmarts)
-        //return Integer.valueOf(-1);
         return null;
       }
     } else {

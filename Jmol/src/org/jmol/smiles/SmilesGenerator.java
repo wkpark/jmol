@@ -647,7 +647,7 @@ public class SmilesGenerator {
     //    sp2Atoms = null;
     //  }
 
-    if (nH == 1)
+    if (sp2Atoms != null && nH == 1)
       sp2Atoms[nSp2Atoms++] = aH;
 
     // determine which connected atom should carry on the chain

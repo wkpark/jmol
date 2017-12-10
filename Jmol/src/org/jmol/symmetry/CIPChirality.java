@@ -2577,7 +2577,6 @@ public class CIPChirality {
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int compareRule1a(CIPAtom b) {
-      System.out.println(this + " " + this.elemNo + " " + b + b.elemNo);
       return b.atom == null ? A_WINS 
           : atom == null ? B_WINS
           : b.elemNo < elemNo ? A_WINS 

@@ -638,45 +638,49 @@ abstract class OutputManager {
     // org.jmol.image.AviCreator does create AVI animations from JPEGs
     //but these aren't read by standard readers, so that's pretty much useless.
 
-    String sret = null;
     String fileName = (String) params.get("fileName");
-    if (fileName == null)
+    OC out = (OC) params.get("outputChannel");
+    if (fileName == null && out == null)
       return null;
+    String sret = null;
     String type = (String) params.get("type");
     String text = (String) params.get("text");
     int width = getInt(params, "width", 0);
     int height = getInt(params, "height", 0);
+    int saveWidth = 0, saveHeight = 0;
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
     String captureMode = (String) params.get("captureMode");
+    String localName = null;
     if (captureMode != null && !vwr.allowCapture())
       return "ERROR: Cannot capture on this platform.";
     boolean mustRender = (quality != Integer.MIN_VALUE);
     // localName will be fileName only if we are able to write to disk.
-    String localName = null;
     if (captureMode != null) {
       doCheck = false; // will be checked later
       mustRender = false;
     }
-    if (!fileName.startsWith("\1")) {
-      if (doCheck)
-        fileName = getOutputFileNameFromDialog(fileName, quality, params);
-      fileName = setFullPath(params, fileName);
+    if (out == null) {
+      if (!fileName.startsWith("\1")) {
+        if (doCheck)
+          fileName = getOutputFileNameFromDialog(fileName, quality, params);
+        fileName = setFullPath(params, fileName);
+      }
+      if (fileName == null)
+        return null;
+      params.put("fileName", fileName);
+
+      // JSmol/HTML5 WILL produce a localName now
+      if (OC.isLocal(fileName))
+        localName = fileName;
+      saveWidth = vwr.dimScreen.width;
+      saveHeight = vwr.dimScreen.height;
+      vwr.creatingImage = true;
+      if (mustRender) {
+        vwr.mustRender = true;
+        vwr.resizeImage(width, height, true, false, false);
+        vwr.setModelVisibility();
+      }
     }
-    if (fileName == null)
-      return null;
-    params.put("fileName", fileName);
-    // JSmol/HTML5 WILL produce a localName now
-    if (OC.isLocal(fileName))
-      localName = fileName;
-    int saveWidth = vwr.dimScreen.width;
-    int saveHeight = vwr.dimScreen.height;
-    vwr.creatingImage = true;
-    if (mustRender) {
-      vwr.mustRender = true;
-      vwr.resizeImage(width, height, true, false, false);
-      vwr.setModelVisibility();
-    }
-    
     try {
       if (type.equals("JMOL"))
         type = "ZIPALL";
@@ -685,7 +689,7 @@ abstract class OutputManager {
         if (scripts != null && type.equals("ZIP"))
           type = "ZIPALL";
         sret = createZipSet(text, scripts, type.equals("ZIPALL"),
-            getOutputChannel(fileName, null), null);
+            out == null ? getOutputChannel(fileName, null) : out, null);
       } else if (type.equals("SCENE")) {
         sret = createSceneSet(fileName, text, width, height);
       } else {
@@ -699,7 +703,7 @@ abstract class OutputManager {
           // allow Jmol to do it            
           String captureMsg = null;
           if (captureMode != null) {
-            OC out = null;
+            out = null;
             Map<String, Object> cparams = vwr.captureParams;
             int imode = "ad on of en ca mo ".indexOf(captureMode
                 .substring(0, 2));
@@ -829,7 +833,7 @@ abstract class OutputManager {
           null));
     } finally {
       vwr.creatingImage = false;
-      if (quality != Integer.MIN_VALUE)
+      if (quality != Integer.MIN_VALUE && saveWidth > 0)
         vwr.resizeImage(saveWidth, saveHeight, true, false, true);
     }
     return sret;

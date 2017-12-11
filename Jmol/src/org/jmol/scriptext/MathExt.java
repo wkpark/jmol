@@ -24,6 +24,7 @@
 
 package org.jmol.scriptext;
 
+import java.io.BufferedInputStream;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
@@ -37,10 +38,12 @@ import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.M4;
 import javajs.util.Measure;
+import javajs.util.OC;
 import javajs.util.P3;
 import javajs.util.P4;
 import javajs.util.PT;
 import javajs.util.Quat;
+import javajs.util.Rdr;
 import javajs.util.SB;
 import javajs.util.T3;
 import javajs.util.V3;
@@ -2122,7 +2125,7 @@ public class MathExt {
     int nBytesMax = (args.length > 1 && args[1].tok == T.integer ? args[1].asInt() : -1);
     boolean asJSON = (args.length > 1 && args[1].asString().equalsIgnoreCase("JSON"));
     if (asBytes)
-      return mp.addXMap(vwr.fm.getFileAsMap(file));
+      return mp.addXMap(vwr.fm.getFileAsMap(file, null));
     boolean isQues = file.startsWith("?");
     if (vwr.isJS && (isQues || async)) {
       if (isFile && isQues)
@@ -3456,15 +3459,28 @@ public class MathExt {
         isWithinModelSet, rd));
   }
 
+  @SuppressWarnings("unchecked")
   private boolean evaluateWrite(ScriptMathProcessor mp, SV[] args)
       throws ScriptException {
     switch (args.length) {
     case 0:
       return false;
     case 1:
-      if (!args[0].asString().toUpperCase().equals("PNGJ"))
-        break;
-      return mp.addXMap(vwr.fm.getFileAsMap(null));
+      String type = args[0].asString().toUpperCase();
+      if (type.equals("PNGJ")) {
+        return mp.addXMap(vwr.fm.getFileAsMap(null, "PNGJ"));
+      }
+      if (PT.isOneOf(type, ";ZIP;ZIPALL;JMOL;")) {
+        Map<String, Object> params = new Hashtable<String, Object>();
+        OC oc = new OC();
+        params.put("outputChannel", oc);
+        vwr.createZip(null, type, params);
+        BufferedInputStream bis = Rdr.getBIS(oc.toByteArray());
+        params = new Hashtable<String, Object>();
+        vwr.getJzt().readFileAsMap(bis, params, null);
+        return mp.addXMap(params);
+      }
+      break;
     }
     return mp.addXStr(e.getCmdExt().dispatch(T.write, true, args));
   }

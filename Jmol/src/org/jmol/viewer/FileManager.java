@@ -752,12 +752,13 @@ public class FileManager implements BytePoster {
     return ((byte[]) bytes).length + " bytes";
   }
 
-  public Map<String, Object> getFileAsMap(String name) {
+  public Map<String, Object> getFileAsMap(String name, String type) {
     Map<String, Object> bdata = new Hashtable<String, Object>();
     Object t;
     if (name == null) {
+      // return the current state as a PNGJ or ZIPDATA
       String[] errMsg = new String[1];
-      byte[] bytes = vwr.getImageAsBytes("PNGJ", -1, -1, -1, errMsg);
+      byte[] bytes = vwr.getImageAsBytes(type, -1, -1, -1, errMsg);
       if (errMsg[0] != null) {
         bdata.put("_ERROR_", errMsg[0]);
         return bdata;

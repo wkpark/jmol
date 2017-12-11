@@ -8103,11 +8103,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return getOutputManager().processWriteOrCapture(params);
   }
 
-  public Object createZip(String fileName, String type, Map<String, Object> params) {
+  public Object createZip(String fileName, String type,
+                          Map<String, Object> params) {
+    String state = getStateInfo();
     Object data = params.get("data");
-    params.put("fileName", fileName);
+    if (fileName != null)
+      params.put("fileName", fileName);
     params.put("type", type);
-    params.put("text", getStateInfo());
+    params.put("text", state);
     if (data instanceof String[])
       params.put("scripts", data);
     else if (data instanceof Lst)

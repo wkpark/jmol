@@ -19,7 +19,7 @@ import org.jmol.quantum.SlaterData;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.Viewer;
 
-public class QCJsonWriter2 extends JSONWriter {
+public class QCJSONWriter extends JSONWriter {
 
   private Map<String, Object> moBases = new Hashtable<String, Object>();
   

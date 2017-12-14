@@ -24,7 +24,7 @@ import org.jmol.util.Logger;
  * @author Matthew Zwier <mczwier@gmail.com>
  */
 
-public class QCJsonReader2 extends MoldenReader {
+public class QCJSONReader extends MoldenReader {
   
   private Map<String, Object> job;
 

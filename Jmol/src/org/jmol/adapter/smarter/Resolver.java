@@ -51,7 +51,7 @@ public class Resolver {
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GaussianFchk;GaussianWfn;Jaguar;" +
-                 "Molden;MopacGraphf;GenNBO;NWChem;Psi;Qchem;QCJson;" +
+                 "Molden;MopacGraphf;GenNBO;NWChem;Psi;Qchem;QCJSON;" +
                  "WebMO;MO;", // MO is for XmlMolpro 
     "pdb.", ";Pdb;Pqr;P2n;JmolData;",
     "pymol.", ";PyMOL;",
@@ -373,7 +373,7 @@ public class Resolver {
   { "JSON", "{\"mol\":" };
 
   private final static String[] qcJsonStartRecords = 
-  { "QCJson", "[\"QCJSON" };
+  { "QCJSON", "[\"QCJSON" };
 
   private final static String[] jcampdxStartRecords = 
   { "Jcampdx", "##TITLE" };

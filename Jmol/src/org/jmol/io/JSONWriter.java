@@ -64,7 +64,12 @@ public class JSONWriter {
   }
 
   public void writeNumber(Number o) {
-    oc.append(o.toString());
+    String s = o.toString();
+    if (s.equals("NaN")) {
+      writeString(s);
+    } else {
+      oc.append(s);
+    }
   }
 
   public void writeBoolean(Boolean o) {

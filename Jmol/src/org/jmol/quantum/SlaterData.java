@@ -28,7 +28,7 @@ package org.jmol.quantum;
 public class SlaterData {
 
   public boolean isCore;
-  public int iAtom;
+  public int atomNo;
   public int x;
   public int y;
   public int z;
@@ -38,7 +38,7 @@ public class SlaterData {
   public int index;
       
   public SlaterData(int iAtom, int x, int y, int z, int r, double zeta, double coef) {
-    this.iAtom = iAtom;
+    this.atomNo = iAtom; // 1-based
     this.x = x;
     this.y = y;
     this.z = z;
@@ -49,7 +49,7 @@ public class SlaterData {
   
   @Override
   public String toString() {
-    return "[" + iAtom 
+    return "[" + atomNo 
         + "," + x
         + "," + y
         + "," + z

@@ -992,7 +992,7 @@ public class MOCalculation extends QuantumCalculation {
 
     int lastAtom = atomIndex;
     SlaterData slater = slaters[slaterIndex];
-    atomIndex = slater.iAtom;
+    atomIndex = slater.atomNo - 1;
     //System.out.println("MOCALC SLATER " + slaterIndex + " " + lastAtom + " " + atomIndex);
     double minuszeta = -slater.zeta;
     if ((thisAtom = qmAtoms[atomIndex]) == null) {

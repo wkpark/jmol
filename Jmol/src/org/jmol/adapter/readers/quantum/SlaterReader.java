@@ -63,7 +63,7 @@ abstract class SlaterReader extends BasisFunctionReader {
    *  Mopac: a == -2 ==> z^2 ==> (coef)(2z^2-x^2-y^2)(r^d)exp(-zeta*r)
    *    and: b == -2 ==> (coef)(x^2-y^2)(r^d)exp(-zeta*r)
    *    
-   * @param iAtom
+   * @param iAtom now 1-based
    * @param a
    * @param b
    * @param c
@@ -100,7 +100,7 @@ abstract class SlaterReader extends BasisFunctionReader {
         SlaterData sd = slaterArray[i];
         sd.coef *= scaleSlater(sd.x, sd.y, sd.z, sd.r, sd.zeta);
         if (debugging) {
-          Logger.debug("SlaterReader " + i + ": " + sd.iAtom + " " + sd.x + " " + sd.y +  " " + sd.z + " " + sd.r + " " + sd.zeta + " " + sd.coef);
+          Logger.debug("SlaterReader " + i + ": " + sd.atomNo + " " + sd.x + " " + sd.y +  " " + sd.z + " " + sd.r + " " + sd.zeta + " " + sd.coef);
         }
       }
     if (doSort) {
@@ -117,7 +117,7 @@ abstract class SlaterReader extends BasisFunctionReader {
   class SlaterSorter implements Comparator<SlaterData> {
     @Override
     public int compare(SlaterData sd1, SlaterData sd2) {
-      return ( sd1.iAtom < sd2.iAtom ? -1 : sd1.iAtom > sd2.iAtom ? 1 : 0);
+      return ( sd1.atomNo < sd2.atomNo ? -1 : sd1.atomNo > sd2.atomNo ? 1 : 0);
     }    
   }
 

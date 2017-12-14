@@ -208,7 +208,7 @@ public class MoldenReader extends MopacSlaterReader {
       String[] tokens = getTokens();
       if (tokens.length < 7)
         continue;
-      addSlater(parseIntStr(tokens[0]) - 1, parseIntStr(tokens[1]),
+      addSlater(parseIntStr(tokens[0]), parseIntStr(tokens[1]),
           parseIntStr(tokens[2]), parseIntStr(tokens[3]), parseIntStr(tokens[4]),
           parseFloatStr(tokens[5]), parseFloatStr(tokens[6]));
       nCoef++;

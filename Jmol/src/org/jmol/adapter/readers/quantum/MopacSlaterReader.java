@@ -57,17 +57,17 @@ abstract class MopacSlaterReader extends SlaterReader {
            // 0 2  5  8   12    18  22  26  30
     switch (pt) {
     case 0: // s
-      addSlater(iAtom, 0, 0, 0, getNPQs(atomicNumber) - 1, zeta, coef);
+      addSlater(iAtom + 1, 0, 0, 0, getNPQs(atomicNumber) - 1, zeta, coef);
       return;
     case 2: // Px
     case 5: // Py
     case 8: // Pz
-      addSlater(iAtom, pt == 2 ? 1 : 0, pt == 5 ? 1 : 0, pt == 8 ? 1 : 0,
+      addSlater(iAtom + 1, pt == 2 ? 1 : 0, pt == 5 ? 1 : 0, pt == 8 ? 1 : 0,
           getNPQp(atomicNumber) - 2, zeta, coef);
       return;
     }
     pt = (pt >> 2) * 3 - 9;   // 12->0, 18->3, 22->6, 26->9, 30->12
-    addSlater(iAtom, sphericalDValues[pt++], sphericalDValues[pt++],
+    addSlater(iAtom + 1, sphericalDValues[pt++], sphericalDValues[pt++],
         sphericalDValues[pt++], getNPQd(atomicNumber) - 3, zeta,
         coef);
   }  

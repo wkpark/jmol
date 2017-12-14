@@ -907,7 +907,7 @@ public class Atom extends Point3fi implements Node {
   String getIdentity(boolean allInfo) {
     SB info = new SB();
     String group3 = getGroup3(true);
-    if (group3 != null && group3.length() > 0 && !group3.equals("UNK")) {
+    if (group3 != null && group3.length() > 0 && (!group3.equals("UNK") || group.chain.model.isBioModel)) {
       info.append("[");
       info.append(group3);
       info.append("]");

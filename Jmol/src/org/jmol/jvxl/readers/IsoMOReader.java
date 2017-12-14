@@ -77,12 +77,14 @@ class IsoMOReader extends AtomDataReader {
 
   /////// ab initio/semiempirical quantum mechanical orbitals ///////
 
+  private Map<String, Object> mo;
+
   @Override
   @SuppressWarnings("unchecked")
   protected void setup(boolean isMapData) {
     mos = (Lst<Map<String, Object>>) params.moData.get("mos");
     linearCombination = params.qm_moLinearCombination;
-    Map<String, Object> mo = (mos != null && linearCombination == null ? mos
+    mo = (mos != null && linearCombination == null ? mos
         .get(params.qm_moNumber - 1) : null);
     boolean haveVolumeData = params.moData.containsKey("haveVolumeData");
     if (haveVolumeData && mo != null) // from XmlChem3dReader
@@ -349,6 +351,8 @@ class IsoMOReader extends AtomDataReader {
         return;
       q.createCube();
       jvxlData.integration = q.getIntegration();
+      if (mo != null)
+        mo.put("integration", Float.valueOf(jvxlData.integration));
     }
   }
 

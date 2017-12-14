@@ -372,9 +372,6 @@ public class Resolver {
   private final static String[] jsonStartRecords = 
   { "JSON", "{\"mol\":" };
 
-  private final static String[] qcJsonStartRecords = 
-  { "QCJSON", "[\"QCJSON" };
-
   private final static String[] jcampdxStartRecords = 
   { "Jcampdx", "##TITLE" };
   
@@ -402,7 +399,7 @@ public class Resolver {
     mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
     inputFileStartRecords, magresFileStartRecords, pymolStartRecords, 
-    janaStartRecords, jsonStartRecords, jcampdxStartRecords, qcJsonStartRecords, 
+    janaStartRecords, jsonStartRecords, jcampdxStartRecords, 
     jmoldataStartRecords, pqrStartRecords, p2nStartRecords, cif2StartRecords, cfiStartRecords };
 
   ////////////////////////////////////////////////////////////////
@@ -830,6 +827,9 @@ public class Resolver {
   private final static String[] abinitContainsRecords = { "Abinit",
     "http://www.abinit.org", "Catholique", "Louvain" };  
   
+  private final static String[] qcJsonContainsRecords = 
+  { "QCJSON", "\"QCJSON" };
+
   /*
   private final static String[] gaussianWfnRecords =
   { "GaussianWfn", "MO ORBITALS" };
@@ -858,7 +858,8 @@ public class Resolver {
     dmolContainsRecords, gulpContainsRecords, 
     espressoContainsRecords, siestaContainsRecords, xcrysDenContainsRecords,
     mopacArchiveContainsRecords,abinitContainsRecords,gaussianFchkContainsRecords,
-    inputContainsRecords, aflowContainsRecords, magCifContainsRecords
+    inputContainsRecords, aflowContainsRecords, magCifContainsRecords, 
+    qcJsonContainsRecords
     
   };
   

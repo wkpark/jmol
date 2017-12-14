@@ -19,15 +19,33 @@ import org.jmol.quantum.SlaterData;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.Viewer;
 
+/**
+ * A very experimental class for writing QCJSON files. This standard is in the
+ * process of being developed, so any of this could change at any time.
+ * 
+ * All we have here is Bob Hanson's experiment with getting Jmol to save and
+ * restore structures, vibrations, and molecular orbitals.
+ * 
+ * Data set Bob is using is at
+ * 
+ * https://sourceforge.net/p/jmol/code/HEAD/tree/trunk/Jmol-datafiles/qcjson
+ * 
+ */
 public class QCJSONWriter extends JSONWriter {
 
+  // Current status: 
+  // 
+  // 2017.12.14  Generating valid JSON code that can be read back in for tested files.
+  //
+
   private Map<String, Object> moBases = new Hashtable<String, Object>();
-  
+
   private boolean filterMOs;
 
   public static Object getUnitsConversion(String units, boolean asArray) {
     String sunits = QCSchema.getFactorToAU(units);
-    return (asArray ? new Object[] {units, sunits} : "[\"" + units + "\"," + sunits + "]");
+    return (asArray ? new Object[] { units, sunits } : "[\"" + units + "\","
+        + sunits + "]");
   }
 
   private Viewer vwr;
@@ -54,7 +72,7 @@ public class QCJSONWriter extends JSONWriter {
   public void writeSchemaMetadata() {
     mapOpen();
     mapAddKeyValue("__jmol_created", new Date(), ",\n");
-    mapAddKeyValue("__jmol_source", vwr.getP("_modelFile"),"");
+    mapAddKeyValue("__jmol_source", vwr.getP("_modelFile"), "");
     mapClose();
   }
 
@@ -77,7 +95,7 @@ public class QCJSONWriter extends JSONWriter {
     writeJob(1);
   }
 
-  public void writeJob(int iJob) {    
+  public void writeJob(int iJob) {
     append(",\n");
     mapOpen();
     {
@@ -150,7 +168,8 @@ public class QCJSONWriter extends JSONWriter {
 
   public Object getProperty(int modelIndex, String key) {
     @SuppressWarnings("unchecked")
-    Map<String, Object> props = (Map<String, Object>) (modelIndex >= vwr.ms.am.length ? null :  vwr.ms.am[modelIndex].auxiliaryInfo.get("modelProperties"));
+    Map<String, Object> props = (Map<String, Object>) (modelIndex >= vwr.ms.am.length ? null
+        : vwr.ms.am[modelIndex].auxiliaryInfo.get("modelProperties"));
     return (props == null ? null : props.get(key));
   }
 
@@ -196,11 +215,11 @@ public class QCJSONWriter extends JSONWriter {
           Atom a = vwr.ms.at[i];
           append("");
           pt.setT(a);
-          if(isFractional)
+          if (isFractional)
             unitCell.toFractional(pt, false);
           oc.append(formatNumber(pt.x)).append(",\t")
-            .append(formatNumber(pt.y)).append(",\t")
-            .append(formatNumber(pt.z)).append(i < last ? ",\n" : "\n");
+              .append(formatNumber(pt.y)).append(",\t")
+              .append(formatNumber(pt.z)).append(i < last ? ",\n" : "\n");
           symbols.add(PT.esc(a.getElementSymbol()));
           numbers.add("" + a.getElementNumber());
           charges.add("" + a.getPartialCharge());
@@ -229,7 +248,8 @@ public class QCJSONWriter extends JSONWriter {
   }
 
   private void writePrefix_Units(String prefix, String units) {
-    mapAddKeyValueRaw(prefix + "_units", getUnitsConversion(units, false), ",\n");
+    mapAddKeyValueRaw(prefix + "_units", getUnitsConversion(units, false),
+        ",\n");
   }
 
   public void writeBonds(int modelIndex) {
@@ -305,10 +325,9 @@ public class QCJSONWriter extends JSONWriter {
     return modelIndex;
   }
 
-  private void writeMapKeyValueUnits(String key, Object value,
-                                      String units) {
+  private void writeMapKeyValueUnits(String key, Object value, String units) {
     mapAddKeyValueRaw(key, "{\"value\":" + value + ",\"units\":"
-        + getUnitsConversion(units, false) + "}", ",\n");    
+        + getUnitsConversion(units, false) + "}", ",\n");
   }
 
   private boolean haveMOData(int modelIndex) {
@@ -326,29 +345,53 @@ public class QCJSONWriter extends JSONWriter {
 
   private void writeMOData(int modelIndex) {
     @SuppressWarnings("unchecked")
-    Map<String, Object> moData = (Map<String, Object>) getAuxiliaryData(modelIndex, "moData");
+    Map<String, Object> moData = (Map<String, Object>) getAuxiliaryData(
+        modelIndex, "moData");
     Map<String, Object> moDataJSON = new Hashtable<String, Object>();
     moDataJSON.put("orbitals", moData.get("mos"));
     // units
     String units = (String) moData.get("EnergyUnits");
     if (units == null)
       units = "?";
-    moDataJSON.put("orbitals_energy_units",getUnitsConversion(units, true));
+    moDataJSON.put("orbitals_energy_units", getUnitsConversion(units, true));
     // normalization is critical for Molden, NWChem, and many other readers.
     // not needed for Gaussian, Jaguar, WebMO, Spartan, or GenNBO
-    moDataJSON.put("jmol_normalized", Boolean.valueOf(moData.get("isNormalized") == Boolean.TRUE));
+    moDataJSON.put("__jmol_normalized",
+        Boolean.valueOf(moData.get("isNormalized") == Boolean.TRUE));
     String type = (String) moData.get("calculationType");
-    moDataJSON.put("jmol_calculation_type", type == null ? "?" : type);
-//    @SuppressWarnings("unchecked")
-//    Map<String, String> orbitalMaps = (Map<String, String>) moData.get("orbitalMaps");
-//    if (orbitalMaps != null && !orbitalMaps.isEmpty()) {
-//      moDataJSON.put("jmol_orbital_maps", orbitalMaps);      
-//    }
+    moDataJSON.put("__jmol_calculation_type", type == null ? "?" : type);
+    //    @SuppressWarnings("unchecked")
+    //    Map<String, String> orbitalMaps = (Map<String, String>) moData.get("orbitalMaps");
+    //    if (orbitalMaps != null && !orbitalMaps.isEmpty()) {
+    //      moDataJSON.put("jmol_orbital_maps", orbitalMaps);      
+    //    }
     moDataJSON.put("basis_id", getBasisID(moData));
     filterMOs = true;
+    setModifyKeys(fixIntegration());
     mapAddKeyValue("molecular_orbitals", moDataJSON, "\n");
+    setModifyKeys(null);
     filterMOs = false;
     append("");
+  }
+
+  private static Map<String, String> integrationKeyMap;
+
+  /**
+   * When an MO is calculated in Jmol, Jmol will check the integration so that
+   * it can be checked to be close to 1.0000. This integration value is saved
+   * back in the MO data, but it is not a standard key. (As though anything is
+   * here!)
+   * 
+   * So we set a key mapping to replace it.
+   * 
+   * @return the "integration" key map
+   */
+  private static Map<String, String> fixIntegration() {
+    if (integrationKeyMap == null) {
+      integrationKeyMap = new Hashtable<String, String>();
+      integrationKeyMap.put("integration", "__jmol_integration");
+    }
+    return integrationKeyMap;
   }
 
   @Override
@@ -361,15 +404,15 @@ public class QCJSONWriter extends JSONWriter {
       if (key.equals("coefficients") && dfCoefMaps != null) {
         return fixCoefficients((double[]) map.get(key));
       }
-      
+
     }
     return map.get(key);
   }
 
   /**
-   * Jmol allows for a set of arrays that map coefficient indicies
-   * with nonstandard order to Gaussian/Molden order. Here we do the
-   * conversion upon writing so that the order is always Gaussian/Molden order.
+   * Jmol allows for a set of arrays that map coefficient indicies with
+   * nonstandard order to Gaussian/Molden order. Here we do the conversion upon
+   * writing so that the order is always Gaussian/Molden order.
    * 
    * @param coeffs
    * @return
@@ -561,7 +604,7 @@ public class QCJSONWriter extends JSONWriter {
     @Override
     public String toString() {
       String s = super.toString();
-      return (s.length() == 0 ? "[]" : "[\""+type+"\"," + s
+      return (s.length() == 0 ? "[]" : "[\"" + type + "\"," + s
           + (repeatCount > 0 ? sep + repeatCount + "," + lastElement : "")
           + "]");
     }

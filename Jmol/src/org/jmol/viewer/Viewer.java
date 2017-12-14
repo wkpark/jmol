@@ -9592,7 +9592,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return (jsonParser == null ? jsonParser = (JSJSONParser) Interface.getInterface("javajs.util.JSJSONParser", this, "script") : jsonParser);
   }
 
-  public Map<String, Object> parseJSON(String jsonMap) {
+  public Object parseJSON(String str) {
+    return (str == null ? null : str.startsWith("{") ? parseJSONMap(str) : parseJSONArray(str));
+  }
+
+  public Map<String, Object> parseJSONMap(String jsonMap) {
     return getJSJSONParser().parseMap(jsonMap, true);
   }
   

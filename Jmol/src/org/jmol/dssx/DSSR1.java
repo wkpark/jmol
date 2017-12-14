@@ -137,7 +137,7 @@ public class DSSR1 extends AnnotationParser {
         String s =   "          " + modelNumber;
         data = "MODEL" + s.substring(s.length() - 9) + "\n" + data + "ENDMDL\n";  
         data = vwr.getFileAsString3(name + data, false, null);
-        Map<String, Object> x = vwr.parseJSON(data);
+        Map<String, Object> x = vwr.parseJSONMap(data);
         if (x != null) {
           info.put("dssr", x);
           setGroup1(vwr.ms, modelIndex);

@@ -49,7 +49,7 @@ public class SlaterData {
   
   @Override
   public String toString() {
-    return "[" + (iAtom + 1) 
+    return "[" + iAtom 
         + "," + x
         + "," + y
         + "," + z

@@ -16,6 +16,16 @@ public class JSONWriter {
   
   protected OC oc;
   protected int indent = 0;
+  /**
+   * allows writing of one or more keys different from the original
+   */
+  private Map<String, String> modifiedKeys;
+  
+  public void setModifyKeys(Map<String, String> mapNewToOld) {
+    modifiedKeys = mapNewToOld; 
+  }
+
+
   private final static String SPACES = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
   
 
@@ -123,6 +133,8 @@ public class JSONWriter {
 
   public void mapAddKey(String key) {
     append("");
+    if (modifiedKeys != null && modifiedKeys.containsKey(key))
+      key = modifiedKeys.get(key);
     writeString(key);
     oc.append(":");
   }

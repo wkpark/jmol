@@ -131,7 +131,7 @@ public class MMCifReader extends CifReader {
       addedData = data;
       addedDataKey = key;
     } else if (key.equals("_dssr")) {
-      dssr = vwr.parseJSON(reader.readLine());
+      dssr = vwr.parseJSONMap(reader.readLine());
       reader.readLine(); // sometimes there is a null character here
     }
   }

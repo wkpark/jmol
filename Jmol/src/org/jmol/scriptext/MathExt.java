@@ -2140,7 +2140,11 @@ public class MathExt {
     }
     String str = isFile ? vwr.fm.getFilePath(file, false, false) : vwr
         .getFileAsString4(file, nBytesMax, false, false, true, "script");
-    return (asJSON ? mp.addXObj(vwr.parseJSON(str)) : mp.addXStr(str));
+    try {
+      return (asJSON ? mp.addXObj(vwr.parseJSON(str)) : mp.addXStr(str));
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   private boolean evaluateMath(ScriptMathProcessor mp, SV[] args, int tok) {
@@ -2899,7 +2903,7 @@ public class MathExt {
     switch (tok) {
     case T.eval:
       return (args.length == 2 ? s.equalsIgnoreCase("JSON")
-          && mp.addXObj(vwr.parseJSON(SV.sValue(args[1]))) : mp.addXObj(vwr
+          && mp.addXObj(vwr.parseJSONMap(SV.sValue(args[1]))) : mp.addXObj(vwr
           .evaluateExpressionAsVariable(s)));
     case T.script:
       String appID = (args.length == 2 ? SV.sValue(args[1]) : ".");

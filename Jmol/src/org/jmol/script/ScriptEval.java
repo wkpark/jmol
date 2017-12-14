@@ -4947,6 +4947,18 @@ public class ScriptEval extends ScriptExpr {
       return;
     }
     switch (tokAt(1)) {
+    case T.mo:
+      if (!chk && isFrame && slen == 2) {
+        while (++modelIndex < vwr.ms.mc) {
+          if (!vwr.ms.am[modelIndex].auxiliaryInfo.containsKey("moData"))
+            continue;
+          vwr.am.setFrame(modelIndex);
+          showString("Frame set to " + (modelIndex + 1));
+          return;
+        }
+        showString("No molecular orbitals");
+      }
+      return;
     case T.integer:
       if (isFrame && slen == 2) {
         // FRAME n
@@ -5222,7 +5234,7 @@ public class ScriptEval extends ScriptExpr {
     if (!data.startsWith("{"))
       data = vwr.getFileAsString3(data, true, "script");
     clearDefinedVariableAtomSets();
-    Map<String, Object> map = vwr.parseJSON(data);
+    Map<String, Object> map = vwr.parseJSONMap(data);
     showString(vwr.getAnnotationParser(true).fixDSSRJSONMap(map));
     vwr.ms.setInfo(modelIndex, "dssr", map);
   }

@@ -302,19 +302,26 @@ public class QCJSONReader extends MoldenReader {
   /**
    * Read basis and orbital information.
    * 
-   * @param moInfo
+   * @param molecular_orbitals
    * @return true if successful
    * 
    * @throws Exception
    */
-  private boolean readMolecularOrbitals(Map<String, Object> moInfo) throws Exception {
-    if (moInfo == null)
+  private boolean readMolecularOrbitals(Map<String, Object> molecular_orbitals) throws Exception {
+    if (molecular_orbitals == null)
       return false;
-    String moBasisID = moInfo.get("basis_id").toString();//:"MOBASIS_1"
+    String moBasisID = molecular_orbitals.get("basis_id").toString();//:"MOBASIS_1"
     if (!readBasis(moBasisID))
       return false;
+    Boolean isNormalized = (Boolean) molecular_orbitals.get("__jmol_normalized");
+    if (isNormalized != null && isNormalized.booleanValue())
+      moData.put("isNormalized", isNormalized);
+    calculationType = (String) molecular_orbitals.get("__jmol_calculation_type");
+    if (calculationType == null)
+      calculationType = "?";
+    moData.put("calculationType", calculationType);
 
-    Lst<Object> mos = getList(moInfo, "orbitals");
+    Lst<Object> mos = getList(molecular_orbitals, "orbitals");
     int n = mos.size();
     for (int i = 0; i < n; i++) {
       @SuppressWarnings("unchecked")
@@ -329,9 +336,6 @@ public class QCJSONReader extends MoldenReader {
         else if (spin.indexOf("alpha") >= 0)
           alphaBeta = "alpha";
       }
-      calculationType = (String) thisMO.get("jmol_calculation_type");
-      if (calculationType == null)
-        calculationType = "?";
       float[] coefs = getFloatArray(thisMO, "coefficients");
       line = "" + symmetry;
       if (filterMO()) {
@@ -356,7 +360,7 @@ public class QCJSONReader extends MoldenReader {
     }
     if (debugging)
       Logger.debug("read " + orbitals.size() + " MOs");
-    Lst<Object> units = getList(moInfo, "orbitals_energy_units");
+    Lst<Object> units = getList(molecular_orbitals, "orbitals_energy_units");
     String sunits = (units == null ? null : units.get(0).toString());
     setMOs(sunits == null || sunits.equals("?") ? "?" : sunits);
     if (haveEnergy && doSort)

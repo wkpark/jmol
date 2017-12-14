@@ -100,6 +100,12 @@ class VolumeDataReader extends SurfaceReader {
       readSurfaceData(isMapData);
     } catch (Exception e) {
       System.out.println(e.toString());
+      /**
+       * @j2sNative
+       */
+      {
+      e.printStackTrace();
+      }
       return false;
     }
     return true;

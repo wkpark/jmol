@@ -381,7 +381,7 @@ public class MOCalculation extends QuantumCalculation {
       }
     }
     sum = 1 / Math.sqrt(f * sum);
-    if (Logger.debugging)
+    if (Logger.debuggingHigh)
       Logger.debug("\t\t\tnormalization for l=" + el + " nGaussians=" + nGaussians + " is " + sum);
     return sum;
   }

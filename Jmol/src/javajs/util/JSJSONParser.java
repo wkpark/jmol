@@ -145,7 +145,7 @@ public class JSJSONParser {
     if (isKey && c == 0)
       throw new JSONException("invalid key");
 
-    String string = str.substring(i, index);
+    String string = str.substring(i, index).trim();
 
     // check for the only valid simple words: true, false, null (lower case)
     // and in this case, only for 
@@ -162,7 +162,6 @@ public class JSJSONParser {
       }
     }
     //  only numbers from here on:
-
     c = string.charAt(0);
     if (c >= '0' && c <= '9' || c == '-')
       try {

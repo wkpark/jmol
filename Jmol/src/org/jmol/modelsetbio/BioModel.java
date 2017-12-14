@@ -205,7 +205,7 @@ public final class BioModel extends Model {
     Object annotv = cache.get(key);
     if (annotv == null && ann != null) {
       annotv = (ann instanceof SV || ann instanceof Hashtable ? ann
-              : vwr.parseJSON((String) ann));
+              : vwr.parseJSONMap((String) ann));
       cache.put(key, annotv);
     }
     return (annotv instanceof SV || annotv instanceof Hashtable ? annotv : null);

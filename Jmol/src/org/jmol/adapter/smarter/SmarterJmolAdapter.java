@@ -205,7 +205,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
           // hack to determine type:
           String type = (f.contains("version\":\"DSSR") ? "dssr" : f
               .contains("/outliers/") ? "validation" : "domains");
-          Map<String, Object> x = vwr.parseJSON(f);
+          Map<String, Object> x = vwr.parseJSONMap(f);
           if (x != null)
             htParams.put(type, (type.equals("dssr") ? x : SV.getVariableMap(x)));
           continue;

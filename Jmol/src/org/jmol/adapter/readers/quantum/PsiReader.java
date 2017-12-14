@@ -276,7 +276,7 @@ public class PsiReader extends MOReader {
       }
       for (int j = 0; j < slaters.size(); j++) {
         int[] slater = slaters.get(j);
-        sdata.addLast(new int[] { i, slater[0], slater[1], slater[2] });
+        sdata.addLast(new int[] { i + 1, slater[0], slater[1], slater[2] });
         //System.out.println(atomType + " " + i + " " + slater[0] + " " + slater[1] + " "+ slater[2]);
           
       }

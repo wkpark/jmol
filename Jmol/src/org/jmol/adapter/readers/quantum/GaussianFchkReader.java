@@ -355,12 +355,12 @@ public class GaussianFchkReader extends GaussianReader {
       int nGaussians = (int) pps[i];
       int iatom = (int) atomMap[i];
       int[] slater = new int[4];
-      slater[0] = iatom - 1;
+      slater[0] = iatom; // 1-based
       if (oType.equals("F7") || oType.equals("D5"))
         slater[1] = BasisFunctionReader.getQuantumShellTagIDSpherical(oType.substring(0, 1));
       else
         slater[1] = BasisFunctionReader.getQuantumShellTagID(oType);      
-      slater[2] = gaussianCount;
+      slater[2] = gaussianCount + 1;
       slater[3] = nGaussians;
       if (debugging)
         Logger.debug("Slater " + shells.size() + " " + Escape.eAI(slater));

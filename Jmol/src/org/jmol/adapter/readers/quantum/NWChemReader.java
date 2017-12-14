@@ -776,10 +776,10 @@ public class NWChemReader extends MOReader {
           break;
         }
         int[] slater = new int[4];
-        slater[0] = i;
+        slater[0] = i + 1;
         slater[1] = (isD6F10 ? BasisFunctionReader.getQuantumShellTagID(type)
             : BasisFunctionReader.getQuantumShellTagIDSpherical(type));
-        slater[2] = gaussianCount;
+        slater[2] = gaussianCount + 1;
         slater[3] = nGaussians;
         shells.addLast(slater);
         for (int ifunc = 0; ifunc < nGaussians; ifunc++)

@@ -272,7 +272,7 @@ public class MOCalculation extends QuantumCalculation {
 //    double c = 0;
 //    int[] shell = shells.get(iShell);
 //    int basisType = shell[1];
-//    gaussianPtr = shell[2];
+//    gaussianPtr = shell[2] - 1;
 //    nGaussians = shell[3];
 //    doShowShellType = doDebug;
 //    //System.out.println(iShell + " basistype is " + basisType);
@@ -291,9 +291,9 @@ public class MOCalculation extends QuantumCalculation {
   private void processShell(int iShell) {
     int lastAtom = atomIndex;
     int[] shell = shells.get(iShell);
-    atomIndex = shell[0] + firstAtomOffset;
+    atomIndex = shell[0] - 1 + firstAtomOffset;
     int basisType = shell[1];
-    gaussianPtr = shell[2];
+    gaussianPtr = shell[2] - 1;
     nGaussians = shell[3];
     doShowShellType = doDebug;
     //System.out.println("shell " + iShell + " type " + basisType);

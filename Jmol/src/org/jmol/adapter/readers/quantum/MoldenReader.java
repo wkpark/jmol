@@ -136,18 +136,18 @@ public class MoldenReader extends MopacSlaterReader {
         for (int i = 0; i < n; i++) {
           int iatom = shells.get(i)[0];
           if (iatom != Integer.MAX_VALUE) {
-            ilast = atoms[iatom].elementNumber;
+            ilast = atoms[iatom - 1].elementNumber;
             continue;
           }
           for (int j = bsAtomOK.nextClearBit(0); j >= 0; j = bsAtomOK
               .nextClearBit(j + 1)) {
             if (atoms[j].elementNumber == ilast) {
-              shells.get(i)[0] = j;
+              shells.get(i)[0] = j + 1;
               Logger.info("MoldenReader assigning shells starting with " + i
                   + " for ** to atom " + (j + 1) + " z " + ilast);
               for (; ++i < n && !bsBadIndex.get(i)
                   && shells.get(i)[0] == Integer.MAX_VALUE;)
-                shells.get(i)[0] = j;
+                shells.get(i)[0] = j + 1;
               i--;
               bsAtomOK.set(j);
               break;
@@ -264,9 +264,9 @@ public class MoldenReader extends MopacSlaterReader {
         int nPrimitives = parseIntStr(tokens[1]);
         int[] slater = new int[4];
         nSPDF[type]++;
-        slater[0] = atomIndex;
+        slater[0] = atomIndex + 1;
         slater[1] = type;
-        slater[2] = gaussianPtr;
+        slater[2] = gaussianPtr + 1;
         slater[3] = nPrimitives;
         int n = getDfCoefMaps()[type].length;
         //System.out.println("adding " + n + " coefficients type " + JmolAdapter.getQuantumShellTag(type) + " for atom " + atomIndex);

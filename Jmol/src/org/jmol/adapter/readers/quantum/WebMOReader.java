@@ -252,7 +252,7 @@ public class WebMOReader extends MopacSlaterReader {
 
     Lst<int[]> sdata = new  Lst<int[]>();
     Lst<float[]> gdata = new  Lst<float[]>();
-    int atomIndex = 0;
+    int atomNo = 1;
     int gaussianPtr = 0;
 
     while (getLine()) {
@@ -262,10 +262,10 @@ public class WebMOReader extends MopacSlaterReader {
       if (tokens.length != 1) // VERY unlikely event -- might as well note it, though.
         throw new Exception("Error reading GTOs: missing atom index");
       int[] slater = new int[4];
-      atomIndex = parseIntStr(tokens[0]) - 1;
+      atomNo = parseIntStr(tokens[0]);
       tokens = PT.getTokens(rd());
       int nGaussians = parseIntStr(tokens[1]);
-      slater[0] = atomIndex;
+      slater[0] = atomNo;
       slater[1] = BasisFunctionReader.getQuantumShellTagID(tokens[0]);
       slater[2] = gaussianPtr;
       slater[3] = nGaussians;

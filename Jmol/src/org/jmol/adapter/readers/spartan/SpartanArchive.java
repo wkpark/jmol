@@ -248,7 +248,7 @@ class SpartanArchive {
       String[] tokens = PT.getTokens(readLine());
       boolean isSpherical = (tokens[4].charAt(0) == '1');
       int[] slater = new int[4];
-      slater[0] = parseInt(tokens[3]) - 1; //atom pointer; 1-based
+      slater[0] = parseInt(tokens[3]); //atom pointer; 1-based
       int iBasis = parseInt(tokens[0]); //0 = S, 1 = SP, 2 = D, 3 = F
       switch (iBasis) {
       case 0:
@@ -265,7 +265,8 @@ class SpartanArchive {
         break;
       }
       slater[1] = iBasis;
-      int gaussianPtr = slater[2] = parseInt(tokens[2]) - 1;
+      slater[2] = parseInt(tokens[2]);
+      int gaussianPtr = slater[2] - 1;
       int nGaussians = slater[3] = parseInt(tokens[1]);
       for (int j = 0; j < nGaussians; j++)
         typeArray[gaussianPtr + j] = iBasis;
@@ -308,7 +309,7 @@ class SpartanArchive {
     int nCoeff = 0;
     for (int i = 0; i < shellCount; i++) {
       int[] slater = shells.get(i);
-      switch(typeArray[slater[2]]) {
+      switch(typeArray[slater[2] - 1]) {
       case QS.S:
         nCoeff++;
         break;

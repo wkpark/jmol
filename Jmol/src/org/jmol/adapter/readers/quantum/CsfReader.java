@@ -643,7 +643,7 @@ public class CsfReader extends MopacSlaterReader {
           int[] slater = new int[4];
           int iAtom = asc
               .getAtomIndex(connectors.get(sto_gto + "_basis_fxn" + (ipt + 1))[0]);
-          slater[0] = iAtom;
+          slater[0] = iAtom + 1;
           slater[1] = BasisFunctionReader.getQuantumShellTagID(types[ipt]
               .substring(0, 1));
           int nZ = 0;

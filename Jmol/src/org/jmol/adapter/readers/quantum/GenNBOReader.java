@@ -402,7 +402,7 @@ public class GenNBOReader extends MOReader {
     for (int i = 0; i < shellCount; i++) {
       int[] slater = new int[4];
       int nc = ncomp[i];
-      slater[0] = centers[ptCenter] - 1;
+      slater[0] = centers[ptCenter];
       line = "";
       for (int ii = 0; ii < nc; ii++)
         line += labels[ptCenter++] + " ";
@@ -467,7 +467,7 @@ public class GenNBOReader extends MOReader {
       slater[1] = QS.FC;
       break;
     }
-    slater[2] = pt; // gaussian list pointer
+    slater[2] = pt + 1; // gaussian list pointer
     slater[3] = ng; // number of gaussians
     shells.addLast(slater);
     return true;
@@ -538,7 +538,7 @@ public class GenNBOReader extends MOReader {
     for (int i = 0; i < shellCount; i++) {
       tokens = PT.getTokens(rd());
       int[] slater = new int[4];
-      slater[0] = parseIntStr(tokens[0]) - 1; // atom pointer; 1-based
+      slater[0] = parseIntStr(tokens[0]); // atom pointer; 1-based
       int n = parseIntStr(tokens[1]);
       int pt = parseIntStr(tokens[2]) - 1; // gaussian list pointer
       int ng = parseIntStr(tokens[3]);     // number of gaussians

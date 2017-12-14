@@ -287,7 +287,7 @@ $end
   private void readBasis() throws Exception {
     // initialize the 'global' variables
     moData = new Hashtable<String, Object>();
-    int ac = 0;
+    int ac = 1;
     int shellCount = 0;
     int gaussianCount = 0;
     // local variables
@@ -308,7 +308,7 @@ $end
       tokens = getTokens();
       slater[0] = ac;
       slater[1] = BasisFunctionReader.getQuantumShellTagID(tokens[0]); // default cartesian
-      slater[2] = gaussianCount;
+      slater[2] = gaussianCount + 1;
       int nGaussians = parseIntStr(tokens[1]);
       slater[3] = nGaussians;
       shells.addLast(slater);

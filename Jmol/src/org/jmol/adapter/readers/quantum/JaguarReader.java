@@ -165,7 +165,7 @@ public class JaguarReader extends MOReader {
   
   private void readUnnormalizedBasis() throws Exception {
     String lastAtom = "";
-    int iAtom = -1;
+    int iAtom = 0;
     int[][] sdata = new int[moCount][4];
     Lst<float[]>[] sgdata = AU.createArrayOfArrayList(moCount);
     String[] tokens;
@@ -251,7 +251,7 @@ public class JaguarReader extends MOReader {
   private void readBasisNormalized() throws Exception {
 // if (true) return;
     String lastAtom = "";
-    int iAtom = -1;
+    int iAtom = 0;
     String id;
     int iFunc = 0;
     int iFuncLast = -1;
@@ -293,7 +293,7 @@ public class JaguarReader extends MOReader {
           }
         }
       } else {
-        sdata = new int[] { iAtom, iType, gaussianCount, 1, iFunc };
+        sdata = new int[] { iAtom, iType, gaussianCount + 1, 1, iFunc };
         sarray.addLast(sdata);
         iFuncLast = iFunc;
       }

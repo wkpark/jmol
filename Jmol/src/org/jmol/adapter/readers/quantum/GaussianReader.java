@@ -426,7 +426,7 @@ public class GaussianReader extends MOReader {
         ac++;
         while (rd().indexOf("****") < 0) {
           int[] slater = new int[4];
-          slater[0] = ac - 1;
+          slater[0] = ac;
           tokens = getTokens();
           String oType = tokens[0];
           if (doSphericalF && oType.indexOf("F") >= 0 || doSphericalD
@@ -436,7 +436,7 @@ public class GaussianReader extends MOReader {
             slater[1] = BasisFunctionReader.getQuantumShellTagID(oType);
 
           int nGaussians = parseIntStr(tokens[1]);
-          slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
+          slater[2] = gaussianCount + 1; // or parseInt(tokens[7])
           slater[3] = nGaussians;
           if (debugging)
             Logger.debug("Slater " + shells.size() + " " + Escape.eAI(slater));
@@ -469,7 +469,7 @@ public class GaussianReader extends MOReader {
           slater[1] = BasisFunctionReader.getQuantumShellTagID(oType);
 
         int nGaussians = parseIntStr(tokens[5]);
-        slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
+        slater[2] = gaussianCount + 1; // or parseInt(tokens[7])
         slater[3] = nGaussians;
         shells.addLast(slater);
         gaussianCount += nGaussians;

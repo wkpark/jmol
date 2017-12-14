@@ -129,7 +129,7 @@ abstract public class GamessReader extends MOReader {
         }
         for (int j = 0; j < slaters.size(); j++) {
           slater = slaters.get(j);
-          shells.addLast(new int[] { i, slater[0], slater[1], slater[2] });
+          shells.addLast(new int[] { i + 1, slater[0], slater[1] + 1, slater[2] });
         }
       }
     }

@@ -151,7 +151,7 @@ public abstract class XmlMOReader extends XmlCmlReader {
         for (int i = 1, n = basisData.size(); i < n; i++) {
           htSlaterIDs.put(basisId + "_" + i,
               new int[] { -1, moReader.getQuantumShellTagID(otype),
-                  gaussianCount, nPrimitives });
+                  gaussianCount + 1, nPrimitives });
           gaussianCount += nPrimitives;
         }
         return true;
@@ -238,7 +238,7 @@ public abstract class XmlMOReader extends XmlCmlReader {
             break;
           slater = AU.arrayCopyI(slater, -1);
           moReader.shells = slaters;
-          slater[0] = i;
+          slater[0] = i + 1;
           slaters.addLast(slater);
         }
       }

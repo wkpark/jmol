@@ -137,12 +137,13 @@ public class QCJsonReader extends MoldenReader {
       }
       if (doReadMolecularOrbitals) {
         readMolecularOrbitals(getMap(step, "molecular_orbitals"));
+        clearOrbitals();
       }
       applySymmetryAndSetTrajectory();
       if (loadVibrations) {
         readFreqsAndModes(getList(step, "vibrations"));
       }
-
+      
     }
   }
   

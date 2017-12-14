@@ -560,9 +560,7 @@ public class MOReader extends BasisFunctionReader {
       finalizeMOData(lastMoData = moData);
     }
     if (clearOrbitals) {
-      orbitals = new  Lst<Map<String, Object>>();
-      moData = new Hashtable<String, Object>();
-      alphaBeta = "";
+      clearOrbitals();
     }
   }
   

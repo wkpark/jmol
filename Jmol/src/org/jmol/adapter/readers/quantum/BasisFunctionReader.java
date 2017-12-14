@@ -201,4 +201,11 @@ public abstract class BasisFunctionReader extends AtomSetCollectionReader {
     orbitals.clear();
   }
 
+  protected void clearOrbitals() {
+    orbitals = new  Lst<Map<String, Object>>();
+    moData = new Hashtable<String, Object>();
+    alphaBeta = "";
+  }
+
+
 }

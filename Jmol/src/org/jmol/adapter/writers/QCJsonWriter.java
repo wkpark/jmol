@@ -7,9 +7,11 @@ import java.util.Map;
 
 import javajs.util.DF;
 import javajs.util.Lst;
+import javajs.util.P3;
 import javajs.util.PT;
 import javajs.util.SB;
 
+import org.jmol.api.SymmetryInterface;
 import org.jmol.io.JSONWriter;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
@@ -17,39 +19,15 @@ import org.jmol.quantum.SlaterData;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.Viewer;
 
-public class QCSchemaWriter extends JSONWriter {
-
-  private final static String version = "QCJSON 0-0-0.Jmol_"
-      + Viewer.getJmolVersion().replace(' ', '_');
-
-  private final static String knownUnits =
-  /////0         1         2         3         4
-  /////01234567890123456789012345678901234567890123456789
-      "cm cm^-1 cm-1 angstroms au atomic units";
+public class QCJsonWriter extends JSONWriter {
 
   private Map<String, Object> moBases = new Hashtable<String, Object>();
   
   private boolean filterMOs;
 
-  public String getUnitsConversion(String units) {
-    String convFactor = "\"?\"";
-    units = units.toLowerCase();
-    switch (knownUnits.indexOf(units)) {
-    case 3:
-    case 9:
-      units = "cm-1";
-      break;
-    case 14:
-      units = "angstroms";
-      convFactor = "1.8897";
-      break;
-    case 24:
-    case 27:
-      units = "au";
-      convFactor = "1";
-      break;
-    }
-    return "[\"" + units + "\"," + convFactor + "]";
+  public static Object getUnitsConversion(String units, boolean asArray) {
+    String sunits = QCSchema.getFactorToAU(units);
+    return (asArray ? new Object[] {units, sunits} : "[\"" + units + "\"," + sunits + "]");
   }
 
   private Viewer vwr;
@@ -85,7 +63,7 @@ public class QCSchemaWriter extends JSONWriter {
   }
 
   public void writeMagic() {
-    writeString(version);
+    writeString(QCSchema.version);
   }
 
   public void closeSchema() {
@@ -116,7 +94,7 @@ public class QCSchemaWriter extends JSONWriter {
     mapOpen();
     {
       mapAddMapAllExcept("__jmol_info", vwr.getModelSetAuxiliaryInfo(),
-          ";group3Counts;properties;group3Lists;models;");
+          ";group3Counts;properties;group3Lists;models;unitCellParams;");
     }
     mapClose();
   }
@@ -177,7 +155,7 @@ public class QCSchemaWriter extends JSONWriter {
   }
 
   private boolean isVibration(int modelIndex) {
-    return (getProperty(modelIndex, "Frequency") != null);
+    return (vwr.ms.getLastVibrationVector(modelIndex, 0) >= 0);
   }
 
   public void writeModelMetadata(int modelIndex) {
@@ -185,7 +163,7 @@ public class QCSchemaWriter extends JSONWriter {
     mapOpen();
     {
       mapAddMapAllExcept("__jmol_info", vwr.ms.am[modelIndex].auxiliaryInfo,
-          ";.PATH;PATH;fileName;moData;");
+          ";.PATH;PATH;fileName;moData;unitCellParams;");
     }
     mapClose();
   }
@@ -199,19 +177,30 @@ public class QCSchemaWriter extends JSONWriter {
     mapAddKey("atoms");
     mapOpen();
     {
-      writePrefix_Units("coords_", "Angstroms");
+      SymmetryInterface unitCell = vwr.ms.getUnitCell(modelIndex);
+      boolean isFractional = (unitCell != null && !unitCell.isBio());
+      if (isFractional) {
+        float[] params = unitCell.getUnitCellAsArray(false);
+        writePrefix_Units("unit_cell", "angstroms");
+        mapAddKeyValue("unit_cell", params, ",\n");
+      }
+      writePrefix_Units("coords", isFractional ? "fractional" : "angstroms");
       mapAddKey("coords");
       arrayOpen(true);
       {
         oc.append("\n");
         BS bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
         int last = bs.length() - 1;
+        P3 pt = new P3();
         for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
           Atom a = vwr.ms.at[i];
           append("");
-          oc.append(formatNumber(a.x)).append(",\t")
-            .append(formatNumber(a.y)).append(",\t")
-            .append(formatNumber(a.z)).append(i < last ? ",\n" : "\n");
+          pt.setT(a);
+          if(isFractional)
+            unitCell.toFractional(pt, false);
+          oc.append(formatNumber(pt.x)).append(",\t")
+            .append(formatNumber(pt.y)).append(",\t")
+            .append(formatNumber(pt.z)).append(i < last ? ",\n" : "\n");
           symbols.add(PT.esc(a.getElementSymbol()));
           numbers.add("" + a.getElementNumber());
           charges.add("" + a.getPartialCharge());
@@ -240,7 +229,7 @@ public class QCSchemaWriter extends JSONWriter {
   }
 
   private void writePrefix_Units(String prefix, String units) {
-    mapAddKeyValueRaw(prefix + "units", getUnitsConversion(units), ",\n");
+    mapAddKeyValueRaw(prefix + "_units", getUnitsConversion(units, false), ",\n");
   }
 
   public void writeBonds(int modelIndex) {
@@ -254,6 +243,7 @@ public class QCSchemaWriter extends JSONWriter {
       oc.append("\n");
       String sep = null;
       int ivib = 0;
+      modelIndex--;
       while (isVibration(++modelIndex)) {
         if (sep != null)
           oc.append(sep);
@@ -265,27 +255,27 @@ public class QCSchemaWriter extends JSONWriter {
           Object value = getProperty(modelIndex, "FreqValue");
           String freq = (String) getProperty(modelIndex, "Frequency");
           String intensity = (String) getProperty(modelIndex, "IRIntensity");
+          String[] tokens;
           if (value == null) {
-            System.out.println("model " + modelIndex + " has no _M.properties.FreqValue");
-            continue;
+            System.out.println("model " + modelIndex
+                + " has no _M.properties.FreqValue");
           }
           if (freq == null) {
-            System.out.println("model " + modelIndex + " has no _M.properties.Frequency");
-            continue;
-          }
-          String[] tokens = PT.split(freq, " ");
-          if (tokens.length == 1) {
             System.out.println("model " + modelIndex
-                + " has no frequency units");
-            continue;
+                + " has no _M.properties.Frequency");
+          } else {
+            tokens = PT.split(freq, " ");
+            if (tokens.length == 1) {
+              System.out.println("model " + modelIndex
+                  + " has no frequency units");
+            }
+            writeMapKeyValueUnits("frequency", value, tokens[1]);
           }
-          writeMapKeyValueUnits("frequency", value, tokens[1]);
           if (intensity != null) {
             tokens = PT.split(intensity, " ");
             writeMapKeyValueUnits("ir_intensity", tokens[0], tokens[1]);
 
           }
-            
           String label = (String) getProperty(modelIndex, "FrequencyLabel");
           if (label != null)
             mapAddKeyValue("label", label, ",\n");
@@ -300,8 +290,8 @@ public class QCSchemaWriter extends JSONWriter {
               Vibration v = a.getVibrationVector();
               append("");
               oc.append(formatNumber(v.x)).append(",\t")
-                .append(formatNumber(v.y)).append(",\t")
-                .append(formatNumber(v.z)).append(i < last ? ",\n" : "\n");
+                  .append(formatNumber(v.y)).append(",\t")
+                  .append(formatNumber(v.z)).append(i < last ? ",\n" : "\n");
             }
           }
           arrayClose(true);
@@ -318,7 +308,7 @@ public class QCSchemaWriter extends JSONWriter {
   private void writeMapKeyValueUnits(String key, Object value,
                                       String units) {
     mapAddKeyValueRaw(key, "{\"value\":" + value + ",\"units\":"
-        + getUnitsConversion(units) + "}", ",\n");    
+        + getUnitsConversion(units, false) + "}", ",\n");    
   }
 
   private boolean haveMOData(int modelIndex) {
@@ -343,12 +333,17 @@ public class QCSchemaWriter extends JSONWriter {
     String units = (String) moData.get("EnergyUnits");
     if (units == null)
       units = "?";
-    moDataJSON.put("orbitals_energy_units",getUnitsConversion(units));
+    moDataJSON.put("orbitals_energy_units",getUnitsConversion(units, true));
     // normalization is critical for Molden, NWChem, and many other readers.
     // not needed for Gaussian, Jaguar, WebMO, Spartan, or GenNBO
-    moDataJSON.put("normalized", Boolean.valueOf(moData.get("isNormalized") == Boolean.TRUE));
+    moDataJSON.put("jmol_normalized", Boolean.valueOf(moData.get("isNormalized") == Boolean.TRUE));
     String type = (String) moData.get("calculationType");
-    moDataJSON.put("calculation_type", type == null ? "?" : type);
+    moDataJSON.put("jmol_calculation_type", type == null ? "?" : type);
+//    @SuppressWarnings("unchecked")
+//    Map<String, String> orbitalMaps = (Map<String, String>) moData.get("orbitalMaps");
+//    if (orbitalMaps != null && !orbitalMaps.isEmpty()) {
+//      moDataJSON.put("jmol_orbital_maps", orbitalMaps);      
+//    }
     moDataJSON.put("basis_id", getBasisID(moData));
     filterMOs = true;
     mapAddKeyValue("molecular_orbitals", moDataJSON, "\n");
@@ -371,6 +366,14 @@ public class QCSchemaWriter extends JSONWriter {
     return map.get(key);
   }
 
+  /**
+   * Jmol allows for a set of arrays that map coefficient indicies
+   * with nonstandard order to Gaussian/Molden order. Here we do the
+   * conversion upon writing so that the order is always Gaussian/Molden order.
+   * 
+   * @param coeffs
+   * @return
+   */
   private Object fixCoefficients(double[] coeffs) {
     double[] c = new double[coeffs.length];
     for (int i = 0, n = shells.size(); i < n; i++) {

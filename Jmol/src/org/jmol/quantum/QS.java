@@ -97,7 +97,7 @@ public class QS {
         new int[10], //3 F10
         new int[9],  //4 G9 7
         new int[15], //4 G15
-        new int[11], //5 H11 9 == 2*5 + 1
+        new int[11], //5 H11 == 2*5 + 1
         new int[21], //5 H21 == (5+1)(5+2)/2 = (n*n+3*n +2)/2 = n(n+3)/2 + 1
         new int[13], //6 I13 == 2*6 + 1
         new int[28]  //6 I28 == (6+1)(6+2)/2

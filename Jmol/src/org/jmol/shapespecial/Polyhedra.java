@@ -153,7 +153,7 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
       return;
     }
     if ("generate" == propertyName) {
-      if (!iHaveCenterBitSet) {
+      if (!iHaveCenterBitSet && bs != null && !bs.isEmpty()) {
         centers = bs;
         iHaveCenterBitSet = true;
       }
@@ -729,8 +729,11 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
     if (thisID != null) {
       if (PT.isWild(thisID))
         return;
-      if (center != null)
+      if (center != null) {
+        if (nPoints == 0)
+          setPointsFromBitset();
         p = validatePolyhedron(center, nPoints);
+      }
     } else if (info != null && info.containsKey("id")) {
       Object o = info.get("id"); 
       thisID = (o instanceof SV ? ((SV) o).asString() : o.toString());
@@ -777,6 +780,14 @@ public class Polyhedra extends AtomShape implements Comparator<Object[]>{
     }
     if (iter != null)
       iter.release();
+  }
+
+  private void setPointsFromBitset() {
+    // polyhedra ID p1 @6 to {connected(@6)}
+    if (bsVertices != null)
+      for (int i = bsVertices.nextSetBit(0); i >= 0 && nPoints < MAX_VERTICES; i = bsVertices
+          .nextSetBit(i + 1))
+        otherAtoms[nPoints++] = atoms[i];
   }
 
   private void addPolyhedron(Polyhedron p) {

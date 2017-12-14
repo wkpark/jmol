@@ -603,9 +603,9 @@ $end
     boolean isOK = true;
     if (dList.length() > 0) {
       if (dSpherical) 
-        isOK = getDFMap(dList, QS.DS, DS_LIST, 2);
+        isOK = getDFMap("DS", dList, QS.DS, DS_LIST, 2);
       else
-        isOK = getDFMap(dList, QS.DC, DC_LIST, 3);
+        isOK = getDFMap("DC", dList, QS.DC, DC_LIST, 3);
       if (!isOK) {
         Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs. dList=" + dList);
         shells = null;
@@ -613,9 +613,9 @@ $end
     }
     if (fList.length() > 0) {
       if (fSpherical) 
-        isOK = getDFMap(fList, QS.FS, FS_LIST, 2);
+        isOK = getDFMap("FS", fList, QS.FS, FS_LIST, 2);
       else
-        isOK = getDFMap(fList, QS.FC, FC_LIST, 3);
+        isOK = getDFMap("FC", fList, QS.FC, FC_LIST, 3);
       if (!isOK) {
         Logger.error("atomic orbital order is unrecognized -- skipping reading of MOs. fList=" + fList);
         shells = null;

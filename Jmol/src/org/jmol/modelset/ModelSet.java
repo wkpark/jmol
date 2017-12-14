@@ -1685,7 +1685,7 @@ public class ModelSet extends BondCollection {
   }
 
   public int getLastVibrationVector(int modelIndex, int tok) {
-    if (vibrations != null) {
+    if (vibrations != null && modelIndex < vwr.ms.mc) {
       Vibration v;
       int a1 = (modelIndex < 0 || isTrajectory(modelIndex)
           || modelIndex >= mc - 1 ? ac : am[modelIndex + 1].firstAtomIndex);

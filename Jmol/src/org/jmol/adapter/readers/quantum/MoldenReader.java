@@ -29,14 +29,14 @@ import org.jmol.util.Logger;
 
 public class MoldenReader extends MopacSlaterReader {
   
-  private boolean loadGeometries;
-  private boolean loadVibrations;
-  private boolean vibOnly;
-  private boolean optOnly;
-  private boolean doSort = true;
+  protected boolean loadGeometries;
+  protected boolean loadVibrations;
+  protected boolean vibOnly;
+  protected boolean optOnly;
+  protected boolean doSort = true;
  
-  private String orbitalType = "";
-  private int modelAtomCount;
+  protected String orbitalType = "";
+  protected int modelAtomCount;
   
   @Override
   protected void initializeReader() {

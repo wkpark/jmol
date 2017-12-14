@@ -114,26 +114,37 @@ public abstract class BasisFunctionReader extends AtomSetCollectionReader {
     }
   }
 
+  
+  Map<String, String> orbitalMaps = new Hashtable<String, String>();
  
   /**
    * 
-   * finds the position in the Jmol-required list of function types. This list is
-   * reader-dependent. 
+   * finds the position in the Jmol-required list of function types. This list
+   * is reader-dependent.
    * 
-   * @param fileList 
-   * @param shellType 
-   * @param jmolList 
-   * @param minLength 
-   * @return            true if successful
+   * @param shell
+   *        TODO
+   * @param fileList
+   * @param shellType
+   * @param jmolList
+   * @param minLength
+   * 
+   * @return true if successful
    * 
    */
-  protected boolean getDFMap(String fileList, int shellType, String jmolList, int minLength) {
-   if (fileList.equals(jmolList))
+  protected boolean getDFMap(String shell, String fileList, int shellType,
+                             String jmolList, int minLength) {
+    orbitalMaps.put(shell, fileList);
+    moData.put("orbitalMaps", orbitalMaps);
+    if (fileList.equals(jmolList))
       return true;
-   getDfCoefMaps();
-   boolean isOK = QS.createDFMap(dfCoefMaps[shellType], fileList, jmolList, minLength);
+    getDfCoefMaps();
+    boolean isOK = QS.createDFMap(dfCoefMaps[shellType], fileList, jmolList,
+        minLength);
     if (!isOK)
-      Logger.error("Disabling orbitals of type " + shellType + " -- Cannot read orbital order for: " + fileList + "\n expecting: " + jmolList);
+      Logger.error("Disabling orbitals of type " + shellType
+          + " -- Cannot read orbital order for: " + fileList + "\n expecting: "
+          + jmolList);
     return isOK;
   }
 

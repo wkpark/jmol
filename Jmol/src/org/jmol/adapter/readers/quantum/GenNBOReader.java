@@ -437,32 +437,32 @@ public class GenNBOReader extends MOReader {
       slater[1] = QS.S;
       break;
     case 3:
-      if (!getDFMap(line, QS.P, P_LIST, 3))
+      if (!getDFMap("P", line, QS.P, P_LIST, 3))
         return false;
       slater[1] = QS.P;
       break;
     case 4:
-      if (!getDFMap(line, QS.SP, SP_LIST, 1))
+      if (!getDFMap("SP", line, QS.SP, SP_LIST, 1))
         return false;
       slater[1] = QS.SP;
       break;        
     case 5:
-      if (!getDFMap(line, QS.DS, DS_LIST, 3))
+      if (!getDFMap("DS", line, QS.DS, DS_LIST, 3))
         return false;
       slater[1] = QS.DS;
       break;
     case 6:
-      if (!getDFMap(line, QS.DC, DC_LIST, 3))
+      if (!getDFMap("DC", line, QS.DC, DC_LIST, 3))
         return false;
       slater[1] = QS.DC;
       break;
     case 7:
-      if (!getDFMap(line, QS.FS, FS_LIST, 3))
+      if (!getDFMap("FS", line, QS.FS, FS_LIST, 3))
         return false;
       slater[1] = QS.FS;
       break;
     case 10:
-      if (!getDFMap(line, QS.FC, FC_LIST, 3))
+      if (!getDFMap("FC", line, QS.FC, FC_LIST, 3))
         return false;
       slater[1] = QS.FC;
       break;

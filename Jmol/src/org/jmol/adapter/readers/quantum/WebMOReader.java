@@ -209,16 +209,16 @@ public class WebMOReader extends MopacSlaterReader {
         isOK = true;
         break;
       case 5:
-        isOK = (tokens[0].equals("DOrbitals") && getDFMap(data, QS.DS, DS_LIST, 99));
+        isOK = (tokens[0].equals("DOrbitals") && getDFMap("DS", data, QS.DS, DS_LIST, 99));
         break;
       case 6:
-        isOK = (tokens[0].equals("DOrbitals") && getDFMap(data, QS.DC, DC_LIST, 2));
+        isOK = (tokens[0].equals("DOrbitals") && getDFMap("DC", data, QS.DC, DC_LIST, 2));
         break;
       case 7:
-        isOK = (tokens[0].equals("FOrbitals") && getDFMap(data, QS.FS, FS_LIST, 99));
+        isOK = (tokens[0].equals("FOrbitals") && getDFMap("FS", data, QS.FS, FS_LIST, 99));
         break;
       case 10:
-        isOK = (tokens[0].equals("FOrbitals") && getDFMap(data, QS.FC, FC_LIST, 3));
+        isOK = (tokens[0].equals("FOrbitals") && getDFMap("FC", data, QS.FC, FC_LIST, 3));
         break;
       }      
       if (!isOK) {

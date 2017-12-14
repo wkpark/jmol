@@ -360,22 +360,22 @@ public class MOReader extends BasisFunctionReader {
           haveCoeffMap = true;
           boolean isOK = true;
           if (pCoeffLabels.length() > 0)
-            isOK = getDFMap(pCoeffLabels, QS.P, P_LIST, 4);
+            isOK = getDFMap("P", pCoeffLabels, QS.P, P_LIST, 4);
           if (dCoeffLabels.length() > 0) {
             if (dCoeffLabels.indexOf("X") >= 0)
-              isOK = getDFMap(dCoeffLabels, QS.DC, QS.CANONICAL_DC_LIST, 2);
+              isOK = getDFMap("DC", dCoeffLabels, QS.DC, QS.CANONICAL_DC_LIST, 2);
             else if (dCoeffLabels.indexOf("(D6)") >= 0)
-              isOK = getDFMap(dCoeffLabels, QS.DC, DC_LIST, 4);
+              isOK = getDFMap("DC", dCoeffLabels, QS.DC, DC_LIST, 4);
             else
-              isOK = getDFMap(dCoeffLabels, QS.DS, DS_LIST, 4);
+              isOK = getDFMap("DS", dCoeffLabels, QS.DS, DS_LIST, 4);
           }
           if (fCoeffLabels.length() > 0) {
             if (fCoeffLabels.indexOf("X") >= 0)
-              isOK = getDFMap(fCoeffLabels, QS.FC, QS.CANONICAL_FC_LIST, 2);
+              isOK = getDFMap("FC", fCoeffLabels, QS.FC, QS.CANONICAL_FC_LIST, 2);
             else if (fCoeffLabels.indexOf("(F10)") >= 0)
-              isOK = getDFMap(fCoeffLabels, QS.FC, FC_LIST, 5);
+              isOK = getDFMap("FC", fCoeffLabels, QS.FC, FC_LIST, 5);
             else
-              isOK = getDFMap(fCoeffLabels, QS.FS, FS_LIST, 4);
+              isOK = getDFMap("FS", fCoeffLabels, QS.FS, FS_LIST, 4);
           }
           if (!isOK) {
             //

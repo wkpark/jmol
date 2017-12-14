@@ -51,7 +51,7 @@ public class Resolver {
     "molxyz.", ";Mol3D;Mol;Xyz;",
     "more.", ";BinaryDcd;Gromacs;Jcampdx;MdCrd;MdTop;Mol2;TlsDataOnly;",
     "quantum.", ";Adf;Csf;Dgrid;GamessUK;GamessUS;Gaussian;GaussianFchk;GaussianWfn;Jaguar;" +
-                 "Molden;MopacGraphf;GenNBO;NWChem;Psi;Qchem;" +
+                 "Molden;MopacGraphf;GenNBO;NWChem;Psi;Qchem;QCJson;" +
                  "WebMO;MO;", // MO is for XmlMolpro 
     "pdb.", ";Pdb;Pqr;P2n;JmolData;",
     "pymol.", ";PyMOL;",
@@ -371,7 +371,10 @@ public class Resolver {
 
   private final static String[] jsonStartRecords = 
   { "JSON", "{\"mol\":" };
-  
+
+  private final static String[] qcJsonStartRecords = 
+  { "QCJson", "[\"QCJSON" };
+
   private final static String[] jcampdxStartRecords = 
   { "Jcampdx", "##TITLE" };
   
@@ -399,7 +402,7 @@ public class Resolver {
     mol2Records, webmoFileStartRecords, 
     moldenFileStartRecords, dcdFileStartRecords, tlsDataOnlyFileStartRecords,
     inputFileStartRecords, magresFileStartRecords, pymolStartRecords, 
-    janaStartRecords, jsonStartRecords, jcampdxStartRecords, 
+    janaStartRecords, jsonStartRecords, jcampdxStartRecords, qcJsonStartRecords, 
     jmoldataStartRecords, pqrStartRecords, p2nStartRecords, cif2StartRecords, cfiStartRecords };
 
   ////////////////////////////////////////////////////////////////

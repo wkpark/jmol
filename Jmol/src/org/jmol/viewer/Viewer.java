@@ -9588,11 +9588,20 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   private JSJSONParser jsonParser;
   
-  public Map<String, Object> parseJSON(String ann) {
-    if (jsonParser == null)
-      jsonParser = ((JSJSONParser) Interface.getInterface("javajs.util.JSJSONParser", this, "script"));
-    return jsonParser.parseMap(ann, true);
+  private JSJSONParser getJSJSONParser() {
+    return (jsonParser == null ? jsonParser = (JSJSONParser) Interface.getInterface("javajs.util.JSJSONParser", this, "script") : jsonParser);
   }
+
+  public Map<String, Object> parseJSON(String jsonMap) {
+    return getJSJSONParser().parseMap(jsonMap, true);
+  }
+  
+  @SuppressWarnings("unchecked")
+  public Lst<Object> parseJSONArray(String jsonArray) {
+    return (Lst<Object>) getJSJSONParser().parse(jsonArray, true);
+  }
+
+
 
   /**
    * Retrieve a Symmetry object, possibly re-using an old one.

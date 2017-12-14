@@ -148,12 +148,13 @@ public class NWChemReader extends MOReader {
       return true;
     }
     if (line.indexOf("Output coordinates in ") >= 0) {
+      String thisLine = line;
       if (!htMOs.isEmpty())
         checkMOs();
       if (!doGetModel(++modelNumber, null))
         return checkLastModel();
       equivalentAtomSets++;
-      readAtoms();
+      readAtoms(thisLine);
       return true;
     }
     if (line.indexOf("Vibrational analysis") >= 0) {
@@ -164,11 +165,12 @@ public class NWChemReader extends MOReader {
     if (!doProcessLines)
       return true;
 
-    if (line.indexOf("ENERGY GRADIENTS") >= 0) {
-      equivalentAtomSets++;
-      readGradients();
-      return true;
-    }
+//    if (line.indexOf("ENERGY GRADIENTS") >= 0) {
+//      // abandoned - we don't need to see gradients as vibrations
+//      equivalentAtomSets++;
+//      readGradients();
+//      return true;
+//    }
 
     if (line.startsWith("  Mulliken analysis of the total density")) {
       // only do this if I have read an atom set in this task/step
@@ -310,8 +312,8 @@ public class NWChemReader extends MOReader {
    * Reads the output coordinates section into a new AtomSet.
    * @throws Exception If an error occurs.
    **/
-  private void readAtoms() throws Exception {
-    float scale = (line.indexOf("angstroms") < 0 ? ANGSTROMS_PER_BOHR : 1);
+  private void readAtoms(String thisLine) throws Exception {
+    float scale = (thisLine.indexOf("angstroms") < 0 ? ANGSTROMS_PER_BOHR : 1);
     readLines(3); // skip blank line, titles and dashes
     String tokens[];
     haveEnergy = false;
@@ -376,11 +378,12 @@ public class NWChemReader extends MOReader {
     asc.setAtomSetModelProperty("vector", "gradient");
     asc.setAtomSetModelProperty(SmarterJmolAdapter.PATH_KEY, "Task "
         + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR + "Gradients");
+    float f = ANGSTROMS_PER_BOHR;
     while (rd() != null && line.length() > 0) {
       tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 8)
         break; // make sure I have enough tokens
-      Atom atom = setAtomCoordScaled(null, tokens, 2, ANGSTROMS_PER_BOHR);
+      Atom atom = setAtomCoordScaled(null, tokens, 2, f);
       atom.atomName = fixTag(tokens[1]);
 
       // Keep gradients in a.u. (larger value that way)
@@ -705,11 +708,11 @@ public class NWChemReader extends MOReader {
     nBasisFunctions = 0;
     boolean isD6F10 = (line.indexOf("cartesian") >= 0);
     if (isD6F10) {
-      getDFMap(DC_LIST, QS.DC, QS.CANONICAL_DC_LIST, 3);
-      getDFMap(FC_LIST, QS.FC, QS.CANONICAL_FC_LIST, 3);
+      getDFMap("DC", DC_LIST, QS.DC, QS.CANONICAL_DC_LIST, 3);
+      getDFMap("FC", FC_LIST, QS.FC, QS.CANONICAL_FC_LIST, 3);
     } else {
-      getDFMap(DS_LIST, QS.DS, QS.CANONICAL_DS_LIST, 2);
-      getDFMap(FS_LIST, QS.FS, QS.CANONICAL_FS_LIST, 2);
+      getDFMap("DS", DS_LIST, QS.DS, QS.CANONICAL_DS_LIST, 2);
+      getDFMap("FS", FS_LIST, QS.FS, QS.CANONICAL_FS_LIST, 2);
     }
     shells = new  Lst<int[]>();
     Map<String, Lst<Lst<Object[]>>> atomInfo = new Hashtable<String, Lst<Lst<Object[]>>>();

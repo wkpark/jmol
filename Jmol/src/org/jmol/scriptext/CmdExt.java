@@ -3460,7 +3460,7 @@ public class CmdExt extends ScriptExt {
         nAtomSets = 3; // don't allow two of these
         if (eval.isAtomExpression(++i)) {
           // select... polyhedron .... to ....
-          propertyName = (needsGenerating ? "to" : "toBitSet");
+          propertyName = (needsGenerating || haveCenter ? "to" : "toBitSet");
           propertyValue = atomExpressionAt(i);
         } else if (eval.isArrayParameter(i)) {
           // select... polyhedron .... to [...]

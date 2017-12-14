@@ -460,7 +460,7 @@ public class GaussianReader extends MOReader {
         if (!tokens[1].equals(lastAtom))
           ac++;
         lastAtom = tokens[1];
-        slater[0] = ac - 1;
+        slater[0] = ac;
         String oType = tokens[4];
         if (doSphericalF && oType.indexOf("F") >= 0 || doSphericalD
             && oType.indexOf("D") >= 0)

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javajs.util.AU;
 import javajs.util.Lst;
-import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.adapter.smarter.Atom;
@@ -440,120 +439,120 @@ public class QCJsonReader extends MoldenReader {
 
   /////////////////// from Molden reader -- TODO /////////////////
   
-  private boolean checkSymmetry() throws Exception {
-    // extension for symmetry
-    if (line.startsWith("[SPACEGROUP]")) {
-      setSpaceGroupName(rd());
-      rd();
-      return true;
-    }
-    if (line.startsWith("[OPERATORS]")) {
-      while (rd() != null && line.indexOf("[") < 0)
-        if (line.length() > 0) {
-          Logger.info("adding operator " + line);
-          setSymmetryOperator(line);
-        }
-      return true;
-    }
-    if (line.startsWith("[CELL]")) {
-      rd();
-      Logger.info("setting cell dimensions " + line);
-      // ANGS assumed here
-      next[0] = 0;
-      for (int i = 0; i < 6; i++)
-        setUnitCellItem(i, parseFloat());
-      rd();
-      return true;
-    }
-    if (line.startsWith("[CELLAXES]")) {
-      float[] f = new float[9];
-      fillFloatArray(null, 0, f);
-      addExplicitLatticeVector(0, f, 0);
-      addExplicitLatticeVector(1, f, 3);
-      addExplicitLatticeVector(2, f, 6);
-      return true;
-    }
-    return false;
-  }
-
-  /*
-[GEOCONV]
-energy
--.75960756002000E+02
--.75961091052100E+02
--.75961320555300E+02
--.75961337317300E+02
--.75961338487700E+02
--.75961338493500E+02
-max-force
-0.15499000000000E-01
-0.11197000000000E-01
-0.50420000000000E-02
-0.15350000000000E-02
-0.42000000000000E-04
-0.60000000000000E-05
-[GEOMETRIES] XYZ
-     3
-
- o  0.00000000000000E+00 0.00000000000000E+00 -.36565628831562E+00
- h  -.77567072215814E+00 0.00000000000000E+00 0.18282805096053E+00
- h  0.77567072215814E+00 0.00000000000000E+00 0.18282805096053E+00
-
-  */
-  private boolean readGeometryOptimization() throws Exception {
-    Lst<String> energies = new  Lst<String>();
-    rd(); // energy
-    while (rd() != null 
-        && line.indexOf("force") < 0)
-      energies.addLast("" + PT.dVal(line.trim()));
-    skipTo("[GEOMETRIES] XYZ");
-    int nGeom = energies.size();
-    int firstModel = (optOnly || desiredModelNumber >= 0 ? 0 : 1);
-    modelNumber = firstModel; // input model counts as model 1; vibrations do not count
-    boolean haveModel = false;
-    if (desiredModelNumber == 0 || desiredModelNumber == nGeom)
-      desiredModelNumber = nGeom; 
-    else if (asc.atomSetCount > 0)
-      finalizeMOData(moData);
-    for (int i = 0; i < nGeom; i++) {
-      readLines(2);
-      if (doGetModel(++modelNumber, null)) {
-        readAtomSet("Step " + (modelNumber - firstModel) + "/" + nGeom + ": " + energies.get(i), false, 
-            !optOnly || haveModel);
-        haveModel = true;
-      } else {
-        readLines(modelAtomCount);
-      }
-    }
-    return true;
-  }
-
-  private void skipTo(String key) throws Exception {
-    key = key.toUpperCase();
-    if (line == null || !line.toUpperCase().contains(key))
-//      discardLinesUntilContains(key);
-      while (rd() != null && line.toUpperCase().indexOf(key) < 0) {
-      }
-    
-  }
-
-  private void readAtomSet(String atomSetName, boolean isBohr, boolean asClone) throws Exception {
-    if (asClone && desiredModelNumber < 0)
-      asc.cloneFirstAtomSet(0);
-    float f = (isBohr ? ANGSTROMS_PER_BOHR : 1);
-    asc.setAtomSetName(atomSetName);
-    if (asc.ac == 0) {
-      while (rd() != null && line.indexOf('[') < 0) {    
-        String [] tokens = getTokens();
-        if (tokens.length == 4)
-          setAtomCoordScaled(null, tokens, 1, f).atomName = tokens[0];
-      }    
-      modelAtomCount = asc.getLastAtomSetAtomCount();
-      return;
-    }
-    Atom[] atoms = asc.atoms;
-    int i0 = asc.getLastAtomSetAtomIndex();
-    for (int i = 0; i < modelAtomCount; i++)
-      setAtomCoordScaled(atoms[i + i0], PT.getTokens(rd()), 1, f);
-  }
+//  private boolean checkSymmetry() throws Exception {
+//    // extension for symmetry
+//    if (line.startsWith("[SPACEGROUP]")) {
+//      setSpaceGroupName(rd());
+//      rd();
+//      return true;
+//    }
+//    if (line.startsWith("[OPERATORS]")) {
+//      while (rd() != null && line.indexOf("[") < 0)
+//        if (line.length() > 0) {
+//          Logger.info("adding operator " + line);
+//          setSymmetryOperator(line);
+//        }
+//      return true;
+//    }
+//    if (line.startsWith("[CELL]")) {
+//      rd();
+//      Logger.info("setting cell dimensions " + line);
+//      // ANGS assumed here
+//      next[0] = 0;
+//      for (int i = 0; i < 6; i++)
+//        setUnitCellItem(i, parseFloat());
+//      rd();
+//      return true;
+//    }
+//    if (line.startsWith("[CELLAXES]")) {
+//      float[] f = new float[9];
+//      fillFloatArray(null, 0, f);
+//      addExplicitLatticeVector(0, f, 0);
+//      addExplicitLatticeVector(1, f, 3);
+//      addExplicitLatticeVector(2, f, 6);
+//      return true;
+//    }
+//    return false;
+//  }
+//
+//  /*
+//[GEOCONV]
+//energy
+//-.75960756002000E+02
+//-.75961091052100E+02
+//-.75961320555300E+02
+//-.75961337317300E+02
+//-.75961338487700E+02
+//-.75961338493500E+02
+//max-force
+//0.15499000000000E-01
+//0.11197000000000E-01
+//0.50420000000000E-02
+//0.15350000000000E-02
+//0.42000000000000E-04
+//0.60000000000000E-05
+//[GEOMETRIES] XYZ
+//     3
+//
+// o  0.00000000000000E+00 0.00000000000000E+00 -.36565628831562E+00
+// h  -.77567072215814E+00 0.00000000000000E+00 0.18282805096053E+00
+// h  0.77567072215814E+00 0.00000000000000E+00 0.18282805096053E+00
+//
+//  */
+//  private boolean readGeometryOptimization() throws Exception {
+//    Lst<String> energies = new  Lst<String>();
+//    rd(); // energy
+//    while (rd() != null 
+//        && line.indexOf("force") < 0)
+//      energies.addLast("" + PT.dVal(line.trim()));
+//    skipTo("[GEOMETRIES] XYZ");
+//    int nGeom = energies.size();
+//    int firstModel = (optOnly || desiredModelNumber >= 0 ? 0 : 1);
+//    modelNumber = firstModel; // input model counts as model 1; vibrations do not count
+//    boolean haveModel = false;
+//    if (desiredModelNumber == 0 || desiredModelNumber == nGeom)
+//      desiredModelNumber = nGeom; 
+//    else if (asc.atomSetCount > 0)
+//      finalizeMOData(moData);
+//    for (int i = 0; i < nGeom; i++) {
+//      readLines(2);
+//      if (doGetModel(++modelNumber, null)) {
+//        readAtomSet("Step " + (modelNumber - firstModel) + "/" + nGeom + ": " + energies.get(i), false, 
+//            !optOnly || haveModel);
+//        haveModel = true;
+//      } else {
+//        readLines(modelAtomCount);
+//      }
+//    }
+//    return true;
+//  }
+//
+//  private void skipTo(String key) throws Exception {
+//    key = key.toUpperCase();
+//    if (line == null || !line.toUpperCase().contains(key))
+////      discardLinesUntilContains(key);
+//      while (rd() != null && line.toUpperCase().indexOf(key) < 0) {
+//      }
+//    
+//  }
+//
+//  private void readAtomSet(String atomSetName, boolean isBohr, boolean asClone) throws Exception {
+//    if (asClone && desiredModelNumber < 0)
+//      asc.cloneFirstAtomSet(0);
+//    float f = (isBohr ? ANGSTROMS_PER_BOHR : 1);
+//    asc.setAtomSetName(atomSetName);
+//    if (asc.ac == 0) {
+//      while (rd() != null && line.indexOf('[') < 0) {    
+//        String [] tokens = getTokens();
+//        if (tokens.length == 4)
+//          setAtomCoordScaled(null, tokens, 1, f).atomName = tokens[0];
+//      }    
+//      modelAtomCount = asc.getLastAtomSetAtomCount();
+//      return;
+//    }
+//    Atom[] atoms = asc.atoms;
+//    int i0 = asc.getLastAtomSetAtomIndex();
+//    for (int i = 0; i < modelAtomCount; i++)
+//      setAtomCoordScaled(atoms[i + i0], PT.getTokens(rd()), 1, f);
+//  }
 }

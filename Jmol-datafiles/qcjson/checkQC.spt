@@ -31,7 +31,7 @@ function updateQCJSON(fname, fname1) {
     print x
     x = x.split(" ")[4]
     if (x < 0.95 || x > 1.05)
-      if (prompt("Integration problem for " + fname + " Stop?","yes") == "yes")
+      if (prompt("Integration problem for " + fname + " Continue?","yes") != "yes")
         quit 
   }
   print "created " + fname1
@@ -44,7 +44,7 @@ function checkAllQCJSON() {
     print qcdir + f
     f = qcdir + f
     if (f)
-      updateQCJSON(f);
+      updateQCJSON(f, '-');
   } 
 }
 

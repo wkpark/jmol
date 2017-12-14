@@ -49,7 +49,7 @@ import javajs.util.T3;
 import javajs.util.V3;
 import javajs.util.XmlUtil;
 
-import org.jmol.adapter.writers.QCJsonWriter;
+import org.jmol.adapter.writers.QCJsonWriter2;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolPropertyManager;
@@ -1292,7 +1292,7 @@ public class PropertyManager implements JmolPropertyManager {
    */
   private String getQCJSON(BS bs) {
     // bs is ignored here
-    QCJsonWriter writer = (QCJsonWriter) Interface.getInterface("org.jmol.adapter.writers.QCJsonWriter", vwr, "script");
+    QCJsonWriter2 writer = (QCJsonWriter2) Interface.getInterface("org.jmol.adapter.writers.QCJsonWriter", vwr, "script");
     writer.set(vwr, null);
     writer.writeJSON();
     return writer.toString();

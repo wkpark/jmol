@@ -24,7 +24,7 @@ import org.jmol.util.Logger;
  * @author Matthew Zwier <mczwier@gmail.com>
  */
 
-public class QCJsonReader extends MoldenReader {
+public class QCJsonReader2 extends MoldenReader {
   
   private Map<String, Object> job;
 
@@ -333,7 +333,7 @@ public class QCJsonReader extends MoldenReader {
       if (calculationType == null)
         calculationType = "?";
       float[] coefs = getFloatArray(thisMO, "coefficients");
-      line = symmetry;
+      line = "" + symmetry;
       if (filterMO()) {
         Map<String, Object> mo = new Hashtable<String, Object>();
         mo.put("coefficients", coefs);

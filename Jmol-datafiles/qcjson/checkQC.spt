@@ -1,0 +1,53 @@
+// checkQC.spt validation for QCJSON files -- preliminary only
+// Bob Hanson 12/14/2017 8:12:15 AM
+
+qcdir = "c:/jmol-dev/workspace/Jmol-datafiles/qcjson/preliminary/"
+sourcesdir = "c:/jmol-dev/workspace/Jmol-datafiles/qcjson/sources/"
+
+function updateQCJSON(fname, fname1) {
+ print "updateQCJSON '" + fname + "'" 
+  if (fname1 == '-')
+    fname1 = fname;
+  else if (!fname1)
+    fname1 = "test.qcjson";
+  var json = load(fname, "JSON")
+  var source = json[2].__jmol_source
+  if (!source){
+    print "NO SOURCE FOR " + fname
+    return
+  }
+  print "loading " + source
+  load @source
+  frame mo
+  try{
+    mo homo
+  }
+  write @fname1  
+  load @fname1
+  refresh
+  frame mo
+  try{
+    var x = script("mo homo")
+    print x
+    x = x.split(" ")[4]
+    if (x < 0.95 || x > 1.05)
+      if (prompt("Integration problem for " + fname + " Stop?","yes") == "yes")
+        quit 
+  }
+  print "created " + fname1
+}
+
+
+function checkAllQCJSON() {
+  var ffiles = load(qcdir + "files.txt").split("\n")
+  for (var f in ffiles) {
+    print qcdir + f
+    f = qcdir + f
+    if (f)
+      updateQCJSON(f);
+  } 
+}
+
+checkAllQCJSON()
+
+

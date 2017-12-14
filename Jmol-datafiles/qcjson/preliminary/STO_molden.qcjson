@@ -1,6 +1,6 @@
-["QCJSON 0-0-0.Jmol_14.26.1__2017-11-15_21:59",
+["QCJSON 0-0-0.Jmol_14.27.2__2017-12-11_09:38",
 {
-	"__jmol_created":"Sun Dec 03 17:30:35 CST 2017",
+	"__jmol_created":"Wed Dec 13 14:19:28 CST 2017",
 	"__jmol_source":"c:/jmol-dev/bobtest/water.molden"
 },
 {
@@ -15,7 +15,7 @@
 			"__jmol_block":"Model 1",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.8897],
+					"coords_units":["Angstroms",1.8897],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	 0.00000E+0,
 						 9.68630E-1,	 0.00000E+0,	 0.00000E+0,
@@ -124,10 +124,10 @@
 					"coefficients":[-0.0,-0.4757036,0.37163067,0.0,0.563736,-0.563736],
 					"spin":"beta"
 				}],
+				"jmol_calculation_type":"?",
 				"basis_id":"MOBASIS_1",
-				"orbitals_energy_units":"[\"?\",\"?\"]",
-				"calculation_type":"?",
-				"normalized":false
+				"jmol_normalized":false,
+				"orbitals_energy_units":["?","\"?\""]
 			}
 			,
 			"metadata":{

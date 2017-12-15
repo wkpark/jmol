@@ -267,7 +267,7 @@ public class WebMOReader extends MopacSlaterReader {
       int nGaussians = parseIntStr(tokens[1]);
       slater[0] = atomNo;
       slater[1] = BasisFunctionReader.getQuantumShellTagID(tokens[0]);
-      slater[2] = gaussianPtr;
+      slater[2] = gaussianPtr + 1;
       slater[3] = nGaussians;
       for (int i = 0; i < nGaussians; i++) {
         String[] strData = PT.getTokens(rd());

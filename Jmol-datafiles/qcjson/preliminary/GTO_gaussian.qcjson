@@ -1,6 +1,6 @@
-["QCJSON 0-0-0.Jmol_14.27.2__2017-12-14_09:42",
+["QCJSON 0-0-0.Jmol_14.27.2__2017-12-14_17:50",
 {
-	"__jmol_created":"Thu Dec 14 17:51:56 CST 2017",
+	"__jmol_created":"Fri Dec 15 08:20:28 CST 2017",
 	"__jmol_source":"c:/jmol-dev/workspace/Jmol-datafiles/gaussian/spher_g03.out"
 },
 {
@@ -222,7 +222,7 @@
 					"symmetry":"(A1)--V"
 				}],
 				"basis_id":"MOBASIS_1",
-				"orbitals_energy_units":["?","\"?\""],
+				"orbitals_energy_units":["?","?"],
 				"__jmol_calculation_type":"6-31G(df) (5D, 7F)",
 				"__jmol_normalized":false
 			}
@@ -427,7 +427,7 @@
 					"symmetry":"(A1)--V"
 				}],
 				"basis_id":"MOBASIS_2",
-				"orbitals_energy_units":["?","\"?\""],
+				"orbitals_energy_units":["?","?"],
 				"__jmol_calculation_type":"6-31G(d) (6D, 7F)",
 				"__jmol_normalized":false
 			}
@@ -632,7 +632,7 @@
 					"symmetry":"(A1)--V"
 				}],
 				"basis_id":"MOBASIS_3",
-				"orbitals_energy_units":["?","\"?\""],
+				"orbitals_energy_units":["?","?"],
 				"__jmol_calculation_type":"6-31G(d) (6D, 7F)",
 				"__jmol_normalized":false
 			}

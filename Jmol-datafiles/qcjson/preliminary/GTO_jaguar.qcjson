@@ -1,6 +1,6 @@
-["QCJSON 0-0-0.Jmol_14.27.2__2017-12-14_09:42",
+["QCJSON 0-0-0.Jmol_14.27.2__2017-12-14_17:50",
 {
-	"__jmol_created":"Thu Dec 14 17:51:57 CST 2017",
+	"__jmol_created":"Fri Dec 15 08:20:28 CST 2017",
 	"__jmol_source":"C:/jmol-dev/workspace/Jmol-datafiles/jaguar/CH3OH_6-31G++.out"
 },
 {
@@ -133,7 +133,7 @@
 					"coefficients":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
 				}],
 				"basis_id":"MOBASIS_1",
-				"orbitals_energy_units":["?","\"?\""],
+				"orbitals_energy_units":["?","?"],
 				"__jmol_calculation_type":"6-31g**",
 				"__jmol_normalized":true
 			}

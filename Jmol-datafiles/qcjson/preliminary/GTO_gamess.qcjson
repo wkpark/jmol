@@ -1,6 +1,6 @@
-["QCJSON 0-0-0.Jmol_14.27.2__2017-12-14_09:42",
+["QCJSON 0-0-0.Jmol_14.27.2__2017-12-14_17:50",
 {
-	"__jmol_created":"Thu Dec 14 17:51:56 CST 2017",
+	"__jmol_created":"Fri Dec 15 08:20:27 CST 2017",
 	"__jmol_source":"c:/jmol-dev/workspace/Jmol-datafiles/gamess/cl2o.gamess"
 },
 {
@@ -332,7 +332,7 @@
 					"symmetry":"B1"
 				}],
 				"basis_id":"MOBASIS_1",
-				"orbitals_energy_units":["?","\"?\""],
+				"orbitals_energy_units":["?","?"],
 				"__jmol_calculation_type":"3-21G(f,d) RHF OPTIMIZE",
 				"__jmol_normalized":false
 			}
@@ -836,7 +836,7 @@
 					"symmetry":"B1"
 				}],
 				"basis_id":"MOBASIS_1",
-				"orbitals_energy_units":["?","\"?\""],
+				"orbitals_energy_units":["?","?"],
 				"__jmol_calculation_type":"3-21G(f,d) RHF OPTIMIZE",
 				"__jmol_normalized":false
 			}

@@ -42,12 +42,6 @@ public class QCJSONWriter extends JSONWriter {
 
   private boolean filterMOs;
 
-  public static Object getUnitsConversion(String units, boolean asArray) {
-    String sunits = QCSchema.getFactorToAU(units);
-    return (asArray ? new Object[] { units, sunits } : "[\"" + units + "\","
-        + sunits + "]");
-  }
-
   private Viewer vwr;
 
   public void set(Viewer viewer, OutputStream os) {
@@ -248,7 +242,7 @@ public class QCJSONWriter extends JSONWriter {
   }
 
   private void writePrefix_Units(String prefix, String units) {
-    mapAddKeyValueRaw(prefix + "_units", getUnitsConversion(units, false),
+    mapAddKeyValueRaw(prefix + "_units", QCSchema.getUnitsJSON(units, false),
         ",\n");
   }
 
@@ -327,7 +321,7 @@ public class QCJSONWriter extends JSONWriter {
 
   private void writeMapKeyValueUnits(String key, Object value, String units) {
     mapAddKeyValueRaw(key, "{\"value\":" + value + ",\"units\":"
-        + getUnitsConversion(units, false) + "}", ",\n");
+        + QCSchema.getUnitsJSON(units, false) + "}", ",\n");
   }
 
   private boolean haveMOData(int modelIndex) {
@@ -353,7 +347,7 @@ public class QCJSONWriter extends JSONWriter {
     String units = (String) moData.get("EnergyUnits");
     if (units == null)
       units = "?";
-    moDataJSON.put("orbitals_energy_units", getUnitsConversion(units, true));
+    moDataJSON.put("orbitals_energy_units", QCSchema.getUnitsJSON(units, true));
     // normalization is critical for Molden, NWChem, and many other readers.
     // not needed for Gaussian, Jaguar, WebMO, Spartan, or GenNBO
     moDataJSON.put("__jmol_normalized",

@@ -11,7 +11,14 @@ import org.jmol.viewer.Viewer;
  * A general Java class for working with QCShema units and array types.
  * 
  * j2sNative blocks can be ignored -- they just increase efficiency in the JavaScript rendition of Jmol.
+ * 
+ * for examples of use, see
+ * 
+ * org.jmol.adapters.readers.quantum.QCJSONReader
+ * 
+ * org.jmol.adapters.writers.QCJSONWriter extends org.jmol.util.JSONWriter
  *  
+ *  @author Bob Hanson
  */
 public class QCSchemaUnits {
 

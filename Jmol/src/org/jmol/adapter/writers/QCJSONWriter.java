@@ -12,10 +12,10 @@ import javajs.util.PT;
 import javajs.util.SB;
 
 import org.jmol.api.SymmetryInterface;
-import org.jmol.io.JSONWriter;
 import org.jmol.java.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.quantum.SlaterData;
+import org.jmol.util.JSONWriter;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.Viewer;
 import org.qcschema.QCSchemaUnits;
@@ -47,6 +47,7 @@ public class QCJSONWriter extends JSONWriter {
 
   public void set(Viewer viewer, OutputStream os) {
     vwr = viewer;
+    setWriteNullAsString(false);
     setStream(os);
   }
 

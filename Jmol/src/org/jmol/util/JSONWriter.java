@@ -1,4 +1,4 @@
-package org.jmol.io;
+package org.jmol.util;
 
 import java.io.OutputStream;
 import java.lang.reflect.Array;

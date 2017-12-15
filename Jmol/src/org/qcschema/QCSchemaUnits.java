@@ -10,7 +10,7 @@ import org.jmol.viewer.Viewer;
 /**
  * A general Java class for working with QCShema units and array types.
  * 
- * j2sNative blocks can be ignored -- they just increase efficiency in the JavaScript rendition.
+ * j2sNative blocks can be ignored -- they just increase efficiency in the JavaScript rendition of Jmol.
  *  
  */
 public class QCSchemaUnits {
@@ -19,7 +19,7 @@ public class QCSchemaUnits {
       + Viewer.getJmolVersion().replace(' ', '_');
 
   // 
-  //  http://cccbdb.nist.gov/hartree.asp
+  //  source: http://cccbdb.nist.gov/hartree.asp
   //  A hartree is equal to 2625.5 kJ/mol, 627.5 kcal/mol, 27.211 eV, and 219474.6 cm-1.
   //  One bohr = 0.529 177 210 67 x 10-10 m 
   
@@ -27,39 +27,106 @@ public class QCSchemaUnits {
 
   public final static String UNITS_AU = "au";
   public final static double TOAU_AU = 1;
+  
   // distance
+  
+  public final static String UNITS_CM = "cm";
+  public final static double TOAU_CM = 1/0.52917721067e-8;
+  
+  public final static String UNITS_M = "m";
+  public final static double TOAU_M = 1/0.52917721067e-10;
+  
   public final static String UNITS_ANGSTROMS = "angstroms";
-  public final static double TOAU_ANGSTROMS = 1.88972613;
+  public final static double TOAU_ANGSTROMS = 1/0.52917721067; // 1.88972613;
+  
   public final static String UNITS_BOHR = "bohr";
   public final static double TOAU_BOHR = 1;
+  
   // energy
+  
   public final static String UNITS_HARTREE = "hartree";
   public final static double TOAU_HARTREE = 1;
-  public final static String UNITS_EV = "ev";
-  public final static double TOAU_EV = 0.03688675765;
-  public final static String UNITS_CM_1 = "cm-1";
-  public final static double TOAU_CM_1 = 4.5563359e-6;
-  public final static String UNITS_KJ_MOL = "kj/mol";
-  public final static double TOAU_KJ_MOL = 0.00038087983;
-  public final static String UNITS_KCAL_MOL = "kcal/mol";
-  public final static double TOAU_KCAL_MOL = 0.00159362549;
   
-  // TODO: should be an Enum
-  public final static String knownUnits =
+  public final static String UNITS_EV = "ev";
+  public final static double TOAU_EV = 1/27.211; //0.03688675765;
+  
+  public final static String UNITS_CM_1 = "cm-1";
+  public final static double TOAU_CM_1 = 1/219474.6; //4.5563359e-6;
+  
+  public final static String UNITS_KJ_MOL = "kj/mol";
+  public final static double TOAU_KJ_MOL = 1/2635.5;  //0.00038087983;  
+  
+  public final static String UNITS_KCAL_MOL = "kcal/mol";
+  public final static double TOAU_KCAL_MOL = 1/627.5; //0.00159362549;
+  
+  /**
+   * A very simple and efficient way to catalog string matches. Far faster than ENUM.
+   * Note that singular or plural on anstroms, bohrs, or hartrees both work.
+   */
+  private final static String knownUnits =
   /////0         1         2         3         4         5         6         7         8
   /////012345678901234567890123456789012345678901234567890123456789012345678901234567890123
-      "cm cm^-1 cm-1 angstroms au atomic units fractional bohr hartree ev kj_mol kcal_mol";
-
+      "cm cm^-1 cm-1 angstroms au atomic units fractional bohrs hartrees ev kj_mol kcal_mol";
 
   private static Hashtable<String, Double> htConvert = new Hashtable<String, Double>();
+  
+  /**
+   * Get the standard conversion factor to atomic units for this unit.
+   * 
+   * @param units
+   * @return the nominal conversion factor or 0 ("fractional") or Double.NaN (unknown)
+   */
+  public static double getFactorToAU(String units) {
+    switch (knownUnits.indexOf(units.toLowerCase())) {
+    case 0:
+      // units = UNITS_CM
+      return TOAU_CM;
+    case 1:
+      // units = UNITS_M
+      return TOAU_M;
+    case 3:
+    case 9:
+      //units = UNITS_CM_1;
+      return TOAU_CM_1;
+    case 14:
+      //units = UNITS_ANGSTROMS;
+      return TOAU_ANGSTROMS;
+    case 24:
+    case 27:
+      //units = UNITS_AU;
+      return 1;
+    case 40:
+      //units = "UNITS_FRACTIONAL";
+      return 0;
+    case 51:
+      //units = UNITS_BOHR;
+      return TOAU_BOHR;
+    case 57:
+      //units = UNITS_HARTREE;
+      return TOAU_HARTREE;
+    case 66:
+      //units = UNITS_EV;
+      return TOAU_EV;
+    case 69:
+      //units = UNITS_KCAL_MOL;
+      return TOAU_KCAL_MOL;
+    case 76:
+      //units = UNITS_KJ_MOL;
+      return TOAU_KJ_MOL;
+    default:
+      return Double.NaN;
+    }
+  }
   
   /**
    * Calculate the unit conversion between two units, using a static 
    * unit-to-unit cache for efficiency.
    * 
+   * Not used in Jmol.
+   * 
    * @param fromUnits
    * @param toUnits
-   * @return conversion factor
+   * @return conversion factor or Double.NaN if anything goes wrong.
    */
   public static double getUnitConversion(String fromUnits, String toUnits) {
     if (fromUnits.equalsIgnoreCase(toUnits))
@@ -68,12 +135,11 @@ public class QCSchemaUnits {
     Double d = htConvert.get(key);
     if (d != null)
       return d.doubleValue();
-    double val = 1;
+    double val = Double.NaN;
     try {
       double toAUDesired = getFactorToAU(toUnits);
       double toAUActual = getFactorToAU(fromUnits);
-      if (!Double.isNaN(toAUActual))
-        val = toAUActual / toAUDesired;
+      val = toAUActual / toAUDesired;
     } catch (Exception e) {
       // just leave it as 1
     }
@@ -82,78 +148,12 @@ public class QCSchemaUnits {
   }
 
   /**
-   * Get the ["units", toAU] JSON code or just a new String[] {units, toAU}
-   * @param units
-   * @param asArray
-   * @return String or String[]
-   */
-  public static Object getUnitsJSON(String units, boolean asArray) {
-    double d = getFactorToAU(units);
-    String toAU = (!Double.isNaN(d) ? "" + d : asArray ? "?" :  "\"?\"");
-    return (asArray ? new String[] { units, toAU } : "[\"" + units + "\","
-        + toAU + "]");
-  }
-
-
-  /**
-   * Get the nominal conversion factor to atomic units for this unit as a string.
-   * The nominal conversion factor for "fractional" is 0; for unknown units, "?"
-   * 
-   * @param units
-   * @return the nominal conversion factor or 0 (fractional) or "?" (unknown; with quotes)
-   */
-  public static double getFactorToAU(String units) {
-    double convFactor = Double.NaN;
-    units = units.toLowerCase();
-    switch (knownUnits.indexOf(units)) {
-    case 3:
-    case 9:
-      units = UNITS_CM_1;
-      convFactor = TOAU_CM_1;
-      break;
-    case 14:
-      units = UNITS_ANGSTROMS;
-      convFactor = TOAU_ANGSTROMS;
-      break;
-    case 24:
-    case 27:
-      units = UNITS_AU;
-      convFactor = 1;
-      break;
-    case 40:
-      units = "UNITS_FRACTIONAL";
-      convFactor = 0;
-      break;
-    case 51:
-      units = UNITS_BOHR;
-      convFactor = TOAU_BOHR;
-      break;
-    case 56:
-      units = UNITS_HARTREE;
-      convFactor = TOAU_HARTREE;
-      break;
-    case 64:
-      units = UNITS_EV;
-      convFactor = TOAU_EV;
-      break;
-    case 67:
-      units = UNITS_KCAL_MOL;
-      convFactor = TOAU_KCAL_MOL;
-      break;
-    case 74:
-      units = UNITS_KJ_MOL;
-      convFactor = TOAU_KJ_MOL;
-      break;
-
-    }
-    return convFactor;
-  }
-  
-  /**
-   * For a reader, use the [units, factor] along with a desired unit to get the conversion
+   * For a reader, use the JSON [units, factor] along with a desired unit to get the conversion
    * factor from file values to desired units.
    * 
-   * @param unitsFactor
+   * Currently, this method only looks at the factor in the JSON if we do not already know the conversion factor. 
+   * 
+   * @param unitsFactor [units, factor] list or null if to AU is desired.
    * @param unitsDesired
    * @return the conversion factor or Double.NaN if not uncodable
    */
@@ -170,7 +170,7 @@ public class QCSchemaUnits {
   }
 
   /**
-   * Read a {value:xxxx, units:["name",toUnits]} map, converting it to the desired units.
+   * Read a {value:xxxx, units:["name",toAU]} map, converting it to the desired units.
    * 
    * @param valueUnits
    * @param toUnits
@@ -179,6 +179,21 @@ public class QCSchemaUnits {
   public static double convertValue(Map<String, Object> valueUnits, String toUnits) {
       return getDouble(valueUnits, "value", null) * getConversionFactor(valueUnits, "units", toUnits);
   }
+
+  /**
+   * Get the [name, toAU] JSON code or just a new String[] {name, toAU}.
+   * If the conversion is not known, return [name, "?"]
+   * @param name
+   * @param asArray
+   * @return String or String[]
+   */
+  public static Object getUnitsJSON(String name, boolean asArray) {
+    double d = getFactorToAU(name);
+    String toAU = (!Double.isNaN(d) ? "" + d : asArray ? "?" :  "\"?\"");
+    return (asArray ? new String[] { name, toAU } : "[\"" + name + "\","
+        + toAU + "]");
+  }
+
 
   /**
    * Get the necessary conversion factor to the desired units from a key_units or atomic units 
@@ -261,7 +276,7 @@ public class QCSchemaUnits {
    *  
    * @j2sNative
    * 
-   *  return new JU.Lst();
+   *  return new javajs.util  .Lst();
    */
   protected static ArrayList<Object> newList() {
       return new ArrayList<Object>();
@@ -292,29 +307,34 @@ public class QCSchemaUnits {
 
   /**
    * Retrieve an int array, possibly unpacking it if it is run-length encoded.
-   * Errors are not trapped. 
+   * Any error causes this method to return null.
    * 
-   * @param mapOrList
-   * @param key null if mapOrList is a list
-   * @return unpacked int[]
+   * @param mapOrList the list to unpack, or map to pull the list form using the key
+   * @param key the map key, or null if mapOrList is already a list
+   * @return unpacked int[] or null if mapOrList is null or there is an error
    */
   public static int[] getIntArray(Object mapOrList, String key) {
     ArrayList<Object> list = getList(mapOrList, key);
-    if (list == null)
-      return null;
+    if (list != null) {
+      try {
     int[] a = new int[list.size()];
     for (int i = a.length; --i >= 0;)
       a[i] = ((Number) list.get(i)).intValue();
     return a;
+      } catch (Exception e) {
+        // return null in this case
+      }
+    }
+    return null;
   }
 
   /**
    * Retrieve a String array, possibly unpacking it if it is run-length encoded.
    * Any "null" string is read as null. 
    * 
-   * @param mapOrList
-   * @param key into mapOrlist if it is a map, or null if mapOrList is a list
-   * @return unpacked String[]
+   * @param mapOrList the list to unpack, or map to pull the list form using the key
+   * @param key the map key, or null if mapOrList is already a list
+   * @return unpacked string[] or null if mapOrList is null
    */
   public static String[] getStringArray(Object mapOrList, String key) {
     ArrayList<Object> list = getList(mapOrList, key);
@@ -322,11 +342,17 @@ public class QCSchemaUnits {
       return null;
     String[] a = new String[list.size()];
     for (int i = a.length; --i >= 0;) {
-      a[i] = list.get(i).toString();
-      if (a[i].equals("null"))
-        a[i] = null;
+      Object o = list.get(i);
+      a[i] = (o == null ? null : list.get(i).toString());
     }
     return a;
   }
 
+//  static {
+//    System.out.println(getUnitConversion("Angstroms", "cm"));
+//    System.out.println(getUnitConversion("Angstroms", "bohr"));
+//    System.out.println(getUnitConversion("bohr", "Angstroms"));
+//    System.out.println(getUnitConversion("AX", "bohr"));
+//    System.out.println(getUnitConversion("bohr", "AX"));
+//  }
 }

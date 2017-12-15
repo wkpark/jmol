@@ -1,4 +1,4 @@
-package org.jmol.adapter.writers;
+package org.qcschema;
 
 import java.util.Hashtable;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.jmol.viewer.Viewer;
  * j2sNative blocks can be ignored -- they just increase efficiency in the JavaScript rendition.
  *  
  */
-public class QCSchema {
+public class QCSchemaUnits {
 
   public final static String version = "QCJSON 0-0-0.Jmol_"
       + Viewer.getJmolVersion().replace(' ', '_');

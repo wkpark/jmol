@@ -18,6 +18,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.quantum.SlaterData;
 import org.jmol.util.Vibration;
 import org.jmol.viewer.Viewer;
+import org.qcschema.QCSchemaUnits;
 
 /**
  * A very experimental class for writing QCJSON files. This standard is in the
@@ -75,7 +76,7 @@ public class QCJSONWriter extends JSONWriter {
   }
 
   public void writeMagic() {
-    writeString(QCSchema.version);
+    writeString(QCSchemaUnits.version);
   }
 
   public void closeSchema() {
@@ -242,7 +243,7 @@ public class QCJSONWriter extends JSONWriter {
   }
 
   private void writePrefix_Units(String prefix, String units) {
-    mapAddKeyValueRaw(prefix + "_units", QCSchema.getUnitsJSON(units, false),
+    mapAddKeyValueRaw(prefix + "_units", QCSchemaUnits.getUnitsJSON(units, false),
         ",\n");
   }
 
@@ -321,7 +322,7 @@ public class QCJSONWriter extends JSONWriter {
 
   private void writeMapKeyValueUnits(String key, Object value, String units) {
     mapAddKeyValueRaw(key, "{\"value\":" + value + ",\"units\":"
-        + QCSchema.getUnitsJSON(units, false) + "}", ",\n");
+        + QCSchemaUnits.getUnitsJSON(units, false) + "}", ",\n");
   }
 
   private boolean haveMOData(int modelIndex) {
@@ -347,7 +348,7 @@ public class QCJSONWriter extends JSONWriter {
     String units = (String) moData.get("EnergyUnits");
     if (units == null)
       units = "?";
-    moDataJSON.put("orbitals_energy_units", QCSchema.getUnitsJSON(units, true));
+    moDataJSON.put("orbitals_energy_units", QCSchemaUnits.getUnitsJSON(units, true));
     // normalization is critical for Molden, NWChem, and many other readers.
     // not needed for Gaussian, Jaguar, WebMO, Spartan, or GenNBO
     moDataJSON.put("__jmol_normalized",

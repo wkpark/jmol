@@ -10,9 +10,9 @@ import javajs.util.Lst;
 import javajs.util.SB;
 
 import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.writers.QCSchema;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
+import org.qcschema.QCSchemaUnits;
 
 /**
  * A molecular structure and orbital reader for MolDen files.
@@ -78,7 +78,7 @@ public class QCJSONReader extends MoldenReader {
   }
   
   private void readSteps() throws Exception {
-    ArrayList<Object> steps = QCSchema.getList(job, "steps");
+    ArrayList<Object> steps = QCSchemaUnits.getList(job, "steps");
     int nSteps = steps.size();
     for (int iStep = 0; iStep < nSteps; iStep++) {
       if (!doGetModel(++modelCount, null)) {
@@ -93,18 +93,18 @@ public class QCJSONReader extends MoldenReader {
       Map<String, Object> atoms = getMapSafely(topology, "atoms");
 
       // one or the other of these is required:
-      String[] symbols = QCSchema.getStringArray(atoms, "symbol");
-      int[] atomNumbers = QCSchema.getIntArray(atoms, "atom_number");
-      String[] atom_names = QCSchema.getStringArray(atoms, "atom_names");
+      String[] symbols = QCSchemaUnits.getStringArray(atoms, "symbol");
+      int[] atomNumbers = QCSchemaUnits.getIntArray(atoms, "atom_number");
+      String[] atom_names = QCSchemaUnits.getStringArray(atoms, "atom_names");
 
-      double[] coords = QCSchema.getDoubleArray(atoms, "coords");
+      double[] coords = QCSchemaUnits.getDoubleArray(atoms, "coords");
       modelAtomCount = coords.length / 3;
-      double f = QCSchema.getConversionFactor(atoms, "coords", QCSchema.UNITS_ANGSTROMS);
+      double f = QCSchemaUnits.getConversionFactor(atoms, "coords", QCSchemaUnits.UNITS_ANGSTROMS);
       boolean isFractional = (f == 0);
       setFractionalCoordinates(isFractional);
       if (isFractional) {
-        f = QCSchema.getConversionFactor(atoms, "unit_cell", QCSchema.UNITS_ANGSTROMS);
-        double[] cell = QCSchema.getDoubleArray(atoms, "unit_cell");
+        f = QCSchemaUnits.getConversionFactor(atoms, "unit_cell", QCSchemaUnits.UNITS_ANGSTROMS);
+        double[] cell = QCSchemaUnits.getDoubleArray(atoms, "unit_cell");
         // a b c alpha beta gamma 
         // m.m00, m.m10, m.m20, // Va
         // m.m01, m.m11, m.m21, // Vb
@@ -141,7 +141,7 @@ public class QCJSONReader extends MoldenReader {
       }
       applySymmetryAndSetTrajectory();
       if (loadVibrations) {
-        readFreqsAndModes(QCSchema.getList(step, "vibrations"));
+        readFreqsAndModes(QCSchemaUnits.getList(step, "vibrations"));
       }
       
     }
@@ -157,11 +157,11 @@ public class QCJSONReader extends MoldenReader {
       for (int i = 0; i < n; i++) {
         @SuppressWarnings("unchecked")
         Map<String, Object> vib = (Map<String, Object>) vibrations.get(i);
-        double freq = QCSchema.getDouble(vib, "frequency", QCSchema.UNITS_CM_1);
-        double[] vectors = QCSchema.getDoubleArray(vib, "vectors");
+        double freq = QCSchemaUnits.getDouble(vib, "frequency", QCSchemaUnits.UNITS_CM_1);
+        double[] vectors = QCSchemaUnits.getDoubleArray(vib, "vectors");
         if (i > 0)
           asc.cloneLastAtomSet();
-        asc.setAtomSetFrequency(null, null, "" + freq, QCSchema.UNITS_CM_1);
+        asc.setAtomSetFrequency(null, null, "" + freq, QCSchemaUnits.UNITS_CM_1);
         int i0 = asc.getLastAtomSetAtomIndex();
         for (int j = 0, pt = 0; j < modelAtomCount; j++) {
           asc.addVibrationVector(j + i0, (float) (vectors[pt++] * ANGSTROMS_PER_BOHR),
@@ -197,13 +197,13 @@ public class QCJSONReader extends MoldenReader {
       calculationType = "?";
     moData.put("calculationType", calculationType);
 
-    ArrayList<Object> mos = QCSchema.getList(molecular_orbitals, "orbitals");
+    ArrayList<Object> mos = QCSchemaUnits.getList(molecular_orbitals, "orbitals");
     int n = mos.size();
     for (int i = 0; i < n; i++) {
       @SuppressWarnings("unchecked")
       Map<String, Object> thisMO = (Map<String, Object>) mos.get(i); 
-      double energy = QCSchema.getDouble(thisMO, "energy", "ev");
-      double occupancy = QCSchema.getDouble(thisMO, "occupancy", null);
+      double energy = QCSchemaUnits.getDouble(thisMO, "energy", "ev");
+      double occupancy = QCSchemaUnits.getDouble(thisMO, "occupancy", null);
       String symmetry = (String) thisMO.get("symmetry");
       String spin = (String) thisMO.get("type");
       if (spin != null) {
@@ -212,7 +212,7 @@ public class QCJSONReader extends MoldenReader {
         else if (spin.indexOf("alpha") >= 0)
           alphaBeta = "alpha";
       }
-      float[] coefs = toFloatArray(QCSchema.getDoubleArray(thisMO, "coefficients"));
+      float[] coefs = toFloatArray(QCSchemaUnits.getDoubleArray(thisMO, "coefficients"));
       line = "" + symmetry;
       if (filterMO()) {
         Map<String, Object> mo = new Hashtable<String, Object>();
@@ -236,7 +236,7 @@ public class QCJSONReader extends MoldenReader {
     }
     if (debugging)
       Logger.debug("read " + orbitals.size() + " MOs");
-    ArrayList<Object> units = QCSchema.getList(molecular_orbitals, "orbitals_energy_units");
+    ArrayList<Object> units = QCSchemaUnits.getList(molecular_orbitals, "orbitals_energy_units");
     String sunits = (units == null ? null : units.get(0).toString());
     setMOs(sunits == null || sunits.equals("?") ? "?" : sunits);
     if (haveEnergy && doSort)
@@ -262,10 +262,10 @@ public class QCJSONReader extends MoldenReader {
     if (moBasisID == lastBasisID)
       return true;
     lastBasisID = moBasisID;
-    ArrayList<Object> listG = QCSchema.getList(moBasis, "gaussians");
-    ArrayList<Object> listS = QCSchema.getList(moBasis, "shells");
+    ArrayList<Object> listG = QCSchemaUnits.getList(moBasis, "gaussians");
+    ArrayList<Object> listS = QCSchemaUnits.getList(moBasis, "shells");
     if (listG == null && listS == null) {
-      listG = listS = QCSchema.getList(moBasis, "slaters");
+      listG = listS = QCSchemaUnits.getList(moBasis, "slaters");
     }
     if ((listG == null) != (listS == null)) {
       Logger.error("gaussians/shells or slaters missing");
@@ -291,7 +291,7 @@ public class QCJSONReader extends MoldenReader {
     
     nCoef = listS.size();
     for (int i = 0; i < nCoef; i++) {
-      double[] a = QCSchema.getDoubleArray(listS.get(i), null);
+      double[] a = QCSchemaUnits.getDoubleArray(listS.get(i), null);
       addSlater((int) a[0], (int) a[1], (int) a[2], (int) a[3], (int) a[4], (float) a[5], (float) a[6]);
     }
     setSlaters(false, false);
@@ -301,12 +301,12 @@ public class QCJSONReader extends MoldenReader {
   private boolean readGaussianBasis(ArrayList<Object> listG, ArrayList<Object> listS) throws Exception {
     shells = new Lst<int[]>();
     for (int i = 0; i < listS.size(); i++)
-      shells.addLast(QCSchema.getIntArray(listS.get(i), null));
+      shells.addLast(QCSchemaUnits.getIntArray(listS.get(i), null));
     int gaussianPtr = listG.size();
     float[][] garray = AU.newFloat2(gaussianPtr);
     // [[exp, coef], [exp, coef],...] with sp [exp, coef1, coef2]
     for (int i = 0; i < gaussianPtr; i++)
-      garray[i] = toFloatArray(QCSchema.getDoubleArray(listG.get(i), null)); 
+      garray[i] = toFloatArray(QCSchemaUnits.getDoubleArray(listG.get(i), null)); 
     moData.put("shells", shells);
     moData.put("gaussians", garray);
     Logger.info(shells.size() + " slater shells read");

@@ -1,6 +1,6 @@
 ["QCJSON 0-0-0.Jmol_14.27.2__2017-12-14_17:50",
 {
-	"__jmol_created":"Fri Dec 15 08:20:31 CST 2017",
+	"__jmol_created":"Fri Dec 15 21:48:27 CST 2017",
 	"__jmol_source":"file:/C:/jmol-dev/workspace/Jmol-datafiles/nwchem/c24h14.nwo"
 },
 {
@@ -16,7 +16,7 @@
 			"__jmol_block":"Model 1",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 1.27848E+0,	 5.70689E-1,	 6.74802E-3,
 						 8.42584E-2,	 1.40769E+0,	-3.30405E-4,
@@ -65,7 +65,7 @@
 			"vibrations":[
 				{
 					"__jmol_block":"Vibration 1",
-					"frequency":{"value":-0.00,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":-0.00,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000005,"units":["au",1.0]},
 					"vectors":[
 						 2.55101E-2,	 1.51800E-2,	 1.80000E-4,
@@ -110,7 +110,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 2",
-					"frequency":{"value":-0.00,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":-0.00,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000003,"units":["au",1.0]},
 					"vectors":[
 						 1.60000E-4,	-8.30000E-4,	 5.74700E-2,
@@ -155,7 +155,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 3",
-					"frequency":{"value":82.57,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":82.57,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000004,"units":["au",1.0]},
 					"vectors":[
 						 8.20000E-4,	 1.05000E-3,	-1.59100E-2,
@@ -200,7 +200,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 4",
-					"frequency":{"value":86.56,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":86.56,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000003,"units":["au",1.0]},
 					"vectors":[
 						 1.23000E-3,	 8.30000E-4,	-1.52200E-2,
@@ -245,7 +245,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 5",
-					"frequency":{"value":126.32,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":126.32,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000000,"units":["au",1.0]},
 					"vectors":[
 						-1.51000E-3,	 1.05000E-3,	-8.96700E-2,
@@ -290,7 +290,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 6",
-					"frequency":{"value":158.76,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":158.76,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000023,"units":["au",1.0]},
 					"vectors":[
 						-4.80000E-4,	-1.79000E-3,	-1.10200E-2,
@@ -335,7 +335,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 7",
-					"frequency":{"value":184.70,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":184.70,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000011,"units":["au",1.0]},
 					"vectors":[
 						 5.36000E-3,	 4.69000E-3,	-6.06000E-3,
@@ -380,7 +380,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 8",
-					"frequency":{"value":265.43,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":265.43,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.004624,"units":["au",1.0]},
 					"vectors":[
 						 3.61000E-3,	 3.93000E-3,	-2.40000E-3,
@@ -425,7 +425,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 9",
-					"frequency":{"value":284.75,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":284.75,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000560,"units":["au",1.0]},
 					"vectors":[
 						-3.30000E-4,	-6.35000E-3,	-7.37600E-2,
@@ -470,7 +470,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 10",
-					"frequency":{"value":299.66,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":299.66,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000238,"units":["au",1.0]},
 					"vectors":[
 						-5.10000E-3,	-3.52000E-3,	 6.22700E-2,
@@ -515,7 +515,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 11",
-					"frequency":{"value":303.75,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":303.75,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000184,"units":["au",1.0]},
 					"vectors":[
 						-1.10000E-3,	 2.29000E-3,	-5.24300E-2,
@@ -560,7 +560,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 12",
-					"frequency":{"value":352.69,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":352.69,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000226,"units":["au",1.0]},
 					"vectors":[
 						 4.00000E-5,	 1.18700E-2,	 4.09500E-2,
@@ -605,7 +605,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 13",
-					"frequency":{"value":374.48,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":374.48,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000055,"units":["au",1.0]},
 					"vectors":[
 						-3.19000E-2,	-1.31700E-2,	 2.96300E-2,
@@ -650,7 +650,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 14",
-					"frequency":{"value":379.72,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":379.72,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000053,"units":["au",1.0]},
 					"vectors":[
 						 1.36200E-2,	-8.68000E-3,	 2.88700E-2,
@@ -695,7 +695,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 15",
-					"frequency":{"value":388.13,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":388.13,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000731,"units":["au",1.0]},
 					"vectors":[
 						 5.28900E-2,	-1.70200E-2,	 8.91000E-3,
@@ -740,7 +740,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 16",
-					"frequency":{"value":394.48,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":394.48,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000161,"units":["au",1.0]},
 					"vectors":[
 						-3.75000E-2,	-4.83100E-2,	 8.26000E-3,
@@ -785,7 +785,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 17",
-					"frequency":{"value":457.25,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":457.25,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000081,"units":["au",1.0]},
 					"vectors":[
 						 1.60000E-4,	 7.31000E-3,	-7.56700E-2,
@@ -830,7 +830,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 18",
-					"frequency":{"value":483.62,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":483.62,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.002592,"units":["au",1.0]},
 					"vectors":[
 						 2.64600E-2,	 1.24700E-2,	-6.39000E-3,
@@ -875,7 +875,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 19",
-					"frequency":{"value":485.46,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":485.46,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001579,"units":["au",1.0]},
 					"vectors":[
 						 2.39100E-2,	 7.81000E-3,	 9.70000E-4,
@@ -920,7 +920,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 20",
-					"frequency":{"value":504.21,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":504.21,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000124,"units":["au",1.0]},
 					"vectors":[
 						 4.04700E-2,	 3.14000E-3,	 8.00000E-3,
@@ -965,7 +965,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 21",
-					"frequency":{"value":505.52,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":505.52,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000044,"units":["au",1.0]},
 					"vectors":[
 						 4.50000E-3,	 1.61000E-2,	-9.94000E-3,
@@ -1010,7 +1010,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 22",
-					"frequency":{"value":509.93,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":509.93,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000020,"units":["au",1.0]},
 					"vectors":[
 						-1.24600E-2,	-2.02500E-2,	-4.27000E-3,
@@ -1055,7 +1055,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 23",
-					"frequency":{"value":523.52,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":523.52,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000580,"units":["au",1.0]},
 					"vectors":[
 						-1.31100E-2,	-2.69900E-2,	 2.80000E-2,
@@ -1100,7 +1100,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 24",
-					"frequency":{"value":553.88,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":553.88,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000192,"units":["au",1.0]},
 					"vectors":[
 						 3.30000E-4,	 3.99000E-3,	-7.06500E-2,
@@ -1145,7 +1145,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 25",
-					"frequency":{"value":563.26,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":563.26,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000523,"units":["au",1.0]},
 					"vectors":[
 						-2.41000E-3,	-2.25000E-3,	 7.01200E-2,
@@ -1190,7 +1190,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 26",
-					"frequency":{"value":576.36,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":576.36,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.004688,"units":["au",1.0]},
 					"vectors":[
 						 2.98500E-2,	 1.61100E-2,	-4.18000E-3,
@@ -1235,7 +1235,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 27",
-					"frequency":{"value":607.84,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":607.84,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000056,"units":["au",1.0]},
 					"vectors":[
 						 1.45600E-2,	-3.00100E-2,	 9.55000E-3,
@@ -1280,7 +1280,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 28",
-					"frequency":{"value":632.51,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":632.51,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.006483,"units":["au",1.0]},
 					"vectors":[
 						-1.60000E-4,	-1.70000E-3,	-2.27300E-2,
@@ -1325,7 +1325,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 29",
-					"frequency":{"value":675.77,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":675.77,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.003154,"units":["au",1.0]},
 					"vectors":[
 						 5.18000E-3,	 6.58000E-3,	-8.48700E-2,
@@ -1370,7 +1370,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 30",
-					"frequency":{"value":677.79,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":677.79,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.010804,"units":["au",1.0]},
 					"vectors":[
 						-3.85200E-2,	 7.12400E-2,	 2.69100E-2,
@@ -1415,7 +1415,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 31",
-					"frequency":{"value":688.96,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":688.96,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000578,"units":["au",1.0]},
 					"vectors":[
 						-1.46200E-2,	 7.71000E-3,	-5.66200E-2,
@@ -1460,7 +1460,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 32",
-					"frequency":{"value":702.70,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":702.70,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000156,"units":["au",1.0]},
 					"vectors":[
 						-4.54000E-3,	-1.70000E-4,	-1.81000E-2,
@@ -1505,7 +1505,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 33",
-					"frequency":{"value":703.72,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":703.72,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000381,"units":["au",1.0]},
 					"vectors":[
 						 1.79800E-2,	 1.53300E-2,	 1.77500E-2,
@@ -1550,7 +1550,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 34",
-					"frequency":{"value":746.36,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":746.36,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000831,"units":["au",1.0]},
 					"vectors":[
 						 2.14200E-2,	 1.04800E-2,	-9.62000E-3,
@@ -1595,7 +1595,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 35",
-					"frequency":{"value":777.88,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":777.88,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000053,"units":["au",1.0]},
 					"vectors":[
 						 1.84000E-3,	 7.06000E-3,	-1.18810E-1,
@@ -1640,7 +1640,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 36",
-					"frequency":{"value":792.93,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":792.93,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000056,"units":["au",1.0]},
 					"vectors":[
 						-3.61000E-3,	 3.30000E-4,	 4.21800E-2,
@@ -1685,7 +1685,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 37",
-					"frequency":{"value":802.58,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":802.58,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001891,"units":["au",1.0]},
 					"vectors":[
 						-3.19400E-2,	-1.79500E-2,	 2.27000E-3,
@@ -1730,7 +1730,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 38",
-					"frequency":{"value":813.72,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":813.72,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000520,"units":["au",1.0]},
 					"vectors":[
 						 8.26000E-3,	-1.27900E-2,	-4.03400E-2,
@@ -1775,7 +1775,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 39",
-					"frequency":{"value":819.76,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":819.76,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000246,"units":["au",1.0]},
 					"vectors":[
 						-1.73200E-2,	-6.83200E-2,	-1.73500E-2,
@@ -1820,7 +1820,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 40",
-					"frequency":{"value":823.22,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":823.22,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001561,"units":["au",1.0]},
 					"vectors":[
 						 1.23400E-2,	 1.51500E-2,	-5.24400E-2,
@@ -1865,7 +1865,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 41",
-					"frequency":{"value":839.66,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":839.66,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001074,"units":["au",1.0]},
 					"vectors":[
 						 6.20300E-2,	-5.87300E-2,	 5.90000E-3,
@@ -1910,7 +1910,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 42",
-					"frequency":{"value":843.44,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":843.44,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001252,"units":["au",1.0]},
 					"vectors":[
 						 1.04000E-3,	 5.80000E-4,	-5.65700E-2,
@@ -1955,7 +1955,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 43",
-					"frequency":{"value":849.38,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":849.38,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000018,"units":["au",1.0]},
 					"vectors":[
 						 8.10000E-3,	 3.87200E-2,	-1.73800E-2,
@@ -2000,7 +2000,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 44",
-					"frequency":{"value":865.52,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":865.52,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000331,"units":["au",1.0]},
 					"vectors":[
 						 1.54000E-3,	 1.68500E-2,	-3.50000E-3,
@@ -2045,7 +2045,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 45",
-					"frequency":{"value":878.42,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":878.42,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000001,"units":["au",1.0]},
 					"vectors":[
 						 5.50000E-4,	 7.00000E-4,	 2.00800E-2,
@@ -2090,7 +2090,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 46",
-					"frequency":{"value":895.05,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":895.05,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.004357,"units":["au",1.0]},
 					"vectors":[
 						 2.00000E-4,	 2.32000E-3,	 2.44000E-3,
@@ -2135,7 +2135,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 47",
-					"frequency":{"value":971.16,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":971.16,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.004598,"units":["au",1.0]},
 					"vectors":[
 						 1.27800E-2,	-5.61400E-2,	-2.72000E-3,
@@ -2180,7 +2180,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 48",
-					"frequency":{"value":989.69,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":989.69,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000204,"units":["au",1.0]},
 					"vectors":[
 						-2.73000E-3,	-5.60000E-4,	 8.42000E-3,
@@ -2225,7 +2225,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 49",
-					"frequency":{"value":994.05,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":994.05,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.134241,"units":["au",1.0]},
 					"vectors":[
 						 1.68000E-3,	 3.31000E-3,	-3.47000E-3,
@@ -2270,7 +2270,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 50",
-					"frequency":{"value":999.92,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":999.92,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000250,"units":["au",1.0]},
 					"vectors":[
 						-2.89000E-3,	-3.05000E-3,	 4.50000E-3,
@@ -2315,7 +2315,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 51",
-					"frequency":{"value":1005.54,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1005.54,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000140,"units":["au",1.0]},
 					"vectors":[
 						-1.93900E-2,	-3.33100E-2,	-3.53000E-3,
@@ -2360,7 +2360,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 52",
-					"frequency":{"value":1013.08,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1013.08,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000461,"units":["au",1.0]},
 					"vectors":[
 						-1.96000E-3,	-2.30000E-4,	 1.31000E-3,
@@ -2405,7 +2405,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 53",
-					"frequency":{"value":1018.77,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1018.77,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000015,"units":["au",1.0]},
 					"vectors":[
 						 9.28900E-2,	-3.97000E-3,	 2.97000E-3,
@@ -2450,7 +2450,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 54",
-					"frequency":{"value":1018.81,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1018.81,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000105,"units":["au",1.0]},
 					"vectors":[
 						-1.02700E-2,	 1.03000E-3,	-3.00000E-4,
@@ -2495,7 +2495,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 55",
-					"frequency":{"value":1025.37,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1025.37,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000012,"units":["au",1.0]},
 					"vectors":[
 						-6.93000E-3,	 6.69100E-2,	 2.94000E-3,
@@ -2540,7 +2540,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 56",
-					"frequency":{"value":1058.08,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1058.08,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000936,"units":["au",1.0]},
 					"vectors":[
 						-3.98000E-2,	-1.50300E-2,	 8.17000E-3,
@@ -2585,7 +2585,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 57",
-					"frequency":{"value":1084.05,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1084.05,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000014,"units":["au",1.0]},
 					"vectors":[
 						-2.69000E-2,	-1.55200E-2,	-1.76000E-2,
@@ -2630,7 +2630,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 58",
-					"frequency":{"value":1175.12,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1175.12,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000960,"units":["au",1.0]},
 					"vectors":[
 						-9.97000E-3,	-5.30000E-2,	-8.70000E-4,
@@ -2675,7 +2675,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 59",
-					"frequency":{"value":1191.07,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1191.07,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.002520,"units":["au",1.0]},
 					"vectors":[
 						 2.12500E-2,	-1.78800E-2,	-4.30000E-4,
@@ -2720,7 +2720,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 60",
-					"frequency":{"value":1197.37,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1197.37,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001068,"units":["au",1.0]},
 					"vectors":[
 						 5.18500E-2,	 4.10000E-4,	 1.70000E-3,
@@ -2765,7 +2765,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 61",
-					"frequency":{"value":1211.79,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1211.79,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000865,"units":["au",1.0]},
 					"vectors":[
 						-5.85000E-3,	-1.73000E-3,	-9.90000E-4,
@@ -2810,7 +2810,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 62",
-					"frequency":{"value":1213.17,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1213.17,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.007773,"units":["au",1.0]},
 					"vectors":[
 						 2.55000E-2,	 3.17000E-3,	-1.47000E-3,
@@ -2855,7 +2855,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 63",
-					"frequency":{"value":1225.12,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1225.12,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.005216,"units":["au",1.0]},
 					"vectors":[
 						 2.42500E-2,	-3.15000E-3,	-3.30000E-3,
@@ -2900,7 +2900,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 64",
-					"frequency":{"value":1238.88,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1238.88,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000228,"units":["au",1.0]},
 					"vectors":[
 						-5.20300E-2,	-2.27200E-2,	-2.46000E-3,
@@ -2945,7 +2945,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 65",
-					"frequency":{"value":1241.13,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1241.13,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000905,"units":["au",1.0]},
 					"vectors":[
 						-1.80100E-2,	 2.08900E-2,	 2.53000E-3,
@@ -2990,7 +2990,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 66",
-					"frequency":{"value":1252.61,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1252.61,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000303,"units":["au",1.0]},
 					"vectors":[
 						 2.75800E-2,	-2.87600E-2,	 1.14000E-3,
@@ -3035,7 +3035,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 67",
-					"frequency":{"value":1260.88,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1260.88,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000457,"units":["au",1.0]},
 					"vectors":[
 						-9.00000E-5,	 4.18000E-3,	 4.00000E-4,
@@ -3080,7 +3080,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 68",
-					"frequency":{"value":1270.91,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1270.91,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000711,"units":["au",1.0]},
 					"vectors":[
 						 1.74800E-2,	 9.52000E-3,	 2.15000E-3,
@@ -3125,7 +3125,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 69",
-					"frequency":{"value":1276.24,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1276.24,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001918,"units":["au",1.0]},
 					"vectors":[
 						 3.10000E-3,	 8.22000E-3,	 2.30000E-4,
@@ -3170,7 +3170,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 70",
-					"frequency":{"value":1299.27,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1299.27,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000246,"units":["au",1.0]},
 					"vectors":[
 						-1.18500E-2,	-2.82700E-2,	-1.90000E-3,
@@ -3215,7 +3215,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 71",
-					"frequency":{"value":1310.49,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1310.49,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001475,"units":["au",1.0]},
 					"vectors":[
 						-7.33700E-2,	-1.80600E-2,	-6.83000E-3,
@@ -3260,7 +3260,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 72",
-					"frequency":{"value":1350.21,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1350.21,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000411,"units":["au",1.0]},
 					"vectors":[
 						 7.02400E-2,	-6.90400E-2,	-9.20000E-4,
@@ -3305,7 +3305,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 73",
-					"frequency":{"value":1366.42,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1366.42,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000220,"units":["au",1.0]},
 					"vectors":[
 						-5.47100E-2,	-3.34400E-2,	-2.75000E-3,
@@ -3350,7 +3350,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 74",
-					"frequency":{"value":1369.40,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1369.40,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.002999,"units":["au",1.0]},
 					"vectors":[
 						-1.39900E-2,	 4.90300E-2,	 1.65000E-3,
@@ -3395,7 +3395,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 75",
-					"frequency":{"value":1384.75,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1384.75,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.014485,"units":["au",1.0]},
 					"vectors":[
 						-7.41000E-3,	 4.68300E-2,	 4.05000E-3,
@@ -3440,7 +3440,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 76",
-					"frequency":{"value":1402.90,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1402.90,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000357,"units":["au",1.0]},
 					"vectors":[
 						 5.58100E-2,	 7.99600E-2,	 5.88000E-3,
@@ -3485,7 +3485,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 77",
-					"frequency":{"value":1420.17,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1420.17,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.024804,"units":["au",1.0]},
 					"vectors":[
 						 2.10600E-2,	-5.41100E-2,	-1.91000E-3,
@@ -3530,7 +3530,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 78",
-					"frequency":{"value":1422.67,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1422.67,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.012015,"units":["au",1.0]},
 					"vectors":[
 						-6.33000E-3,	-4.26000E-3,	-5.50000E-4,
@@ -3575,7 +3575,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 79",
-					"frequency":{"value":1432.59,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1432.59,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000701,"units":["au",1.0]},
 					"vectors":[
 						 3.25400E-2,	-6.13000E-3,	 1.37000E-3,
@@ -3620,7 +3620,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 80",
-					"frequency":{"value":1456.58,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1456.58,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000288,"units":["au",1.0]},
 					"vectors":[
 						-3.14400E-2,	 2.30800E-2,	-3.70000E-4,
@@ -3665,7 +3665,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 81",
-					"frequency":{"value":1463.05,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1463.05,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001019,"units":["au",1.0]},
 					"vectors":[
 						-6.28000E-3,	-5.66200E-2,	-4.32000E-3,
@@ -3710,7 +3710,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 82",
-					"frequency":{"value":1480.41,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1480.41,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001440,"units":["au",1.0]},
 					"vectors":[
 						 9.66000E-3,	-3.57400E-2,	-1.20000E-4,
@@ -3755,7 +3755,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 83",
-					"frequency":{"value":1488.62,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1488.62,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000994,"units":["au",1.0]},
 					"vectors":[
 						-1.56700E-2,	-5.03000E-3,	-4.50000E-4,
@@ -3800,7 +3800,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 84",
-					"frequency":{"value":1498.40,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1498.40,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.005628,"units":["au",1.0]},
 					"vectors":[
 						-6.22600E-2,	 6.12300E-2,	 3.60000E-4,
@@ -3845,7 +3845,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 85",
-					"frequency":{"value":1520.32,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1520.32,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.002368,"units":["au",1.0]},
 					"vectors":[
 						-5.90900E-2,	 4.32900E-2,	-5.90000E-4,
@@ -3890,7 +3890,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 86",
-					"frequency":{"value":1528.35,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1528.35,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000911,"units":["au",1.0]},
 					"vectors":[
 						 7.82000E-3,	 1.81400E-2,	 7.00000E-5,
@@ -3935,7 +3935,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 87",
-					"frequency":{"value":1532.98,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1532.98,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000032,"units":["au",1.0]},
 					"vectors":[
 						 1.03500E-2,	-1.16400E-2,	 5.60000E-4,
@@ -3980,7 +3980,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 88",
-					"frequency":{"value":1558.29,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1558.29,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000001,"units":["au",1.0]},
 					"vectors":[
 						-1.19100E-2,	-3.13900E-2,	-1.40000E-3,
@@ -4025,7 +4025,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 89",
-					"frequency":{"value":1571.17,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1571.17,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.003971,"units":["au",1.0]},
 					"vectors":[
 						 1.89100E-2,	 2.99400E-2,	 2.92000E-3,
@@ -4070,7 +4070,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 90",
-					"frequency":{"value":1580.39,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1580.39,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.002692,"units":["au",1.0]},
 					"vectors":[
 						 4.46000E-2,	 3.15100E-2,	 2.67000E-3,
@@ -4115,7 +4115,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 91",
-					"frequency":{"value":1619.22,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1619.22,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000849,"units":["au",1.0]},
 					"vectors":[
 						 5.25800E-2,	-2.75000E-3,	 1.68000E-3,
@@ -4160,7 +4160,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 92",
-					"frequency":{"value":1623.18,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1623.18,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.009761,"units":["au",1.0]},
 					"vectors":[
 						 7.74000E-2,	 1.36600E-2,	 4.09000E-3,
@@ -4205,7 +4205,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 93",
-					"frequency":{"value":1656.84,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1656.84,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000029,"units":["au",1.0]},
 					"vectors":[
 						-1.16600E-2,	 3.82900E-2,	 1.85000E-3,
@@ -4250,7 +4250,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 94",
-					"frequency":{"value":1659.85,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1659.85,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000775,"units":["au",1.0]},
 					"vectors":[
 						-4.49900E-2,	-7.40900E-2,	-4.43000E-3,
@@ -4295,7 +4295,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 95",
-					"frequency":{"value":1673.53,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1673.53,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000042,"units":["au",1.0]},
 					"vectors":[
 						-1.43300E-2,	-7.92000E-3,	-1.01000E-3,
@@ -4340,7 +4340,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 96",
-					"frequency":{"value":1681.03,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":1681.03,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000045,"units":["au",1.0]},
 					"vectors":[
 						 3.04100E-2,	 2.74700E-2,	 1.88000E-3,
@@ -4385,7 +4385,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 97",
-					"frequency":{"value":2989.22,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":2989.22,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.005996,"units":["au",1.0]},
 					"vectors":[
 						 6.60000E-4,	-1.40000E-4,	 5.00000E-5,
@@ -4430,7 +4430,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 98",
-					"frequency":{"value":3001.44,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3001.44,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.005572,"units":["au",1.0]},
 					"vectors":[
 						 3.90000E-4,	 3.20000E-4,	 1.40000E-4,
@@ -4475,7 +4475,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 99",
-					"frequency":{"value":3074.34,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3074.34,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.003788,"units":["au",1.0]},
 					"vectors":[
 						 2.40000E-4,	 9.00000E-5,	 1.00000E-4,
@@ -4520,7 +4520,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 100",
-					"frequency":{"value":3074.88,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3074.88,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.023252,"units":["au",1.0]},
 					"vectors":[
 						 1.70000E-4,	 3.10000E-4,	 1.20000E-4,
@@ -4565,7 +4565,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 101",
-					"frequency":{"value":3174.43,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3174.43,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.045052,"units":["au",1.0]},
 					"vectors":[
 						-3.20000E-4,	-2.10000E-4,	-2.00000E-5,
@@ -4610,7 +4610,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 102",
-					"frequency":{"value":3174.74,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3174.74,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.023060,"units":["au",1.0]},
 					"vectors":[
 						 3.10000E-4,	 1.60000E-4,	 4.00000E-5,
@@ -4655,7 +4655,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 103",
-					"frequency":{"value":3175.56,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3175.56,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.059990,"units":["au",1.0]},
 					"vectors":[
 						 3.00000E-4,	 2.10000E-4,	 2.00000E-5,
@@ -4700,7 +4700,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 104",
-					"frequency":{"value":3176.48,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3176.48,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001130,"units":["au",1.0]},
 					"vectors":[
 						 2.50000E-4,	 7.00000E-5,	 2.00000E-5,
@@ -4745,7 +4745,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 105",
-					"frequency":{"value":3177.69,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3177.69,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.020539,"units":["au",1.0]},
 					"vectors":[
 						-1.90000E-4,	-7.00000E-5,	 0.00000E+0,
@@ -4790,7 +4790,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 106",
-					"frequency":{"value":3195.21,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3195.21,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001951,"units":["au",1.0]},
 					"vectors":[
 						 2.60000E-4,	 5.00000E-5,	 3.00000E-5,
@@ -4835,7 +4835,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 107",
-					"frequency":{"value":3195.43,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3195.43,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.000223,"units":["au",1.0]},
 					"vectors":[
 						-3.90000E-4,	-1.10000E-4,	-1.00000E-5,
@@ -4880,7 +4880,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 108",
-					"frequency":{"value":3196.89,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3196.89,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.001844,"units":["au",1.0]},
 					"vectors":[
 						 6.00000E-5,	 1.00000E-5,	 2.00000E-5,
@@ -4925,7 +4925,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 109",
-					"frequency":{"value":3198.52,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3198.52,"units":["cm^-1",4.55633590401805E-6]},
 					"ir_intensity":{"value":0.017422,"units":["au",1.0]},
 					"vectors":[
 						-6.00000E-5,	 2.00000E-5,	 0.00000E+0,
@@ -4970,7 +4970,7 @@
 				},
 				{
 					"__jmol_block":"Vibration 110",
-					"frequency":{"value":3200.07,"units":["cm^-1",4.5563359E-6]},
+					"frequency":{"value":3200.07,"units":["cm^-1",4.55633590401805E-6]},
 					"vectors":[
 						 2.00000E-5,	 2.00000E-5,	 1.00000E-5,
 						 1.00000E-5,	 3.00000E-5,	-1.00000E-5,

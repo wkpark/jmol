@@ -1,6 +1,6 @@
 ["QCJSON 0-0-0.Jmol_14.27.2__2017-12-14_17:50",
 {
-	"__jmol_created":"Fri Dec 15 08:20:27 CST 2017",
+	"__jmol_created":"Fri Dec 15 21:48:21 CST 2017",
 	"__jmol_source":"c:/jmol-dev/workspace/Jmol-datafiles/gamess/cl2o.gamess"
 },
 {
@@ -53,7 +53,7 @@
 			"__jmol_block":"Model 1",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	 0.00000E+0,
 						 1.52980E+0,	 0.00000E+0,	 1.26810E-1,
@@ -82,7 +82,7 @@
 			"__jmol_block":"Model 2",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	 0.00000E+0,
 						 1.52981E+0,	 0.00000E+0,	 1.26810E-1,
@@ -361,7 +361,7 @@
 			"__jmol_block":"Model 3",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-5.59641E-2,
 						 1.63105E+0,	 0.00000E+0,	 1.54792E-1,
@@ -395,7 +395,7 @@
 			"__jmol_block":"Model 4",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-1.91504E-1,
 						 1.66829E+0,	 0.00000E+0,	 2.22562E-1,
@@ -429,7 +429,7 @@
 			"__jmol_block":"Model 5",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-3.33051E-1,
 						 1.68004E+0,	 0.00000E+0,	 2.93336E-1,
@@ -463,7 +463,7 @@
 			"__jmol_block":"Model 6",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-4.51347E-1,
 						 1.61171E+0,	 0.00000E+0,	 3.52483E-1,
@@ -497,7 +497,7 @@
 			"__jmol_block":"Model 7",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-5.02152E-1,
 						 1.49669E+0,	 0.00000E+0,	 3.77886E-1,
@@ -531,7 +531,7 @@
 			"__jmol_block":"Model 8",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-5.45953E-1,
 						 1.39980E+0,	 0.00000E+0,	 3.99786E-1,
@@ -565,7 +565,7 @@
 			"__jmol_block":"Model 9",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-5.41839E-1,
 						 1.42373E+0,	 0.00000E+0,	 3.97729E-1,
@@ -599,7 +599,7 @@
 			"__jmol_block":"Model 10",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-5.39894E-1,
 						 1.42195E+0,	 0.00000E+0,	 3.96757E-1,
@@ -633,7 +633,7 @@
 			"__jmol_block":"Model 11",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-5.40679E-1,
 						 1.42145E+0,	 0.00000E+0,	 3.97149E-1,
@@ -667,7 +667,7 @@
 			"__jmol_block":"Model 12",
 			"topology":{
 				"atoms":{
-					"coords_units":["angstroms",1.88972613],
+					"coords_units":["angstroms",1.8897261254578281],
 					"coords":[
 						 0.00000E+0,	 0.00000E+0,	-5.40679E-1,
 						 1.42145E+0,	 0.00000E+0,	 3.97149E-1,
@@ -862,7 +862,7 @@
 		}
 	],
 	"mo_bases":{
-				"MOBASIS_1":{
+		"MOBASIS_1":{
 			"gaussians":[[322.037,0.059239],[48.4308,0.3515],[10.4206,0.707658],[7.40294,-0.404453,0.244586],[1.5762,1.22156,0.853955],[0.373684,1.0,1.0],[1376.4,0.064582996],[207.857,0.380363],[45.1554,0.67819],[60.8014,-0.098763995,0.108598],[13.9765,0.051133998,0.458682],[3.8871,0.991337,0.601962],[1.35299,-0.222401,0.219216],[0.526955,1.18252,0.822321],[0.166714,1.0,1.0],[0.75,1.0]],
 			"shells":[[1,0,1,3],[1,2,4,2],[1,2,6,1],[2,0,7,3],[2,2,10,3],[2,2,13,2],[2,2,15,1],[2,4,16,1],[3,0,7,3],[3,2,10,3],[3,2,13,2],[3,2,15,1],[3,4,16,1]]
 		}

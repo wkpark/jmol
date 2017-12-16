@@ -41,6 +41,8 @@ public class QCJSONWriter extends JSONWriter {
 
   private Map<String, Object> moBases = new Hashtable<String, Object>();
 
+  private Map<String, String> htBasisMap = new Hashtable<String, String>();
+
   private boolean filterMOs;
 
   private Viewer vwr;
@@ -361,7 +363,8 @@ public class QCJSONWriter extends JSONWriter {
     //    if (orbitalMaps != null && !orbitalMaps.isEmpty()) {
     //      moDataJSON.put("jmol_orbital_maps", orbitalMaps);      
     //    }
-    moDataJSON.put("basis_id", getBasisID(moData));
+    setDFCoord(moData);
+    moDataJSON.put("basis_id", addBasis(moData));
     filterMOs = true;
     setModifyKeys(fixIntegration());
     mapAddKeyValue("molecular_orbitals", moDataJSON, "\n");
@@ -425,9 +428,7 @@ public class QCJSONWriter extends JSONWriter {
     return c;
   }
 
-  @SuppressWarnings("unchecked")
-  private String getBasisID(Map<String, Object> moData) {
-    String hash = "!";
+  private void setDFCoord(Map<String, Object> moData) {
     dfCoefMaps = (int[][]) moData.get("dfCoefMaps");
     if (dfCoefMaps != null) {
       // just looking for a non-zero map
@@ -443,25 +444,36 @@ public class QCJSONWriter extends JSONWriter {
       if (!haveMap)
         dfCoefMaps = null;
     }
+
+  }
+  /**
+   * Add a basis to the associative array moBases keyed on its hashcode
+   *  
+   * @param moData
+   * @return ID for this basis.
+   */
+  @SuppressWarnings("unchecked")
+  private String addBasis(Map<String, Object> moData) {
+    int hash = 1;
     Object gaussians = moData.get("gaussians");
     if (gaussians != null) {
-      hash += gaussians.hashCode();
+      hash ^= gaussians.hashCode();
     }
     shells = (Lst<int[]>) moData.get("shells");
     if (shells != null) {
-      hash += shells.hashCode();
+      hash ^= shells.hashCode();
     }
     Object slaters = moData.get("slaters");
     if (slaters != null) {
-      hash += slaters.hashCode();
+      hash ^= slaters.hashCode();
     }
-    String key = (String) moBases.get(hash);
+    String strHash = "" + hash;
+    String key = htBasisMap.get(strHash);
     if (key == null) {
-      moBases.put(hash, key = "MOBASIS_" + ++basisID);
+      htBasisMap.put(strHash, key = "MOBASIS_" + ++basisID);
       Map<String, Object> map = new Hashtable<String, Object>();
-      if (gaussians != null) {
+      if (gaussians != null)
         map.put("gaussians", gaussians);
-      }
       if (shells != null) {
 
         // shells array: [iAtom, type, gaussianPtr, gaussianCount]
@@ -488,9 +500,8 @@ public class QCJSONWriter extends JSONWriter {
 
         map.put("shells", shells);
       }
-      if (slaters != null) {
+      if (slaters != null)
         map.put("slaters", slaters);
-      }
       moBases.put(key, map);
     }
     return key;
@@ -503,13 +514,13 @@ public class QCJSONWriter extends JSONWriter {
     mapAddKey("mo_bases");
     mapOpen();
     {
-      String sep = "";
+      String sep = null;
       for (String key : moBases.keySet()) {
         if (key.startsWith("!"))
           continue;
         append(sep);
         mapAddKeyValue(key, moBases.get(key), "\n");
-        sep = ",";
+        sep = ",\n";
       }
     }
     mapClose();

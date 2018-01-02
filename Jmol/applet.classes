@@ -76,7 +76,7 @@ org/jmol/util/*.java
 org/jmol/viewer/*.java
 org/jmol/viewer/binding/*.java
 
-
+org/qcschema/*.java
 
 
 

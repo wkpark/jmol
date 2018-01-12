@@ -944,16 +944,6 @@ public class GlobalSettings {
         : format.indexOf("%file") >= 0 ? PT.rep(format, "%file", id.toLowerCase()) : format + id);
   }
 
-  public String[] fixSurfaceFileNameVariables(String id) {
-    boolean isDiff = id.startsWith("=");
-    if (isDiff)
-      id = id.substring(1);
-    String server = resolveDataBase(null, id, (isDiff ? edsUrlFormatDiff
-        : edsUrlFormat));
-    String strCutoff = resolveDataBase(null, id, edsUrlCutoff);
-    return new String[] { server, strCutoff, isDiff ? "diff" : null };
-  }
-
   static boolean doReportProperty(String name) {
     return (name.charAt(0) != '_' && unreportedProperties.indexOf(";" + name
         + ";") < 0);

@@ -143,7 +143,7 @@ public final class JC {
   // note list of RCSB access points: http://www.rcsb.org/pdb/static.do?p=download/http/index.html
   
   public static String[] databases = { 
-    "chebi", "https://www.ebi.ac.uk/chebi/saveStructure.do?defaultImage=true&chebiId=%file%2D%",
+    // still http:
     "aflowbin", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",
     "aflow", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",
     // _#DOCACHE_ flag indicates that the loaded file should be saved in any state in full
@@ -158,9 +158,10 @@ public final class JC {
     "nmrdb13", "http://www.nmrdb.o  rg/service/jsmol13c?POST?molfile=",
     //"pdb", "http://ftp.wwpdb.org/pub/pdb/data/structures/divided/pdb/%c2%c3/pdb%file.ent.gz", // new Jmol 14.5.0 10/28/2015
     "magndata", "http://webbdcrista1.ehu.es/magndata/mcif/%FILE.mcif",
-    "mmtf", "https://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
     "rna3d", "http://rna.bgsu.edu/rna3dhub/%TYPE/download/%FILE",
     // now https:
+    "mmtf", "https://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
+    "chebi", "https://www.ebi.ac.uk/chebi/saveStructure.do?defaultImage=true&chebiId=%file%2D%",
     "ligand", "https://files.rcsb.org/ligands/download/%FILE.cif",
     "mp", "https://www.materialsproject.org/materials/mp-%FILE/cif#_DOCACHE_", // e.g. https://materialsproject.org/rest/v1/materials/mp-24972/cif 
     "nci", "https://cactus.nci.nih.gov/chemical/structure/%FILE",
@@ -171,7 +172,9 @@ public final class JC {
     "pubchem", "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/%FILE/SDF?record_type=3d",
     "map", "https://www.ebi.ac.uk/pdbe/api/%TYPE/%FILE?pretty=false&metadata=true", 
     "pdbemap", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file.ccp4",
-    "pdbemapdiff", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file_diff.ccp4"
+    "pdbemapdiff", "https://www.ebi.ac.uk/pdbe/coordinates/files/%file_diff.ccp4",
+    "pdbemapserver", "https://www.ebi.ac.uk/pdbe/densities/x-ray/%file/box/0,0,0/0,0,0?space=cartesian&encoding=cif",
+    "pdbemapdiffserver", "https://www.ebi.ac.uk/pdbe/densities/x-ray/%file/box/0,0,0/0,0,0?space=cartesian&encoding=cif&diff=1" /// last bit is just mine
   };
 
   /**

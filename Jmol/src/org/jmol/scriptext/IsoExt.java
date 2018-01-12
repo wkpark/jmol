@@ -2605,7 +2605,17 @@ public class IsoExt extends ScriptExt {
          * If the model auxiliary info has "jmolSufaceInfo", we use that.
          */
         boolean checkWithin = false;
-        if (filename.startsWith("*") && filename.length() > 1) {
+        boolean isUppsala = false;
+        if (filename.startsWith("http://eds.bmc.uu.se/eds/dfs/cb/") && filename.endsWith(".omap")) {
+          // decommissoning Uppsala
+          filename = (filename.indexOf("_diff") >= 0 ? "*" : "") + "*" + filename.substring(32, 36);
+          //"http://eds.bmc.uu.se/eds/dfs/cb/1cbs/1cbs_diff.omap"
+          // 0         1         2         3 xxxx
+          // 0123456789012345678901234567890123456789
+        }
+        if (filename.startsWith("*") || (isUppsala = filename.startsWith("="))&& filename.length() > 1) {
+          if (isUppsala) // Uppsala EDS decommissioned
+            filename = filename.replace('=', '*');          
           // new PDB ccp4 option
           if (filename.startsWith("**")) {
             if (Float.isNaN(sigma))
@@ -2618,44 +2628,9 @@ public class IsoExt extends ScriptExt {
           }
           if (!Float.isNaN(sigma))
             showString("using sigma=" + sigma);
-          filename = (String) vwr.setLoadFormat(filename, '_', false);
+          filename = (String) vwr.setLoadFormat(filename, (ptWithin == 0 ? '_' : '-'), false);
           checkWithin = true;
-        } else if (filename.startsWith("=") && filename.length() > 1) {
-          checkWithin = true;
-          String[] info = (String[]) vwr.setLoadFormat(filename, '_', false);
-          filename = info[0];
-          String strCutoff = (!firstPass || !Float.isNaN(cutoff) ? null
-              : info[1]);
-          String diff = info[2];
-          if (strCutoff != null && !chk) {
-            cutoff = Float.NaN;
-            String key = (diff == null ? "MAP_SIGMA_DENS" : "DIFF_SIGMA_DENS");
-            try {
-              String sfdat = vwr.getFileAsString3(strCutoff, false, null);
-              Logger.info(sfdat);
-              sfdat = PT.split(sfdat, key)[1];
-              cutoff = PT.parseFloat(sfdat);
-            } catch (Exception e) {
-              Logger.error(key + " -- could  not read " + strCutoff);
-            }
-            if (cutoff > 0) {
-              if (diff != null) {
-                if (Float.isNaN(sigma))
-                  sigma = 3;
-                addShapeProperty(propertyList, "sign", Boolean.TRUE);
-              }
-              showString("using cutoff = " + cutoff
-                  + (Float.isNaN(sigma) ? "" : " sigma=" + sigma));
-              if (!Float.isNaN(sigma)) {
-                cutoff *= sigma;
-                sigma = Float.NaN;
-                addShapeProperty(propertyList, "sigma", Float.valueOf(sigma));
-              }
-              addShapeProperty(propertyList, "cutoff", Float.valueOf(cutoff));
-              sbCommand.append(" cutoff ").appendF(cutoff);
-            }
-          }
-        }
+        } 
         if (checkWithin) {
           if (ptWithin == 0) {
             onlyOneModel = filename;

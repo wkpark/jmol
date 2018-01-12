@@ -117,51 +117,51 @@ class MrcBinaryReader extends MapFileReader {
     float rmsDeviation;
     int nlabel;
 
-    nx = binarydoc.readInt(); // CCP4 "extent[0-2]"
-    if (nx < 0 || nx > 1<<8) {
+    n0 = binarydoc.readInt(); // CCP4 "extent[0-2]"
+    if (n0 < 0 || n0 > 1<<8) {
       setStream(null, false);
-      nx = binarydoc.swapBytesI(nx);
+      n0 = binarydoc.swapBytesI(n0);
       //removed for PDBE CCP4 files
       //if (params.thePlane == null)
         //params.insideOut = !params.insideOut;
-      if (nx < 0 || nx > 1000) {
-        Logger.info("nx=" + nx + " not displayable as MRC file");
+      if (n0 < 0 || n0 > 1000) {
+        Logger.info("nx=" + n0 + " not displayable as MRC file");
         throw new Exception("MRC file type not readable");
       }
       Logger.info("reading little-endian MRC file");
     }
-    ny = binarydoc.readInt();
-    nz = binarydoc.readInt();
+    n1 = binarydoc.readInt();
+    n2 = binarydoc.readInt();
 
     mode = binarydoc.readInt();
 
     if (mode < 0 || mode > 6) {
       setStream(null, false);
-      nx = binarydoc.swapBytesI(nx);
-      ny = binarydoc.swapBytesI(ny);
-      nz = binarydoc.swapBytesI(nz);
+      n0 = binarydoc.swapBytesI(n0);
+      n1 = binarydoc.swapBytesI(n1);
+      n2 = binarydoc.swapBytesI(n2);
       mode = binarydoc.swapBytesI(mode);
     }
 
     Logger.info("MRC header: mode: " + mode);
-    Logger.info("MRC header: nx ny nz: " + nx + " " + ny + " " + nz);
+    Logger.info("MRC header: nx ny nz: " + n0 + " " + n1 + " " + n2);
 
-    nxyzStart[0] = binarydoc.readInt(); // CCP4 "nxyzstart[0-2]"
-    nxyzStart[1] = binarydoc.readInt();
-    nxyzStart[2] = binarydoc.readInt();
+    xyzStart[0] = binarydoc.readInt(); // CCP4 "nxyzstart[0-2]"
+    xyzStart[1] = binarydoc.readInt();
+    xyzStart[2] = binarydoc.readInt();
 
-    Logger.info("MRC header: nxyzStart: " + nxyzStart[0] + " " + nxyzStart[1]  + " " + nxyzStart[2] );
+    Logger.info("MRC header: nxyzStart: " + xyzStart[0] + " " + xyzStart[1]  + " " + xyzStart[2] );
 
     na = binarydoc.readInt(); // CCP4 "grid[0-2]"
     nb = binarydoc.readInt();
     nc = binarydoc.readInt();
 
     if (na == 0)
-      na = nx - 1;
+      na = n0 - 1;
     if (nb == 0)
-      nb = ny - 1;
+      nb = n1 - 1;
     if (nc == 0)
-      nc = nz - 1;
+      nc = n2 - 1;
     
     Logger.info("MRC header: na nb nc: " + na + " " + nb  + " " + nc );
 
@@ -304,8 +304,6 @@ class MrcBinaryReader extends MapFileReader {
       break;
     }
     nBytes = binarydoc.getPosition();
-    if (voxelValue > 1000)
-      System.out.println(nBytes + " " + voxelValue);
     return voxelValue;
   }
 

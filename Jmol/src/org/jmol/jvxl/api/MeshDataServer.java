@@ -39,4 +39,5 @@ public interface MeshDataServer extends VertexDataServer {
   public abstract P3[] calculateGeodesicSurface(BS bsSelected, float envelopeRadius);
   public abstract void addRequiredFile(String fileName);
   public abstract void setOutputChannel(GenericBinaryDocument binaryDoc, OC out);
+  public abstract void setRequiredFile(String oldName, String fileName);
 }

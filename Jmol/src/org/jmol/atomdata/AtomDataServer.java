@@ -1,6 +1,8 @@
 package org.jmol.atomdata;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.util.Map;
 
 
 import org.jmol.api.AtomIndexIterator;
@@ -27,5 +29,7 @@ public interface AtomDataServer {
   public void log(String msg);
   
   public float evalFunctionFloat(Object func, Object params, float[] values);
+
+  Map<String, Object> readCifData(String fileName, Object rdrOrStringData, boolean isCif2);
 
 }

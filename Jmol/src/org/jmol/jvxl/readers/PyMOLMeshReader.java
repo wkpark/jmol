@@ -226,9 +226,9 @@ class PyMOLMeshReader extends MapFileReader {
 
     // Min
     t = getList(data, 11);
-    nxyzStart[0] = (int) getFloat(t, 0);
-    nxyzStart[1] = (int) getFloat(t, 1);
-    nxyzStart[2] = (int) getFloat(t, 2);
+    xyzStart[0] = getFloat(t, 0);
+    xyzStart[1] = getFloat(t, 1);
+    xyzStart[2] = getFloat(t, 2);
 
     // FDim
     // These are the actual grid extents for the map, inclusive of both end points.
@@ -236,18 +236,18 @@ class PyMOLMeshReader extends MapFileReader {
     // scheme is different for Jmol (z fastest, x slowest), and this takes care of that.
 
     t = getList(data, 13);
-    nz = (int) getFloat(t, 0);
-    ny = (int) getFloat(t, 1);
-    nx = (int) getFloat(t, 2);
+    n2 = (int) getFloat(t, 0);
+    n1 = (int) getFloat(t, 1);
+    n0 = (int) getFloat(t, 2);
 
     // if is no crystallographic unit cell, then na, nb, nc, above, are total garbage,
     // and we need to get them from nz, ny, nz. And we need to get a,b,c from ExtentMax - ExtentMin:
 
     if (!haveUnitCell) {
       // mep grid, for example (electrostatics2.pse)
-      na = nz - 1;
-      nb = ny - 1;
-      nc = nx - 1;
+      na = n2 - 1;
+      nb = n1 - 1;
+      nc = n0 - 1;
       t = getList(data, 8); // ExtentMax
       a = getFloat(t, 0) - origin.x;
       b = getFloat(t, 1) - origin.y;

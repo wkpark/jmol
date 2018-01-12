@@ -74,19 +74,22 @@ abstract class MapFileReader extends VolumeFileReader {
     */
 
   protected int mapc, mapr, maps;
-  protected int nx, ny, nz, mode;
-  protected int[] nxyzStart = new int[3];
+  protected int n0, n1, n2, mode;
+  protected float[] xyzStart = new float[3];
   protected int na, nb, nc;
   protected float a, b, c, alpha, beta, gamma;
   protected P3 origin = new P3();
   //protected P3 adjustment = new P3();
   protected P3[] vectors = new P3[3];
+  protected int xIndex = -1, yIndex, zIndex;
+
+  protected P3 p3 = new P3();  
 
   protected void getVectorsAndOrigin() {
-      
-    Logger.info("grid parameters: nx,ny,nz: " + nx + "," + ny + "," + nz);
-    Logger.info("grid parameters: nxStart,nyStart,nzStart: " + nxyzStart[0]
-        + "," + nxyzStart[1] + "," + nxyzStart[2]);
+
+    Logger.info("grid parameters: nx,ny,nz: " + n0 + "," + n1 + "," + n2);
+    Logger.info("grid parameters: nxStart,nyStart,nzStart: " + xyzStart[0]
+        + "," + xyzStart[1] + "," + xyzStart[2]);
 
     Logger.info("grid parameters: mx,my,mz: " + na + "," + nb + "," + nc);
     Logger.info("grid parameters: a,b,c,alpha,beta,gamma: " + a + "," + b + ","
@@ -95,8 +98,8 @@ abstract class MapFileReader extends VolumeFileReader {
         + maps);
     Logger.info("grid parameters: originX,Y,Z: " + origin);
 
-    SimpleUnitCell unitCell = SimpleUnitCell.newA( new float[] { a / na, b / nb, c / nc, alpha,
-        beta, gamma });
+    SimpleUnitCell unitCell = SimpleUnitCell.newA(new float[] { a / na, b / nb,
+        c / nc, alpha, beta, gamma });
 
     /*
      
@@ -139,8 +142,8 @@ abstract class MapFileReader extends VolumeFileReader {
      our z: volVector[2] = vector[mapc - 1]  (fast)
     
      This is because our x is the slowest running variable.
-    */               
-        
+    */
+
     vectors[0] = P3.new3(1, 0, 0);
     vectors[1] = P3.new3(0, 1, 0);
     vectors[2] = P3.new3(0, 0, 1);
@@ -153,9 +156,11 @@ abstract class MapFileReader extends VolumeFileReader {
     Logger.info("    b: " + vectors[1]);
     Logger.info("    c: " + vectors[2]);
 
-    voxelCounts[0] = nz; // slowest
-    voxelCounts[1] = ny;
-    voxelCounts[2] = nx; // fastest
+    // we must pass through the data as it is present
+    
+    voxelCounts[0] = n2; // slowest
+    voxelCounts[1] = n1;
+    voxelCounts[2] = n0; // fastest
 
     volumetricVectors[0].setT(vectors[maps - 1]);
     volumetricVectors[1].setT(vectors[mapr - 1]);
@@ -167,53 +172,63 @@ abstract class MapFileReader extends VolumeFileReader {
 
       // older method -- wow! Beats me.....
 
-      int[] xyz2crs = new int[3];
-      xyz2crs[mapc - 1] = 0; // mapc = 2 ==> [1] = 0
-      xyz2crs[mapr - 1] = 1; // mapr = 1 ==> [0] = 1
-      xyz2crs[maps - 1] = 2; // maps = 3 ==> [2] = 2
-      int xIndex = xyz2crs[0]; // xIndex = 1
-      int yIndex = xyz2crs[1]; // yIndex = 0
-      int zIndex = xyz2crs[2]; // zIndex = 2
+      if (xIndex == -1) {
+        int[] xyz2crs = new int[3];
+        xyz2crs[mapc - 1] = 0; // mapc = 2 ==> [1] = 0
+        xyz2crs[mapr - 1] = 1; // mapr = 1 ==> [0] = 1
+        xyz2crs[maps - 1] = 2; // maps = 3 ==> [2] = 2
+        xIndex = xyz2crs[0]; // xIndex = 1
+        yIndex = xyz2crs[1]; // yIndex = 0
+        zIndex = xyz2crs[2]; // zIndex = 2
+      }
 
-      origin.scaleAdd2(nxyzStart[xIndex]/* + adjustment.x */, vectors[0], origin);
-      origin.scaleAdd2(nxyzStart[yIndex]/* + adjustment.y */, vectors[1], origin);
-      origin.scaleAdd2(nxyzStart[zIndex]/* + adjustment.z */, vectors[2], origin);
-
+      origin.scaleAdd2(xyzStart[xIndex]/* + adjustment.x */, vectors[0],
+          origin);
+      origin.scaleAdd2(xyzStart[yIndex]/* + adjustment.y */, vectors[1],
+          origin);
+      origin.scaleAdd2(xyzStart[zIndex]/* + adjustment.z */, vectors[2],
+          origin);
+      
     }
 
     volumetricOrigin.setT(origin);
 
     Logger.info("Jmol grid origin in Cartesian coordinates: " + origin);
     Logger.info("Use  isosurface OFFSET {x y z}  if you want to shift it.\n");
-        
-      /* example:
-          
-isosurface within 5 {_Fe} "1blu.ccp4";
-reading isosurface data from C:/jmol-dev/workspace/Jmol/bobtest/1blu.ccp4
-FileManager opening C:\jmol-dev\workspace\Jmol\bobtest\1blu.ccp4
-data file type was determined to be MRC-
-FileManager opening C:\jmol-dev\workspace\Jmol\bobtest\1blu.ccp4
-MRC header: mode: 2
-MRC header: dmin,dmax,dmean: -2.0043933,4.9972544,-0.0151823275
-MRC header: ispg,nsymbt: 152,0
-MRC header: rms: 0.46335652
-MRC header: labels: 1
-Created by MAPMAN V. 080625/7.8.5 at Tue Jan 19 08:04:40 2010 for A. Nonymous
-MRC header: bytes read: 1024
+    
+    p3.set(na, nb, nc);
+    unitCell.toCartesian(p3, true);
+    p3.add(origin);
+    Logger.info("boundbox corners " +  origin + " " + p3 + ";draw bbox boundbox mesh nofill");
 
-cutoff set to (dmean + 2*rms) = 0.91153073
-grid parameters: nx,ny,nz: 73,60,66
-grid parameters: nxStart,nyStart,nzStart: -12,23,-32
-grid parameters: mx,my,mz: 78,78,114
-grid parameters: a,b,c,alpha,beta,gamma: 52.0,52.0,77.1875,90.0,90.0,120.0
-grid parameters: mapc,mapr,maps: 2,1,3
-grid parameters: originX,Y,Z: 0.0,0.0,0.0
-Jmol unit cell vectors:
+    /* example:
+        
+    isosurface within 5 {_Fe} "1blu.ccp4";
+    reading isosurface data from C:/jmol-dev/workspace/Jmol/bobtest/1blu.ccp4
+    FileManager opening C:\jmol-dev\workspace\Jmol\bobtest\1blu.ccp4
+    data file type was determined to be MRC-
+    FileManager opening C:\jmol-dev\workspace\Jmol\bobtest\1blu.ccp4
+    MRC header: mode: 2
+    MRC header: dmin,dmax,dmean: -2.0043933,4.9972544,-0.0151823275
+    MRC header: ispg,nsymbt: 152,0
+    MRC header: rms: 0.46335652
+    MRC header: labels: 1
+    Created by MAPMAN V. 080625/7.8.5 at Tue Jan 19 08:04:40 2010 for A. Nonymous
+    MRC header: bytes read: 1024
+
+    cutoff set to (dmean + 2*rms) = 0.91153073
+    grid parameters: nx,ny,nz: 73,60,66
+    grid parameters: nxStart,nyStart,nzStart: -12,23,-32
+    grid parameters: mx,my,mz: 78,78,114
+    grid parameters: a,b,c,alpha,beta,gamma: 52.0,52.0,77.1875,90.0,90.0,120.0
+    grid parameters: mapc,mapr,maps: 2,1,3
+    grid parameters: originX,Y,Z: 0.0,0.0,0.0
+    Jmol unit cell vectors:
     a: (0.6666667, 0.0, 0.0)
     b: (-0.33333337, 0.57735026, 0.0)
     c: (-2.9596254E-8, -5.1262216E-8, 0.6770833)
-Jmol grid origin in Cartesian coordinates: (19.333334, -6.9282017, -21.666666)
-Jmol origin in slow-to-fast system: (19.333334, -6.9282017, -21.666666)
+    Jmol grid origin in Cartesian coordinates: (19.333334, -6.9282017, -21.666666)
+    Jmol origin in slow-to-fast system: (19.333334, -6.9282017, -21.666666)
 
     */
 

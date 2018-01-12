@@ -123,16 +123,16 @@ MRC header: mapc,mapr,maps: 2,1,3
     jvxlFileHeaderBuffer.append("Xplor data\nJmol " + Viewer.getJmolVersion() + '\n');
 
     na = parseIntStr(getLine());
-    nxyzStart[0] = parseInt();
-    nx = parseInt() - nxyzStart[0] + 1;
+    xyzStart[0] = parseInt();
+    n0 = (int) (parseInt() - xyzStart[0] + 1);
     
     nb = parseInt();
-    nxyzStart[1] = parseInt();
-    ny = parseInt() - nxyzStart[1] + 1;
+    xyzStart[1] = parseInt();
+    n1 = (int) (parseInt() - xyzStart[1] + 1);
     
     nc = parseInt();
-    nxyzStart[2] = parseInt();
-    nz = parseInt() - nxyzStart[2] + 1;
+    xyzStart[2] = parseInt();
+    n2 = (int) (parseInt() - xyzStart[2] + 1);
     
     a = parseFloatStr(getLine());
     b = parseFloat();

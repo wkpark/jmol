@@ -1466,6 +1466,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return apiPlatform.getLocalUrl(fileName);
   }
 
+  public String getFileAsString(String fileName) {
+    return getAsciiFileOrNull(fileName);
+  }
+  
   @Override
   public BufferedInputStream getBufferedInputStream(String fullPathName) {
     // used by some JVXL readers, also OutputManager.writeZipFile and ScriptManager.openFileAsync
@@ -2889,9 +2893,17 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     BufferedReader rdr = Rdr.getBR(data);
     if (type == null)
       type = getModelAdapter().getFileTypeName(rdr);
-    return (type == null ? null : Rdr.readCifData(
+    return (type == null ? null : readCifData(null, rdr, "cif2".equals(type.toLowerCase())));
+  }
+
+  @Override
+  public Map<String, Object> readCifData(String fileName, Object rdrOrStringData, boolean isCif2) {
+    if (rdrOrStringData == null)
+      rdrOrStringData = getFileAsString(fileName);
+    BufferedReader rdr = (rdrOrStringData instanceof BufferedReader ? (BufferedReader) rdrOrStringData : Rdr.getBR((String) rdrOrStringData));
+    return Rdr.readCifData(
         (GenericCifDataParser) Interface.getInterface(
-            ("cif2".equals(type.toLowerCase()) ? "org.jmol.adapter.readers.cif.Cif2DataParser" : "javajs.util.CifDataParser"), this, "script"), rdr));
+            (isCif2 ? "org.jmol.adapter.readers.cif.Cif2DataParser" : "javajs.util.CifDataParser"), this, "script"), rdr);
   }
 
   JmolStateCreator jsc;
@@ -4128,15 +4140,15 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       }
       return (withPrefix ? "MOL3D::" : "")
           + PT.formatStringS(format, "FILE", id);
+    case '-':
     case '_': // isosurface "=...", but we code that type as '_'
-      if (name.startsWith("*")) {
-        boolean isDiff = id.startsWith("*");
-        if (isDiff)
-          id = id.substring(1);
-        return g.resolveDataBase((isDiff ? "pdbemapdiff" : "pdbemap"), id,
-            null);
-      }
-      return g.fixSurfaceFileNameVariables(id);
+      // now *xxxx or =xxxx   --  both go to EBI instead of Uppsala, 
+      // as Uppsala is being decommissioned in 2018
+      boolean isDiff = id.startsWith("*") || id.startsWith("=");
+      if (isDiff)
+        id = id.substring(1);
+      return g.resolveDataBase((isDiff ? "pdbemapdiff" : "pdbemap") + (type == '-' ? "server" : ""), id,
+          null);
     }
     return id;
   }

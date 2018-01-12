@@ -87,13 +87,13 @@ class Dsn6BinaryReader extends MapFileReader {
         header[i] = binarydoc.swapBytesS(header[i]);
     }
     
-    nxyzStart[0] = header[0];
-    nxyzStart[1] = header[1];
-    nxyzStart[2] = header[2];
+    xyzStart[0] = header[0];
+    xyzStart[1] = header[1];
+    xyzStart[2] = header[2];
 
-    nx = header[3]; // CCP4 "extent[0-2]"
-    ny = header[4];
-    nz = header[5];
+    n0 = header[3]; // CCP4 "extent[0-2]"
+    n1 = header[4];
+    n2 = header[5];
 
     na = header[6]; // CCP4 "grid[0-2]"
     nb = header[7];
@@ -197,11 +197,11 @@ class Dsn6BinaryReader extends MapFileReader {
     getVectorsAndOrigin();
     setCutoffAutomatic();
 
-    xyCount = nx * ny;
+    xyCount = n0 * n1;
     brickLayerVoxelCount = xyCount * 8;
     // byte blocks are 8 layers of 8x8 voxels, with remainders
-    nBrickX = (nx + 7) / 8;
-    nBrickY = (ny + 7) / 8;
+    nBrickX = (n0 + 7) / 8;
+    nBrickY = (n1 + 7) / 8;
     brickRowByteCount = nBrickX * 512;
     brickLayerByteCount = brickRowByteCount * nBrickY;
     brickLayer = new byte[brickLayerByteCount];
@@ -253,8 +253,8 @@ class Dsn6BinaryReader extends MapFileReader {
     
     // within the data:
     
-    int x = pt % nx;
-    int y = (pt / nx) % ny;
+    int x = pt % n0;
+    int y = (pt / n0) % n1;
     int z = pt / xyCount;
     
     // within the brick:

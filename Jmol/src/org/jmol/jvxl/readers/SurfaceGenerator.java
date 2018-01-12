@@ -1217,7 +1217,7 @@ public class SurfaceGenerator {
   private Object readerData;
   
   Object getReaderData() {
-    // needed by DelPhiBinary, Dsn6Binary, IsoShape, MrcBinary, Msms, Pmesh
+    // needed by DelPhiBinary, Dsn6Binary, IsoShape, MrcBinary, Msms, Pmesh, CifDensity
     Object o = readerData;
     readerData = null;
     return o;
@@ -1333,6 +1333,12 @@ public class SurfaceGenerator {
     if (meshDataServer == null)
       return;
     meshDataServer.addRequiredFile(fileName);    
+  }
+
+  public void setRequiredFile(String oldName, String fileName) {
+    if (meshDataServer == null)
+      return;
+    meshDataServer.setRequiredFile(oldName, fileName);    
   }
 
   void log(String msg) {

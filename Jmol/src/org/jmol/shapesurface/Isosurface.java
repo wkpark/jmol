@@ -1580,6 +1580,8 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
   }
 
   private boolean associateNormals;
+  private String oldFileName;
+  private String newFileName;
 
   @Override
   public int addVertexCopy(T3 vertexXYZ, float value, int assocVertex, boolean asCopy) {
@@ -1616,6 +1618,9 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     thisMesh.dataType = sg.params.dataType;
     thisMesh.scale3d = sg.params.scale3d;
     if (script != null) {
+      if (oldFileName != null) {
+        script = script.replace(oldFileName, newFileName);
+      }
       if (script.charAt(0) == ' ') {
         script = myType + " ID " + PT.esc(thisMesh.thisID) + script;
         pt = script.indexOf("; isosurface map");
@@ -1634,6 +1639,12 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
     fileName = " # /*file*/\"" + fileName + "\"";
     if (scriptAppendix.indexOf(fileName) < 0)
     scriptAppendix += fileName;
+  }
+
+  @Override
+  public void setRequiredFile(String oldName, String fileName) {
+    oldFileName = oldName;
+    newFileName = fileName;
   }
 
   private void setJvxlInfo() {

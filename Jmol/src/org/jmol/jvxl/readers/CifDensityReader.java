@@ -24,81 +24,51 @@
 package org.jmol.jvxl.readers;
 
 
-import java.io.BufferedReader;
 import java.util.List;
 import java.util.Map;
 
 import javajs.util.P3;
 import javajs.util.PT;
-import javajs.util.SB;
-
-import org.jmol.util.Logger;
 
 
-class CifDensityReader extends MapFileReader {
 
-  /*
-   * DSN6 map file reader. 
-   * 
-   * http://eds.bmc.uu.se/eds/
-   * 
-   * Also referred to as "O" format
-   * 
-   * see http://www.ks.uiuc.edu/Research/vmd/plugins/doxygen/dsn6plugin_8C-source.html
-   *
-   */
+/**
+ * CIF density reader. See https://www.ebi.ac.uk/pdbe/densities/x-ray/1eve/box, 
+ * for example:
+ * 
+ *  https://www.ebi.ac.uk/pdbe/densities/x-ray/1eve/box/-4.413,55.607,64.124/-0.4130001,59.607,68.124?space=cartesian&encoding=cif
+ *  
+ * Extends BCifDensityReader just enough to handle nonbinary CIF data.
+ *
+ */
 
-  
+class CifDensityReader extends BCifDensityReader {
+
   CifDensityReader(){}
   
-  private Map<String, Object> cifData, thisData;
-  private boolean isDiff;
-  
   @Override
-  void init2(SurfaceGenerator sg, BufferedReader brNull) {
-    
-    allowSigma = true;
-    
-    init2MFR(sg, br);
-    Object[] o2 = (Object[]) sg.getReaderData();
-    String fileName = (String) o2[0];
-    // TODO  -- what about cached data -- must append "#diff=1" to that
-    String data = (String) o2[1];
-    isDiff = (fileName != null && fileName.indexOf("&diff=1") >= 0
-        || data != null && data.indexOf("#diff=1") >= 0);
-    // the initial dummy call just asertains that 
-    if (fileName != null && fileName.indexOf("/0,0,0/0,0,0?") >= 0) {
-      String oldName = fileName;
-      P3[] box = sg.params.boundingBox;
-      fileName = fileName.replace("0,0,0/0,0,0",
-          box[0].x + "," + box[0].y + ","+ box[0].z + "/"
-          + box[1].x + "," + box[1].y + "," + box[1].z);
-      Logger.info("reading " + fileName);
-      sg.setRequiredFile(oldName, fileName);
-    }
+  protected void getCifData(String fileName, Object data) {
     cifData = sg.atomDataServer.readCifData(fileName, data, false);
-    // data are HIGH on the inside and LOW on the outside
-    if (params.thePlane == null)
-      params.insideOut = !params.insideOut;
-    nSurfaces = 1; 
   }
 
-  private P3 readP3(String key, P3 p3) {
+  @Override
+  protected P3 readCifP3(String key, P3 p3) {
     if (p3 == null)
       p3 = new P3();
-    float x = getFloat(key + "[0]");
+    float x = getCifFloat(key + "[0]");
     if (Float.isNaN(x)) {
       p3.x = Float.NaN;
     } else {
       p3.x = x;
-      p3.y = getFloat(key + "[1]");
-      p3.z = getFloat(key + "[2]");
+      p3.y = getCifFloat(key + "[1]");
+      p3.z = getCifFloat(key + "[2]");
     }
     return p3;
   }
   
+  @Override
   @SuppressWarnings("unchecked")
-  private Map<String, Object> getMap(String type) {
+  protected Map<String, Object> getCifMap(String type) {
     type = "data_" + type;
     List<Object> list = (List<Object>) cifData.get("models");
     for (int i = 0; i < list.size(); i++) {
@@ -108,7 +78,9 @@ class CifDensityReader extends MapFileReader {
     }
     return null;
   }
-  private float getFloat(String key) {
+  
+  @Override
+  protected float getCifFloat(String key) {
     Object o = thisData.get(key);
     float x = Float.NaN;
     if (o != null) {
@@ -121,12 +93,15 @@ class CifDensityReader extends MapFileReader {
     return x;
   }
 
-  private String getString(String key) {
-    Object o = thisData.get(key);
-    return (o == null ? null : o.toString());
+  @Override
+  @SuppressWarnings("unchecked")
+  protected float[] readCifFloats(String key, float[] values) {
+    List<Object> list = (List<Object>) thisData.get(key);
+    for (int i = 0, n = values.length; i < n; i++)
+      values[i] = PT.parseFloat((String) list.get(i));
+    return values;
   }
-  
-  private float[] values;
+
 
   //  $ print getProperty("cifInfo","http://www.ebi.ac.uk/pdbe/densities/x-ray/1cbs/box/0.1,0.1,0.1/0.23,0.31,0.18?space=fractional&encoding=cif").models[2]
   //      {
@@ -164,162 +139,8 @@ class CifDensityReader extends MapFileReader {
   //          0.186828
   //          0.11986
 
-  @Override
-  protected void readParameters() throws Exception {
-
-    //    getMap("SERVER");
-    //    String type = getString("_density_server_result.query_type");
-    //    if (!"box".equals(type))
-    //      return;
-    //    P3 origin = readP3("_density_server_result.query_box_a", null);
-    //    readP3("_density_server_result.query_box_b", p3);
-    getMap(isDiff ? "FO-FC" : "2FO-FC");
-    boolean isFractional = "fractional"
-        .equals(getString("_density_server_result_query_box_type"));
-
-    readP3("_volume_data_3d_info_axis_order", p3);
-
-    //    _volume_data_3d_info.axis_order[0]                1 
-    //    _volume_data_3d_info.axis_order[1]                0 
-    //    _volume_data_3d_info.axis_order[2]                2 
-
-    P3 axis_order = readP3("_volume_data_3d_info_axis_order", null);
-
-    //    _volume_data_3d_info.origin[0]                    0.6 
-    //    _volume_data_3d_info.origin[1]                    0.5 
-    //    _volume_data_3d_info.origin[2]                    0.69697
-
-    P3 fracOrigin = readP3("_volume_data_3d_info_origin", null);
-
-    //    _volume_data_3d_info.dimensions[0]                0.4 
-    //    _volume_data_3d_info.dimensions[1]                0.5 
-    //    _volume_data_3d_info.dimensions[2]                0.30303
-
-    P3 fracDimensions = readP3("_volume_data_3d_info_dimensions", null);
-
-    //    _volume_data_3d_info.sample_count[0]              32 
-    //    _volume_data_3d_info.sample_count[1]              38 
-    //    _volume_data_3d_info.sample_count[2]              40
-
-    P3 sampleCounts = readP3("_volume_data_3d_info_sample_count", p3);
-
-    mapc = (int) axis_order.x + 1; // fastest "column"  2 --> y
-    mapr = (int) axis_order.y + 1; // intermediat "row" 1 --> x
-    maps = (int) axis_order.z + 1; // slowest "section" 3 --> z
-
-    // Jmol will run through these z slowest, then y next, then x.
-
-    // TODO check for inversion of inside/outside due to switching x/y axes
-    
-    
-    // these counts are for the dimensions of the data, not the dimensions of the axes
-
-    n0 = (int) sampleCounts.x;
-    n1 = (int) sampleCounts.y;
-    n2 = (int) sampleCounts.z
-        ;
-    // these counts are for the dimensions of the axes
-
-    na = (int) getXYZ(sampleCounts, mapc - 1);
-    nb = (int) getXYZ(sampleCounts, mapr - 1);
-    nc = (int) getXYZ(sampleCounts, maps - 1);
-
-    //  _volume_data_3d_info.spacegroup_cell_size[0]      45.65 
-    //  _volume_data_3d_info.spacegroup_cell_size[1]      47.56 
-    //  _volume_data_3d_info.spacegroup_cell_size[2]      77.61 
-
-    readP3("_volume_data_3d_info_spacegroup_cell_size", p3);
-
-    a = p3.x;
-    b = p3.y;
-    c = p3.z;
-
-    float fa = getXYZ(fracDimensions, mapc - 1);
-    float fb = getXYZ(fracDimensions, mapr - 1);
-    float fc = getXYZ(fracDimensions, maps - 1);
-
-    // fraction is in terms of a and in the units of na
-    
-    xyzStart[xIndex = 0] = getXYZ(fracOrigin, mapc - 1) * na / fa;
-    xyzStart[yIndex = 1] = getXYZ(fracOrigin, mapr - 1) * nb / fb;
-    xyzStart[zIndex = 2] = getXYZ(fracOrigin, maps - 1) * nc / fc;
-
-    a *= fa;
-    b *= fb;
-    c *= fc;
-    
-    // our "axes" may be shorter than the original ones,
-    // but they will be in the same directions
-
-
-    //  _volume_data_3d_info.spacegroup_cell_angles[0]    90 
-    //  _volume_data_3d_info.spacegroup_cell_angles[1]    90 
-    //  _volume_data_3d_info.spacegroup_cell_angles[2]    90 
-
-    readP3("_volume_data_3d_info_spacegroup_cell_angles", p3);
-    alpha = p3.x;
-    beta = p3.y;
-    gamma = p3.z;
-
-    values = readFloats("_volume_data_3d_values", new float[na * nb * nc]);
-
-    //  _volume_data_3d_info.spacegroup_number            19   
-    //    _volume_data_3d_info.sample_rate                  1 
-
-    getVectorsAndOrigin();
-    
-    if (params.thePlane == null && (params.cutoffAutomatic || !Float.isNaN(params.sigma))) {
-      float sigma = (params.sigma < 0 || Float.isNaN(params.sigma) ? 1 : params.sigma);
-      dmean = getFloat("_volume_data_3d_info_mean_source");
-      float rmsDeviation = getFloat("_volume_data_3d_info_sigma_source");
-      params.cutoff = rmsDeviation * sigma + dmean;
-      Logger.info("Cutoff set to (mean + rmsDeviation*" + sigma + " = " + params.cutoff + ")\n");
-    }
-
-
-    //setCutoffAutomatic();
-
-    jvxlFileHeaderBuffer = new SB();
-    jvxlFileHeaderBuffer.append("CifDensity reader\n");
-    jvxlFileHeaderBuffer
-        .append("see http://www.ebi.ac.uk/pdbe/densities/x-ray/1cbs/dbox/\n");
-
-  }
-  
-  @SuppressWarnings("unchecked")
-  private float[] readFloats(String key, float[] values) {
-    List<Object> list = (List<Object>) thisData.get(key);
-    for (int i = 0, n = values.length; i < n; i++)
-      values[i] = PT.parseFloat((String) list.get(i));
-    return values;
-  }
-
-  private float getXYZ(P3 a, float x) {
-    switch ((int) x) {
-    case 0:
-      return a.x;
-    case 1:
-      return a.y;
-    case 2:
-    default:
-      return a.z;
-    }
-  }
-
-  private int pt;
-
-    
-  @Override
-  protected float nextVoxel() throws Exception {
-    //System.out.println("pt " + pt + " " + values[pt]);
-    return values[pt++];
-  }
-
-  @Override
-  protected void skipData(int nPoints) throws Exception {
-    pt += nPoints;
-  }
 }
+
 
 
 

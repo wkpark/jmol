@@ -683,7 +683,7 @@ public class FileManager implements BytePoster {
         return (forceInputStream ? Rdr.getBIS(s.getBytes()) : Rdr.getBR(s));
       }
       // check for PyMOL or MMTF
-      if (Rdr.isPickleS(bis) || Rdr.isMessagePackS(bis))
+      if (Rdr.isMessagePackS(bis) || Rdr.isPickleS(bis))
         return bis;
       bis = Rdr.getPngZipStream(bis, true);
       if (Rdr.isZipS(bis)) {
@@ -1143,7 +1143,7 @@ public class FileManager implements BytePoster {
   }
 
   public static boolean isSurfaceType(String fname) {
-    return PT.isOneOf(fname.toLowerCase().substring(fname.lastIndexOf(".")+1), ";jvxl;kin;o;msms;map;pmesh;mrc;efvet;cube;obj;dssr;");
+    return PT.isOneOf(fname.toLowerCase().substring(fname.lastIndexOf(".")+1), ";jvxl;kin;o;msms;map;pmesh;mrc;efvet;cube;obj;dssr;bcif;");
   }
   
   public static String determineSurfaceFileType(BufferedReader bufferedReader) {
@@ -1171,6 +1171,8 @@ public class FileManager implements BytePoster {
     //System.out.println("");
     
     switch (line.charAt(0)) {
+    case 0x83: // Finite map(3)
+      return "BCifDensity";
     case '@':
       if (line.indexOf("@text") == 0)
         return "Kinemage";

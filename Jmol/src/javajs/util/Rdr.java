@@ -185,7 +185,8 @@ public class Rdr implements GenericLineReader {
 
   public static boolean isMessagePackB(byte[] bytes) {
     // look for 'map' start
-    return (bytes != null && bytes.length >= 1 && (bytes[0] & 0xFF) == 0xDE);
+    int b;
+    return (bytes != null && bytes.length >= 1 && (((b = bytes[0] & 0xFF)) == 0xDE || (b & 0xE0) == 0x80));
   }
 
   public static boolean isPngZipStream(InputStream is) {

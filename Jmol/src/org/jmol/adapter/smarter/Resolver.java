@@ -316,7 +316,7 @@ public class Resolver {
   ////////////////////////////////////////////////////////////////
 
   public static String getBinaryType(InputStream inputStream) {
-    return (Rdr.isPickleS(inputStream) ? "PyMOL" : Rdr.isMessagePackS(inputStream) ? "MMTF" : null);
+    return (Rdr.isPickleS(inputStream) ? "PyMOL" : (Rdr.getMagic(inputStream, 1)[0] & 0xDE) == 0xDE ? "MMTF" : null);
   }
 
   private static String checkFileStart(String leader) {

@@ -50,7 +50,7 @@ abstract class VolumeFileReader extends SurfaceFileReader {
   protected int[] downsampleRemainders;
   private boolean getNCIPlanes;
   protected int nData;
-  private boolean readerClosed;
+  protected boolean readerClosed;
 
 
   VolumeFileReader() {}

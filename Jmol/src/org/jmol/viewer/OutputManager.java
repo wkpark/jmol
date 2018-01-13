@@ -147,9 +147,13 @@ abstract class OutputManager {
         vwr.fm.loadImage(info, fileName, false);
         return errMsg = "OK - viewing " + fileName.substring(1);
       }
-      if (out == null && (out = openOutputChannel(privateKey, fileName, false, false)) == null)
-        return errMsg = "ERROR: canceled";
-      fileName = out.getFileName();
+      boolean isPngj = type.equals("PNGJ");
+      if (!isPngj) {
+        if (out == null
+            && (out = openOutputChannel(privateKey, fileName, false, false)) == null)
+          return errMsg = "ERROR: canceled";
+        fileName = out.getFileName();
+      }
       String comment = null;
       Object stateData = null;
       params.put("date", vwr.apiPlatform.getDateFormat("8601"));
@@ -167,11 +171,13 @@ abstract class OutputManager {
         comment = "";
       } else if (type.startsWith("PNG")) {
         comment = "";
-        boolean isPngj = type.equals("PNGJ");
         if (isPngj) {// get zip file data
           OC outTemp = getOutputChannel(null, null);
           getWrappedState(fileName, scripts, image, outTemp);
           stateData = outTemp.toByteArray();
+          if (out == null
+              && (out = openOutputChannel(privateKey, fileName, false, false)) == null)
+            return errMsg = "ERROR: canceled";
         } else if (rgbbuf == null && !asBytes
             && !params.containsKey("captureMode")) {
           stateData = ((String) getWrappedState(null, scripts, image, null))

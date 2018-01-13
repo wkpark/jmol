@@ -4147,8 +4147,18 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       boolean isDiff = id.startsWith("*") || id.startsWith("=");
       if (isDiff)
         id = id.substring(1);
-      return g.resolveDataBase((isDiff ? "pdbemapdiff" : "pdbemap") + (type == '-' ? "server" : ""), id,
+      String ciftype  = null;
+      pt = id.indexOf("."); 
+      if (pt >= 0) {
+        ciftype = id.substring(pt + 1);
+        id = id.substring(0, pt);
+      }
+      id = g.resolveDataBase((isDiff ? "pdbemapdiff" : "pdbemap") + (type == '-' ? "server" : ""), id,
           null);
+      if ("cif".equals(ciftype)) {
+        id = id.replace("bcif", "cif");
+      }
+      break;
     }
     return id;
   }

@@ -4649,6 +4649,13 @@ public class ScriptEval extends ScriptExpr {
       // note that as ZAP will already have been issued here.
       if (errMsg.indexOf(JC.NOTE_SCRIPT_FILE) == 0) {
         filename = errMsg.substring(JC.NOTE_SCRIPT_FILE.length()).trim();
+        if (filename.indexOf("png|") >= 0 && filename.endsWith("pdb|state.spt")) {
+          // fix for earlier version in JavaScript saving the full state instead of just the PDB file. 
+          filename = filename.substring(0, filename.lastIndexOf("|"));
+          filename += filename.substring(filename.lastIndexOf("|"));
+          runScript("load \""+ filename + "\"");
+          return;
+        }
         cmdScript(0, filename, null);
         return;
       } 

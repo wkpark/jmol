@@ -180,13 +180,16 @@ public class Rdr implements GenericLineReader {
   }
 
   public static boolean isMessagePackS(InputStream is) {
-    return isMessagePackB(getMagic(is, 1));
+    return isMessagePackB(getMagic(is, 2));
   }
 
   public static boolean isMessagePackB(byte[] bytes) {
-    // look for 'map' start
+    // look for 'map' start, but PNG files start with 0x89, which is
+    // the MessagePack start for a 9-member map, so in that case we have
+    // to check that the next byte is not "P" as in <89>PNG
     int b;
-    return (bytes != null && bytes.length >= 1 && (((b = bytes[0] & 0xFF)) == 0xDE || (b & 0xE0) == 0x80));
+    
+    return (bytes != null && bytes.length >= 1 && (((b = bytes[0] & 0xFF)) == 0xDE || (b & 0xE0) == 0x80 && bytes[1] != 0x50));
   }
 
   public static boolean isPngZipStream(InputStream is) {

@@ -101,44 +101,6 @@ class CifDensityReader extends BCifDensityReader {
       values[i] = PT.parseFloat((String) list.get(i));
     return values;
   }
-
-
-  //  $ print getProperty("cifInfo","http://www.ebi.ac.uk/pdbe/densities/x-ray/1cbs/box/0.1,0.1,0.1/0.23,0.31,0.18?space=fractional&encoding=cif").models[2]
-  //      {
-  //        "_volume_data_3d_info_axis_order[0]"  :  "1"
-  //        "_volume_data_3d_info_axis_order[1]"  :  "0"
-  //        "_volume_data_3d_info_axis_order[2]"  :  "2"
-  //        "_volume_data_3d_info_dimensions[0]"  :  "0.2125"
-  //        "_volume_data_3d_info_dimensions[1]"  :  "0.144737"
-  //        "_volume_data_3d_info_dimensions[2]"  :  "0.083333"
-  //        "_volume_data_3d_info_max_sampled"  :  "3.762699"
-  //        "_volume_data_3d_info_max_source"  :  "3.762699"
-  //        "_volume_data_3d_info_mean_sampled"  :  "0"
-  //        "_volume_data_3d_info_mean_source"  :  "0"
-  //        "_volume_data_3d_info_min_sampled"  :  "-1.298991"
-  //        "_volume_data_3d_info_min_source"  :  "-1.298991"
-  //        "_volume_data_3d_info_name"  :  "2Fo-Fc"
-  //        "_volume_data_3d_info_origin[0]"  :  "0.1"
-  //        "_volume_data_3d_info_origin[1]"  :  "0.092105"
-  //        "_volume_data_3d_info_origin[2]"  :  "0.098485"
-  //        "_volume_data_3d_info_sample_count[0]"  :  "17"
-  //        "_volume_data_3d_info_sample_count[1]"  :  "11"
-  //        "_volume_data_3d_info_sample_count[2]"  :  "11"
-  //        "_volume_data_3d_info_sample_rate"  :  "1"
-  //        "_volume_data_3d_info_sigma_sampled"  :  "0.354201"
-  //        "_volume_data_3d_info_sigma_source"  :  "0.354201"
-  //        "_volume_data_3d_info_spacegroup_cell_angles[0]"  :  "90"
-  //        "_volume_data_3d_info_spacegroup_cell_angles[1]"  :  "90"
-  //        "_volume_data_3d_info_spacegroup_cell_angles[2]"  :  "90"
-  //        "_volume_data_3d_info_spacegroup_cell_size[0]"  :  "45.65"
-  //        "_volume_data_3d_info_spacegroup_cell_size[1]"  :  "47.56"
-  //        "_volume_data_3d_info_spacegroup_cell_size[2]"  :  "77.61"
-  //        "_volume_data_3d_info_spacegroup_number"  :  "19"
-  //        "_volume_data_3d_values"  :
-  //        [
-  //          0.186828
-  //          0.11986
-
 }
 
 

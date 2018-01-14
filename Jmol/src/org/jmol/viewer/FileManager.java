@@ -410,6 +410,9 @@ public class FileManager implements BytePoster {
     byte[] cacheBytes = (allowCached && outputBytes == null ? cacheBytes = getPngjOrDroppedBytes(
         fullName, name) : null);
     try {
+      if (allowCached && name.indexOf(".png") >= 0 && pngjCache == null
+          && !vwr.getBoolean(T.testflag1))
+        pngjCache = new Hashtable<String, Object>();
       if (cacheBytes == null) {
         boolean isPngjBinaryPost = (name.indexOf("?POST?_PNGJBIN_") >= 0);
         boolean isPngjPost = (isPngjBinaryPost || name.indexOf("?POST?_PNGJ_") >= 0);
@@ -435,9 +438,6 @@ public class FileManager implements BytePoster {
           name = name.substring(0, iurl);
         }
         boolean isApplet = (appletDocumentBaseURL != null);
-        if (allowCached && name.indexOf(".png") >= 0 && pngjCache == null
-            && !vwr.getBoolean(T.testflag1))
-          pngjCache = new Hashtable<String, Object>();
         if (isApplet || isURL) {
           if (isApplet && isURL && appletProxy != null)
             name = appletProxy + "?url=" + urlEncode(name);

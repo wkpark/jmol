@@ -310,8 +310,8 @@ class BCifDensityReader extends MapFileReader {
     
     if (params.thePlane == null && (params.cutoffAutomatic || !Float.isNaN(params.sigma))) {
       float sigma = (params.sigma < 0 || Float.isNaN(params.sigma) ? 1 : params.sigma);
-      dmean = getCifFloat("_volume_data_3d_info_mean_source");
-      float rmsDeviation = getCifFloat("_volume_data_3d_info_sigma_source");
+      dmean = getCifFloat("_volume_data_3d_info_mean_sampled");
+      float rmsDeviation = getCifFloat("_volume_data_3d_info_sigma_sampled");
       params.cutoff = rmsDeviation * sigma + dmean;
       Logger.info("Cutoff set to (mean + rmsDeviation*" + sigma + " = " + params.cutoff + ")\n");
     }

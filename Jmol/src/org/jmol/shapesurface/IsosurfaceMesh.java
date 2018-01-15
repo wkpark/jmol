@@ -1006,6 +1006,19 @@ public class IsosurfaceMesh extends Mesh {
     recalcAltVertices = true;
   }
 
+  float[] getDataMinMax() { 
+    float min = Float.MAX_VALUE;
+    float max = Float.MIN_VALUE;
+    for (int i = vvs.length; --i >= 0;) {
+      float v = vvs[i];
+      if (v < min)
+        min = v;
+      if (v > max)
+        max = v;      
+    }
+    return new float[] { min, max };
+  }
+  
   float[] getDataRange() {
     return (jvxlData.jvxlPlane != null
         && colorEncoder == null ? null : new float[] {

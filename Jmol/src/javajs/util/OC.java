@@ -398,9 +398,9 @@ public class OC extends OutputStream implements GenericOutputChannel {
   }
 
   public final static String[] urlPrefixes = { "http:", "https:", "sftp:", "ftp:",
-  "file:" };
+  "cache://", "file:" };
   // note that SFTP is not supported
-  public final static int URL_LOCAL = 4;
+  public final static int URL_LOCAL = 5;
 
   public static boolean isRemote(String fileName) {
     if (fileName == null)

@@ -1520,6 +1520,10 @@ public class FileManager implements BytePoster {
     // BytePoster interface - for javajs.util.OC (output channel)
     // in principle, could have sftp or ftp here
     // but sftp is not implemented
+    if (fileName.startsWith("cache://")) {
+      cachePut(fileName, bytes);
+      return "OK " + bytes.length + "cached";
+    }
     Object ret = getBufferedInputStreamOrErrorMessageFromName(fileName, null, false,
             false, bytes, false, true);
     if (ret instanceof String)

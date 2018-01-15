@@ -25,6 +25,8 @@ package org.jmol.jvxl.data;
 
 
 
+import java.util.Map;
+
 import javajs.J2SIgnoreImport;
 import javajs.util.Lst;
 import javajs.util.P3;
@@ -32,8 +34,6 @@ import javajs.util.PT;
 import javajs.util.SB;
 import javajs.util.T3;
 import javajs.util.XmlUtil;
-
-import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.java.BS;
@@ -93,7 +93,7 @@ public class JvxlCoder {
    * @param nSurfaces
    * @param state
    * @param comment
-   * @return
+   * @return JVXL file XML 
    */
   public static String jvxlGetFileVwr(Viewer vwr, JvxlData jvxlData,
                                    MeshData meshData, String[] title,
@@ -122,8 +122,7 @@ public class JvxlCoder {
           "jmolVersion", jvxlData.version,
           "xmlns", "http://jmol.org/jvxl_schema",
           "xmlns:cml", "http://www.xml-cml.org/schema" });
-      if (jvxlData.jvxlFileTitle != null)
-        XmlUtil.appendCdata(data, "jvxlFileTitle", null, "\n" + jvxlData.jvxlFileTitle);
+      XmlUtil.appendCdata(data, "jvxlFileTitle", null, jvxlData.jvxlFileTitle == null ? "\n" : "\n" + jvxlData.jvxlFileTitle);
       if (jvxlData.moleculeXml != null)
         data.append(jvxlData.moleculeXml);
       String volumeDataXml = (vertexDataOnly ? null : jvxlData.jvxlVolumeDataXml);

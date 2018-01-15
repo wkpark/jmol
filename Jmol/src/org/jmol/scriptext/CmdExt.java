@@ -3605,6 +3605,7 @@ public class CmdExt extends ScriptExt {
     String type = "SPT";
     boolean isCommand = true;
     boolean showOnly = false;
+    boolean isContact = false;
     if (args == null) {
       // write command
       args = st;
@@ -3848,6 +3849,7 @@ public class CmdExt extends ScriptExt {
       // write script "filename"
       // write isosurface t.jvxl
       // write isosurface t.pmesh
+      // write contact t.jvxl
 
       if (type.equals("IMAGE")
           && PT.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
@@ -3907,7 +3909,8 @@ public class CmdExt extends ScriptExt {
       //   fileName = fileName.substring(0, fileName.length() - 1);
     }
 
-    if (type.equals("ISOSURFACE")) {
+    if (type.equals("ISOSURFACE") || type.equals("CONTACT")) {
+      isContact = type.equals("CONTACT");
       type = (fileName != null && fileName.indexOf(".") >= 0 ? fileName
           .substring(fileName.lastIndexOf(".") + 1).toUpperCase() : "JVXL");
       if (type.equals("PMESH"))
@@ -4131,11 +4134,11 @@ public class CmdExt extends ScriptExt {
           error(ScriptError.ERROR_noData);
         type = "PMB";
       } else if (data == "ISOSURFACE" || data == "MESH") {
-        if ((data = (String) getIsosurfaceJvxl(JC.SHAPE_ISOSURFACE, data)) == null)
+        if ((data = (String) getIsosurfaceJvxl(isContact ? JC.SHAPE_CONTACT : JC.SHAPE_ISOSURFACE, data)) == null)
           error(ScriptError.ERROR_noData);
         type = (data.indexOf("<?xml") >= 0 ? "XJVXL" : "JVXL");
         if (!showOnly)
-          showString((String) getShapeProperty(JC.SHAPE_ISOSURFACE,
+          showString((String) getShapeProperty(isContact ? JC.SHAPE_CONTACT : JC.SHAPE_ISOSURFACE,
               "jvxlFileInfo"));
       } else {
         // image

@@ -139,7 +139,7 @@ import org.jmol.viewer.Viewer;
 
 public class Isosurface extends MeshCollection implements MeshDataServer {
 
-  private IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
+  protected IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
   protected IsosurfaceMesh thisMesh;
 
   @Override
@@ -943,7 +943,6 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       return JvxlCoder.jvxlGetFileVwr(vwr, jvxlData, meshData, title, "", true, 1, sb.toString(), null);
     }
     if (property == "jvxlFileInfo") {
-      thisMesh.setJvxlColorMap(false);
       return JvxlCoder.jvxlGetInfo(jvxlData);
     }
     if (property == "command") {

@@ -25,14 +25,14 @@
 
 package org.jmol.shapesurface;
 
+import java.util.Hashtable;
+import java.util.Map;
+
 import javajs.util.CU;
 import javajs.util.Lst;
 import javajs.util.Measure;
-
-import java.util.Hashtable;
-
-import java.util.Map;
-
+import javajs.util.P3;
+import javajs.util.V3;
 
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.atomdata.AtomData;
@@ -41,6 +41,7 @@ import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.c.HB;
 import org.jmol.c.VDW;
 import org.jmol.java.BS;
+import org.jmol.jvxl.data.JvxlCoder;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.readers.Parameters;
@@ -48,13 +49,12 @@ import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
+import org.jmol.util.BoxInfo;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.ContactPair;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
-import javajs.util.P3;
 import org.jmol.util.TempArray;
-import javajs.util.V3;
 
 public class Contact extends Isosurface {
 
@@ -65,6 +65,30 @@ public class Contact extends Isosurface {
     myType = "contact";
   }
 
+  @Override
+  public Object getProperty(String property, int index) {
+    return getPropC(property, index);
+  }
+
+  protected int displayType;
+
+  protected Object getPropC(String property, int index) {
+    IsosurfaceMesh thisMesh = this.thisMesh;
+    if (index >= 0 && (index >= meshCount || (thisMesh = isomeshes[index]) == null))
+      return null;
+    if (property == "jvxlFileInfo") {
+      thisMesh.setJvxlColorMap(false);
+      if (displayType == T.plane) {
+        JvxlCoder.jvxlCreateColorData(jvxlData, thisMesh.vvs);
+        float[] minmax = thisMesh.getDataMinMax();
+        jvxlData.mappedDataMin = minmax[0];
+        jvxlData.mappedDataMax = minmax[1];
+      }
+      return JvxlCoder.jvxlGetInfo(jvxlData);
+    }
+    return getPropI(property, index);
+  }
+  
   @Override
   public void setProperty(String propertyName, Object value, BS bs) {
 
@@ -82,6 +106,7 @@ public class Contact extends Isosurface {
   protected Atom[] atoms;
   private int ac;
   private float minData, maxData;
+
   //private final static String hbondH = "_H & connected(_O|_N and his and not *.N |_S)";
   //private final static float HBOND_CUTOFF = -0.8f;
   private final static RadiusData rdVDW =  new RadiusData(null, 1, EnumType.FACTOR, VDW.AUTO);
@@ -293,7 +318,7 @@ public class Contact extends Isosurface {
     double volume = 0;
     if (displayType == T.full && resolution == Float.MAX_VALUE)
       resolution = (nContacts > 1000 ? 3 : 10);
-
+    BoxInfo box = new BoxInfo();
     for (int i = nContacts; --i >= 0;) {
       ContactPair cp = pairs.get(i);
       float oldScore = cp.score;
@@ -339,8 +364,13 @@ public class Contact extends Isosurface {
       }
       if (colorByType)
         setColorByScore((cp.contactType == T.hbond ? 4 : cp.score), nV);
+      for (int j = thisMesh.vc; --j >= 0;)
+        box.addBoundBoxPoint(thisMesh.vs[j]);
     }
     Logger.setLogLevel(logLevel);
+    jvxlData.boundingBox[0] = box.bbCorner0;
+    jvxlData.boundingBox[1] = box.bbCorner1;
+    this.displayType = displayType;
     return (float) volume;
   }
   
@@ -590,8 +620,10 @@ public class Contact extends Isosurface {
       setPropI("map", Boolean.TRUE, null);
       params.volumeData = volumeData;
       setPropI("sasurface", Float.valueOf(0), null);
-      if (displayType != T.connect)
+      if (displayType == T.plane) {
         iSlab0 = -100;
+      }
+      break;
     }
     if (iSlab0 != iSlab1)
       thisMesh.getMeshSlicer().slabPolygons(TempArray.getSlabWithinRange(iSlab0, iSlab1),

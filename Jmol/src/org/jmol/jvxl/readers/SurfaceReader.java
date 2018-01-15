@@ -394,7 +394,10 @@ public abstract class SurfaceReader implements VertexDataServer {
         return false;
       generateSurfaceData();
     }
-    if (jvxlFileHeaderBuffer != null) {
+    
+    if (jvxlFileHeaderBuffer == null) {
+      jvxlData.jvxlFileTitle = "";
+    } else {
       String s = jvxlFileHeaderBuffer.toString();
       int i = s.indexOf('\n', s.indexOf('\n', s.indexOf('\n') + 1) + 1) + 1;
       jvxlData.jvxlFileTitle = s.substring(0, i);

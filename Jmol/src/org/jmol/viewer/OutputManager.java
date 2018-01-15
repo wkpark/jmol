@@ -377,14 +377,15 @@ abstract class OutputManager {
   OC getOutputChannel(String fileName, String[] fullPath) {
     if (!vwr.haveAccess(ACCESS.ALL))
       return null;
-    if (fileName != null) {
+    boolean isCache = (fileName != null && fileName.startsWith("cache://"));
+    if (fileName != null && !isCache) {
       fileName = getOutputFileNameFromDialog(fileName, Integer.MIN_VALUE, null);
       if (fileName == null)
         return null;
     }
     if (fullPath != null)
       fullPath[0] = fileName;
-    String localName = (OC.isLocal(fileName) ? fileName : null);
+    String localName = (OC.isLocal(fileName) || isCache ? fileName : null);
     try {
       return openOutputChannel(privateKey, localName, false, false);
     } catch (IOException e) {

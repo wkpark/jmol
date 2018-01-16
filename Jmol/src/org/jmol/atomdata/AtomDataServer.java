@@ -30,6 +30,6 @@ public interface AtomDataServer {
   
   public float evalFunctionFloat(Object func, Object params, float[] values);
 
-  Map<String, Object> readCifData(String fileName, Object rdrOrStringData, boolean isCif2);
+  Map<String, Object> readCifData(String fileName, Object rdrOrStringData, String type);
 
 }

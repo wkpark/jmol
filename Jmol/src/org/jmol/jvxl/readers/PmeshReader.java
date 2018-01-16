@@ -156,6 +156,7 @@ class PmeshReader extends PolygonFileReader {
       }
       br.reset();
     } catch (Exception e) {
+      System.out.println(e);
     }
     return false;
   }

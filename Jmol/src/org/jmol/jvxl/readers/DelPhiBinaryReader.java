@@ -65,7 +65,7 @@ class DelPhiBinaryReader extends VolumeFileReader {
    * @param sg 
    */
   @Override
-  void init2(SurfaceGenerator sg, BufferedReader brNull) {
+  void init2(SurfaceGenerator sg, BufferedReader br) {
     String fileName = (String) ((Object[]) sg.getReaderData())[0];
     init2VFR(sg, br);
     binarydoc = newBinaryDocument();

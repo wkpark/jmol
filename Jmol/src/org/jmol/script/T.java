@@ -824,9 +824,11 @@ public class T {
   public final static int defaults                       = strparam | 32;
   public final static int defaulttorsionlabel            = strparam | 34;
   public final static int defaultvdw                     = strparam | 35;
-  public final static int edsurlcutoff                   = strparam | 36;
-  public final static int edsurlformat                   = strparam | 37;
-  public final static int edsurlformatdiff               = strparam | 38;
+  public final static int eds                            = strparam | 36;
+  public final static int edsdiff                        = strparam | 37;
+//  public final static int edsurlcutoff                   = strparam | 36;
+//  public final static int edsurlformat                   = strparam | 37;
+//  public final static int edsurlformatdiff               = strparam | 38;
   public final static int energyunits                    = strparam | 39; 
   public final static int filecachedirectory             = strparam | 40;
   public final static int forcefield                     = strparam | 41;
@@ -2390,9 +2392,11 @@ public class T {
        "defaultTorsionLabel",
        "defaultVDW",
        "drawFontSize",
-       "edsUrlCutoff",
-       "edsUrlFormat",
-       "edsUrlFormatDiff",
+       "eds",
+       "edsDiff",
+//       "edsUrlCutoff",
+//       "edsUrlFormat",
+//       "edsUrlFormatDiff",
        "energyUnits",
        "fileCacheDirectory",
        "fontsize",
@@ -3443,9 +3447,11 @@ public class T {
         defaulttorsionlabel,                //        "defaultTorsionLabel"
         defaultvdw,                         //        "defaultVDW"
         drawfontsize,                       //        "drawFontSize"
-        edsurlcutoff,                       //        "edsUrlCutoff"
-        edsurlformat,                       //        "edsUrlFormat"
-        edsurlformatdiff,                   //        "edsUrlFormatDiff"
+        eds,                                //        "eds"
+        edsdiff,                            //        "edsDiff"
+//        edsurlcutoff,                       //        "edsUrlCutoff"
+//        edsurlformat,                       //        "edsUrlFormat"
+//        edsurlformatdiff,                   //        "edsUrlFormatDiff"
         energyunits,                        //        "energyUnits"
         filecachedirectory,                 //        "fileCacheDirectory"
         fontsize,                           //        "fontsize"

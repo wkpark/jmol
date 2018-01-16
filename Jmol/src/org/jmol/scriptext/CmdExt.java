@@ -4311,7 +4311,7 @@ public class CmdExt extends ScriptExt {
       eval.checkLength23();
       len = st.length;
       if (!chk) {
-        Object d = vwr.ms.getInfo(vwr.am.cmi, "domains");
+        Object d = vwr.getModelInfo("domains");
         if (d instanceof SV)
           msg = vwr.getAnnotationInfo((SV) d, eval.optParameterAsString(2),
               T.domains);
@@ -4327,7 +4327,7 @@ public class CmdExt extends ScriptExt {
       eval.checkLength23();
       len = st.length;
       if (!chk) {
-        Object d = vwr.ms.getInfo(vwr.am.cmi, "validation");
+        Object d = vwr.getModelInfo("validation");
         if (d instanceof SV)
           msg = vwr.getAnnotationInfo((SV) d, eval.optParameterAsString(2),
               T.validation);
@@ -4343,7 +4343,7 @@ public class CmdExt extends ScriptExt {
       eval.checkLength23();
       len = st.length;
       if (!chk) {
-        Object d = vwr.ms.getInfo(vwr.am.cmi, "dssr");
+        Object d = vwr.getModelInfo("dssr");
         msg = (d == null ? "no DSSR information has been read" : len > 2 ? SV
             .getVariable(vwr.extractProperty(d, stringParameter(2), -1))
             .asString() : "" + SV.getVariable(d).asString());
@@ -4388,7 +4388,7 @@ public class CmdExt extends ScriptExt {
         if ("mf".equals(param2))
           param2 = "formula";
         if ("formula".equals(param2)) {
-          msg = (String) vwr.ms.getInfo(vwr.am.cmi, "formula");
+          msg = (String) vwr.getModelInfo("formula");
           // cif files will have formula already
           if (msg != null)
             msg = PT.rep(msg, " ", "");
@@ -5063,9 +5063,9 @@ public class CmdExt extends ScriptExt {
       // reset -- presumes conventional, so if it is not, 
       // _M.unitcell_conventional must be set in the reader.
 
-      newUC = vwr.ms.getInfo(vwr.am.cmi, "unitcell_conventional");
+      newUC = vwr.getModelInfo("unitcell_conventional");
       if (PT.isOneOf(ucname, ";parent;standard;primitive;")) {
-        if (newUC == null && vwr.ms.getInfo(vwr.am.cmi, "isprimitive") != null) {
+        if (newUC == null && vwr.getModelInfo("isprimitive") != null) {
           showString("Cannot convert unit cell when file data is primitive and have no lattice information");
           return;
         }
@@ -5078,11 +5078,11 @@ public class CmdExt extends ScriptExt {
         oabc = (T3[]) newUC;
       }
       if (stype == null)
-        stype = (String) vwr.ms.getInfo(vwr.am.cmi, "latticeType");
+        stype = (String) vwr.getModelInfo("latticeType");
       if (newUC != null)
         eval.setCurrentCagePts(vwr.getV0abc(newUC), "" + newUC);
       if (!ucname.equals("conventional")) {
-        s = (String) vwr.ms.getInfo(vwr.am.cmi, "unitcell_" + ucname);
+        s = (String) vwr.getModelInfo("unitcell_" + ucname);
         if (s == null) {
           boolean isPrimitive = ucname.equals("primitive");
           if (isPrimitive || ucname.equals("reciprocal")) {

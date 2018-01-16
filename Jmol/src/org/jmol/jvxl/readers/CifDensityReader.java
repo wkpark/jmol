@@ -48,7 +48,7 @@ class CifDensityReader extends BCifDensityReader {
   
   @Override
   protected void getCifData(String fileName, Object data) {
-    cifData = sg.atomDataServer.readCifData(fileName, data, false);
+    cifData = sg.atomDataServer.readCifData(fileName, data, "CIF");
   }
 
   @Override

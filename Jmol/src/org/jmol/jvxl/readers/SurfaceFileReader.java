@@ -23,12 +23,14 @@
  */
 package org.jmol.jvxl.readers;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 
 import javajs.api.GenericBinaryDocument;
 import javajs.util.OC;
 import javajs.util.PT;
+import javajs.util.Rdr;
 
 import org.jmol.api.Interface;
 import org.jmol.viewer.Viewer;
@@ -46,8 +48,20 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   protected void setStream(String fileName, boolean isBigEndian) {
-    binarydoc.setStream(fileName == null ? null : sg.atomDataServer
-            .getBufferedInputStream(fileName), isBigEndian);
+    if (fileName == null)
+      binarydoc.setStream(null, isBigEndian);
+    else
+    try {
+      if (br instanceof Rdr.StreamReader) {
+        BufferedInputStream stream = ((Rdr.StreamReader) br).getStream();
+        stream.reset();
+        binarydoc.setStream(stream, true); 
+      }
+    } catch (Exception e) {
+      System.out.println("BCifDensityReader " + e);
+      binarydoc.setStream(sg.atomDataServer
+          .getBufferedInputStream(fileName), isBigEndian);
+    }
   }
 
   @Override
@@ -60,8 +74,8 @@ abstract class SurfaceFileReader extends SurfaceReader {
   }
 
   void init2SFR(SurfaceGenerator sg, BufferedReader br) {
-    init(sg);
     this.br = br;
+    init(sg);
   }
 
   GenericBinaryDocument newBinaryDocument() {

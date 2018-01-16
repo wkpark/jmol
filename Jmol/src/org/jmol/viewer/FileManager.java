@@ -1154,9 +1154,33 @@ public class FileManager implements BytePoster {
     // Apbs, Jvxl, or Cube, also efvet and DHBD
 
     String line = null;
+
+    if (bufferedReader instanceof Rdr.StreamReader) {
+      BufferedInputStream is = ((Rdr.StreamReader) bufferedReader).getStream();
+      if (is.markSupported()) {
+        try {
+          is.mark(300);
+          byte[] buf = new byte[300];
+          is.read(buf, 0, 300);
+          is.reset();
+          if ((buf[0] & 0xFF) == 0x83) // Finite map(3)
+            return "BCifDensity";
+          if (buf[0] == 'P' && buf[1] == 'M' && buf[2] == 1 && buf[3] == 0)//          "PM\1\0"
+            return "Pmesh";
+          if (buf[208] == 'M' && buf[209] == 'A' && buf[210] == 'P')//          "MAP" at 208
+            return "Mrc";
+          if (buf[0] == '\24' && buf[1] == 0 && buf[2] == 0 && buf[3] == 0)
+            return "DelPhi";
+          if (buf[36] == 0 && buf[37] == 100) // header19 (short)100
+            return "Dsn6";
+        } catch (IOException e) {
+          // ignore
+        }
+      }
+    }
+
     LimitedLineReader br = null;
- 
-    
+
     try {
       br = new LimitedLineReader(bufferedReader, 16000);
       line = br.getHeader(0);
@@ -1166,13 +1190,32 @@ public class FileManager implements BytePoster {
     if (br == null || line == null || line.length() == 0)
       return null;
 
+    // binary formats: problem here is that the buffered reader
+    // may be translating byte sequences into unicode
+    // and thus shifting the offset
+    int pt0 = line.indexOf('\0');
+    if (pt0 >= 0) {
+      if (line.charAt(0) == 0x83) // Finite map(3)
+        return "BCifDensity";
+      if (line.indexOf(FileManager.PMESH_BINARY_MAGIC_NUMBER) == 0)
+        return "Pmesh";
+      if (line.indexOf("MAP ") == 208)
+        return "Mrc";
+      if (line.indexOf(DELPHI_BINARY_MAGIC_NUMBER) == 0)
+        return "DelPhi";
+      if (line.length() > 37
+          && (line.charAt(36) == 0 && line.charAt(37) == 100 || line.charAt(36) == 0
+              && line.charAt(37) == 100)) {
+        // header19 (short)100
+        return "Dsn6";
+      }
+    }
+
     //for (int i = 0; i < 220; i++)
     //  System.out.print(" " + i + ":" + (0 + line.charAt(i)));
     //System.out.println("");
-    
+
     switch (line.charAt(0)) {
-    case 0x83: // Finite map(3)
-      return "BCifDensity";
     case '@':
       if (line.indexOf("@text") == 0)
         return "Kinemage";
@@ -1219,31 +1262,14 @@ public class FileManager implements BytePoster {
       return "Obj";
     if (line.indexOf("# object with") == 0)
       return "Nff";
-    if (line.indexOf("BEGIN_DATAGRID_3D") >= 0 || line.indexOf("BEGIN_BANDGRID_3D") >= 0)
+    if (line.indexOf("BEGIN_DATAGRID_3D") >= 0
+        || line.indexOf("BEGIN_BANDGRID_3D") >= 0)
       return "Xsf";
     if (line.indexOf("tiles in x, y") >= 0)
       return "Ras3D";
-    // binary formats: problem here is that the buffered reader
-    // may be translating byte sequences into unicode
-    // and thus shifting the offset
-    int pt0 = line.indexOf('\0');
-    if (pt0 >= 0) {
-      if (line.indexOf(FileManager.PMESH_BINARY_MAGIC_NUMBER) == 0)
-        return "Pmesh";
-      if (line.indexOf("MAP ") == 208)
-        return "Mrc";
-      if (line.indexOf(DELPHI_BINARY_MAGIC_NUMBER) == 0)
-        return "DelPhi";
-      if (line.length() > 37 && (line.charAt(36) == 0 && line.charAt(37) == 100 
-          || line.charAt(36) == 0 && line.charAt(37) == 100)) { 
-           // header19 (short)100
-          return "Dsn6";
-      }
-    }
-    
     if (line.indexOf(" 0.00000e+00 0.00000e+00      0      0\n") >= 0)
       return "Uhbd"; // older APBS http://sourceforge.net/p/apbs/code/ci/9527462a39126fb6cd880924b3cc4880ec4b78a9/tree/src/mg/vgrid.c
-    
+
     // Apbs, Jvxl, Obj, or Cube, maybe formatted Plt
 
     line = br.readLineWithNewline();
@@ -1261,8 +1287,9 @@ public class FileManager implements BytePoster {
         return "PltFormatted";
     }
     String line3 = br.readLineWithNewline(); // third line
-    if (line.startsWith("v ") && line2.startsWith("v ") && line3.startsWith("v "))
-        return "Obj";
+    if (line.startsWith("v ") && line2.startsWith("v ")
+        && line3.startsWith("v "))
+      return "Obj";
     //next line should be the atom line
     int nAtoms = PT.parseInt(line3);
     if (nAtoms == Integer.MIN_VALUE)
@@ -1270,8 +1297,9 @@ public class FileManager implements BytePoster {
     tokens = PT.getTokens(line3);
     if (tokens[0].indexOf(".") > 0)
       return (line3.length() >= 60 || tokens.length != 3 ? null : "VaspChgcar"); // M40 files are > 60 char
-    if (nAtoms >= 0) 
-      return (tokens.length == 4 || tokens.length == 5 && tokens[4].equals("1") ? "Cube" : null); //Can't be a Jvxl file; 
+    if (nAtoms >= 0)
+      return (tokens.length == 4 || tokens.length == 5 && tokens[4].equals("1") ? "Cube"
+          : null); //Can't be a Jvxl file; 
     nAtoms = -nAtoms;
     for (int i = 4 + nAtoms; --i >= 0;)
       if ((line = br.readLineWithNewline()) == null)

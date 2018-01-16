@@ -243,10 +243,10 @@ public class GlobalSettings {
     setF("drawFontSize", drawFontSize);
     setB("drawPicking", drawPicking);
     setB("dsspCalculateHydrogenAlways", dsspCalcHydrogen);
-    setO("edsUrlFormat", edsUrlFormat);
-    setO("edsUrlFormatDiff", edsUrlFormatDiff);
-    //setParameterValue("edsUrlOptions", edsUrlOptions);
-    setO("edsUrlCutoff", edsUrlCutoff);
+//    setO("edsUrlFormat", edsUrlFormat);
+//    setO("edsUrlFormatDiff", edsUrlFormatDiff);
+//    //setParameterValue("edsUrlOptions", edsUrlOptions);
+//    setO("edsUrlCutoff", edsUrlCutoff);
     setB("ellipsoidArcs", ellipsoidArcs);
     setB("ellipsoidArrows", ellipsoidArrows);
     setB("ellipsoidAxes", ellipsoidAxes);
@@ -453,9 +453,9 @@ public class GlobalSettings {
       nmrUrlFormat, nmrPredictFormat, smilesUrlFormat, nihResolverFormat,
       pubChemFormat;
 
-  String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%c2%c3/%file/%file.omap";
-  String edsUrlFormatDiff = "http://eds.bmc.uu.se/eds/dfs/%c2%c3/%file/%file_diff.omap";
-  String edsUrlCutoff = "http://eds.bmc.uu.se/eds/dfs/%c2%c3/%file/%file.sfdat";
+//  String edsUrlFormat = "http://eds.bmc.uu.se/eds/dfs/%c2%c3/%file/%file.omap";
+//  String edsUrlFormatDiff = "http://eds.bmc.uu.se/eds/dfs/%c2%c3/%file/%file_diff.omap";
+//  String edsUrlCutoff = "http://eds.bmc.uu.se/eds/dfs/%c2%c3/%file/%file.sfdat";
   // not implemented String edsUrlOptions = "within 2.0 {*}";
   float minBondDistance = JC.DEFAULT_MIN_BOND_DISTANCE;
   int minPixelSelRadius = 6;
@@ -1057,9 +1057,9 @@ public class GlobalSettings {
     app(str, "#set smilesUrlFormat " + PT.esc(smilesUrlFormat));
     app(str, "#set nihResolverFormat " + PT.esc(nihResolverFormat));
     app(str, "#set pubChemFormat " + PT.esc(pubChemFormat));
-    app(str, "#set edsUrlFormat " + PT.esc(edsUrlFormat));
-    app(str, "#set edsUrlFormatDiff " + PT.esc(edsUrlFormatDiff));
-    app(str, "#set edsUrlCutoff " + PT.esc(edsUrlCutoff));
+//    app(str, "#set edsUrlFormat " + PT.esc(edsUrlFormat));
+//    app(str, "#set edsUrlFormatDiff " + PT.esc(edsUrlFormatDiff));
+//    app(str, "#set edsUrlCutoff " + PT.esc(edsUrlCutoff));
     //    if (autoLoadOrientation)
     //      appendCmd(str, "set autoLoadOrientation true");
     app(str, "set bondingVersion " + bondingVersion);

@@ -4574,9 +4574,7 @@ public class ScriptEval extends ScriptExpr {
         isConcat = true;
         int pt = filename.indexOf("/");
         String id;
-        if (pt == 1 && vwr.ms.getInfo(vwr.am.cmi, "isPDB") == Boolean.TRUE) {
-          //  load 
-          id = (String) vwr.ms.getInfo(vwr.am.cmi, "modelName");
+        if (pt == 1 && (id = vwr.getPdbID()) != null) {
           filename = filename.substring(0, 1) + id + filename.substring(1);
           pt = filename.indexOf("/");
         } else {

@@ -55,6 +55,26 @@ import javajs.api.GenericZipTools;
  */
 public class Rdr implements GenericLineReader {
 
+  public static class StreamReader extends BufferedReader {
+
+    private BufferedInputStream stream;
+
+    public StreamReader(BufferedInputStream bis, String charSet) throws UnsupportedEncodingException {
+      super(new InputStreamReader(bis, (charSet == null ? "UTF-8" : charSet)));
+      stream = bis;
+    }
+    
+    public BufferedInputStream getStream() {
+      try {
+        stream.reset();
+      } catch (IOException e) {
+        // ignore
+      }
+      return stream;
+    }
+
+  }
+
   BufferedReader reader;
 
   public Rdr(BufferedReader reader) {
@@ -346,7 +366,7 @@ public class Rdr implements GenericLineReader {
       throws IOException {
     // could also just make sure we have a buffered input stream here.
     if (getUTFEncodingForStream(bis) == Encoding.NONE)
-      return new BufferedReader(new InputStreamReader(bis, (charSet == null ? "UTF-8" : charSet)));
+      return new Rdr.StreamReader(bis, charSet);
     byte[] bytes = getLimitedStreamBytes(bis, -1);
     bis.close();
     return getBR(charSet == null ? fixUTF(bytes) : new String(bytes, charSet));

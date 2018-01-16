@@ -2882,28 +2882,42 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public Map<String, Object> getCifData(int modelIndex) {
-    return readCifData(ms.getModelFileName(modelIndex), ms.getModelFileType(modelIndex));
+    return readCifData(ms.getModelFileName(modelIndex), ms.getModelFileType(modelIndex).toUpperCase());
   }
 
   public Map<String, Object> readCifData(String fileName, String type) {
-    String data = (fileName == null || fileName.length() == 0 ? getCurrentFileAsString("script") 
+    String fname = (fileName == null ? ms.getModelFileName(am.cmi) : fileName);
+    if (type == null && fname != null
+        && fname.toUpperCase().indexOf("BCIF") >= 0) {
+      BufferedInputStream is = fm.getBufferedInputStream(fname);
+      try {
+        return ((javajs.util.MessagePackReader) Interface.getInterface(
+            "javajs.util.MessagePackReader", this, "script"))
+            .getMapForStream(is);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return new Hashtable<String, Object>();
+      }
+    }
+    String data = (fileName == null || fileName.length() == 0 ? getCurrentFileAsString("script")
         : getFileAsString3(fileName, false, null));
-    if (data == null)
+    if (data == null || data.length() < 2)
       return null;
     BufferedReader rdr = Rdr.getBR(data);
     if (type == null)
       type = getModelAdapter().getFileTypeName(rdr);
-    return (type == null ? null : readCifData(null, rdr, "cif2".equals(type.toLowerCase())));
+    return (type == null ? null : readCifData(null, rdr, type));
+
   }
 
   @Override
-  public Map<String, Object> readCifData(String fileName, Object rdrOrStringData, boolean isCif2) {
+  public Map<String, Object> readCifData(String fileName, Object rdrOrStringData, String type) {
     if (rdrOrStringData == null)
       rdrOrStringData = getFileAsString(fileName);
     BufferedReader rdr = (rdrOrStringData instanceof BufferedReader ? (BufferedReader) rdrOrStringData : Rdr.getBR((String) rdrOrStringData));
     return Rdr.readCifData(
         (GenericCifDataParser) Interface.getInterface(
-            (isCif2 ? "org.jmol.adapter.readers.cif.Cif2DataParser" : "javajs.util.CifDataParser"), this, "script"), rdr);
+            ("CIF2".equals(type) ? "org.jmol.adapter.readers.cif.Cif2DataParser" : "javajs.util.CifDataParser"), this, "script"), rdr);
   }
 
   JmolStateCreator jsc;
@@ -4140,7 +4154,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       }
       return (withPrefix ? "MOL3D::" : "")
           + PT.formatStringS(format, "FILE", id);
-    case '-':
+    case '-': // localized version
     case '_': // isosurface "=...", but we code that type as '_'
       // now *xxxx or =xxxx   --  both go to EBI instead of Uppsala, 
       // as Uppsala is being decommissioned in 2018
@@ -5489,17 +5503,18 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case T.nihresolverformat:
       g.nihResolverFormat = value;
       break;
-    // 14.3.10 (forgot to add these earlier)
-    case T.edsurlcutoff:
-      g.edsUrlCutoff = value;
-      break;
-    case T.edsurlformat:
-      g.edsUrlFormat = value;
-      break;
-    // 14.3.10 new
-    case T.edsurlformatdiff:
-      g.edsUrlFormatDiff = value;
-      break;
+// removed for Jmol 14.29.1
+//    // 14.3.10 (forgot to add these earlier)
+//    case T.edsurlcutoff:
+//      g.edsUrlCutoff = value;
+//      break;
+//    case T.edsurlformat:
+//      g.edsUrlFormat = value;
+//      break;
+//    // 14.3.10 new
+//    case T.edsurlformatdiff:
+//      g.edsUrlFormatDiff = value;
+//      break;
     // 13.3.6
     case T.animationmode:
       setAnimationMode(value);
@@ -9704,6 +9719,19 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public BS[] getSubstructureSetArray(String pattern, BS bsSelected, int flags) throws Exception {
     return getSmilesMatcher().getSubstructureSetArray(pattern, ms.at, ms.ac, bsSelected, null, flags);
+  }
+
+  public String getPdbID() {
+    return (ms.getInfo(am.cmi, "isPDB") == Boolean.TRUE ? (String) ms.getInfo(am.cmi, "modelName") : null);
+  }
+  
+  /**
+   * get a value from the current model's Model.auxiliaryInfo
+   * @param key
+   * @return value, or null if there is no SINGLE current model 
+   */
+  public Object getModelInfo(String key) {
+    return ms.getInfo(am.cmi, key);
   }
 
 }

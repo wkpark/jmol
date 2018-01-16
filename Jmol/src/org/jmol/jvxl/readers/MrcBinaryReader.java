@@ -51,7 +51,7 @@ class MrcBinaryReader extends MapFileReader {
    * @param sg 
    */
   @Override
-  void init2(SurfaceGenerator sg, BufferedReader brNull) {
+  void init2(SurfaceGenerator sg, BufferedReader br) {
     String fileName = (String) ((Object[]) sg.getReaderData())[0];
     init2MFR(sg, br);
     binarydoc = newBinaryDocument();
@@ -182,6 +182,10 @@ class MrcBinaryReader extends MapFileReader {
     mapc = binarydoc.readInt(); // CCP4 "crs2xyz[0-2]
     mapr = binarydoc.readInt();
     maps = binarydoc.readInt();
+    
+    // I do not have this exactly right yet -- just a hack -- EBI  eds/full
+    if (mapc == 2 && mapr == 1 && params.thePlane == null)
+      params.insideOut = !params.insideOut;
 
     String s = "" + mapc + mapr + maps;
     Logger.info("MRC header: mapc mapr maps: " + s);

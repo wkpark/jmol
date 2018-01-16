@@ -1163,6 +1163,7 @@ public class SurfaceGenerator {
     }
     String data = null;
     if (value instanceof String) {
+      // inline string data
       data = (String) value;
       // this will be OK, because any string will be a simple string, 
       // not a binary file.
@@ -1203,12 +1204,6 @@ public class SurfaceGenerator {
     readerData = new Object[] { params.fileName, data };
 
     if ("MRC DELPHI DSN6".indexOf(fileType.toUpperCase()) >= 0) {
-      try {
-        br.close();
-      } catch (IOException e) {
-        // ignore
-      }
-      br = null;
       fileType += "Binary";
     }
     return newReaderBr(fileType + "Reader", br);

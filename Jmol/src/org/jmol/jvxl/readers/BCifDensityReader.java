@@ -33,6 +33,7 @@ import javajs.util.AU;
 import javajs.util.BC;
 import javajs.util.MessagePackReader;
 import javajs.util.P3;
+import javajs.util.Rdr;
 import javajs.util.SB;
 
 import org.jmol.util.Logger;
@@ -60,12 +61,6 @@ class BCifDensityReader extends MapFileReader {
       binarydoc.setStream(new BufferedInputStream(new ByteArrayInputStream((byte[]) data)), true);
     else
       setStream(fileName, true);
-    try {
-      cifData = (new MessagePackReader(binarydoc, true)).readMap();
-      System.out.println("BCifDensityReader BCIF encoder " + cifData.get("encoder") + " BCIF version" + cifData.get("version"));
-    } catch (Exception e) {
-      System.out.println("BCifDensityReader error " + e);
-    }    
     nSurfaces = 1; 
   }
 
@@ -85,6 +80,14 @@ class BCifDensityReader extends MapFileReader {
   
   @SuppressWarnings("unchecked")
   protected Map<String, Object> getCifMap(String type) {
+    if (cifData == null)
+    try {
+      cifData = (new MessagePackReader(binarydoc, true)).readMap();
+      System.out.println("BCifDensityReader BCIF encoder " + cifData.get("encoder") + " BCIF version " + cifData.get("version"));
+    } catch (Exception e) {
+      System.out.println("BCifDensityReader error " + e);
+    }    
+
     Object[] dataBlocks = (Object[]) cifData.get("dataBlocks");
     for (int i = dataBlocks.length; --i >= 0;) {
       Map<String, Object> map = (Map<String, Object>) dataBlocks[i];
@@ -177,10 +180,8 @@ class BCifDensityReader extends MapFileReader {
   private boolean isDiff;
   
   @Override
-  void init2(SurfaceGenerator sg, BufferedReader brNull) {
-    
+  void init2(SurfaceGenerator sg, BufferedReader br) {    
     allowSigma = true;
-    
     init2MFR(sg, br);
     Object[] o2 = (Object[]) sg.getReaderData();
     String fileName = (String) o2[0];
@@ -188,16 +189,6 @@ class BCifDensityReader extends MapFileReader {
     Object data = o2[1];
     isDiff = (fileName != null && fileName.indexOf("&diff=1") >= 0
         || data instanceof String && ((String)data).indexOf("#diff=1") >= 0);
-    // the initial dummy call just asertains that 
-    if (fileName != null && fileName.indexOf("/0,0,0/0,0,0?") >= 0) {
-      String oldName = fileName;
-      P3[] box = sg.params.boundingBox;
-      fileName = fileName.replace("0,0,0/0,0,0",
-          box[0].x + "," + box[0].y + ","+ box[0].z + "/"
-          + box[1].x + "," + box[1].y + "," + box[1].z);
-      Logger.info("reading " + fileName);
-      sg.setRequiredFile(oldName, fileName);
-    }
     getCifData(fileName, data);
     // data are HIGH on the inside and LOW on the outside
 //    if (params.thePlane == null)

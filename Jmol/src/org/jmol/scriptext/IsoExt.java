@@ -1334,7 +1334,7 @@ public class IsoExt extends ScriptExt {
     P4 plane = null;
     P3 lattice = null;
     boolean fixLattice = false;
-    P3[] pts;
+    P3[] pts = null;
     int color = 0;
     String str = null;
     int modelIndex = (chk ? 0 : Integer.MIN_VALUE);
@@ -1565,7 +1565,7 @@ public class IsoExt extends ScriptExt {
           }
           if (ptc == null)
             ptc = (bs == null ? new P3() : vwr.ms.getAtomSetCenter(bs));
-          getWithinDistanceVector(propertyList, distance, ptc, bs, isDisplay);
+          pts = getWithinDistanceVector(propertyList, distance, ptc, bs, isDisplay);
           sbCommand.append(" within ").appendF(distance).append(" ")
               .append(bs == null ? Escape.eP(ptc) : Escape.eBS(bs));
         }
@@ -2595,10 +2595,21 @@ public class IsoExt extends ScriptExt {
         sbCommand.append(" INLINE ").append(PT.esc(str));
         surfaceObjectSeen = true;
         break;
+      case T.eds:
+      case T.edsdiff:        
       case T.string:
         boolean firstPass = (!surfaceObjectSeen && !planeSeen);
         propertyName = (firstPass && !isMapped ? "readFile" : "mapColor");
-        String filename = paramAsStr(i);
+        String filename;
+        if (eval.theTok == T.string) {
+          filename = paramAsStr(i);
+        } else {
+          String pdbID = vwr.getPdbID();
+          if (pdbID == null)
+            eval.errorStr(ScriptError.ERROR_invalidArgument, "no PDBID available");
+          filename = "*"  + (eval.theTok == T.edsdiff ? "*" : "") + pdbID;
+        }
+          
         /*
          * A file name, optionally followed by a calculation type and/or an integer file index.
          * Or =xxxx, an EDM from Uppsala Electron Density Server
@@ -2617,6 +2628,9 @@ public class IsoExt extends ScriptExt {
           if (isUppsala) // Uppsala EDS decommissioned
             filename = filename.replace('=', '*');          
           // new PDB ccp4 option
+          boolean isFull = (filename.indexOf("/full") >= 0);
+          if (filename.indexOf("/diff") >= 0)
+            filename = "*" + filename.substring(0, filename.indexOf("/diff"));
           if (filename.startsWith("**")) {
             if (Float.isNaN(sigma))
               addShapeProperty(propertyList, "sigma", Float.valueOf(sigma = 3));
@@ -2627,20 +2641,26 @@ public class IsoExt extends ScriptExt {
             }
           }
           if (!Float.isNaN(sigma))
-            showString("using sigma=" + sigma);
-          filename = (String) vwr.setLoadFormat(filename, (ptWithin == 0 ? '_' : '-'), false);
-          checkWithin = true;
+            showString("using cutoff = " + sigma + " sigma");
+          filename = (String) vwr.setLoadFormat(filename, (isFull || pts == null ? '_' : '-'), false);
+          // the initial dummy call just asertains that 
+          checkWithin = !isFull;
         } 
         if (checkWithin) {
-          if (ptWithin == 0) {
+          if (pts == null && ptWithin == 0) {
             onlyOneModel = filename;
             if (modelIndex < 0)
               modelIndex = vwr.am.cmi;
             bs = vwr.getModelUndeletedAtomsBitSet(modelIndex);
             if (bs.nextSetBit(0) >= 0) {
-              getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
+              pts = getWithinDistanceVector(propertyList, 2.0f, null, bs, false);
               sbCommand.append(" within 2.0 ").append(Escape.eBS(bs));
             }
+          }
+          if (pts != null && filename.indexOf("/0,0,0/0,0,0?") >= 0) {
+            filename = filename.replace("0,0,0/0,0,0",
+                pts[0].x + "," + pts[0].y + ","+ pts[0].z + "/"
+                + pts[pts.length - 1].x + "," + pts[pts.length - 1].y + "," + pts[pts.length - 1].z);
           }
           if (firstPass)
             defaultMesh = true;
@@ -3737,7 +3757,7 @@ public class IsoExt extends ScriptExt {
     }
   }
 
-  private void getWithinDistanceVector(Lst<Object[]> propertyList,
+  private P3[] getWithinDistanceVector(Lst<Object[]> propertyList,
                                        float distance, P3 ptc, BS bs,
                                        boolean isShow) {
     Lst<P3> v = new Lst<P3>();
@@ -3763,6 +3783,7 @@ public class IsoExt extends ScriptExt {
     }
     addShapeProperty(propertyList, (isShow ? "displayWithin" : "withinPoints"),
         new Object[] { Float.valueOf(distance), pts, bs, v });
+    return pts;
   }
 
   private void addShapeProperty(Lst<Object[]> propertyList, String key,

@@ -187,7 +187,8 @@ public class GamessUSReader extends GamessReader {
     asc.newAtomSet();
     while (rd().indexOf("$END") < 0) {
       String[] tokens = getTokens();
-      addAtomXYZSymName(tokens, 2, tokens[0], null).elementNumber = (short) parseIntStr(tokens[1]);
+      if (tokens.length > 4)
+        addAtomXYZSymName(tokens, 2, tokens[0], null).elementNumber = (short) parseIntStr(tokens[1]);
     }
     return (continuing = false);
   }

@@ -2507,7 +2507,7 @@ class GraphSet implements XYScaleConverter {
 	 * @param x1 start of integral or NaN to clear
 	 * @param x2 end of (pending) integral or NaN to split 
 	 * @param isFinal 
-	 * @return 
+	 * @return true if successful 
 	 * 
 	 * 
 	 * 
@@ -4580,6 +4580,11 @@ class GraphSet implements XYScaleConverter {
 	public int getSpectrumCount() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public void invertYAxis() {
+		viewList.get(0).init(null, 0, 0, getSpectrum().invertYAxis().isContinuous());
+		resetViewCompletely();		
 	}
 
 }

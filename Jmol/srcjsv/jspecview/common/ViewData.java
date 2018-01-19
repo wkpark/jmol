@@ -27,6 +27,7 @@ public class ViewData {
 
   private int nSpectra;
   private int iThisScale;
+	private Lst<Spectrum> spectra;
 
 	/**
 	 * 
@@ -61,8 +62,12 @@ public class ViewData {
 		init(spectra, yPt1, yPt2, isContinuous);
 	}
 
-  private void init(Lst<Spectrum> spectra, 
+  void init(Lst<Spectrum> spectra, 
   		double yPt1, double yPt2, boolean isContinuous) {
+  	if (spectra == null)
+  		spectra = this.spectra;
+  	else
+  		this.spectra = spectra;
 		thisScale = scaleData[iThisScale = 0];
 		for (int i = 0; i < scaleData.length; i++) {
 			scaleData[i].userYFactor = spectra.get(i).getUserYFactor();

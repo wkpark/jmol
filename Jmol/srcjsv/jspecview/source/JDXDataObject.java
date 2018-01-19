@@ -687,6 +687,16 @@ public abstract class JDXDataObject extends JDXHeader {
     xyCoords = coords;
   }
 
+  public JDXDataObject invertYAxis() {
+  	for (int i = xyCoords.length; --i >= 0;) {
+  		xyCoords[i].setYVal(-xyCoords[i].getYVal());
+  	}
+  	double d = minY;
+  	minY = -maxY;
+  	maxY = -d;
+  	return this;
+  }
+  
   /**
    * array of x,y coordinates
    */

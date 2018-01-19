@@ -287,6 +287,9 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 				case INTEGRALRANGE:
 					execSetIntegralParameter(st, Double.parseDouble(value));
 					break;
+				case INVERTY:
+					execZoom("invertY");
+					break;
 				case JMOL:
 					si.syncToJmol(value);
 					break;
@@ -627,11 +630,23 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 				pd().resetView();
 			} else if (value.equalsIgnoreCase("clear")) {
 				pd().clearAllView();
+			} else if (value.equalsIgnoreCase("invertY")) {
+				pd().getCurrentGraphSet().invertYAxis();
 			}
 			return true;
 		case 2:
 			x1 = Double.parseDouble(tokens.get(0));
 			x2 = Double.parseDouble(tokens.get(1));
+			break;
+		case 3:
+			String xy = tokens.get(0); 
+			if (xy.equalsIgnoreCase("X")) {
+				x1 = Double.parseDouble(tokens.get(1));
+				x2 = Double.parseDouble(tokens.get(2));				
+			} else if (xy.equalsIgnoreCase("Y")) {
+				y1 = Double.parseDouble(tokens.get(1));
+				y2 = Double.parseDouble(tokens.get(2));
+			}
 			break;
 		case 4:
 			x1 = Double.parseDouble(tokens.get(0));

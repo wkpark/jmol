@@ -95,7 +95,7 @@ class Display {
     /**
      * @j2sNative
      * 
-     * var s = prompt(label, data);
+     * var s = (data == null ? alert(label) : prompt(label, data));
      * if (s != null)return s;
      */
     {}

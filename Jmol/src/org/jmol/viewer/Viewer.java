@@ -8954,7 +8954,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public void alert(String msg) {
-    prompt(msg, "OK", null, true);
+    prompt(msg, null, null, true);
   }
 
   public String prompt(String label, String data, String[] list,

@@ -5604,7 +5604,7 @@ public class ScriptEval extends ScriptExpr {
       msg = parameterExpressionString(1, 0);
     }
     if (!chk)
-      vwr.prompt(msg, "OK", null, true);
+      vwr.prompt(msg, null, null, true);
   }
 
   private void cmdReset() throws ScriptException {

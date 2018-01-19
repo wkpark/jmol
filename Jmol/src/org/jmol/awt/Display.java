@@ -84,7 +84,7 @@ class Display {
         list = PT.split(data, "|");
       int i = JOptionPane.showOptionDialog(null, label, "Jmol prompt",
           JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
-          list, list[0]);
+          list, list == null ? "OK" : list[0]);
       // ESCAPE will close the panel with no option selected.
       return (data == null ? "" + i : i == JOptionPane.CLOSED_OPTION ? "null"
           : list[i]);

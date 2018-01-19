@@ -3771,7 +3771,7 @@ public class IsoExt extends ScriptExt {
       pts[1] = pt1;
       v.addLast(ptc);
     } else {
-      BoxInfo bbox = vwr.ms.getBoxInfo(bs, -Math.abs(distance));
+      BoxInfo bbox = vwr.ms.getBoxInfo(bs, -Math.abs(distance * 2));
       pts[0] = bbox.getBoundBoxVertices()[0];
       pts[1] = bbox.getBoundBoxVertices()[BoxInfo.XYZ];
       if (bs.cardinality() == 1)

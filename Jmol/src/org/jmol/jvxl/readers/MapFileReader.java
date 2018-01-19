@@ -85,8 +85,15 @@ abstract class MapFileReader extends VolumeFileReader {
 
   protected P3 p3 = new P3();  
 
+  protected void checkInsideOut(int mapc, int mapr, int maps) {
+    if (params.thePlane == null)
+      params.insideOut = (";123;231;312;".indexOf(";" + mapc + mapr + maps) >= 0);
+  }
+
   protected void getVectorsAndOrigin() {
 
+    checkInsideOut(mapc, mapr, maps);
+    
     Logger.info("grid parameters: nx,ny,nz: " + n0 + "," + n1 + "," + n2);
     Logger.info("grid parameters: nxStart,nyStart,nzStart: " + xyzStart[0]
         + "," + xyzStart[1] + "," + xyzStart[2]);

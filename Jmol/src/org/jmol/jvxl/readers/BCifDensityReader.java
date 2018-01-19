@@ -33,6 +33,7 @@ import javajs.util.AU;
 import javajs.util.BC;
 import javajs.util.MessagePackReader;
 import javajs.util.P3;
+import javajs.util.PT;
 import javajs.util.Rdr;
 import javajs.util.SB;
 
@@ -237,13 +238,18 @@ class BCifDensityReader extends MapFileReader {
     mapc = (int) axis_order.x + 1; // fastest "column"  2 --> y
     mapr = (int) axis_order.y + 1; // intermediat "row" 1 --> x
     maps = (int) axis_order.z + 1; // slowest "section" 3 --> z
-
+    
+    int[] crs2abc = new int[3];
+    crs2abc[mapc - 1] = 0;
+    crs2abc[mapr - 1] = 1;
+    crs2abc[maps - 1] = 2;
+    
     // Jmol will run through these z slowest, then y next, then x.
 
     // TODO check for inversion of inside/outside due to switching x/y axes
     
     
-    // these counts are for the dimensions of the data, not the dimensions of the axes
+    // these counts are for the ordering of the data, not the dimensions of the axes
 
     n0 = (int) sampleCounts.x;
     n1 = (int) sampleCounts.y;
@@ -251,9 +257,9 @@ class BCifDensityReader extends MapFileReader {
         ;
     // these counts are for the dimensions of the axes
 
-    na = (int) getXYZ(sampleCounts, mapc - 1);
-    nb = (int) getXYZ(sampleCounts, mapr - 1);
-    nc = (int) getXYZ(sampleCounts, maps - 1);
+    na = (int) getXYZ(sampleCounts, crs2abc[0]);
+    nb = (int) getXYZ(sampleCounts, crs2abc[1]);
+    nc = (int) getXYZ(sampleCounts, crs2abc[2]);
 
     //  _volume_data_3d_info.spacegroup_cell_size[0]      45.65 
     //  _volume_data_3d_info.spacegroup_cell_size[1]      47.56 
@@ -265,15 +271,15 @@ class BCifDensityReader extends MapFileReader {
     b = p3.y;
     c = p3.z;
 
-    float fa = getXYZ(fracDimensions, mapc - 1);
-    float fb = getXYZ(fracDimensions, mapr - 1);
-    float fc = getXYZ(fracDimensions, maps - 1);
+    float fa = getXYZ(fracDimensions, crs2abc[0]);
+    float fb = getXYZ(fracDimensions, crs2abc[1]);
+    float fc = getXYZ(fracDimensions, crs2abc[2]);
 
     // fraction is in terms of a and in the units of na
     
-    xyzStart[xIndex = 0] = getXYZ(fracOrigin, mapc - 1) * na / fa;
-    xyzStart[yIndex = 1] = getXYZ(fracOrigin, mapr - 1) * nb / fb;
-    xyzStart[zIndex = 2] = getXYZ(fracOrigin, maps - 1) * nc / fc;
+    xyzStart[xIndex = 0] = getXYZ(fracOrigin, crs2abc[0]) * na / fa;
+    xyzStart[yIndex = 1] = getXYZ(fracOrigin, crs2abc[1]) * nb / fb;
+    xyzStart[zIndex = 2] = getXYZ(fracOrigin, crs2abc[2]) * nc / fc;
 
     a *= fa;
     b *= fb;

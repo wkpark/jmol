@@ -3665,6 +3665,7 @@ public class CmdExt extends ScriptExt {
     int height = -1;
     boolean isExport = false;
     String fileName = null;
+    int quality = Integer.MIN_VALUE;
 
     // accept write ...... AS type
 
@@ -3812,7 +3813,6 @@ public class CmdExt extends ScriptExt {
       break;
     }
 
-    int quality = Integer.MIN_VALUE;
     if (pt0 < argCount) {
       // get type
       val = SV.sValue(tokenAt(pt, args));
@@ -3854,6 +3854,7 @@ public class CmdExt extends ScriptExt {
       if (type.equals("IMAGE")
           && PT.isOneOf(val.toLowerCase(), JC.IMAGE_OR_SCENE)) {
         type = val.toUpperCase();
+        quality = Integer.MIN_VALUE;
         pt++;
       }
     }
@@ -4147,7 +4148,7 @@ public class CmdExt extends ScriptExt {
           fileName = "\1";
         }
         len = -1;
-        if (quality < 0)
+        if (sceneType == null && quality < 0)
           quality = -1;
       }
       if (data == null)

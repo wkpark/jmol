@@ -160,7 +160,7 @@ public final class JC {
     "magndata", "http://webbdcrista1.ehu.es/magndata/mcif/%FILE.mcif",
     "rna3d", "http://rna.bgsu.edu/rna3dhub/%TYPE/download/%FILE",
     // now https:
-    "mmtf", "https://mmtf.rcsb.org/full/%FILE", // new Jmol 14.5.4 4/2016
+    "mmtf", "https://mmtf.rcsb.org/v1.0/full/%FILE", // new Jmol 14.5.4 4/2016
     "chebi", "https://www.ebi.ac.uk/chebi/saveStructure.do?defaultImage=true&chebiId=%file%2D%",
     "ligand", "https://files.rcsb.org/ligands/download/%FILE.cif",
     "mp", "https://www.materialsproject.org/materials/mp-%FILE/cif#_DOCACHE_", // e.g. https://materialsproject.org/rest/v1/materials/mp-24972/cif 

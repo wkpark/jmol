@@ -2029,7 +2029,7 @@ public class ScriptEval extends ScriptExpr {
 
   @Override
   public void notifyResumeStatus() {
-    if (!chk && !executionStopped && !executionStepping) {
+    if (!chk && !executionStopped && !executionStepping && !executionPaused) {
       vwr.scriptStatus("script execution "
           + (error || executionStopped ? "interrupted" : "resumed"));
     }

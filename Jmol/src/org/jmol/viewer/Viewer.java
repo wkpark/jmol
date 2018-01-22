@@ -9722,7 +9722,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public String getPdbID() {
-    return (ms.getInfo(am.cmi, "isPDB") == Boolean.TRUE ? (String) ms.getInfo(am.cmi, "modelName") : null);
+    return (ms.getInfo(am.cmi, "isPDB") == Boolean.TRUE ? (String) ms.getInfo(am.cmi, "pdbID") : null);
   }
   
   /**

@@ -267,8 +267,8 @@ public class MMCifReader extends CifReader {
         ignoreFileSpaceGroupName = true;
         sgName = spaceGroup;
         fractionalizeCoordinates(true);
-        asc.setModelInfoForSet("biosymmetry", null, asc.iSet);
-        asc.setModelInfoForSet("biosymmetryCount", null, asc.iSet);
+        asc.setCurrentModelInfo("biosymmetry", null);
+        asc.setCurrentModelInfo("biosymmetryCount", null);
         asc.checkSpecial = false;
         if (byChain)
           return true;

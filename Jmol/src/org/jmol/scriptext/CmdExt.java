@@ -3658,7 +3658,7 @@ public class CmdExt extends ScriptExt {
     String val = null;
     SV tVar = null;
     int nVibes = 0;
-    String sceneType = "PNGJ";
+    String sceneType = null;
     boolean isCoord = false;
     BS bsFrames = null;
     int width = -1;
@@ -3761,6 +3761,8 @@ public class CmdExt extends ScriptExt {
         if (PT.isOneOf(val, ";PNG;PNGJ;")) {
           sceneType = val;
           pt++;
+        } else {
+          sceneType = "PNG";
         }
         break;
       case T.vibration:

@@ -82,6 +82,7 @@ import org.jmol.util.Logger;
 public class MMTFReader extends MMCifReader {
 
   private boolean haveStructure;
+  private String pdbID;
 
 
   @Override
@@ -129,9 +130,9 @@ public class MMTFReader extends MMCifReader {
     String title = (String) map.get("title");
     if (title != null)
       appendLoadNote(title);
-    String id = (String) map.get("structureId");
-    if (id == null)
-      id = "?";
+    pdbID = (String) map.get("structureId");
+    if (pdbID == null)
+      pdbID = (String) map.get("pdbId");
     fileAtomCount = ((Integer) map.get("numAtoms")).intValue();
     int nBonds = ((Integer) map.get("numBonds")).intValue();
 
@@ -141,7 +142,7 @@ public class MMTFReader extends MMCifReader {
     groupMap = new int[groupCount];    // file->jmol group index map
     
     int modelCount = ((Integer) map.get("numModels")).intValue();
-    appendLoadNote("id=" + id + " numAtoms=" + fileAtomCount + " numBonds="
+    appendLoadNote("id=" + pdbID + " numAtoms=" + fileAtomCount + " numBonds="
         + nBonds + " numGroups=" + groupCount + " numModels=" + modelCount);
     getMMTFAtoms(doDoubleBonds);
     if (!isCourseGrained) {
@@ -240,6 +241,7 @@ public class MMTFReader extends MMCifReader {
           iChain = 0;
           setModelPDB(true);
           incrementModel(iModel + 1);
+          asc.setCurrentModelInfo("pdbID", pdbID);
           nAtoms0 = asc.ac;
           if (done)
             return;
@@ -325,6 +327,7 @@ public class MMTFReader extends MMCifReader {
         addMMTFBonds(bo, bi, a0, doMulti, false);
       }
     }
+    asc.setCurrentModelInfo("pdbID", pdbID);
   }
 
   private void addMMTFBonds(int[] bo, int[] bi, int a0, boolean doMulti, boolean isInter) {

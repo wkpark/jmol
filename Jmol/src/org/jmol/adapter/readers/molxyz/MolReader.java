@@ -293,7 +293,7 @@ public class MolReader extends AtomSetCollectionReader {
       molData.put(atomValueName == null ? "atom_values" : atomValueName.toString(), atomData);
     }
     if (!molData.isEmpty())
-      asc.setModelInfoForSet("molData", molData, asc.iSet);
+      asc.setCurrentModelInfo("molData", molData);
   }
 
   /**

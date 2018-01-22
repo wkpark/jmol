@@ -299,7 +299,8 @@ public class CifReader extends AtomSetCollectionReader {
       } else if (key.equals("_symmetry_int_tables_number")) {
         intTableNo = parseIntStr(data);
         rotateHexCell = (isAFLOW && (intTableNo >= 143 && intTableNo <= 194)); // trigonal or hexagonal
-            
+      } else if (key.equals("_entry_id")) {
+        asc.setCurrentModelInfo("pdbID", data);
       } else {
         processSubclassEntry();
       }

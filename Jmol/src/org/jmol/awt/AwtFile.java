@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.AccessControlException;
 
+import org.jmol.viewer.Viewer;
+
 import javajs.api.GenericFileInterface;
 import javajs.util.PT;
 
@@ -60,6 +62,7 @@ class AwtFile extends File implements GenericFileInterface {
       } else if (post != null) {
         type = "application/x-www-form-urlencoded";
       }
+      conn.setRequestProperty("User-Agent", Viewer.getJmolVersion());
       if (type != null) {
         conn.setRequestProperty("Content-Type", type);
         conn.setDoOutput(true);

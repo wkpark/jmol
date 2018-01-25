@@ -23,29 +23,27 @@
  */
 package org.jmol.adapter.readers.cif;
 
-import org.jmol.adapter.smarter.AtomSetCollection;
-import org.jmol.adapter.smarter.Atom;
-import org.jmol.adapter.smarter.AtomSetCollectionReader;
-import org.jmol.api.JmolAdapter;
-import org.jmol.api.SymmetryInterface;
-import org.jmol.java.BS;
-
-import org.jmol.script.T;
-
-import javajs.api.GenericCifDataParser;
-import javajs.util.Lst;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.jmol.util.Logger;
-import org.jmol.util.Vibration;
-
-import javajs.util.Rdr;
+import javajs.api.GenericCifDataParser;
 import javajs.util.CifDataParser;
+import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.PT;
+import javajs.util.Rdr;
 import javajs.util.V3;
+
+import org.jmol.adapter.smarter.Atom;
+import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.adapter.smarter.AtomSetCollectionReader;
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.SymmetryInterface;
+import org.jmol.java.BS;
+import org.jmol.script.T;
+import org.jmol.util.Logger;
+import org.jmol.util.Vibration;
 
 /**
  * A true line-free CIF file reader for CIF files.
@@ -300,7 +298,7 @@ public class CifReader extends AtomSetCollectionReader {
         intTableNo = parseIntStr(data);
         rotateHexCell = (isAFLOW && (intTableNo >= 143 && intTableNo <= 194)); // trigonal or hexagonal
       } else if (key.equals("_entry_id")) {
-        asc.setCurrentModelInfo("pdbID", data);
+        pdbID = data;
       } else {
         processSubclassEntry();
       }
@@ -432,6 +430,8 @@ public class CifReader extends AtomSetCollectionReader {
     int n = asc.atomSetCount;
     if (n > 1)
       asc.setCollectionName("<collection of " + n + " models>");
+    if (pdbID != null)
+      asc.setCurrentModelInfo("pdbID", pdbID);
     finalizeReaderASCR();
     addHeader();
     if (haveAromatic)
@@ -554,16 +554,24 @@ public class CifReader extends AtomSetCollectionReader {
       Logger.debug(key);
   }
 
+  protected String pdbID;
+
   protected void nextAtomSet() {
     asc.setCurrentModelInfo("isCIF", Boolean.TRUE);
     if (asc.iSet >= 0) {
       // note that there can be problems with multi-data mmCIF sets each with
       // multiple models; and we could be loading multiple files!
-      if (isMMCIF)
+      if (isMMCIF) {
         setModelPDB(true); // first model can be missed
+        if (pdbID != null)
+          asc.setCurrentModelInfo("pdbID", pdbID);
+      }
       asc.newAtomSet();
-      if (isMMCIF)
+      if (isMMCIF) {
         setModelPDB(true);
+        if (pdbID != null)
+          asc.setCurrentModelInfo("pdbID", pdbID);
+      }
     } else {
       asc.setCollectionName(thisDataSetName);
     }

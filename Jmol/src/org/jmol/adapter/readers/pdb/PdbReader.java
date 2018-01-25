@@ -412,8 +412,11 @@ public class PdbReader extends AtomSetCollectionReader {
  
   protected void finalizeReaderPDB() throws Exception {
     checkNotPDB();
-    if (pdbID != null)
+    if (pdbID != null) {
       asc.setAtomSetName(pdbID);
+      asc.setCurrentModelInfo("pdbID", pdbID);
+    }
+    
     checkUnitCellParams();
     if (!isCourseGrained)
       connectAll(maxSerial, isConnectStateBug);

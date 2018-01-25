@@ -218,7 +218,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
         return;
       String id = currentMesh.thisID;
       int imodel = currentMesh.modelIndex;
-      vwr.cachePut("cache://isosurface_" + id, getPropI("jvxlDataXml", -1));
+      vwr.cachePut("cache://isosurface_" + id, ((String)getPropI("jvxlDataXml", -1)).getBytes());
       deleteMeshI(currentMesh.index);
       setPropI("init", null, null);
       setPropI("thisID", id, null);

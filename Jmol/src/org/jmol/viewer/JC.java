@@ -325,7 +325,7 @@ public final class JC {
 
   public final static boolean officialRelease = false;
 
-  public final static String DEFAULT_HELP_PATH = "http://chemapps.stolaf.edu/jmol/docs/index.htm";
+  public final static String DEFAULT_HELP_PATH = "https://chemapps.stolaf.edu/jmol/docs/index.htm";
 
   public final static String STATE_VERSION_STAMP = "# Jmol state version ";
 

@@ -957,7 +957,7 @@ abstract class OutputManager {
           Object ret = (isSparDir ? fm.spardirCache.get(name) : fm.getFileAsBytes(
               name, null));
           if (!AU.isAB(ret))
-            return (String) ret;
+            return "ERROR: " + (String) ret;
           newName = addPngFileBytes(name, (byte[]) ret, iFile, crcMap,
               isSparDir, newName, ptSlash, v);
         }

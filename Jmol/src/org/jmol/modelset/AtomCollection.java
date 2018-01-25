@@ -850,6 +850,10 @@ abstract public class AtomCollection {
     atom.paletteID = PAL.CPK.id;
     atom.colixAtom = vwr.cm.getColixAtomPalette(atom,
         PAL.CPK.id);
+    if (bsPartialCharges != null) {
+      bsPartialCharges.clear(atom.i);
+      partialCharges[atom.i] = 0;
+    }
     if (doTaint)
       taintAtom(atom.i, TAINT_ELEMENT);
   }

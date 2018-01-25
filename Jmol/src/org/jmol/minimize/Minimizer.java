@@ -604,16 +604,21 @@ public class Minimizer {
   public void endMinimization() {
     updateAtomXYZ();
     setMinimizationOn(false);
-    boolean failed = pFF.detectExplosion();
-    if (failed)
-      restoreCoordinates();
-    vwr.setIntProperty("_minimizationStep", pFF.getCurrentStep());
-    reportEnergy();
-    vwr.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
-    vwr.notifyMinimizationStatus();
-    vwr.refresh(Viewer.REFRESH_SYNC_MASK, "Minimizer:done" + (failed ? " EXPLODED" : "OK"));
+    if (pFF == null) {
+      System.out.println("pFF was null");
+    } else {
+      boolean failed = pFF.detectExplosion();
+      if (failed)
+        restoreCoordinates();
+      vwr.setIntProperty("_minimizationStep", pFF.getCurrentStep());
+      reportEnergy();
+      vwr.setStringProperty("_minimizationStatus", (failed ? "failed" : "done"));
+      vwr.notifyMinimizationStatus();
+      vwr.refresh(Viewer.REFRESH_SYNC_MASK, "Minimizer:done"
+          + (failed ? " EXPLODED" : "OK"));
+    }
     Logger.info("minimizer: endMinimization");
-}
+  }
 
   double[][] coordSaved;
   

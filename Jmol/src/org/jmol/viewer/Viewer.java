@@ -9162,8 +9162,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public void calculatePartialCharges(BS bsSelected) throws JmolAsyncException {
     if (bsSelected == null || bsSelected.isEmpty())
       bsSelected = getModelUndeletedAtomsBitSetBs(getVisibleFramesBitSet());
-    int pt = bsSelected.nextSetBit(0);
-    if (pt < 0)
+    if (bsSelected.isEmpty())
       return;
 //    // this forces an array if it does not exist 
 //    setAtomProperty(BSUtil.newAndSetBit(pt), T.partialcharge, 0, 1f, null,

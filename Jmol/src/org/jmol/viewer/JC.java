@@ -714,7 +714,7 @@ public final class JC {
     "@positive basic",
     "@neutral amino&!(acidic,basic)",
     "@polar amino&!hydrophobic",
-
+    "@peptide protein&within(chain,monomer>1)&!within(chain,monomer>12)", // Jmol 14.29.1
     "@cyclic his,phe,pro,trp,tyr",
     "@acyclic amino&!cyclic",
     "@aliphatic ala,gly,ile,leu,val",

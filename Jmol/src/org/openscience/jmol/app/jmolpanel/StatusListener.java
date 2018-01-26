@@ -272,7 +272,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     try {
       Object data = vwr.fm.getFileAsBytes(fileName, null);
       if ((data instanceof byte[]))
-        ((JmolAudio) Interface.getInterface("org.openscience.jmol.jmolpanel.JmolAudio")).playAudio((byte[]) data);
+        ((JmolAudio) Interface.getInterface("org.openscience.jmol.app.jmolpanel.JmolAudio")).playAudio((byte[]) data);
     } catch (Exception e) {
       Logger.info(e.getMessage());
     }

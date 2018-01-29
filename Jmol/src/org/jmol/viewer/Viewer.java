@@ -1339,7 +1339,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   @Override
   public void setSelectionSet(BS set) {
-    // JmolViewer API only -- not used in Jmol 
     select(set, false, 0, true);
   }
 
@@ -4919,13 +4918,15 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    */
 
   public void setStatusAtomPicked(int atomIndex, String info,
-                                  Map<String, Object> map) {
+                                  Map<String, Object> map, boolean andSelect) {
+    if (andSelect)
+      setSelectionSet(BSUtil.newAndSetBit(atomIndex));
     if (info == null) {
       info = g.pickLabel;
       info = (info.length() == 0 ? getAtomInfoXYZ(atomIndex,
           g.messageStyleChime) : ms.getAtomInfo(atomIndex, info, ptTemp));
     }
-    setPicked(atomIndex);
+    setPicked(atomIndex, false);
     if (atomIndex < 0) {
       Measurement m = getPendingMeasurement();
       if (m != null)
@@ -7413,7 +7414,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         getVisibleFramesBitSet(), getBondPicking()));
   }
 
-  void checkObjectDragged(int prevX, int prevY, int x, int y, int action) {
+  boolean checkObjectDragged(int prevX, int prevY, int x, int y, int action) {
     int iShape = 0;
     switch (getPickingMode()) {
     case ActionManager.PICKING_LABEL:
@@ -7428,8 +7429,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       refresh(REFRESH_REPAINT, "checkObjectDragged");
       if (iShape == JC.SHAPE_DRAW)
         scriptEcho((String) getShapeProperty(JC.SHAPE_DRAW, "command"));
-    }
-    // TODO: refresh 1 or 2?
+      return true;
+    }    
+    return false;
   }
 
   public boolean rotateAxisAngleAtCenter(JmolScriptEvaluator eval,
@@ -7659,7 +7661,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       undoMoveActionClear(atomIndex, AtomCollection.TAINT_COORD, true);
     invertSelected(null, null, atomIndex, bs);
     if (isClick)
-      setStatusAtomPicked(atomIndex, "inverted: " + Escape.eBS(bs), null);
+      setStatusAtomPicked(atomIndex, "inverted: " + Escape.eBS(bs), null, true);
   }
 
   public void invertSelected(P3 pt, P4 plane, int iAtom, BS bsAtoms) {
@@ -9062,10 +9064,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     }
   }
 
-  public void setPicked(int atomIndex) {
+  public void setPicked(int atomIndex, boolean andReset) {
     SV pickedSet = null;
     SV pickedList = null;
     if (atomIndex >= 0) {
+      if (andReset)
+        setPicked(-1, false);
       g.setI("_atompicked", atomIndex);
       pickedSet = (SV) g.getParam("picked", true);
       pickedList = (SV) g.getParam("pickedList", true);

@@ -137,6 +137,8 @@ public class Labels extends AtomShape {
     }
 
     if ("label" == propertyName) {
+      // TODO: Should do this as a click/response with label:
+      boolean isPicked = (isPickingMode() && bsSelected.cardinality() == 1 && bsSelected.nextSetBit(0) == lastPicked);
       setScaling();
       LabelToken[][] tokens = null;
       int nbs = checkStringLength(bsSelected.length());
@@ -151,11 +153,11 @@ public class Labels extends AtomShape {
         for (int pt = 0, i = bsSelected.nextSetBit(0); i >= 0 && i < nbs; i = bsSelected
             .nextSetBit(i + 1)) {
           if (pt >= n) {
-            setLabel(nullToken, "", i, true);
+            setLabel(nullToken, "", i, !isPicked);
             continue;
           }
           tokens[0] = null;
-          setLabel(tokens, SV.sValue(list.get(pt++)), i, true);
+          setLabel(tokens, SV.sValue(list.get(pt++)), i, !isPicked);
         }
       } else {
         String strLabel = (String) value;
@@ -163,7 +165,7 @@ public class Labels extends AtomShape {
             : new LabelToken[][] { null });
         for (int i = bsSelected.nextSetBit(0); i >= 0 && i < ac; i = bsSelected
             .nextSetBit(i + 1))
-          setLabel(tokens, strLabel, i, true);
+          setLabel(tokens, strLabel, i, !isPicked);
       }
       return;
     }
@@ -384,6 +386,10 @@ public class Labels extends AtomShape {
 
   }
 
+  private boolean isPickingMode() {
+    return (vwr.getPickingMode() == ActionManager.PICKING_LABEL && labelBoxes != null);
+  }
+
   private int checkStringLength(int n) {
     n = Math.min(ac, n);
     if (strings == null || n > strings.length) {
@@ -473,7 +479,7 @@ public class Labels extends AtomShape {
       tokens = temp[0] = LabelToken.compile(vwr, strLabel, '\0', null);
     String label = (tokens == null ? null : LabelToken.formatLabelAtomArray(
         vwr, atom, tokens, '\0', null, ptTemp ));
-    boolean isNew = addString(atom, i, label, strLabel); 
+    boolean isNew = addString(atom, i, label, strLabel);
     doAll |= isNew || label == null;
     Text text = getLabel(i);
     if (isScaled && doAll) {
@@ -650,23 +656,39 @@ public class Labels extends AtomShape {
 //  }
 
   private int pickedAtom = -1;
+  private int lastPicked = -1;
   private int pickedOffset = 0;
   private int pickedX;
   private int pickedY;
   
+  
+  @Override
+  public Map<String, Object> checkObjectClicked(int x, int y, int modifiers, BS bsVisible, boolean drawPicking) {
+    if (!isPickingMode())
+      return null;
+    int iAtom = findNearestLabel(x, y);
+    if (iAtom < 0)
+      return null;
+    Map<String, Object> map = new Hashtable<String, Object>();
+    map.put("type", "label");
+    map.put("atomIndex", Integer.valueOf(iAtom));
+    lastPicked = iAtom;
+    return map;
+  }
+
   @Override
   public synchronized boolean checkObjectDragged(int prevX, int prevY, int x,
                                                  int y, int dragAction,
                                                  BS bsVisible) {
 
-    if (vwr.getPickingMode() != ActionManager.PICKING_LABEL
-        || labelBoxes == null)
+    if (!isPickingMode())
       return false;
     // mouse down ?
     if (prevX == Integer.MIN_VALUE) {
       int iAtom = findNearestLabel(x, y);
       if (iAtom >= 0) {
         pickedAtom = iAtom;
+        lastPicked = pickedAtom;
         vwr.acm.setDragAtomIndex(iAtom);
         pickedX = x;
         pickedY = y;
@@ -677,10 +699,8 @@ public class Labels extends AtomShape {
       return false;
     }
     // mouse up ?
-    if (prevX == Integer.MAX_VALUE) {
+    if (prevX == Integer.MAX_VALUE)
       pickedAtom = -1;
-      return false;
-    }
     if (pickedAtom < 0)
       return false;
     move2D(pickedAtom, x, y);

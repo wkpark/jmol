@@ -697,7 +697,9 @@ public class ActionManager implements EventManager {
   private int dragAtomIndex = -1;
   
   public void setDragAtomIndex(int iatom) {
+    // from label 
     dragAtomIndex = iatom;
+    setAtomsPicked(BSUtil.newAndSetBit(iatom), "Label picked for atomIndex = " + iatom);
   }
   
 
@@ -990,10 +992,8 @@ public class ActionManager implements EventManager {
     if (Logger.debuggingHigh && vwr.getBoolean(T.testflag1))
       Logger.debug(Binding.getMouseActionName(pressAction, false));
 
-    if (isDrawOrLabelAction(dragAction)) {
-      vwr.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, dragAction);
+    if (isDrawOrLabelAction(dragAction) && vwr.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, dragAction))
       return;
-    }
     checkUserAction(pressAction, x, y, 0, 0, time, Event.PRESSED);
     boolean isBound = false;
     switch (apm) {
@@ -1168,8 +1168,9 @@ public class ActionManager implements EventManager {
 
     if (isDrawOrLabelAction(dragWheelAction)) {
       setMotion(GenericPlatform.CURSOR_MOVE, true);
-      vwr.checkObjectDragged(dragged.x, dragged.y, x, y, dragWheelAction);
-      return;
+      if (vwr.checkObjectDragged(dragged.x, dragged.y, x, y, dragWheelAction)) {
+        return;
+      }
     }
     if (checkMotionRotateZoom(dragWheelAction, x, deltaX, deltaY, true)) {
       if (vwr.tm.slabEnabled && bnd(dragWheelAction,ACTION_slabAndDepth))
@@ -1353,14 +1354,18 @@ public class ActionManager implements EventManager {
     Point3fi nearestPoint = null;
     boolean isBond = false;
     boolean isIsosurface = false;
-    Map<String, Object> t = null;
+    Map<String, Object> map = null;
     // t.tok will let us know if this is an atom or a bond that was clicked
     if (!drawMode) {
-      t = vwr.checkObjectClicked(x, y, clickAction);
-      if (t != null) {
-        isBond = "bond".equals(t.get("type"));
-        isIsosurface = "isosurface".equals(t.get("type"));
-        nearestPoint = getPoint(t);
+      map = vwr.checkObjectClicked(x, y, clickAction);
+      if (map != null) {
+        if (labelMode) {
+          pickLabel(((Integer)map.get("atomIndex")).intValue());
+          return;
+        }
+        isBond = "bond".equals(map.get("type"));
+        isIsosurface = "isosurface".equals(map.get("type"));
+        nearestPoint = getPoint(map);
       }
     }
     if (isBond)
@@ -1403,7 +1408,7 @@ public class ActionManager implements EventManager {
       if (bnd(clickAction, bondPickingMode == PICKING_ROTATE_BOND
           || bondPickingMode == PICKING_ASSIGN_BOND ? ACTION_assignNew
           : ACTION_deleteBond)) {
-        bondPicked(((Integer) t.get("index")).intValue());
+        bondPicked(((Integer) map.get("index")).intValue());
         return;
       }
     } else if (isIsosurface) {
@@ -1440,6 +1445,19 @@ public class ActionManager implements EventManager {
       if (nearestAtomIndex < 0)
         reset();
       return;
+    }
+  }
+
+  private void pickLabel(int iatom) {
+    String label = vwr.ms.at[iatom].atomPropertyString(vwr,  T.label);
+    if (pressedCount == 2) {
+      label = vwr.apiPlatform.prompt("Set label for atomIndex=" + iatom, label, null, false);
+      if (label != null) {
+        vwr.shm.setAtomLabel(label, iatom);
+        vwr.refresh(Viewer.REFRESH_REPAINT, "label atom");
+      }
+    } else {
+      setAtomsPicked(BSUtil.newAndSetBit(iatom), "Label picked for atomIndex = " + iatom + ": " + label);
     }
   }
 
@@ -1616,8 +1634,7 @@ public class ActionManager implements EventManager {
   public boolean zoomTrigger;
 
   private void enterMeasurementMode(int iAtom) {
-    vwr.setPicked(-1);
-    vwr.setPicked(iAtom);
+    vwr.setPicked(iAtom, true);
     vwr.setCursor(GenericPlatform.CURSOR_CROSSHAIR);
     vwr.setPendingMeasurement(mp = getMP());
     measurementQueued = mp;
@@ -1681,7 +1698,7 @@ public class ActionManager implements EventManager {
     int n = measurementQueued.addPoint(atomIndex, ptClicked, true);
     if (atomIndex >= 0)
       vwr.setStatusAtomPicked(atomIndex, "Atom #" + n + ":"
-          + vwr.getAtomInfo(atomIndex), null);
+          + vwr.getAtomInfo(atomIndex), null, false);
     return n;
   }
 
@@ -1778,10 +1795,8 @@ public class ActionManager implements EventManager {
       addToMeasurement(atomIndex, ptClicked, true);
       queueAtom(atomIndex, ptClicked);
       int i = measurementQueued.count;
-      if (i == 1) {
-        vwr.setPicked(-1);
-        vwr.setPicked(atomIndex);
-      }
+      if (i == 1)
+        vwr.setPicked(atomIndex, true);
       if (i < n)
         return;
       if (apm == PICKING_MEASURE_SEQUENCE) {
@@ -1825,25 +1840,25 @@ public class ActionManager implements EventManager {
       if (!drawMode && !labelMode && bnd(clickAction, ACTION_center))
         zoomTo(atomIndex);
       else if (bnd(clickAction, ACTION_pickAtom))
-        vwr.setStatusAtomPicked(atomIndex, null, null);
+        vwr.setStatusAtomPicked(atomIndex, null, null, false);
       return;
     case PICKING_LABEL:
       if (bnd(clickAction, ACTION_pickLabel)) {
         runScript("set labeltoggle {atomindex=" + atomIndex + "}");
-        vwr.setStatusAtomPicked(atomIndex, "label picked", null);
+        pickLabel(atomIndex);
       }
       return;
     case PICKING_INVERT_STEREO:
       if (bnd(clickAction, ACTION_assignNew)) {
         vwr.invertRingAt(atomIndex, true);
-        vwr.setStatusAtomPicked(atomIndex, "invert stereo", null);
+        vwr.setStatusAtomPicked(atomIndex, "invert stereo for atomIndex=" + atomIndex, null, true);
       }
       return;
     case PICKING_DELETE_ATOM:
       if (bnd(clickAction, ACTION_deleteAtom)) {
         bs = BSUtil.newAndSetBit(atomIndex);
         vwr.deleteAtoms(bs, false);
-        vwr.setStatusAtomPicked(atomIndex, "deleted: " + Escape.eBS(bs), null);
+        vwr.setStatusAtomPicked(atomIndex, "deleted: " + Escape.eBS(bs), null, false);
       }
       return;
     }
@@ -1882,7 +1897,7 @@ public class ActionManager implements EventManager {
       break;
     }
     vwr.clearClickCount();
-    vwr.setStatusAtomPicked(atomIndex, null, null);
+    vwr.setStatusAtomPicked(atomIndex, null, null, false);
   }
 
   private void assignNew(int x, int y) {
@@ -2003,15 +2018,18 @@ public class ActionManager implements EventManager {
       s += "(" + item + ")";
       try {
         BS bs = vwr.getAtomBitSetEval(null, s);
-        vwr.select(bs, false, 0, false);
-        vwr.setStatusAtomPicked(-1, "selected: " + Escape.eBS(bs), null);
-
+        setAtomsPicked(bs, "selected: " + Escape.eBS(bs));
         vwr.refresh(Viewer.REFRESH_SYNC_MASK, "selections set");
       } catch (Exception e) {
         // ignore
       }
     }
     selectionWorking = false;
+  }
+
+  private void setAtomsPicked(BS bs, String msg) {
+    vwr.select(bs, false, 0, false);
+    vwr.setStatusAtomPicked(-1, msg, null, false);
   }
 
   private void selectRb(int action) {
@@ -2041,7 +2059,7 @@ public class ActionManager implements EventManager {
 
   private void zoomTo(int atomIndex) {
     runScript("zoomTo (atomindex=" + atomIndex + ")");
-    vwr.setStatusAtomPicked(atomIndex, null, null);
+    vwr.setStatusAtomPicked(atomIndex, null, null, false);
   }
 
   @Override

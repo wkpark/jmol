@@ -224,6 +224,10 @@ public class ShapeManager {
                                          BS bsVisible, boolean drawPicking) {
     Shape shape;
     Map<String, Object> map = null;
+    if (vwr.getPickingMode() == ActionManager.PICKING_LABEL) {
+      return shapes[JC.SHAPE_LABELS].checkObjectClicked(x, y, modifiers,
+          bsVisible, false);
+    }
     if (modifiers != 0
         && vwr.getBondPicking()
         && (map = shapes[JC.SHAPE_STICKS].checkObjectClicked(x, y, modifiers,

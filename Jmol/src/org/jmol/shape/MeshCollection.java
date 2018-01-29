@@ -631,7 +631,7 @@ public abstract class MeshCollection extends Shape {
     vwr.setStatusAtomPicked(flag, "[\"" + myType + "\"," + PT.esc(pickedMesh.thisID) + "," +
         + pickedModel + "," + pickedVertex + "," + v.x + "," + v.y + "," + v.z + "," 
         + (pickedMesh.title == null ? "\"\"" 
-               : PT.esc(pickedMesh.title[0]))+"]", map);
+               : PT.esc(pickedMesh.title[0]))+"]", map, false);
   }
 
   protected Map<String, Object> getPickedPoint(T3 v, int modelIndex) {

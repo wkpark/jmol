@@ -7033,7 +7033,7 @@ public class ScriptEval extends ScriptExpr {
       break;
     case T.picking:
       if (!chk)
-        vwr.setPicked(-1);
+        vwr.setPicked(-1, false);
       if (slen > 2) {
         cmdSetPicking();
         return;

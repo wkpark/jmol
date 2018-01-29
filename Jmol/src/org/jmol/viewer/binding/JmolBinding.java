@@ -63,7 +63,7 @@ public class JmolBinding extends Binding {
     bindAction(SINGLE|ALT|LEFT|DRAG, ActionManager.ACTION_rotateSelected);
     bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_rotateBranch);
 
-    bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_dragLabel);    
+    bindAction(SINGLE|LEFT|DRAG, ActionManager.ACTION_dragLabel);    
     bindAction(SINGLE|ALT|LEFT|DRAG, ActionManager.ACTION_dragDrawPoint);
     bindAction(SINGLE|SHIFT|LEFT|DRAG, ActionManager.ACTION_dragDrawObject);
     

@@ -409,7 +409,7 @@ public class GlobalSettings {
     }
 
     // PER-zap settings made
-    vwr.setPicked(-1);
+    vwr.setPicked(-1, false);
     setI("_atomhovered", -1);
     setO("_pickinfo", "");
     setB("selectionhalos", false);

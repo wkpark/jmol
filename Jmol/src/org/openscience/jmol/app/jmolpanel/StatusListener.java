@@ -32,7 +32,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import javajs.api.Interface;
 import javajs.util.PT;
 import jspecview.application.MainFrame;
 
@@ -104,6 +103,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
     case SCRIPT:
     case SYNC:
       return true;
+    case AUDIO:
     case EVAL:
     case ATOMMOVED:
     case CLICK:
@@ -217,10 +217,6 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       break;
     case SYNC:
       //System.out.println("StatusListener sync; " + strInfo);
-      if ("audio:" == data[2]) {
-        playAudio(strInfo);
-        return;
-      }
       String lc = (strInfo == null ? "" : strInfo.toLowerCase());
       if (lc.startsWith("jspecview")) {
         setJSpecView(strInfo.substring(9).trim(), false, false);
@@ -240,6 +236,7 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
       }
       jmol.sendNioMessage(((Integer) data[3]).intValue(), strInfo);
       return;
+    case AUDIO:
     case DRAGDROP:
     case ERROR:
     case HOVER:
@@ -260,22 +257,6 @@ class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterf
         "DATA_API", "getAppConsole", null);
     if (appConsole != null)
       appConsole.notifyCallback(type, data);
-  }
-
-
-  /**
-   * WAV only for application
-   * 
-   * @param fileName
-   */
-  private void playAudio(String fileName) {
-    try {
-      Object data = vwr.fm.getFileAsBytes(fileName, null);
-      if ((data instanceof byte[]))
-        ((JmolAudio) Interface.getInterface("org.openscience.jmol.app.jmolpanel.JmolAudio")).playAudio((byte[]) data);
-    } catch (Exception e) {
-      Logger.info(e.getMessage());
-    }
   }
 
   /**

@@ -31,6 +31,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Window;
+import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
@@ -55,7 +56,10 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import org.jmol.api.JmolAbstractButton;
+import org.jmol.api.JmolDropEditor;
+import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
+import org.jmol.awt.FileDropper;
 import org.jmol.awt.Platform;
 import org.jmol.console.JmolConsole;
 import org.jmol.i18n.GT;
@@ -67,9 +71,21 @@ import org.openscience.jmol.app.jmolpanel.HelpDialog;
 import org.openscience.jmol.app.jmolpanel.PreferencesDialog;
 //import javax.swing.SwingUtilities;
 
-public class AppConsole extends JmolConsole implements EnterListener {
+public class AppConsole extends JmolConsole implements EnterListener, JmolDropEditor {
 
-  public static final String ALL_BUTTONS = "Editor Variables Clear History State UndoRedo Close Font Help";
+  @Override
+  public void loadContent(String script) {
+    getScriptEditor().setVisible(true);
+    getScriptEditor().loadContent(script);
+  }
+
+  @Override
+  public void loadFile(String fileName) {
+    getScriptEditor().setVisible(true);
+    getScriptEditor().loadFile(fileName);    
+  }
+
+   public static final String ALL_BUTTONS = "Editor Variables Clear History State UndoRedo Close Font Help";
 
   private int fontSize;
 
@@ -116,6 +132,8 @@ public class AppConsole extends JmolConsole implements EnterListener {
     }
     addWindowListener();
     layoutWindow(enabledButtons);
+    new FileDropper(statusListener, vwr, this);
+    
     //setVisible(true);
   }
 
@@ -197,6 +215,7 @@ public class AppConsole extends JmolConsole implements EnterListener {
   protected void layoutWindow(String enabledButtons) {
     setTitle();
     console = new ConsoleTextPane(this);
+    console.setDropTarget(new DropTarget(console, new FileDropper(null, vwr, this)));
     console.setPrompt();
     console.setDragEnabled(true);
     if (enabledButtons == null)
@@ -434,6 +453,8 @@ public class AppConsole extends JmolConsole implements EnterListener {
   }
 
   private boolean dontsave;
+
+  private JmolStatusListener statusListener;
   
   private void undoSave(boolean incrementPtr) {
     if (undoButton == null)
@@ -1051,7 +1072,13 @@ public class AppConsole extends JmolConsole implements EnterListener {
       setCharacterAttributes(offsetAfterPrompt,
           getLength() - offsetAfterPrompt, att, true);
     }
-  }  
+  }
+
+  public void setStatusListener(JmolStatusListener myStatusListener) {
+    this.statusListener = myStatusListener;
+  }
+  
+  
 }
 
 interface EnterListener {

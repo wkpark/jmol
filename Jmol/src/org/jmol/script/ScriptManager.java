@@ -525,7 +525,7 @@ public class ScriptManager implements JmolScriptManager {
    * From file dropping.
    * 
    * @param fileName
-   * @param flags 1=pdbCartoons, 2=no scripting, 4=append 
+   * @param flags 1=pdbCartoons, 2=no scripting, 4=append, 8=noAutoPlay 
    * 
    */
   @Override
@@ -533,6 +533,7 @@ public class ScriptManager implements JmolScriptManager {
     boolean noScript = ((flags & 2) == 2);
     boolean isAppend = ((flags & 4) == 4);
     boolean pdbCartoons = ((flags & 1) == 1 && !isAppend);
+    boolean noAutoPlay = ((flags & 8) == 8);
     String cmd = null;
     fileName = fileName.trim();
     if (fileName.startsWith("\t")) {
@@ -590,7 +591,7 @@ public class ScriptManager implements JmolScriptManager {
         cmd = (cmd == null ? "script " : cmd) + PT.esc(fileName);
     } finally {
       if (cmd != null)
-        vwr.evalString(cmd);
+        vwr.evalString(cmd + (noAutoPlay ? "#!NOAUTOPLAY" : ""));
     }
   }
 

@@ -84,6 +84,7 @@ import javax.swing.event.MenuListener;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolStatusListener;
 import org.jmol.awt.FileDropper;
 import org.jmol.awt.Platform;
 import org.jmol.console.JmolButton;
@@ -361,8 +362,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     //if (c != null)
     //historyFile.repositionWindow(EDITOR_WINDOW_NAME, c, 150, 50);
 
+    console.setStatusListener(myStatusListener);
     say(GT._("Setting up Drag-and-Drop..."));
-    new FileDropper(myStatusListener, vwr);
+    new FileDropper(myStatusListener, vwr, null);
     // it's important to set this up first, even though it consumes some memory
     // otherwise, loading a new model in a script that sets the vibration or vector parameters
     // can appear to skip those -- they aren't skipped, but creating the atomSetChooser

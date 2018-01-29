@@ -961,8 +961,10 @@ public class T {
   public final static int appendnew                      = booleanparam | 16;
   public final static int applysymmetrytobonds           = booleanparam | 18;
   public final static int atompicking                    = booleanparam | 20;
+  public final static int allowaudio                     = booleanparam | 21;
   public final static int autobond                       = booleanparam | 22;
   public final static int autofps                        = booleanparam | 24;
+  public final static int autoplaymovie                  = booleanparam | 26;
 //  public final static int autoloadorientation            = booleanparam | 26;
   public final static int axesmolecular                  = booleanparam | 28;
   public final static int axesorientationrasmol          = booleanparam | 30;
@@ -2539,8 +2541,10 @@ public class T {
        "appendNew",
        "applySymmetryToBonds",
        "atomPicking",
+       "allowAudio",
        "autobond",
        "autoFPS",
+       "autoplayMovie",
   //               "autoLoadOrientation",
        "axesMolecular",
        "axesOrientationRasmol",
@@ -3594,6 +3598,8 @@ public class T {
         appendnew,                          //        "appendNew"
         applysymmetrytobonds,               //        "applySymmetryToBonds"
         atompicking,                        //        "atomPicking"
+        allowaudio,                         //        "allowAudio"
+        autoplaymovie,                      //        "autoplayMovie"
         autobond,                           //        "autobond"
         autofps,                            //        "autoFPS"
 //                "autoLoadOrientation"
@@ -3748,8 +3754,10 @@ public class T {
     };
     
 
-    if (sTokens.length != iTokens.length)
+    if (sTokens.length != iTokens.length) {
       Logger.error("sTokens.length ("+sTokens.length+") != iTokens.length! ("+iTokens.length+")");
+      System.exit(1);
+    }
 
     n = sTokens.length;
     for (int i = 0; i < n; i++) {

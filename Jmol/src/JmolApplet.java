@@ -263,4 +263,10 @@ public class JmolApplet extends AppletWrapper implements
       ((GenericApplet) wrappedApplet).getModelIndexFromId(id));
   }
 
+  @Override
+  public void notifyAudioEnded(Object htParams) {
+    if (wrappedApplet != null)
+      ((GenericApplet) wrappedApplet).notifyAudioEnded(htParams);   
+  }
+
 }

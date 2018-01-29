@@ -51,6 +51,8 @@ public class GlobalSettings {
       disablePopupMenu = g.disablePopupMenu;
       messageStyleChime = g.messageStyleChime;
       defaultDirectory = g.defaultDirectory;
+      autoplayMovie = g.autoplayMovie;
+      allowAudio = g.allowAudio;
       allowGestures = g.allowGestures;
       allowModelkit = g.allowModelkit;
       allowMultiTouch = g.allowMultiTouch;
@@ -567,6 +569,8 @@ public class GlobalSettings {
 
   //misc
 
+  boolean autoplayMovie = true;
+  boolean allowAudio = true; // once turned off, cannot be turned back on
   boolean allowGestures = false;
   boolean allowModelkit = true;
   boolean allowMultiTouch = true; // but you still need to set the parameter multiTouchSparshUI=true
@@ -996,7 +1000,7 @@ public class GlobalSettings {
       + ";spinx;spiny;spinz;spinfps;navx;navy;navz;navfps;"
       + CBK.getNameList()
       + ";undo;atompicking;drawpicking;bondpicking;pickspinrate;picklabel"
-      + ";modelkitmode;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit"
+      + ";modelkitmode;autoplaymovie;allowaudio;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit"
       //  oops these were in some state scripts but should not have been
       + ";dodrop;hovered;historylevel;imagestate;iskiosk;useminimizationthread"
       + ";showkeystrokes;saveproteinstructurestate;testflag1;testflag2;testflag3;testflag4" + ";")

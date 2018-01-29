@@ -966,13 +966,21 @@ public class ScriptEval extends ScriptExpr {
       setErrorMessage("io error reading " + data[0] + ": " + data[1]);
       return false;
     }
+    String movieScript = "";
     if (("\n" + data[1]).indexOf("\nJmolManifest.txt\n") >= 0) {
       String path;
       if (filename.endsWith(".all.pngj") || filename.endsWith(".all.png")) {
         path = "|state.spt";
         filename += "|";
       } else {
-        data[0] = filename += "|JmolManifest.txt";
+        if (data[1].indexOf("movie.spt") >= 0) {
+          data[0] = filename + "|movie.spt";
+          if (vwr.fm.getFileDataAsString(data, -1, false, true, false)) { // movie.spt
+            movieScript = data[1];
+          }
+        }
+        filename += "|JmolManifest.txt";
+        data[0] = filename;
         if (!vwr.fm.getFileDataAsString(data, -1, false, true, false)) { // second entry
           setErrorMessage("io error reading " + data[0] + ": " + data[1]);
           return false;
@@ -998,7 +1006,7 @@ public class ScriptEval extends ScriptExpr {
     }
     script = FileManager.setScriptFileReferences(script, localPath, remotePath,
         scriptPath);
-    return compileScript(filename, script, debugScript);
+    return compileScript(filename, script + movieScript, debugScript);
   }
 
   // ///////////// Jmol function support  // ///////////////
@@ -4115,6 +4123,7 @@ public class ScriptEval extends ScriptExpr {
     boolean isConcat = false;
     boolean doOrient = false;
     boolean appendNew = vwr.getBoolean(T.appendnew);
+    boolean isAudio = false;
     String filename = null;
     BS bsModels;
     int i = (tokAt(0) == T.data ? 0 : 1);
@@ -4229,9 +4238,9 @@ public class ScriptEval extends ScriptExpr {
         tok = T.getTokFromName(modelName);
         break;
       case T.audio:
-        if (!chk)
-          vwr.playAudio(optParameterAsString(++i));
-         return;
+        isAudio = true;
+        i++;
+        break;
       case T.identifier:
         i++;
         loadScript.append(" " + modelName);
@@ -4265,6 +4274,11 @@ public class ScriptEval extends ScriptExpr {
           isConcat = true;
           i++;
           loadScript.append(" +");
+        }
+        if (optParameterAsString(i).equals("-")) {
+          isConcat = true;
+          i++;
+          loadScript.append(" -");
         }
         if (tokAt(i) == T.varray) {
           filenames = stringParameterSet(i);
@@ -4340,12 +4354,12 @@ public class ScriptEval extends ScriptExpr {
     int filePt = i;
     int ptAs = i + 1;
     String localName = null;
-//    String annotation = null;
-//    if (tokAt(filePt + 1) == T.divide) {
-//      annotation = optParameterAsString(filePt + 2);
-//      ptAs += 2;
-//      i += 2;
-//    }
+    //    String annotation = null;
+    //    if (tokAt(filePt + 1) == T.divide) {
+    //      annotation = optParameterAsString(filePt + 2);
+    //      ptAs += 2;
+    //      i += 2;
+    //    }
     if (tokAt(ptAs) == T.as) {
       localName = stringParameter(i = ptAs + 1);
       if (vwr.fm.getPathForAllFiles() != "") {
@@ -4362,8 +4376,9 @@ public class ScriptEval extends ScriptExpr {
       // end-of-command options:
       // LOAD SMILES "xxxx" --> load "$xxxx"
 
-      if (filename == null && (i == 0 || filenames == null
-          && (filename = paramAsStr(filePt)).length() == 0))
+      if (filename == null
+          && (i == 0 || filenames == null
+              && (filename = paramAsStr(filePt)).length() == 0))
         filename = getFullPathName();
       if (filename == null && filenames == null) {
         cmdZap(false);
@@ -4450,13 +4465,15 @@ public class ScriptEval extends ScriptExpr {
     } else {
       Lst<String> fNames = new Lst<String>();
       if (i == 1) {
-        if (tokAt(i + 1) == T.plus) {
+        if (tokAt(i + 1) == T.plus || tokAt(i + 1) == T.minus) {
           modelName = "files";
         } else {
           i++;
         }
         loadScript.append(" " + modelName);
       }
+      if (tokAt(i + 1) == T.minus) // state from /val
+        isConcat = true;
       filter = getLoadFilesList(i, loadScript, sOptions, htParams, fNames);
       filenames = fNames.toArray(new String[nFiles = fNames.size()]);
       if (!isConcat && loadScript.indexOf("/*concat*/") >= 0)
@@ -4516,7 +4533,7 @@ public class ScriptEval extends ScriptExpr {
             .append(PT.esc((String) o)).append(";\n    ").appendSB(loadScript);
         htParams.put("fileData", o);
       } else if ((vwr.testAsync || vwr.isJS)
-          && (isAsync || filename.startsWith("?")) 
+          && (isAsync || filename.startsWith("?"))
           || vwr.apiPlatform.forceAsyncLoad(filename)) {
         localName = null;
         filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"),
@@ -4529,6 +4546,7 @@ public class ScriptEval extends ScriptExpr {
     // set up the output stream from AS keyword
 
     OC out = null;
+    String filecat = null;
     if (localName != null) {
       if (localName.equals("."))
         localName = vwr.fm.getFilePath(filename, false, true);
@@ -4552,7 +4570,8 @@ public class ScriptEval extends ScriptExpr {
 
       loadScript.append(" ");
       if (isVariable || isInline) {
-        loadScript.append(filename.indexOf('\n') >= 0 || isVariable ? PT.esc(filename) : filename);
+        loadScript.append(filename.indexOf('\n') >= 0 || isVariable ? PT
+            .esc(filename) : filename);
       } else if (!isData) {
         if (localName != null)
           localName = vwr.fm.getFilePath(localName, false, false);
@@ -4565,10 +4584,10 @@ public class ScriptEval extends ScriptExpr {
 
         // EBI domains and validations, also rna3 and dssr
 
-        // load *1cbs/dom/xx/xx  -->  load *1cbs + *dom/xx/xx/1cbs
-        // load *1cbs/val/xx/xx  -->  load *1cbs + *val/xx/xx/1cbs
-        // load *1cbs/rna3d/loops  -->  load *1cbs + *rna3d/loops/downloads/1cbs
-        // TODO load *1cbs/map/xx/xx  -->  load *1cbs + *map/xx/xx/1cbs (unimplemented electron density?)
+        // load *1cbs/dom/xx/xx  -->  load *1cbs - *dom/xx/xx/1cbs
+        // load *1cbs/val/xx/xx  -->  load *1cbs - *val/xx/xx/1cbs
+        // load *1cbs/rna3d/loops  -->  load *1cbs - *rna3d/loops/downloads/1cbs
+        // TODO load *1cbs/map/xx/xx  -->  load *1cbs - *map/xx/xx/1cbs (unimplemented electron density?)
         // load =1mys/dssr  -->  load =1mys + *dssr/1mys
 
         isConcat = true;
@@ -4584,7 +4603,8 @@ public class ScriptEval extends ScriptExpr {
         filename = filename.substring(0, pt);
         if ((pt = filename.indexOf(".")) >= 0)
           filename = filename.substring(0, pt);
-        if (JC.PDB_ANNOTATIONS.indexOf(";" + ext + ";") >= 0 || ext.startsWith("dssr--")) {
+        if (JC.PDB_ANNOTATIONS.indexOf(";" + ext + ";") >= 0
+            || ext.startsWith("dssr--")) {
           if (filename.startsWith("="))
             filename += ".cif";
           filenames = (ext.equals("all") ? new String[] { filename,
@@ -4593,17 +4613,31 @@ public class ScriptEval extends ScriptExpr {
           filename = "fileSet";
           loadScript = null;
           isVariable = false;
-          sOptions.setLength(0);
+          filecat = "-";
+          //sOptions.setLength(0);
         } else {
           filename += "/" + ext;
         }
       }
-      if (sOptions.length() > 0)
-        loadScript.append(" /*options*/ ").append(sOptions.toString());
-      if (isVariable)
-        loadScript.append("\n  }");
-      if (loadScript != null)
+      if (loadScript != null) {
+        if (sOptions.length() > 0)
+          loadScript.append(" /*options*/ ").append(sOptions.toString());
+        if (isVariable)
+          loadScript.append("\n  }");
         htParams.put("loadScript", loadScript);
+      }
+    }
+
+    if (isAudio) {
+      if (filename != null)
+        htParams.put("audioFile", filename);
+      addFilterAttribute(htParams, filter, "id");
+      addFilterAttribute(htParams, filter, "pause");
+      addFilterAttribute(htParams, filter, "play");
+      addFilterAttribute(htParams, filter, "ended");
+      addFilterAttribute(htParams, filter, "action");
+      vwr.sm.playAudio(htParams);
+      return;
     }
 
     // load model
@@ -4618,7 +4652,8 @@ public class ScriptEval extends ScriptExpr {
       htParams.put("isMutate", Boolean.TRUE);
     htParams.put("eval", this);
     errMsg = vwr.loadModelFromFile(null, filename, filenames, null, isAppend,
-        htParams, loadScript, sOptions, tokType, isConcat);
+        htParams, loadScript, sOptions, tokType, filecat != null ? filecat
+            : isConcat ? "+" : " ");
     if (timeMsg)
       showString(Logger.getTimerMsg("load", 0));
 
@@ -4651,12 +4686,12 @@ public class ScriptEval extends ScriptExpr {
           // fix for earlier version in JavaScript saving the full state instead of just the PDB file. 
           filename = filename.substring(0, filename.lastIndexOf("|"));
           filename += filename.substring(filename.lastIndexOf("|"));
-          runScript("load \""+ filename + "\"");
+          runScript("load \"" + filename + "\"");
           return;
         }
         cmdScript(0, filename, null);
         return;
-      } 
+      }
       if (vwr.async && errMsg.startsWith(JC.READER_NOT_FOUND)) {
         //TODO: other errors can occur due to missing files 
         //String rdrName = errMsg.substring(JC.READER_NOT_FOUND.length());
@@ -4667,12 +4702,21 @@ public class ScriptEval extends ScriptExpr {
     }
 
     if (debugHigh)
-      report("Successfully loaded:"
-          + (filenames == null ? htParams.get("fullPathName") : modelName), false);
+      report(
+          "Successfully loaded:"
+              + (filenames == null ? htParams.get("fullPathName") : modelName),
+          false);
 
     finalizeLoad(isAppend, appendNew, isConcat, doOrient, nFiles, ac0,
         modelCount0);
 
+  }
+
+  private void addFilterAttribute(Map<String, Object> htParams, String filter,
+                                  String key) {
+    String val = PT.getQuotedOrUnquotedAttribute(filter, key);
+    if (val != null && val.length() > 0)
+      htParams.put(key, val);
   }
 
   private int addLoadData(SB loadScript, String key, Map<String, Object> htParams, int i) throws ScriptException {
@@ -4723,6 +4767,11 @@ public class ScriptEval extends ScriptExpr {
       switch (tokAt(i)) {
       case T.plus:
         loadScript.append("/*concat*/ +");
+        ++i;
+        continue;
+      case T.minus:
+        // =xxxx/val split into two
+        loadScript.append(" -");
         ++i;
         continue;
       case T.integer:

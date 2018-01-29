@@ -34,6 +34,7 @@ import javajs.util.T3;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAppConsoleInterface;
+import org.jmol.api.JmolAudioPlayer;
 import org.jmol.api.JmolCallbackListener;
 import org.jmol.api.JmolDialogInterface;
 import org.jmol.api.JmolStatusListener;
@@ -41,6 +42,7 @@ import org.jmol.c.CBK;
 import org.jmol.java.BS;
 import org.jmol.script.SV;
 import org.jmol.script.T;
+import org.jmol.util.JmolAudio;
 import org.jmol.util.Logger;
 
 /**
@@ -202,8 +204,7 @@ public class StatusManager {
     statusRecordSet.addLast(msgRecord);
   }
   
-  synchronized Lst<Lst<Lst<Object>>> getStatusChanged(
-                                                                 String newStatusList) {
+  synchronized Lst<Lst<Lst<Object>>> getStatusChanged(String newStatusList) {
     /*
      * returns a Vector of statusRecordSets, one per status type,
      * where each statusRecordSet is itself a vector of vectors:
@@ -218,8 +219,8 @@ public class StatusManager {
     boolean isAdd = (newStatusList.length() > 0 && newStatusList.charAt(0) == '+');
     boolean getList = false;
     if (isRemove) {
-      statusList = PT.rep(statusList, newStatusList
-          .substring(1, newStatusList.length()), "");
+      statusList = PT.rep(statusList,
+          newStatusList.substring(1, newStatusList.length()), "");
     } else {
       newStatusList = PT.rep(newStatusList, "+", "");
       if (statusList.equals(newStatusList) || isAdd
@@ -235,7 +236,7 @@ public class StatusManager {
     }
     Lst<Lst<Lst<Object>>> list = new Lst<Lst<Lst<Object>>>();
     if (getList)
-      for (Map.Entry<String, Lst<Lst<Object>>> e: messageQueue.entrySet())
+      for (Map.Entry<String, Lst<Lst<Object>>> e : messageQueue.entrySet())
         list.addLast(e.getValue());
     messageQueue.clear();
     statusPtr = 0;
@@ -480,6 +481,7 @@ public class StatusManager {
               errMsgUntranslated });
   }
   
+  
   synchronized void notifyMinimizationStatus(String minStatus, Integer minSteps, 
                                              Float minEnergy, Float minEnergyDiff, String ff) {
     String sJmol = jmolScriptCallback(CBK.MINIMIZATION);
@@ -624,11 +626,6 @@ public class StatusManager {
           "; synced? " + isSynced + "; driving? " + drivingSync + "; disabled? " + syncDisabled);
     }
   }
-
-
-    public void playAudio(String fileNameOrDataURI) {
-      syncSend(fileNameOrDataURI, "audio:", -1);
-    }
 
   public Object syncSend(String script, Object appletNameOrProp, int port) {
     // no jmolscript option for syncSend
@@ -785,6 +782,97 @@ public class StatusManager {
     return (jsl == null || width == vwr.getScreenWidth()
         && height == vwr.getScreenHeight() ? new int[] { width, height } : jsl
         .resizeInnerPanel("preferredWidthHeight " + width + " " + height + ";"));
+  }
+
+  /**
+   * called by file droppers
+   * 
+   * @param data
+   */
+  public void resizeInnerPanelString(String data) {
+    if (jsl != null)
+      jsl.resizeInnerPanel(data);
+  }
+
+  private Map<String, JmolAudioPlayer>audios;
+  
+  public void registerAudio(String id, Map<String, Object> htParams) {
+    stopAudio(id);
+    if (audios == null)
+      audios = new Hashtable<String, JmolAudioPlayer>();
+    if (htParams == null)
+      audios.remove(id);
+    else
+      audios.put(id, (JmolAudioPlayer) htParams.get("audioPlayer"));
+  }
+
+  private void stopAudio(String id) {
+    if (audios == null)
+      return;
+    JmolAudioPlayer player = audios.get(id);
+    if (player != null)
+      player.action("kill");    
+  }
+  
+  public void playAudio(Map<String, Object> htParams) {
+    if (!vwr.getBoolean(T.allowaudio)) {
+      if (htParams == null)
+        return;
+      htParams.put("status", "close");
+      Logger.info("allowAudio is set false");
+      notifyAudioStatus(htParams);
+      return;
+    }
+    try {
+      String action = (htParams == null ? "close" : (String) htParams
+          .get("action"));
+      String id = (htParams == null ? null : (String) htParams.get("id"));
+      if (action != null && action.length() > 0) {
+        if (id == null || id.length() == 0) {
+          if (audios == null || audios.isEmpty())
+            return;
+          if (action.equals("close")) {
+            for (String key : audios.keySet()) {
+              JmolAudioPlayer player = audios.remove(key);
+              player.action("close");
+            }
+          }
+          return;
+        }
+        JmolAudioPlayer player = audios.get(id);
+        if (player != null) {
+          player.action(action);
+          return;
+        }
+      }
+      try {
+        ((JmolAudio) Interface.getInterface("org.jmol.util.JmolAudio", vwr,
+            "script")).playAudio(vwr, htParams);
+      } catch (Exception e) {
+        Logger.info(e.getMessage());
+      }
+    } catch (Throwable t) {
+      // ignore
+    }
+  }
+
+  /**
+   * called from JmolAudio
+   * 
+   * @param htParams
+   */
+  synchronized public void notifyAudioStatus(Map<String, Object> htParams) {
+    String status = (String) htParams.get("status");
+    System.out.println(status);
+    String script = (String) htParams.get(status);
+    if (script != null)
+      vwr.script(script);
+    if (status == "ended")
+      registerAudio((String) htParams.get("id"), null);
+    String sJmol = jmolScriptCallback(CBK.AUDIO);
+    if (notifyEnabled(CBK.AUDIO))
+      cbl.notifyCallback(CBK.AUDIO,
+          new Object[] { sJmol, htParams });
   }
 
 

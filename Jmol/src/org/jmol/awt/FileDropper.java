@@ -44,6 +44,7 @@ import javajs.util.SB;
 
 import javax.swing.JOptionPane;
 
+import org.jmol.api.JmolDropEditor;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
@@ -67,9 +68,11 @@ public class FileDropper implements DropTargetListener {
   private Viewer vwr;
   private PropertyChangeListener pcl;
   private JmolStatusListener statusListener;
+  private JmolDropEditor dropListener;
 
-  public FileDropper(JmolStatusListener statusListener, Viewer vwr) {
+  public FileDropper(JmolStatusListener statusListener, Viewer vwr, JmolDropEditor dropListener) {
     this.statusListener = statusListener; // application only
+    this.dropListener = dropListener;
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);
     this.vwr = vwr;
@@ -92,6 +95,10 @@ public class FileDropper implements DropTargetListener {
   }
 
   private void loadFile(String fname, int x, int y) {
+    if (dropListener != null) {
+      dropListener.loadFile(fname);
+      return;
+    }      
     if (fname.endsWith(".URL")) {
 //      [InternetShortcut]
 //      URL=http://nbo6.chem.wisc.edu/jmol_nborxiv/allyl.47
@@ -125,9 +132,9 @@ public class FileDropper implements DropTargetListener {
     }
     if (statusListener != null) {
       try {
-        String data = vwr.fm.getEmbeddedFileState(fname, false);
+        String data = vwr.fm.getEmbeddedFileState(fname, false, "state.spt");
         if (data.indexOf("preferredWidthHeight") >= 0)
-          statusListener.resizeInnerPanel(data);
+          vwr.sm.resizeInnerPanelString(data);
       } catch (Throwable e) {
         // ignore
       }

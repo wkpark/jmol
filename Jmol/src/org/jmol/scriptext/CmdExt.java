@@ -4705,7 +4705,7 @@ public class CmdExt extends ScriptExt {
         break;
       } else if (tokAt(2) == T.file && (len = slen) == 4) {
         if (!chk)
-          msg = vwr.fm.getEmbeddedFileState(paramAsStr(3), true);
+          msg = vwr.fm.getEmbeddedFileState(paramAsStr(3), true, "state.spt");
         break;
       }
       len = 3;

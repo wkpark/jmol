@@ -32,6 +32,7 @@ public enum CBK {
   ANIMFRAME,
   APPLETREADY,
   ATOMMOVED,
+  AUDIO,
   CLICK,
   DRAGDROP,
   ECHO,

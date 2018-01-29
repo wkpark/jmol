@@ -547,16 +547,15 @@ public class FileManager implements BytePoster {
     }
   }
 
-  public String getEmbeddedFileState(String fileName, boolean allowCached) {
-    String[] dir = null;
-    dir = getZipDirectory(fileName, false, allowCached);
+  public String getEmbeddedFileState(String fileName, boolean allowCached, String sptName) {
+    String[] dir = getZipDirectory(fileName, false, allowCached);
     if (dir.length == 0) {
       String state = vwr.getFileAsString4(fileName, -1, false, true, false, "file");
       return (state.indexOf(JC.EMBEDDED_SCRIPT_TAG) < 0 ? ""
           : FileManager.getEmbeddedScript(state));
     }
     for (int i = 0; i < dir.length; i++)
-      if (dir[i].indexOf(".spt") >= 0) {
+      if (dir[i].indexOf(sptName) >= 0) {
         String[] data = new String[] { fileName + "|" + dir[i], null };
         getFileDataAsString(data, -1, false, false, false);
         return data[1];

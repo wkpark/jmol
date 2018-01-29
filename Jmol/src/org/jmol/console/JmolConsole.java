@@ -26,6 +26,7 @@ package org.jmol.console;
 
 import org.jmol.api.JmolAbstractButton;
 import org.jmol.api.JmolScriptEditorInterface;
+import org.jmol.api.JmolStatusListener;
 import org.jmol.awt.Platform;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.FileManager;
@@ -97,7 +98,7 @@ public abstract class JmolConsole extends GenericConsole implements ActionListen
   }
   
   protected ScriptEditor scriptEditor;
-  
+
   @Override
   public JmolScriptEditorInterface getScriptEditor() {
     // is called by vwr during application startup, despite what Eclipse says.

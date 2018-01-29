@@ -63,6 +63,7 @@ import javajs.util.SB;
 import javajs.util.T3;
 import javajs.util.V3;
 
+import org.jmol.adapter.readers.quantum.NBOParser;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.Interface;
@@ -125,7 +126,6 @@ import org.jmol.util.Rectangle;
 import org.jmol.util.TempArray;
 import org.jmol.util.Triangulator;
 import org.jmol.viewer.binding.Binding;
-import org.jmol.adapter.readers.quantum.NBOParser;
 /*
  * 
  * ****************************************************************
@@ -790,6 +790,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
     am.setAnimationOn(false);
     am.setAnimationFps(g.animationFps);
+    sm.playAudio(null);
     sm.allowStatusReporting = g.statusReporting;
     setBooleanProperty("antialiasDisplay", (isPyMOL ? true : g.antialiasDisplay));
     stm.resetLighting();
@@ -1629,7 +1630,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private String loadModelFromFileRepaint(String fullPathName, String fileName,
                                           String[] fileNames, Object reader) {
     String ret = loadModelFromFile(fullPathName, fileName, fileNames, reader,
-        false, null, null, null, 0, false);
+        false, null, null, null, 0, " ");
     refresh(REFRESH_REPAINT, "loadModelFromFileRepaint");
     return ret;
   }
@@ -1652,17 +1653,17 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    * @param loadScript
    * @param sOptions
    * @param tokType
-   * @param isConcat
+   * @param filecat + or null, -, or space
    * @return null or error
    */
   public String loadModelFromFile(String fullPathName, String fileName,
                                   String[] fileNames, Object reader,
                                   boolean isAppend,
                                   Map<String, Object> htParams, SB loadScript,
-                                  SB sOptions, int tokType, boolean isConcat) {
+                                  SB sOptions, int tokType, String filecat) {
     if (htParams == null)
       htParams = setLoadParameters(null, isAppend);
-    if (isConcat)
+    if (filecat != " ")
       htParams.put("concatenate", Boolean.TRUE);
     Object atomSetCollection;
     String[] saveInfo = fm.getFileInfo();
@@ -1675,11 +1676,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       if (loadScript == null) {
         loadScript = new SB().append("load files");
         for (int i = 0; i < fileNames.length; i++)
-          loadScript.append(i == 0 || !isConcat ? " " : "+").append(
-              "/*file*/$FILENAME" + (i + 1) + "$");
+          loadScript.append(i == 0 || filecat == null ? " " : filecat).append(
+              "/*file*/$FILENAME" + (i + 1) + "$"); 
+        if (sOptions.length() > 0)
+          loadScript.append(" /*options*/ ").append(sOptions.toString());
       }
-      if (sOptions.length() > 0)
-        loadScript.append(" /*options*/ ").append(sOptions.toString());
       long timeBegin = System.currentTimeMillis();
 
       atomSetCollection = fm.createAtomSetCollectionFromFiles(fileNames,
@@ -5202,6 +5203,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.hiddenLinesDashed;
     case T.pdb:
       return ms.getMSInfoB("isPDB");
+    case T.autoplaymovie:
+      return g.autoplayMovie;
+    case T.allowaudio:
+      return !headless && g.allowAudio;
     case T.allowgestures:
       return g.allowGestures;
     case T.allowmultitouch:
@@ -6166,6 +6171,16 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.autoplaymovie:
+      // 14.29.2
+      g.autoplayMovie = value;
+      break;
+    case T.allowaudio:
+      // 14.29.2
+      value = false;
+      // cannot be set TRUE once set FALSE
+        g.allowAudio = value;
+      break;
     case T.nodelay:
       // 14.21.1
       g.noDelay = value;
@@ -9168,7 +9183,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 //    setAtomProperty(BSUtil.newAndSetBit(pt), T.partialcharge, 0, 1f, null,
 //        null, null);
     Logger.info("Calculating MMFF94 partial charges for " + bsSelected.cardinality() + " atoms");
-    getMinimizer(true).calculatePartialCharges(ms, bsSelected);
+    getMinimizer(true).calculatePartialCharges(ms, bsSelected, null);
   }
 
   public void setCurrentModelID(String id) {
@@ -9660,10 +9675,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public Triangulator getTriangulator() {
     return (triangulator == null ? (triangulator = (Triangulator) Interface
         .getUtil("Triangulator", this, "script")) : triangulator);
-  }
-
-  public void playAudio(String fileNameOrDataURI) {
-    sm.playAudio(fileNameOrDataURI);
   }
 
   public Map<String, Object> getCurrentModelAuxInfo() {

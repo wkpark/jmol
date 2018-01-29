@@ -74,6 +74,7 @@ public interface JmolAppletInterface extends JmolSyncInterface {
   public String loadInlineString(String strModel, String script, boolean isAppend);
   public String loadInlineArray(String[] strModels, String script, boolean isAppend);
   public String loadDOMNode(Object DOMNode);
+  public void notifyAudioEnded(Object htParams);
 
   // Note -- some Macintosh-based browsers cannot distinguish methods
   // with the same name but with different method signatures

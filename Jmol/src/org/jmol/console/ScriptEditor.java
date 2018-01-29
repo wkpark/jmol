@@ -29,20 +29,23 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Map;
 
 import javajs.util.PT;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextPane; 
+import javax.swing.JTextPane;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.DefaultEditorKit;
@@ -50,14 +53,14 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.undo.UndoManager;
-import javax.swing.JScrollPane;
 
 import org.jmol.api.JmolScriptEditorInterface;
+import org.jmol.awt.FileDropper;
 import org.jmol.i18n.GT;
+import org.jmol.script.ScriptContext;
 import org.jmol.viewer.FileManager;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
-import org.jmol.script.ScriptContext;
 import org.openscience.jmol.app.jmolpanel.PreferencesDialog;
 
 public final class ScriptEditor extends JDialog implements JmolScriptEditorInterface, ActionListener, WindowListener {
@@ -71,6 +74,8 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   private JButton checkButton;
   private JButton runButton;
   private JButton pauseButton;
+  private JButton saveButton;
+  private JButton saveAsButton;
   private JButton haltButton;
   private JButton clearButton;
   private JButton stateButton;
@@ -134,6 +139,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   void layoutWindow(Container container) {
     editor = new EditorTextPane();
     editor.setDragEnabled(true);
+    editor.setDropTarget(new DropTarget(editor, new FileDropper(null, vwr, this)));
     JScrollPane editorPane = new JScrollPane(editor);
     updateFontSize();
 
@@ -154,7 +160,10 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     haltButton.setEnabled(false);
     clearButton = setButton(GT._("Clear"));
     closeButton = setButton(GT._("Close"));
-
+    saveButton = setButton(GT._("Save"));
+    saveButton.setEnabled(false);
+    saveAsButton = setButton(PT.rep(GT._("&Save As..."), "&", ""));
+    saveAsButton.setEnabled(false);
     // container.setLayout(new BorderLayout());
     // container.add(editorPane, BorderLayout.CENTER);
     JPanel buttonPanelWrapper = new JPanel();
@@ -218,7 +227,14 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   
   @Override
   public void output(String message) {
+    setSaveEnabled(null);
     editor.clearContent(message);
+  }
+
+  private void setSaveEnabled(String zipName) {
+    saveButton.setEnabled(zipName != null);
+    saveAsButton.setEnabled(zipName != null);
+    zipFileName = zipName;    
   }
 
   @Override
@@ -255,6 +271,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   }
 
   protected String filename;
+  private Map<String, Object> map;
   
   private synchronized void setContext(ScriptContext context) {
     pauseButton.setEnabled(vwr.isScriptExecuting());
@@ -375,10 +392,33 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
       vwr.haltScriptExecution();
       return;
     }
+    if (source == saveButton) {
+      saveZip(false);
+      return;
+    }
+    if (source == saveAsButton) {
+      saveZip(true);
+      return;
+    }
 
   }
  
+  private void saveZip(boolean isAs) {
+    if (isAs) {
+    // TODO
+    } else {
+      String script = editor.getText().trim();
+      if (script.startsWith("load "))
+        script = script.substring(script.indexOf(";") +  1);
+      map = vwr.fm.getFileAsMap(zipFileName, null);
+      if (map == null)
+        return;
+      map.put("movie.spt", script);
+    }
+  }
+
   private int fontSize;
+  private String zipFileName;
 
   public void updateFontSize() {
     int scale = PT.parseInt("" + (String) vwr.getProperty("DATA_API", "getPreference", "consoleFontScale"));
@@ -597,7 +637,7 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
     if (fileText == null)
       fileText = new String[] { null, null };
     if (fileText[1] == null)
-      fileText[1] = "<no data>";
+      fileText[1] = "#no data#";
     String filename = fileText[0];
     String msg = fileText[1];
     if (msg != null) {
@@ -646,5 +686,50 @@ public final class ScriptEditor extends JDialog implements JmolScriptEditorInter
   public void windowDeactivated(WindowEvent e) {
     // TODO
     
+  }
+
+//  @Override
+//  public void dragOver(DropTargetDragEvent dtde) {
+//    if (Logger.debugging)
+//      Logger.debug("DropOver detected...");
+//    if (processDragDrop(dtde, null))
+//      dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+//  }
+//
+//  @Override
+//  public void dragEnter(DropTargetDragEvent dtde) {
+//    if (Logger.debugging)
+//      Logger.debug("DropEnter detected...");
+//    if (processDragDrop(dtde, null))
+//      dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+//  }
+//
+
+  @Override
+  public void loadContent(String script) {
+    System.out.println("SCRIPT is " + script);
+  }
+
+  @Override
+  public void loadFile(String fileName) {
+    System.out.println(fileName);
+    if (!fileName.endsWith("png") && !fileName.endsWith("pngj")
+        && !fileName.endsWith("jmol") && !fileName.endsWith("zip"))
+      return;
+    try {
+      setSaveEnabled(fileName);
+      output(vwr.fm.getEmbeddedFileState(fileName, false, "movie.spt"));
+    } catch (Throwable e) {
+      // ignore
+    }
+
+    try {
+      String data = vwr.fm.getEmbeddedFileState(fileName, false, "state.spt");
+      if (data.indexOf("preferredWidthHeight") >= 0)
+        vwr.sm.resizeInnerPanelString(data);
+    } catch (Throwable e) {
+      // ignore
+    }
+    vwr.openFileAsyncSpecial(fileName, 11);
   }
 }

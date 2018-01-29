@@ -368,8 +368,12 @@ public class Contact extends Isosurface {
         box.addBoundBoxPoint(thisMesh.vs[j]);
     }
     Logger.setLogLevel(logLevel);
-    jvxlData.boundingBox[0] = box.bbCorner0;
-    jvxlData.boundingBox[1] = box.bbCorner1;
+    if (jvxlData.boundingBox == null) {
+      System.out.println("???");
+    } else {
+      jvxlData.boundingBox[0] = box.bbCorner0;
+      jvxlData.boundingBox[1] = box.bbCorner1;
+    }
     this.displayType = displayType;
     return (float) volume;
   }

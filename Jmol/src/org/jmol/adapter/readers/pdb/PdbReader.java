@@ -1475,6 +1475,8 @@ public class PdbReader extends AtomSetCollectionReader {
       hetName = htName + hetName;
     }
     htHetero.put(groupName, hetName);
+    appendLoadNote(groupName + " = " + hetName);
+
     //Logger.debug("hetero: "+groupName+" "+hetName);
   }
   

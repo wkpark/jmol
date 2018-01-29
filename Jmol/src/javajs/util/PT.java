@@ -564,6 +564,34 @@ public class PT {
   }
   
   /**
+   * single- or double-quoted string or up to the first space -- like HTML5
+   * not case-sensitive
+   * 
+   * @param line
+   * @param key
+   * @return attribute
+   */
+  public static String getQuotedOrUnquotedAttribute(String line, String key) {
+    if (line == null || key == null)
+      return null;
+    int pt = line.toLowerCase().indexOf(key.toLowerCase() + "=");
+    if (pt < 0 || (pt = pt + key.length() + 1) >= line.length())
+      return "";
+    char c = line.charAt(pt);
+    switch (c) {
+    case '\'':
+    case '"':
+      pt++;
+      break;
+    default:
+      c = ' ';
+      line += " ";
+    }
+    int pt1 = line.indexOf(c, pt);
+    return (pt1 < 0 ? null : line.substring(pt, pt1));
+  }
+  
+  /**
    * CSV format -- escaped quote is "" WITHIN "..."
    *
    * 

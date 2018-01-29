@@ -579,6 +579,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
     case LOADSTRUCT:
     case SCRIPT:
       return !isJNLP;
+    case AUDIO: // Jmol 14.29.2
     case APPLETREADY: // Jmol 12.1.48
     case ATOMMOVED: // Jmol 12.1.48
     case CLICK:
@@ -595,6 +596,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
    * @param type the callback type or null for getJsObjectInfo() -- Java applet only
    * @param data type-dependent
    */
+  @SuppressWarnings("unchecked")
   @Override
   public void notifyCallback(CBK type, Object[] data) {
     String callback = (type == null ? null : callbacks.get(type));
@@ -612,6 +614,7 @@ public abstract class GenericApplet implements JmolAppletInterface,
     case APPLETREADY:
       data[3] = appletObject;
       break;
+    case AUDIO:
     case ERROR:
     case EVAL:
     case HOVER:
@@ -769,11 +772,6 @@ public abstract class GenericApplet implements JmolAppletInterface,
 
   private String sendScript(String script, String appletName, boolean isSync,
                             boolean doCallback) {
-    if ("audio:" == appletName) {
-      playAudio(script);
-      return "";
-    }
-
     if (doCallback) {
       script = notifySync(script, appletName);
       // if the notified JavaScript function returns "" or 0, then 
@@ -822,17 +820,6 @@ public abstract class GenericApplet implements JmolAppletInterface,
       }
     }
     return (isSync ? "" : sb.toString());
-  }
-
-  public void playAudio(String fileOrDataURI) {
-    /**
-     * @j2sNative
-     * 
-     * Jmol._playAudio(fileNameOrDataURI);
-     */
-    {
-      eval("Jmol._playAudio(" + PT.esc(fileOrDataURI));
-    } 
   }
 
   private String notifySync(String info, String appletName) {
@@ -957,5 +944,11 @@ public abstract class GenericApplet implements JmolAppletInterface,
       apps.addLast(appletName);
       //System.out.println("findApplet found2 " + appletName);
     }
+  }
+  
+  @Override
+  @SuppressWarnings("unchecked")
+  public void notifyAudioEnded(Object htParams) {
+    viewer.sm.notifyAudioStatus((Map<String, Object>) htParams);
   }
 }

@@ -681,12 +681,13 @@ public class Minimizer {
   }
 
   
-  public void calculatePartialCharges(ModelSet ms, BS bsAtoms) throws JmolAsyncException {
+  public void calculatePartialCharges(ModelSet ms, BS bsAtoms, BS bsReport) throws JmolAsyncException {
     ForceFieldMMFF ff = new ForceFieldMMFF(this);
     ff.setArrays(ms.at, bsAtoms, ms.bo, ms.bondCount, true, true);
     vwr.setAtomProperty(bsAtoms, T.atomtype, 0, 0, null, null,
         ff.getAtomTypeDescriptions());
-    vwr.setAtomProperty(bsAtoms, T.partialcharge, 0, 0, null,
+   
+    vwr.setAtomProperty(bsReport == null ? bsAtoms : bsReport, T.partialcharge, 0, 0, null,
         ff.getPartialCharges(), null);
   }
 

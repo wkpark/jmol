@@ -53,6 +53,7 @@ public class BinaryDcdReader extends AtomSetCollectionReader {
   @Override
   protected void setup(String fullPath, Map<String, Object> htParams, Object reader) {
     isBinary = true;
+    requiresBSFilter = true;
     setupASCR(fullPath, htParams, reader);
   }
 

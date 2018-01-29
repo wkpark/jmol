@@ -136,6 +136,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
 
   public boolean isBinary;
   public boolean debugging;
+  protected boolean requiresBSFilter;
 
   public AtomSetCollection asc;
   protected BufferedReader reader;
@@ -467,9 +468,11 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     if (!htParams.containsKey("templateAtomCount"))
       htParams.put("templateAtomCount", Integer.valueOf(asc
           .ac));
-    if (htParams.containsKey("bsFilter"))
+    if (bsFilter != null) {
       htParams.put("filteredAtomCount", Integer.valueOf(BSUtil
-          .cardinalityOf((BS) htParams.get("bsFilter"))));
+          .cardinalityOf(bsFilter)));
+      htParams.put("bsFilter", bsFilter);
+    }
     if (!calculationType.equals("?"))
       asc.setInfo("calculationType",
           calculationType);
@@ -550,7 +553,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     else if (htParams.containsKey("modelNumber"))
       desiredModelNumber = ((Integer) htParams.get("modelNumber")).intValue();
     applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
-    bsFilter = (BS) htParams.get("bsFilter");
+    bsFilter = (requiresBSFilter ? (BS) htParams.get("bsFilter") : null);
     setFilter(null);
     fillRange = htParams.get("fillRange");
     if (strSupercell != null) {

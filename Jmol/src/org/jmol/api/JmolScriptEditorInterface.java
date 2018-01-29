@@ -2,7 +2,7 @@ package org.jmol.api;
 
 import org.jmol.script.ScriptContext;
 
-public interface JmolScriptEditorInterface {
+public interface JmolScriptEditorInterface extends JmolDropEditor {
 
   void setVisible(boolean b);
 

@@ -24,6 +24,8 @@
 
 package org.jmol.adapter.readers.more;
 
+import java.util.Map;
+
 import org.jmol.adapter.smarter.AtomSetCollectionReader;
 import org.jmol.util.Logger;
 import javajs.util.P3;
@@ -38,6 +40,12 @@ import javajs.util.P3;
 
 public class MdCrdReader extends AtomSetCollectionReader {
 
+  @Override 
+  protected void setup(String fullPath, Map<String, Object> htParams, Object readerOrDocument) {
+    requiresBSFilter = true;
+    setupASCR(fullPath, htParams, readerOrDocument);
+  }
+  
   @Override
   protected void initializeReader() {
     initializeTrajectoryFile();

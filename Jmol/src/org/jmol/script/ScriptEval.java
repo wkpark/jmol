@@ -995,6 +995,9 @@ public class ScriptEval extends ScriptExpr {
           return false;
         }
       }
+      if (filename.endsWith("|state.spt")) {
+        vwr.g.setO("_pngjFile", filename.substring(0, filename.length() - 10) + "?");
+      }   
     }
     scriptFileName = filename;
     data[1] = FileManager.getEmbeddedScript(data[1]);

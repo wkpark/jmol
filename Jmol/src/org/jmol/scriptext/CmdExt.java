@@ -3866,8 +3866,12 @@ public class CmdExt extends ScriptExt {
       // here we override that
       // write PDB "xxx.pdb"
       String s = SV.sValue(tokenAt(++pt, args));
-      if (s.length() > 0 && s.charAt(0) != '.')
-        type = val.toUpperCase();
+      if (s.length() > 0 && s.charAt(0) != '.') {
+        if (val == null) {
+          System.out.println("??");
+          type = val.toUpperCase();
+        }
+      }
     }
 
     // set the file name

@@ -220,8 +220,7 @@ abstract public class AtomCollection {
     vibrations = null;
     occupancies = null;
     bfactor100s = null;
-    partialCharges = null;
-    bsPartialCharges = null;
+    resetPartialCharges();
     bondingRadii = null;
     atomTensors = null;
   }
@@ -324,11 +323,13 @@ abstract public class AtomCollection {
   }
 
   public void setFormalCharges(BS bs, int formalCharge) {
-    if (bs != null)
+    if (bs != null) {
+      resetPartialCharges();
       for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
         at[i].setFormalCharge(formalCharge);
         taintAtom(i, TAINT_FORMALCHARGE);
       }
+    }
   }
   
   public float[] getAtomicCharges() {
@@ -640,6 +641,7 @@ abstract public class AtomCollection {
         setElement(atom, iValue, true);
         break;
       case T.formalcharge:
+        resetPartialCharges();
         atom.setFormalCharge(iValue);
         taintAtom(i, TAINT_FORMALCHARGE);
         break;
@@ -850,12 +852,14 @@ abstract public class AtomCollection {
     atom.paletteID = PAL.CPK.id;
     atom.colixAtom = vwr.cm.getColixAtomPalette(atom,
         PAL.CPK.id);
-    if (bsPartialCharges != null) {
-      bsPartialCharges.clear(atom.i);
-      partialCharges[atom.i] = 0;
-    }
+    resetPartialCharges();
     if (doTaint)
       taintAtom(atom.i, TAINT_ELEMENT);
+  }
+
+  private void resetPartialCharges() {
+    partialCharges = null;
+    bsPartialCharges = null;
   }
 
   private void setAtomResno(int atomIndex, int resno) {
@@ -2603,9 +2607,7 @@ abstract public class AtomCollection {
     hasBfactorRange = false;
     occupancies = (float[]) AU.deleteElements(occupancies,
         firstAtomIndex, nAtoms);
-    partialCharges = (float[]) AU.deleteElements(partialCharges,
-        firstAtomIndex, nAtoms);
-    bsPartialCharges = BSUtil.deleteBits(bsPartialCharges, bsAtoms);
+    resetPartialCharges();
     atomTensorList = (Object[][]) AU.deleteElements(atomTensorList,
         firstAtomIndex, nAtoms);
     vibrations = (Vibration[]) AU.deleteElements(vibrations,

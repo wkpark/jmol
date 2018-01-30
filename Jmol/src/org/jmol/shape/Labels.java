@@ -137,7 +137,6 @@ public class Labels extends AtomShape {
     }
 
     if ("label" == propertyName) {
-      // TODO: Should do this as a click/response with label:
       boolean isPicked = (isPickingMode() && bsSelected.cardinality() == 1 && bsSelected.nextSetBit(0) == lastPicked);
       setScaling();
       LabelToken[][] tokens = null;

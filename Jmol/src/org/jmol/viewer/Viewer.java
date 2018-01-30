@@ -2548,6 +2548,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         dm.clear();
       setBooleanProperty("legacyjavafloat", false);
       if (resetUndo) {
+        if (zapModelKit)
+          g.removeParam("_pngjFile");
         if (zapModelKit && g.modelKitMode) {
           openStringInlineParamsAppend(JC.MODELKIT_ZAP_STRING, null, true);
           setRotationRadius(5.0f, true);

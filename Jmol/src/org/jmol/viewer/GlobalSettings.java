@@ -45,8 +45,11 @@ public class GlobalSettings {
     htPropertyFlagsRemoved = new Hashtable<String, Boolean>();
     if (g != null) {
       //persistent values not reset with the "initialize" command
-      if (!clearUserVariables)
+      if (!clearUserVariables) {
+        setO("_pngjFile", g.getParameter("_pngjFile", false));
         htUserVariables = g.htUserVariables; // 12.3.7, 12.2.7
+      }
+      
       debugScript = g.debugScript;
       disablePopupMenu = g.disablePopupMenu;
       messageStyleChime = g.messageStyleChime;
@@ -754,7 +757,7 @@ public class GlobalSettings {
       setO(name, Float.valueOf(value));
   }
 
-  void setO(String name, Object value) {
+  public void setO(String name, Object value) {
     name = name.toLowerCase();
     if (value == null || htBooleanParameterFlags.containsKey(name))
       return; // don't allow setting string of a boolean

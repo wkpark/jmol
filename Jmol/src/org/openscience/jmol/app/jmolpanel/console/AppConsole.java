@@ -33,6 +33,7 @@ import java.awt.Font;
 import java.awt.Window;
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.List;
@@ -40,7 +41,9 @@ import java.util.Map;
 
 import javajs.util.PT;
 
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -48,8 +51,12 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Position;
 import javax.swing.text.SimpleAttributeSet;
@@ -87,6 +94,22 @@ public class AppConsole extends JmolConsole implements EnterListener, JmolDropEd
 
    public static final String ALL_BUTTONS = "Editor Variables Clear History State UndoRedo Close Font Help";
 
+  static {
+    boolean isMacOs = (System.getProperty("os.name").toLowerCase()
+        .contains("mac"));
+    if (isMacOs) {
+      // See http://stackoverflow.com/questions/7252749/how-to-use-command-c-command-v-shortcut-in-mac-to-copy-paste-text#answer-7253059
+      InputMap im = (InputMap) UIManager.get("TextPane.focusInputMap");
+      im.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.META_DOWN_MASK),
+          DefaultEditorKit.selectAllAction);
+      im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.META_DOWN_MASK),
+          DefaultEditorKit.copyAction);
+      im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.META_DOWN_MASK),
+          DefaultEditorKit.pasteAction);
+      im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.META_DOWN_MASK), 
+          DefaultEditorKit.cutAction);
+    }
+  }
   private int fontSize;
 
   // note:  "Check" "Top" "Step" not included in 12.1
@@ -708,6 +731,9 @@ public class AppConsole extends JmolConsole implements EnterListener, JmolDropEd
       // Id Control key is down, captures events does command
       // history recall and inhibits caret vertical shift.
 
+      System.out.println("AppConsole: " + ke);
+      
+      
       int kcode = ke.getKeyCode();
       int kid = ke.getID();
       if (kid == KeyEvent.KEY_PRESSED) {

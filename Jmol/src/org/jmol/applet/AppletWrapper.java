@@ -24,7 +24,6 @@
 
 package org.jmol.applet;
 
-import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Event;
@@ -36,19 +35,20 @@ import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.net.URL;
 
-//import javax.swing.JApplet;  also works
-
 import javajs.util.PT;
 
-import org.jmol.util.Logger;
+import javax.swing.JApplet;
+
 import org.jmol.util.GenericApplet;
+import org.jmol.util.Logger;
+//import javax.swing.JApplet;  also works
 
 /**
  * Using Applet only because originally there was the possibility of non-Swing versions of 
  * the JRE being used. No real difference, I think.
  * 
  */
-public class AppletWrapper extends Applet {
+public class AppletWrapper extends JApplet {
 
   public WrappedApplet wrappedApplet;
 

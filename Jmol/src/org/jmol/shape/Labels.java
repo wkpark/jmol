@@ -175,7 +175,10 @@ public class Labels extends AtomShape {
       // in principle, we could make this more efficient,
       // it would be at the cost of general atom property setting
       checkStringLength(ac);
-      setLabel(new LabelToken[][] { null }, propertyName.substring(6),
+      String label = propertyName.substring(6);
+      if (label.length() == 0)
+        label = null;
+      setLabel(new LabelToken[][] { null }, label,
           ((Integer) value).intValue(), false);
       return;
     }

@@ -44,7 +44,7 @@ import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.bspt.Bspf;
 import org.jmol.c.PAL;
 import org.jmol.c.VDW;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelsetbio.BioModelSet;
 
 import org.jmol.util.Elements;
@@ -91,6 +91,8 @@ abstract public class AtomCollection {
   public int ac;
 
   public Trajectory trajectory;
+
+  protected SymmetryInterface pointGroup;
 
   ////////////////////
   
@@ -1120,6 +1122,7 @@ abstract public class AtomCollection {
     validateBspfForModel(m.trajectoryBaseIndex, false);
     if (m.isBioModel)
       m.resetDSSR(true);
+    pointGroup = null;
   }
 
   private void untaint(int atomIndex, int type) {

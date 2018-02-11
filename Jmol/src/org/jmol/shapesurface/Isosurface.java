@@ -249,7 +249,7 @@ public class Isosurface extends MeshCollection implements MeshDataServer {
       }
       return;
     }
-
+    
     if ("remapColor" == propertyName) {
       if (thisMesh != null)
         thisMesh.remapColors(vwr, (ColorEncoder) value, translucentLevel);

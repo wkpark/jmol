@@ -373,45 +373,42 @@ public class GenNBOReader extends MOReader {
   // org.jmol.quantum.MOCalculation expects
   //  9G: G 0, G+1, G-1, G+2, G-2, G+3, G-3, G+4, G-4
   
-  private static String GC_LIST = "401   411   415   402   403   407   412   410   414   404   406   413   405   408   409";
+  private static String GC_LIST = "415   414   413   412   411   410   409   408   407   406   405   404   403   402   401";
   // GenNBO 401  402  403  404  405  406  407  408  409  410 
   //    for xxxx xxxy xxxz xxyy xxyz xxzz xyyy xyyz xyzz xzzz 
   // GenNBO 411  412  413  414  415  
   //        yyyy yyyz yyzz yzzz zzzz
+  // 
+  // Gaussian is exactly opposite this.
   
-  // org.jmol.quantum.MOCalculation expects
-  //      401  411  415  402  403  407  412  410  414 
-  // 15G: xxxx yyyy zzzz xxxy xxxz yyyx yyyz zzzx zzzy,
-  //      404  406  413  405  408  409
-  //      xxyy xxzz yyzz xxyz yyxz zzxy
-
   
   private static String HS_LIST = "551   552   553   554   555   556   557   558   559   560   561";
   
-  private static String HC_LIST = "501   516   521   502   503   511   517   515   520   " + // all 5, 4+1
-  		"504   506   507   518   510   519   " + // 3+2
-  		"505   512   514   " + // 3 + 1 + 1
-  		"508   513   509" + // 2+2+1
-  		""; 
-  // BH: Guessing here
+  private static String HC_LIST = 
+      "521   520   519   518   517   516   515   514   513   512   " +
+  		"511   510   509   508   507   506   505   504   503   502   501"; 
   // GenNBO is 501-521
   //        501   502   503   504   505   506   507   508   509   510
-  //        1     4     5     10    16    11    12    19    21    14                          
   //    for xxxxx xxxxy xxxxz xxxyy xxxyz xxxzz xxyyy xxyyz xxyzz xxzzz
   //        511   512   513   514   515   516   517   518   519   520
-  //        6     17    20    18    8     2     7     13    15    9                                     
   //        xyyyy xyyyz xyyzz xyzzz xzzzz yyyyy yyyyz yyyzz yyzzz yzzzz
   //        521
-  //        3                                                          
   //        zzzzz
+  //
+  // Gaussian is opposite
   
   private static String IS_LIST = "651   652   653   654   655   656   657   658   659   660   661   662   663";
 
-  private static String IC_LIST = "???"; // TODO
+  private static String IC_LIST = 
+      "628   627   626   625   624   623   622   621   620   " +
+  		"619   618   617   616   615   614   613   612   611   610   " +
+      "609   608   607   606   605   604   603   602   601";
   // GenNBO is 601-628
   // for xxxxxx xxxxxy xxxxxz xxxxyy xxxxyz xxxxzz xxxyyy xxxyyz xxxyzz xxxzzz 
   //     xxyyyy xxyyyz xxyyzz xxyzzz xxzzzz xyyyyy xyyyyz xyyyzz xyyzzz xyzzzz 
-  //     xzzzzz yyyyyy yyyyyz yyyyzz yyyzzz yyzzzz yzzzzz zzzzzz 
+  //     xzzzzz yyyyyy yyyyyz yyyyzz yyyzzz yyzzzz yzzzzz zzzzzz
+  //
+  // Gaussian is opposite this 
   
   private void readData47() throws Exception {
     allowNoOrbitals = true;

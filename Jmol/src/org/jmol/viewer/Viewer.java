@@ -5151,6 +5151,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   @Override
   public int getInt(int tok) {
     switch (tok) {
+    case T.infofontsize:
+      return g.infoFontSize;
     case T.animationfps:
       return am.animationFps;
     case T.dotdensity:
@@ -5958,6 +5960,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   private void setIntPropertyTok(String key, int tok, int value) {
     switch (tok) {
+    case T.infofontsize:
+      g.infoFontSize = Math.max(0, value);
+      break;
     case T.contextdepthmax:
     case T.historylevel:
     case T.scriptreportinglevel:

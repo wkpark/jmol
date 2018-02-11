@@ -339,6 +339,13 @@ public class MolecularOrbital extends Isosurface {
       }
       return getMoInfo(-1) + s;
     }
+    if (propertyName == "moLabel") {
+      String[] labels = (String[]) sg.params.moData
+          .get("nboLabels");
+      if (moNumber > 0 && labels != null)
+        return labels[(moNumber - 1) % labels.length];
+      return "";
+    }
     if (propertyName == "moNumber")
       return Integer.valueOf(moNumber);
     if (propertyName == "moLinearCombination")

@@ -681,12 +681,12 @@ public class Parameters {
   int qmOrbitalType;
   int qmOrbitalCount;
   
-  final static int QM_TYPE_UNKNOWN = 0;
-  final static int QM_TYPE_GAUSSIAN = 1;
-  final static int QM_TYPE_SLATER = 2;
-  final static int QM_TYPE_NCI_PRO = 3;
-  final static int QM_TYPE_NCI_SCF = 4;
-  final static int QM_TYPE_VOLUME_DATA = 5;
+  final public static int QM_TYPE_UNKNOWN = 0;
+  final public static int QM_TYPE_GAUSSIAN = 1;
+  final public static int QM_TYPE_SLATER = 2;
+  final public static int QM_TYPE_NCI_PRO = 3;
+  final public static int QM_TYPE_NCI_SCF = 4;
+  final public static int QM_TYPE_VOLUME_DATA = 5;
   
   public Map<String, Object> moData;
   public final static int MO_MAX_GRID = 80;
@@ -745,12 +745,13 @@ public class Parameters {
         // qm_moNumber < 0 means this is an RHF electron density calculation 
         // through orbital -qm_moNumber
         if (title == null) {
-          title = new String[5];
+          title = new String[6];
           title[0] = "%F";
           title[1] = "Model %M  MO %I/%N %T";
           title[2] = "?Energy = %E %U";
           title[3] = "?Symmetry = %S";
           title[4] = "?Occupancy = %O";
+          title[5] = "?%L";
         }
       }
     }

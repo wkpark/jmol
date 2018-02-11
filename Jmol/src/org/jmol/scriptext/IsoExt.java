@@ -1056,10 +1056,14 @@ public class IsoExt extends ScriptExt {
       if (propertyList.size() > 0)
         setShapeProperty(iShape, "setProperties", propertyList);
       if (haveMO && !eval.tQuiet) {
-        if (!isNBO) {
+        String moLabel = "";
+        if (isNBO) {
+          moLabel = (String) getShapeProperty(iShape, "moLabel");
+        } else {
           moNumber = ((Integer) getShapeProperty(iShape, "moNumber")).intValue();
+          moLabel = "" + moNumber;
         }
-        showString(T.nameOf(tokAt(0)) + " " + moNumber + " "
+        showString(T.nameOf(tokAt(0)) + " " + moLabel + " "
             + (isBeta ? "beta " : "") + getShapeProperty(iShape, "message"));
       }
 
@@ -1134,6 +1138,7 @@ public class IsoExt extends ScriptExt {
         moData.put(type + "_coefs", orbitals);
       }
       moData.put("nboType", type);
+      moData.put("nboLabels", nboLabels);
       moData.put("mos", orbitals);
     } catch (Exception e) {
       error(ScriptError.ERROR_moModelError);

@@ -215,12 +215,6 @@ class IsoMOReader extends AtomDataReader {
       line = PT.formatStringS(line, "U",
           energy != null && params.moData.containsKey("energyUnits")
               && ++rep != 0 ? (String) params.moData.get("energyUnits") : "");
-    if (line.indexOf("%L") >= 0) {
-      String[] labels = (String[]) params.moData.get("nboLabels");
-      line = PT.formatStringS(line, "L", (labels != null
-          && params.qm_moNumber > 0 && ++rep != 0 ?
-      labels[(params.qm_moNumber - 1) % labels.length] : ""));
-    }
     if (line.indexOf("%S") >= 0)
       line = PT.formatStringS(
           line,
@@ -340,6 +334,7 @@ class IsoMOReader extends AtomDataReader {
       // electron density calc
       if (mos == null || isMonteCarlo)
         return;
+      System.out.println("createOrbital " + params.qm_moNumber);
       for (int i = params.qm_moNumber; --i >= 0;) {
         Logger.info(" generating isosurface data for MO " + (i + 1));
         Map<String, Object> mo = mos.get(i);

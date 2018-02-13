@@ -449,12 +449,6 @@ public class MOCalculation extends QuantumCalculation {
   private boolean setCoeffs(int type, boolean isProcess) {
     boolean isOK = false;
     map = dfCoefMaps[type];
-    if (type > QS.MAX_TYPE_SUPPORTED) {
-      if (isProcess && doDebug)
-        dumpInfo(type);
-      moCoeff += map.length;
-      return false;
-    }
     if (isProcess && thisAtom == null) {
       moCoeff += map.length;
       return false;

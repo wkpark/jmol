@@ -361,7 +361,7 @@ public class NBOService {
   //////////////////////////// Send Request to NBOServe ///////////////////////////
 
   /**
-   * Start the current request by writing its metacommands to disk and sending a
+   * Start the current request by writing its meta-commands to disk and sending a
    * command to NBOServe directing it to that file via its stdin.
    * 
    * We allow the Jmol command
@@ -466,7 +466,6 @@ public class NBOService {
       if ((pt = s.lastIndexOf("*start*")) < 0) {
 
         // Note that RUN can dump all kinds of things to SYSOUT prior to completion.
-
         if (currentRequest == null)
           return (removeRequest = true);
         logServerLine(s, (currentRequest.isMessy ? Logger.LEVEL_DEBUG

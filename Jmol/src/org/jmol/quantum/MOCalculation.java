@@ -187,7 +187,7 @@ public class MOCalculation extends QuantumCalculation {
   private void setNormalization(Object nboType) {
     String type = "standard";
     normType = NORM_STANDARD;
-    if (nboType == "AO") {
+    if (("" + nboType).startsWith("AO")) {
       normType = NORM_NBO_AO_SPHERICAL;
       type = "NBO-AO";      
     } else if (calculationType != null) {

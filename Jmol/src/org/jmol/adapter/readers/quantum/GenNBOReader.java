@@ -37,6 +37,7 @@ import javajs.util.SB;
 import org.jmol.adapter.smarter.Atom;
 import org.jmol.quantum.QS;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 
 
 /**
@@ -176,7 +177,7 @@ public class GenNBOReader extends MOReader {
       filterMO();
     }
     boolean isAO = nboType.equals("AO");
-    boolean isNBO = !isAO && !nboType.equals("MO");
+    //boolean isNBO = !isAO && !nboType.equals("MO");
     nOrbitals = orbitals.size();
     if (nOrbitals == 0)
       return;
@@ -200,10 +201,7 @@ public class GenNBOReader extends MOReader {
           line = null;
         }
         fillFloatArray(line, 0, coefs);
-        if (Float.isNaN(coefs[0]))
-          System.out.println("testing gennboreader");
         line = null;
-        //setMOType(mo, i);
       }
     }
     if (nboType.equals("NBO")) {
@@ -216,7 +214,8 @@ public class GenNBOReader extends MOReader {
     }
     moData.put(nboType + "_coefs", orbitals);
     setMOData(false);
-    //moData.put("isNormalized", Boolean.TRUE);
+    if (!isAO)
+      moData.put("isNormalized", Boolean.TRUE);
     moData.put("nboType", nboType);
     Logger.info((orbitals.size() - nOrbitals0) + " orbitals read");
 
@@ -734,16 +733,117 @@ public class GenNBOReader extends MOReader {
       nOrbitals *= 2;
     for (int i = 0; i < nOrbitals; i++)
       setMO(new Hashtable<String, Object>());
-    QS qs = new QS();
-    qs.setNboLabels(tokens, nAOs, orbitals, nOrbitals0, nboType);
+    setNboLabels(tokens, nAOs, orbitals, nOrbitals0, nboType);
     if (addBetaSet) {
       moData.put("firstBeta", Integer.valueOf(nAOs));
-      qs.setNboLabels( map.get("beta_" + type), nAOs, orbitals, nOrbitals0 + nAOs, nboType);
+      setNboLabels( map.get("beta_" + type), nAOs, orbitals, nOrbitals0 + nAOs, nboType);
     }
     Lst<Object> structures = getStructureList();
     NBOParser.getStructures46(map.get("NBO"), "alpha", structures, asc.ac);
     NBOParser.getStructures46(map.get("beta_NBO"), "beta", structures, asc.ac);
     
+  }
+
+  @SuppressWarnings("unchecked")
+  public static boolean setNboType(Map<String, Object> moData, String type,
+                                   Viewer vwr) {
+    String[] nboLabels = (String[]) moData.get("nboLabels");
+    //         31    32    33    34    35    36    37    38    39    40    41
+    int ext = ";AO;  ;PNAO;;NAO; ;PNHO;;NHO; ;PNBO;;NBO; ;PNLMO;NLMO;;MO;  ;NO;"
+        .indexOf(";" + type + ";");
+    ext = ext / 6 + 31;
+    boolean isAO = type.equals("AO");
+    try {
+      Lst<Map<String, Object>> orbitals = (Lst<Map<String, Object>>) moData
+          .get(type + "_coefs");
+      if (orbitals == null) {
+        String data = null;
+        if (!isAO) {
+          String fileName = moData.get("nboRoot") + "." + ext;
+          if ((data = vwr.getFileAsString3(fileName, true, null)) == null)
+            return false;
+          data = data.substring(data.indexOf("--\n") + 3);
+          if (ext == 33)
+            data = data.substring(0, data.indexOf("--\n") + 3);
+        }
+        orbitals = (Lst<Map<String, Object>>) moData.get("mos");
+        Object dfCoefMaps = orbitals.get(0).get("dfCoefMaps");
+        int n = orbitals.size();
+        orbitals = new Lst<Map<String, Object>>();
+        for (int i = n; --i >= 0;) {
+          Map<String, Object> mo = new Hashtable<String, Object>();
+          orbitals.addLast(mo);
+          mo.put("dfCoefMaps", dfCoefMaps);
+        }
+        setNboLabels(nboLabels, nboLabels.length, orbitals, 0, type);
+        int nao = nboLabels.length;
+        int len = 0;
+        int[] next = null;
+        if (isAO) {
+          n = nao;
+        } else {
+          if (data.indexOf("alpha") >= 0) {
+            nao = n / 2;
+            data = data.substring(data.indexOf("alpha") + 10); // "alpha spin"
+          }
+          len = data.length();
+          next = new int[1];
+        }
+        for (int i = 0; i < n; i++) {
+          if (i == nao) {
+            // must skip "beta  spin"
+            next[0] += 12;
+          }
+          Map<String, Object> mo = orbitals.get(i);
+          float[] coefs = new float[nao];
+          mo.put("coefficients", coefs);
+          if (isAO) {
+            coefs[i] = 1;
+          } else {
+            for (int j = 0; j < nao; j++) {
+              coefs[j] = PT.parseFloatChecked(data, len, next, false);
+              if (Float.isNaN(coefs[j]))
+                System.out.println("oops = IsoExt ");
+            }
+          }
+        }
+        if (type.equals("NBO")) {
+          float[] occupancies = new float[n];
+          for (int j = 0; j < n; j++)
+            occupancies[j] = PT.parseFloatChecked(data, len, next, false);
+          for (int i = 0; i < n; i++) {
+            Map<String, Object> mo = orbitals.get(i);
+            mo.put("occupancy", Float.valueOf(occupancies[i]));
+          }
+        }
+        moData.put(type + "_coefs", orbitals);
+      }
+      moData.put("nboType", type);
+      moData.put("nboLabels", nboLabels);
+      moData.put("mos", orbitals);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
+  public static void setNboLabels(String[] tokens, int nLabels,
+                           Lst<Map<String, Object>> orbitals, int nOrbitals0,
+                           String moType) {
+    boolean alphaBeta = (orbitals.size() == nLabels * 2);
+    boolean isAO = (moType.indexOf("AO") >= 0);
+    String ab = (!alphaBeta ? "" : nOrbitals0 == 0 ? " alpha" : " beta");
+    for (int j = 0; j < nLabels; j++) {
+      Map<String, Object> mo = orbitals.get(j + nOrbitals0);
+      String type = tokens[j];
+      mo.put("type", moType + " " + type + ab);
+      if (!isAO)
+        mo.put(
+            "occupancy",
+            Float.valueOf(alphaBeta ? 1 : type.indexOf("*") >= 0
+                || type.indexOf("(ry)") >= 0 ? 0 : 2));
+    }
   }
 
 }

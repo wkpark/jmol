@@ -118,10 +118,6 @@ public class NBODialog extends JDialog {
   final private static String[] dialogNames = new String[] { "Home", "Model",
       "Run", "View", "Search", "Settings", "Help" };
 
-  protected static String getDialogName(int type) {
-    return dialogNames[type];
-  }
-
   protected static final int ORIGIN_UNKNOWN = 0;
   protected static final int ORIGIN_NIH = 1;
   protected static final int ORIGIN_LINE_FORMULA = 2;
@@ -207,6 +203,8 @@ public class NBODialog extends JDialog {
   private boolean isOpenShell;  
   
   private boolean isCaretEnabled = true;
+
+  private JButton settingsButton;
   
   protected void setCaretEnabled(boolean tf) {
     isCaretEnabled = tf;
@@ -262,6 +260,7 @@ public class NBODialog extends JDialog {
     }
     if (type == DIALOG_CONFIG) {
       settingsDialog.setVisible(true);
+      settingsDialog.setTitle("Settings " + (nboService.isReady() ? "OK" : " not connected"));
       return;
     }
 
@@ -275,7 +274,7 @@ public class NBODialog extends JDialog {
       }
     }
 
-    logCmd("Entering " + getDialogName(type));
+    logCmd("Entering " + dialogNames[type]);
 
     nboService.restart();
     //  nboService.restartIfNecessary();
@@ -456,7 +455,7 @@ public class NBODialog extends JDialog {
       b.add(Box.createRigidArea(new Dimension(20, 0)));
       b.add(getMainButton(searchButton, DIALOG_SEARCH, NBOConfig.topFont));
       b.add(Box.createRigidArea(new Dimension(30, 50)));
-      b.add(getMainButton(new JButton("Settings"), DIALOG_CONFIG,
+      b.add(settingsButton = getMainButton(new JButton("Settings"), DIALOG_CONFIG,
           NBOConfig.settingHelpFont));
       b.add(Box.createRigidArea(new Dimension(20, 0)));
       b.add(getMainButton(helpBtn, DIALOG_HELP, NBOConfig.settingHelpFont));
@@ -965,9 +964,11 @@ public class NBODialog extends JDialog {
   }
 
   void setLicense(String data) {
+    boolean lost = (data.length() == 2); 
     String[] lines = PT.split(data, "\n");
     licenseInfo.setText("<html><div style='text-align: center'>" + lines[1]
         + "</html>");
+    repaint();
   }
 
   //  protected Component getComponentatPoint(Point p, Component top){

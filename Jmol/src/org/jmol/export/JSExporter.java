@@ -28,7 +28,7 @@ package org.jmol.export;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.util.GData;
 
 import javajs.J2SRequireImport;

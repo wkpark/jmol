@@ -27,7 +27,7 @@ package org.jmol.util;
 import javajs.J2SRequireImport;
 import javajs.util.V3;
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 
 /**

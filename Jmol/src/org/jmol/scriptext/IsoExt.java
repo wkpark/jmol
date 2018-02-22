@@ -45,7 +45,7 @@ import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.c.VDW;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.quantum.MepCalculation;
 import org.jmol.script.SV;
@@ -1080,7 +1080,7 @@ public class IsoExt extends ScriptExt {
     if (chk)
       return;
     if (!((GenNBOReader) Interface.getInterface("org.jmol.adapter.readers.quantum.GenNBOReader", vwr, "script"))
-    .setNboType(moData, type, vwr))
+    .readNBOCoefficients(moData, type, vwr))
       error(ScriptError.ERROR_moModelError);
   }
 

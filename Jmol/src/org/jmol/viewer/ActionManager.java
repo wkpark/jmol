@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.i18n.GT;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.MeasurementPending;

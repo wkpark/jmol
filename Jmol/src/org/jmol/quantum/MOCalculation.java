@@ -29,12 +29,11 @@ import javajs.api.Interface;
 import javajs.util.Lst;
 import javajs.util.T3;
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.jvxl.data.VolumeData;
-import org.jmol.jvxl.readers.Parameters;
 import org.jmol.modelset.Atom;
-import org.jmol.util.Logger;
 import org.jmol.quantum.mo.DataAdder;
+import org.jmol.util.Logger;
 
 
 
@@ -123,7 +122,7 @@ public class MOCalculation extends QuantumCalculation {
   public final static int NORM_NONE = 0;
   public final static int NORM_STANDARD = 1;
   public final static int NORM_NWCHEM = 2;
-  public final static int NORM_NBO_AO_SPHERICAL = 3;
+  public final static int NORM_NBO = 3;
 
   public int normType = NORM_NONE;
 
@@ -187,8 +186,8 @@ public class MOCalculation extends QuantumCalculation {
   private void setNormalization(Object nboType) {
     String type = "standard";
     normType = NORM_STANDARD;
-    if (("" + nboType).startsWith("AO")) {
-      normType = NORM_NBO_AO_SPHERICAL;
+    if (nboType != null) {//("" + nboType).startsWith("AO")) {
+      normType = NORM_NBO;
       type = "NBO-AO";      
     } else if (calculationType != null) {
       if (calculationType.indexOf("NWCHEM") >= 0) {
@@ -418,7 +417,7 @@ public class MOCalculation extends QuantumCalculation {
    * 
    * @param el
    * @param cpt
-   * @return
+   * @return NWCHEM contraction normalization
    */
   public double getContractionNormalization(int el, int cpt) {
     double sum;
@@ -473,7 +472,7 @@ public class MOCalculation extends QuantumCalculation {
     boolean normalizeAlpha = false;
     switch (normType) {
     case NORM_NONE:
-    case NORM_NBO_AO_SPHERICAL:
+    case NORM_NBO:
     default:
       norm = 1;
       break;
@@ -528,7 +527,7 @@ public class MOCalculation extends QuantumCalculation {
     boolean normalizeAlpha = false;
     switch (normType) {
     case NORM_NONE:
-    case NORM_NBO_AO_SPHERICAL:
+    case NORM_NBO:
     default:
       norm = 1;
       break;
@@ -566,7 +565,7 @@ public class MOCalculation extends QuantumCalculation {
     boolean doNormalize = false;
     switch (normType) {
     case NORM_NONE:
-    case NORM_NBO_AO_SPHERICAL:
+    case NORM_NBO:
     default:
       norm1 = norm2 = 1;
       break;
@@ -654,7 +653,6 @@ public class MOCalculation extends QuantumCalculation {
     boolean normalizeAlpha = false;
     switch (normType) {
     case NORM_NONE:
-    case NORM_NBO_AO_SPHERICAL:
     default:
       norm1 = 1;
       norm2 = 1 / ROOT3;
@@ -669,6 +667,11 @@ public class MOCalculation extends QuantumCalculation {
       norm1 = norm2 = getContractionNormalization(2, 1);
       normalizeAlpha = true;
       break;
+    case NORM_NBO:
+//      norm1 = 1;
+//      norm2 = 1 / ROOT3;
+      norm1 = ROOT3;
+      norm2 = 1;
     }
     
     for (int ig = 0; ig < nGaussians; ig++) {
@@ -754,7 +757,7 @@ public class MOCalculation extends QuantumCalculation {
     default:
       norm1 = norm2 = norm3 = norm4 = norm5 = 1;
       break;
-    case NORM_NBO_AO_SPHERICAL:
+    case NORM_NBO:
       norm2 = norm4 = 1;
       norm1 = 2 * ROOT3;
       norm3 = ROOT3;

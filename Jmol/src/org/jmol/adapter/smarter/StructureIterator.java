@@ -27,7 +27,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAdapterStructureIterator;
 import org.jmol.c.STR;
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 public class StructureIterator extends JmolAdapterStructureIterator {
   private int structureCount;

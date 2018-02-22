@@ -54,7 +54,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolPropertyManager;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondSet;

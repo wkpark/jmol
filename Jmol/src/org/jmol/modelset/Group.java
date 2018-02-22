@@ -36,7 +36,7 @@ import org.jmol.viewer.JC;
 
 import javajs.util.P3;
 import org.jmol.c.STR;
-import org.jmol.java.BS;
+import javajs.util.BS;
 
 import java.util.Hashtable;
 

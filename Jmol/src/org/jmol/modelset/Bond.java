@@ -25,7 +25,7 @@
 
 package org.jmol.modelset;
 
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.Edge;
 import org.jmol.util.SimpleNode;

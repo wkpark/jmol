@@ -46,7 +46,7 @@ import javajs.util.V3;
 import org.jmol.api.AtomIndexIterator;
 //import org.jmol.bspt.Bspf;
 //import org.jmol.bspt.CubeIterator;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.jvxl.data.MeshData;
 
 class IsoSolventReader extends AtomDataReader {

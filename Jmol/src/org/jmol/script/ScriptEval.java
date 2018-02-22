@@ -55,7 +55,7 @@ import org.jmol.c.PAL;
 import org.jmol.c.STR;
 import org.jmol.c.VDW;
 import org.jmol.i18n.GT;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.BondSet;
 import org.jmol.modelset.Group;

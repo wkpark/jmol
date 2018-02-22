@@ -56,7 +56,7 @@ import org.jmol.bspt.CubeIterator;
 import org.jmol.c.PAL;
 import org.jmol.c.STR;
 import org.jmol.c.VDW;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.modelsetbio.BioModel;
 import org.jmol.script.ScriptCompiler;
 import org.jmol.script.T;

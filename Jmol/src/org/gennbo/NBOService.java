@@ -612,6 +612,15 @@ public class NBOService {
       }
     }
 
+    public void taskKillNBO() {
+      String cmd = "taskKill /im " + exeName + " /t /f  ";
+      try {
+        Runtime.getRuntime().exec(cmd);
+      } catch (IOException e) {
+        System.out.println("NBOService cannot taskKill " + cmd);
+      }
+    }
+    
     protected void disconnect() {
       destroyed = true;
       try {
@@ -620,7 +629,10 @@ public class NBOService {
 
       }
       try {
-        nboProcess.destroy();
+        nboProcess = null;
+        taskKillNBO();
+        Thread.sleep(100);
+        //        nboProcess.destroy();
       } catch (Exception e) {
         System.out.println("??" + e);
       }
@@ -664,6 +676,7 @@ public class NBOService {
       return cachedReply = cachedReply + s;
     }
   }
+
 }
 
 

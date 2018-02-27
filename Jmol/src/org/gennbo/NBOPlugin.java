@@ -43,7 +43,9 @@ public class NBOPlugin implements JmolPlugin {
 
   @Override
   public boolean isStarted() {
-    return vwr != null;
+    // force a restart each time we enter NBO 
+    return  false;
+//    return vwr != null;
   }
 
 
@@ -96,7 +98,7 @@ public class NBOPlugin implements JmolPlugin {
   public void destroy() {
     if (nboDialog == null)
       return;
-    nboDialog.close();
+    nboDialog.dispose();
     nboDialog = null;
   }
 

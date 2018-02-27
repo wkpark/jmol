@@ -1066,7 +1066,7 @@ class NBOSearch extends NBOView {
       labelOrb2 = "a_NBO";
       orb2 = comboSearchOrb2;
       ComboBoxModel<String> x = orb1.getModel();
-      System.out.println(x.getSize());
+      System.out.println("Search x.getSize is " + x.getSize());
       offset2 = orb1.getModel().getSize() - 1;
       break;
     case KEYWD_NRT:

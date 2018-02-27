@@ -488,7 +488,7 @@ class NBOView {
     d.setVisible(true);
     d.add(box);
     centerDialog(d, 175);
-    showSelected(planeFields);
+    showSelected(planeFields, 3);
     d.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -508,9 +508,9 @@ class NBOView {
     plane.setVisible(true);
   }
 
-  private void showSelected(JTextField[] t) {
+  private void showSelected(JTextField[] t, int n) {
     String s = "";
-    for (int i = t.length; --i >= 0;)
+    for (int i = n; --i >= 0;)
       s += " " + t[i].getText();
     dialog.showSelected(s);
   }
@@ -564,7 +564,7 @@ class NBOView {
     d.setVisible(true);
     d.add(box);
     centerDialog(d, 150);
-    showSelected(vectorFields);
+    showSelected(vectorFields, 2);
     d.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
@@ -1219,7 +1219,8 @@ class NBOView {
   private void initializeImage() {
     //testingView = NBOConfig.debugVerbose;
     dialog.runScriptQueued("image close");
-    dialog.nboService.restart();
+    if (!dialog.nboService.restart())
+      return;
     setDefaultParameterArrays();
     if (jmolView)
       setJmolView(false);
@@ -1244,14 +1245,14 @@ class NBOView {
       if (at2 != Integer.MIN_VALUE)
         return;
       vectorFields[viewVectorPt++].setText("" + at1);
-      showSelected(vectorFields);
+      showSelected(vectorFields, 2);
       viewVectorPt = viewVectorPt % 2;
       break;
     case VIEW_STATE_PLANE:
       if (at2 != Integer.MIN_VALUE)
         return;
       planeFields[viewPlanePt++].setText("" + at1);
-      showSelected(planeFields);
+      showSelected(planeFields, 3);
       viewPlanePt = viewPlanePt % 3;
       break;
     case VIEW_STATE_MAIN:
@@ -1444,7 +1445,8 @@ class NBOView {
   }
 
   protected void loadNewFileIfAble() {
-    dialog.nboService.restart();
+    if (!dialog.nboService.restart())
+        return;
     comboBasis1.setEnabled(false);
     if (comboBasis1.getSelectedIndex() != BASIS_MO)
       comboBasis1.setSelectedIndex(BASIS_PNBO);

@@ -459,8 +459,11 @@ public class MOCalculation extends QuantumCalculation {
       moCoeff += map.length;
       return false;
     }
-    for (int i = 0; i < map.length; i++)
+    for (int i = 0; i < map.length; i++) {
+      if (map[i] + moCoeff >= moCoefficients.length)
+        System.out.println("OHOH");
       isOK |= ((coeffs[i] = moCoefficients[map[i] + moCoeff++]) != 0);
+    }
     isOK &= (coeffs[0] != Integer.MIN_VALUE);
     if (isOK && doDebug && isProcess)
       dumpInfo(type);

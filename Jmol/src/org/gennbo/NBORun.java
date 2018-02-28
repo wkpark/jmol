@@ -722,10 +722,10 @@ class NBORun {
     NBOUtil.postAddGlobalC(sb, "JOBSTEM", dialog.inputFileHandler.jobStem);
     NBOUtil.postAddGlobalC(sb, "ESS", "gennbo");
     NBOUtil.postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
-
+    dialog.doClearOutput();
     dialog.logCmd("RUN GenNBO FILE=" + jobName + " "
         + cleanNBOKeylist(fileData[1], false));
-
+    
     postNBO(sb, "Running GenNBO...");
   }
 

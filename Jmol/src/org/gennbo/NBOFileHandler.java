@@ -268,7 +268,7 @@ class NBOFileHandler extends JPanel {
     boolean canLoad = true;
     boolean isOK = true;
     String msg = "";
-    if (dialog.dialogMode != NBODialog.DIALOG_MODEL) {
+    if (dialog.dialogMode != NBODialog.DIALOG_MODEL && dialog.dialogMode != NBODialog.DIALOG_RUN) {
       for (String x : EXT_ARRAY) {
         File f3 = newNBOFileForExt(x);
         if (!f3.exists() || x.equals("36") && f3.length() == 0) {

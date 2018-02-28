@@ -415,7 +415,7 @@ public class NBOService {
     private BufferedInputStream nboOut;
     private Process nboProcess;
     private PrintWriter nboIn;
-    private String thisReply;
+//    private String thisReply;
     
     @Override
     public void run() {
@@ -424,7 +424,7 @@ public class NBOService {
 
       while (!destroyed && !Thread.currentThread().isInterrupted()) {
     
-        if ((true || NBOConfig.debugVerbose) && System.currentTimeMillis() - lastTime > 1000) {
+        if ((NBOConfig.debugVerbose) && System.currentTimeMillis() - lastTime > 1000) {
           lastTime = System.currentTimeMillis();
           dialog.logStatus("NBORunnable looping");
         }
@@ -672,7 +672,7 @@ public class NBOService {
       n = nboOut.read(buffer, 0, n);    
       String s = PT.rep(new String(buffer, 0, n), "\r", "");
       System.out.println(">> " + s + "<<");
-      thisReply = s;
+      //thisReply = s;
       return cachedReply = cachedReply + s;
     }
   }

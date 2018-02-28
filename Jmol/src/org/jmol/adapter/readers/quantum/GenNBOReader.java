@@ -370,42 +370,45 @@ public class GenNBOReader extends MOReader {
       String[] tokens = getTokens();
       addAtomXYZSymName(tokens, 2, null, null).elementNumber = (short) parseIntStr(tokens[0]);
     }
-    discardLinesUntilContains("$BASIS");
-    int[] centers = getIntData();
-    int[] labels = getIntData();
     
-    discardLinesUntilContains("NSHELL =");
-    
-    
-    
-    shellCount = parseIntAt(line, 10);
-    gaussianCount = parseIntAt(rd(), 10);
-    rd();
-    int[] ncomp = getIntData();
-    int[] nprim = getIntData();
-    int[] nptr = getIntData();
-    // read basis functions
-    shells = new  Lst<int[]>();
-    gaussians = AU.newFloat2(gaussianCount);
-    for (int i = 0; i < gaussianCount; i++)
-      gaussians[i] = new float[6];
-    nOrbitals = 0;
-    int ptCenter = 0;
-    String l = line;
-    for (int i = 0; i < shellCount; i++) {
-      int[] slater = new int[4];
-      int nc = ncomp[i];
-      slater[0] = centers[ptCenter];
-      line = "";
-      for (int ii = 0; ii < nc; ii++)
-        line += labels[ptCenter++] + " ";
-      if (!fillSlater(slater, nc, nptr[i] - 1, nprim[i]))
-        return;
+    if (doReadMolecularOrbitals) {
+      discardLinesUntilContains("$BASIS");
+      int[] centers = getIntData();
+      int[] labels = getIntData();
+      
+      discardLinesUntilContains("NSHELL =");
+      
+      
+      
+      shellCount = parseIntAt(line, 10);
+      gaussianCount = parseIntAt(rd(), 10);
+      rd();
+      int[] ncomp = getIntData();
+      int[] nprim = getIntData();
+      int[] nptr = getIntData();
+      // read basis functions
+      shells = new  Lst<int[]>();
+      gaussians = AU.newFloat2(gaussianCount);
+      for (int i = 0; i < gaussianCount; i++)
+        gaussians[i] = new float[6];
+      nOrbitals = 0;
+      int ptCenter = 0;
+      String l = line;
+      for (int i = 0; i < shellCount; i++) {
+        int[] slater = new int[4];
+        int nc = ncomp[i];
+        slater[0] = centers[ptCenter];
+        line = "";
+        for (int ii = 0; ii < nc; ii++)
+          line += labels[ptCenter++] + " ";
+        if (!fillSlater(slater, nc, nptr[i] - 1, nprim[i]))
+          return;
+      }
+      line = l;
+      getAlphasAndExponents();
+      nboType = "AO";
+      readMOs();
     }
-    line = l;
-    getAlphasAndExponents();
-    nboType = "AO";
-    readMOs();
     continuing = false;
   }
 

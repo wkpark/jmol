@@ -27,7 +27,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,6 +39,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Map;
 
+import javajs.util.BS;
 import javajs.util.PT;
 import javajs.util.SB;
 
@@ -65,7 +65,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jmol.awt.AwtColor;
-import javajs.util.BS;
 import org.jmol.util.C;
 import org.jmol.viewer.Viewer;
 

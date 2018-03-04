@@ -1407,7 +1407,7 @@ class NBOModel {
   private void postNBO(SB sb, final int mode, String statusMessage, String fileName, String fileData) {
     final NBORequest req = new NBORequest();
 //    serverMode = mode;
-    req.set(new Runnable() {
+    req.set(NBODialog.DIALOG_MODEL, new Runnable() {
       @Override
       public void run() {
         processNBO(mode, req);

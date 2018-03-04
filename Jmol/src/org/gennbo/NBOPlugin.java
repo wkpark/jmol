@@ -98,8 +98,13 @@ public class NBOPlugin implements JmolPlugin {
   public void destroy() {
     if (nboDialog == null)
       return;
-    nboDialog.dispose();
-    nboDialog = null;
+    try {
+      nboDialog.close();
+      nboDialog.dispose();
+      nboDialog = null;
+    } catch (Throwable t) {
+      //
+    }
   }
 
   @Override

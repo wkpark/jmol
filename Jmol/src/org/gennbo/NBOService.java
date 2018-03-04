@@ -23,6 +23,7 @@
  */
 package org.gennbo;
 
+import java.awt.Cursor;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -146,8 +147,8 @@ public class NBOService {
    * @return true if there is a current request
    * 
    */
-  public boolean isWorking() {
-    return (currentRequest != null);
+  public int getWorkingMode() {
+    return (currentRequest == null ? NBODialog.DIALOG_HOME : currentRequest.dialogMode);
   }  
   
   ////////////////////// NBOServe Process //////////////////////////
@@ -496,9 +497,13 @@ public class NBOService {
         if (!s.contains("end of file")) {
           dialog.alertError(s);
         }
+        boolean wasWorking = (getWorkingMode() == NBODialog.DIALOG_RUN);
         currentRequest = null;
         clearQueue();
         nboStatus = NBO_STATUS_DEAD;
+        if (wasWorking)
+          dialog.inputFileHandler.checkNBOComplete(true);
+        dialog.setStatus("");
         return restart();
       }
 
@@ -560,7 +565,11 @@ public class NBOService {
         return true;
       } finally {
         if (currentRequest != null && removeRequest) {
+          try {
           requestQueue.remove();
+          } catch (Exception e) {
+            System.out.println("NBOService requestQueue empty");
+          }
           currentRequest = null;
           dialog.setStatus("");
         }

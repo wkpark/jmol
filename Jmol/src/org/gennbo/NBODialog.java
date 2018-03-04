@@ -44,7 +44,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Map;
 
-import javajs.swing.SwingConstants;
+import javax.swing.SwingConstants;
 import javajs.util.PT;
 
 import javax.swing.BorderFactory;
@@ -263,23 +263,26 @@ public class NBODialog extends JDialog {
       return;
     }
 
-    if (nboService.isWorking()) {
+    boolean wasWorking = (nboService.getWorkingMode() == DIALOG_RUN);
+    if (wasWorking) {
       System.out.println(nboService.currentRequest.toString());
       int i = JOptionPane.showConfirmDialog(this,
-          "NBOServe is working. Cancel current job?\n"
-              + "This could affect input/output files\n"
-              + "if GenNBO is running.", "Message", JOptionPane.YES_NO_OPTION);
+          "NBOServe is working. Cancel currently running job?\n", "Message", JOptionPane.YES_NO_OPTION);
       if (i == JOptionPane.NO_OPTION) {
         return;
       }
     }
 
+    clearOutput();
     logCmd("Entering " + dialogNames[type]);
 
     nboService.clearQueue();
-    if (!nboService.restart())
-      return;
+    boolean ok = nboService.restart();
 
+    if (wasWorking)
+      inputFileHandler.checkNBOComplete(false);
+    if (!ok)
+      return;    
     if (!checkEnabled()) {
       doOpenPanel(DIALOG_CONFIG);
       return;
@@ -329,7 +332,7 @@ public class NBODialog extends JDialog {
     setStatus("");
     invalidate();
     setVisible(true);
-    runScriptQueued(jmolOptionNOZAP ? "select none" : "zap");
+    runScriptQueued("image close;" + (jmolOptionNOZAP ? "select none" : "zap"));
   }
 
   /**
@@ -356,7 +359,6 @@ public class NBODialog extends JDialog {
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
-        nboService.closeProcess(false);
         close();
       }
     });
@@ -763,7 +765,7 @@ public class NBODialog extends JDialog {
     clear.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        doClearOutput();
+        clearOutput();
       }
     });
     box2.add(clear);
@@ -809,6 +811,10 @@ public class NBODialog extends JDialog {
   }
 
   public void close() {
+    boolean wasWorking = (nboService.getWorkingMode() == DIALOG_RUN);
+    nboService.closeProcess(false);
+    if (wasWorking)
+      inputFileHandler.checkNBOComplete(false);
     runScriptQueued("select off;initialize;");
   }
 
@@ -920,7 +926,7 @@ public class NBODialog extends JDialog {
   /**
    * clear output panel
    */
-  protected void doClearOutput() {
+  protected void clearOutput() {
     nboOutputBodyText = "";
     // String fontFamily = jpNBOLog.getFont().getFamily();
     if (jpNBODialog != null)

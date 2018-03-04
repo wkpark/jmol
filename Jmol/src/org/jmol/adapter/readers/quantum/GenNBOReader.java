@@ -118,6 +118,8 @@ public class GenNBOReader extends MOReader {
     
     if (is47File) {
       readData47();
+      if (doReadMolecularOrbitals)
+        appendLoadNote("basis AOs are unnormalized -- use NBO TYPE AO to view normalized AOs");
       return;
     }
     boolean isOK;

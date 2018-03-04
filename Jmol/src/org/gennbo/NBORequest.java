@@ -119,9 +119,12 @@ class NBORequest {
 
   public long timeStamp;
 
+  int dialogMode;
+
   NBORequest() {}
   
-  void set(Runnable returnMethod, boolean isMessy, String statusInfo, String... fileData) {
+  void set(int dialogMode, Runnable returnMethod, boolean isMessy, String statusInfo, String... fileData) {
+    this.dialogMode = dialogMode;
     this.isMessy = isMessy;
     this.fileData = fileData;
     this.statusInfo = statusInfo;

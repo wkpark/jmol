@@ -761,12 +761,6 @@ public class GenNBOReader extends MOReader {
         orbitals = (Lst<Map<String, Object>>) moData.get("mos");
         Object dfCoefMaps = orbitals.get(0).get("dfCoefMaps");
         orbitals = new Lst<Map<String, Object>>();
-        for (int i = nboLabels.length; --i >= 0;) {
-          Map<String, Object> mo = new Hashtable<String, Object>();
-          orbitals.addLast(mo);
-          mo.put("dfCoefMaps", dfCoefMaps);
-        }
-        setNboLabels(nboLabels, nMOs, orbitals, 0, nboType);
         int len = 0;
         int[] next = null;
         int nOrbitals = nMOs;
@@ -778,10 +772,16 @@ public class GenNBOReader extends MOReader {
           len = data.length();
           next = new int[1];
         }
+        for (int i = nOrbitals; --i >= 0;) {
+          Map<String, Object> mo = new Hashtable<String, Object>();
+          orbitals.addLast(mo);
+          mo.put("dfCoefMaps", dfCoefMaps);
+        }
+        setNboLabels(nboLabels, nMOs, orbitals, 0, nboType);
         for (int i = 0; i < nOrbitals; i++) {
           if (!isAO && i == nMOs) {
             if (isNBO)
-              getNBOOccupanciesStatic(orbitals, nMOs, nOrbitals - nMOs, data, len, next);
+              getNBOOccupanciesStatic(orbitals, nMOs, 0, data, len, next);
             nboLabels = map.get("beta_" + labelKey);
             // always discarding extra here
 
@@ -812,7 +812,7 @@ public class GenNBOReader extends MOReader {
       moData.put("nboLabels", nboLabels);
       moData.put("mos", orbitals);
     } catch (Exception e) {
-      e.printStackTrace();
+     e.printStackTrace();
       return false;
     }
     return true;
@@ -890,7 +890,7 @@ public class GenNBOReader extends MOReader {
       }
       mo.put("coefficients", coefs);
     }
-    if (isNBO && pt != nNOs)
+    if (isNBO)
       readNBO37Occupancies(pt);
     moData.put(nboType + "_coefs", orbitals);
     setMOData(false);

@@ -634,6 +634,7 @@ public class GenNBOReader extends MOReader {
     String[] tokens = new String[0];
     rd();
     int nNOs = nAOs = nOrbitals;
+    String labelKey = getLabelKey(nboType);
     while (line != null && line.length() > 0) {
       tokens = PT.getTokens(line);
       String type = tokens[0];
@@ -646,34 +647,18 @@ public class GenNBOReader extends MOReader {
             + nOrbitals + "\n");
         nNOs = parseIntStr(count); 
       }
-      if (type.equals(nboType))
+      if (type.equals(labelKey))
         this.nNOs = nNOs;
       SB sb = new SB();
       while (rd() != null && line.length() > 4 && " NA NB AO NH".indexOf(line.substring(1, 4)) < 0)
-        sb.append(line);
-      sb.appendC(' ');
-      String data = PT.rep(sb.toString(), " )", ")");
-      sb = new SB();
-      for (int i = 0, n = data.length() - 1; i < n; i++) { 
-        char c = data.charAt(i);
-        switch (c) {
-        case '(':
-        case '-':
-          if (data.charAt(i + 1) == ' ')
-            i++;
-          break;
-        case ' ':
-          if (PT.isDigit(data.charAt(i + 1)) || data.charAt(i + 1) == '(')
-            continue;
-          break;
-        }
-        sb.appendC(c);
-      }
-      tokens = PT.getTokens(sb.toString());
+        sb.append(line.substring(1));
+      System.out.println(sb.length());
+      tokens = new String[sb.length() / 10];
+      for (int i = 0, pt = 0; i < tokens.length; i++, pt += 10)
+        tokens[i] = PT.rep(sb.substring2(pt, pt + 10), " ","");
       map.put(key, tokens);
     }
     nNOs = this.nNOs;
-    String labelKey = getLabelKey(nboType);
     tokens = map.get((betaOnly ? "beta_" : "") + labelKey);
     moData.put("nboLabelMap", map);
     if (tokens == null) {
@@ -777,7 +762,8 @@ public class GenNBOReader extends MOReader {
         for (int i = nOrbitals; --i >= 0;) {
           Map<String, Object> mo = new Hashtable<String, Object>();
           orbitals.addLast(mo);
-          mo.put("dfCoefMaps", dfCoefMaps);
+          if (dfCoefMaps != null)
+            mo.put("dfCoefMaps", dfCoefMaps);
         }
         setNboLabels(nboLabels, nMOs, orbitals, 0, nboType);
         for (int i = 0; i < nOrbitals; i++) {

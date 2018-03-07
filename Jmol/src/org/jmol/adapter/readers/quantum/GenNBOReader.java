@@ -579,6 +579,8 @@ public class GenNBOReader extends MOReader {
     int ac = parseIntStr(tokens[0]);
     shellCount = parseIntStr(tokens[1]);
     gaussianCount = parseIntStr(tokens[2]);
+    if (tokens.length < 4)
+      Logger.error("NOTE! .31 file is old; d orbitals are not normalized");
 
     // read atom types and positions
     rd(); // ----------

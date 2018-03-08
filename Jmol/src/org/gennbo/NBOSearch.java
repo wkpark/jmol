@@ -1022,7 +1022,7 @@ class NBOSearch extends NBOView {
    * @param op  one-based index of the radio buttons for this SEARCH option
    */
   protected void doGetSearchValue(int op) {
-    dialog.clearOutput();
+    //dialog.clearOutput();
     optionSelected = op - 1;
     // check orbital is selected
     JComboBox<String> orb1 = comboSearchOrb1;

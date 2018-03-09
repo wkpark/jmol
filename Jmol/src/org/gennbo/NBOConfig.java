@@ -457,7 +457,7 @@ class NBOConfig  {
         + type
         + " "
         + orbitalNumber
-        + (isBeta && !type.equals("MO") ? " beta" : "") // AO?
+        + (isBeta ? " beta" : "") 
         + " frontonly "
         + (useWireMesh ? " mesh nofill" : " nomesh fill translucent "
             + (1 - opacityOp)) + ";select none;";

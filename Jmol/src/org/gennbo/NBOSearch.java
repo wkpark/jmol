@@ -31,7 +31,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 
 import javajs.util.PT;
 import javajs.util.SB;
@@ -429,11 +428,12 @@ class NBOSearch extends NBOView {
     dialog.inputFileHandler.setBrowseEnabled(true);
 
     dialog.viewSettingsBox.removeAll();
-    String file = vwr.getProperty("String", "filename", null).toString();
-    String ext = NBOUtil.getExt(new File(file));
-
-//    if (PT.isOneOf(ext, NBOFileHandler.EXTENSIONS))
-//      notifyFileLoaded_s();
+    
+    
+    //String file = vwr.getProperty("String", "filename", null).toString();
+    //String ext = NBOUtil.getExt(new File(file));
+    //    if (PT.isOneOf(ext, NBOFileHandler.EXTENSIONS))
+    //      notifyFileLoaded_s();
 
     return panel;
   }

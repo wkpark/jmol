@@ -757,7 +757,7 @@ class NBORun {
     NBOUtil.postAddGlobalC(sb, "JOBSTEM", jobStem);
     NBOUtil.postAddGlobalC(sb, "ESS", "gennbo");
     NBOUtil.postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
-    dialog.clearOutput();
+    //dialog.clearOutput();
     dialog.logCmd("RUN GenNBO FILE=" + jobName + " "
         + cleanNBOKeylist(fileData[1], false));
     
@@ -789,7 +789,7 @@ class NBORun {
    */
   protected void processNBO(NBORequest req) {
     dialog.inputFileHandler.setInputFile(dialog.inputFileHandler.inputFile);
-    dialog.clearOutput();
+    //dialog.clearOutput();
     if (!dialog.inputFileHandler.checkNBOComplete(true)) {
       dialog.logError("NBO file was corrupted or not created");
       dialog.nboService.clearQueue();

@@ -347,6 +347,7 @@ class NBOModel {
     p2.add(jtNIHInput);
     p2.add(jrFileIn);
     p2.add(jComboUse);
+    jComboUse.setSelectedIndex(1);
     addFocusListeners(jComboUse, jrFileIn);
 
     inputBox.add(p2);
@@ -408,6 +409,8 @@ class NBOModel {
   }
 
   protected void doComboUseAction(String item) {
+    if (dialog.inputFileHandler == null)
+      return;
     if (item == null) {
       dialog.inputFileHandler.tfExt.setText("");
       dialog.inputFileHandler.useExt = NBOConfig.INPUT_FILE_EXTENSIONS;

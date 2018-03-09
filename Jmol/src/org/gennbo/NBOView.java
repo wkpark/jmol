@@ -962,7 +962,7 @@ class NBOView {
       }
     });
 
-    atomOrient.setSelected(true);
+    jmolOrient.setSelected(true);
     dialog.viewSettingsBox.add(btnCam, BorderLayout.SOUTH);
     dialog.repaint();
     dialog.revalidate();

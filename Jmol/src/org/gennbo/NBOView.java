@@ -244,7 +244,7 @@ class NBOView {
     inputBox.setPreferredSize(new Dimension(360, 50));
     inputBox.setMaximumSize(new Dimension(360, 50));
     topBox.add(inputBox);
-    dialog.getNewInputFileHandler(NBOFileHandler.MODE_VIEW);
+    dialog.getNewInputFileHandler(NBOFileHandler.MODE_VIEW, null);
     inputBox.add(Box.createVerticalStrut(5));
     inputBox.add(dialog.inputFileHandler);
     return topBox;
@@ -1045,7 +1045,7 @@ class NBOView {
    * 
    */
   protected boolean checkForCMO() {
-    String keywords = dialog.runPanel.cleanNBOKeylist(dialog.inputFileHandler.get47Keywords(), true);
+    String keywords = dialog.runPanel.cleanNBOKeylist(dialog.inputFileHandler.get47KeywordsNoFile(), true);
     if (!keywords.contains("CMO")) {
       dialog.runPanel.doRunGenNBOJob("CMO");
       return false;

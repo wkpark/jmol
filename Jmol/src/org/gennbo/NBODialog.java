@@ -1219,13 +1219,15 @@ public class NBODialog extends JDialog {
   }
 
   /**
-   * not used for MODEL
+   * 
+   * Create a new input file handler.
    * 
    * @param mode
+   * @param acceptor  will be NBOModel
    */
-  protected void getNewInputFileHandler(int mode) {
+  protected void getNewInputFileHandler(int mode, NBOFileAcceptor acceptor) {
     inputFileHandler = new NBOFileHandler(inputFileHandler == null ? ""
-        : inputFileHandler.jobStem, "47", mode, "47", this);
+        : inputFileHandler.jobStem, mode, this, acceptor);
   }
 
   /**

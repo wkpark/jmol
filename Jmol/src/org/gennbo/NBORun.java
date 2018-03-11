@@ -102,7 +102,7 @@ class NBORun {
     JPanel panel = myPanel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    dialog.getNewInputFileHandler(NBOFileHandler.MODE_RUN);
+    dialog.getNewInputFileHandler(NBOFileHandler.MODE_RUN, null);
     dialog.inputFileHandler.setBrowseEnabled(false);
     dialog.inputFileHandler.removeAllTemporaryRunFiles();
 
@@ -295,7 +295,7 @@ class NBORun {
 
     keywordTextPane = new JTextPane();
     doSetKeywordTextPane(cleanNBOKeylist(
-        dialog.inputFileHandler.get47Keywords(), true));
+        dialog.inputFileHandler.get47KeywordsNoFile(), true));
 
     JScrollPane sp = new JScrollPane();
     sp.getViewport().add(keywordTextPane);
@@ -348,7 +348,7 @@ class NBORun {
     menuPanel.setBorder(BorderFactory.createLoweredBevelBorder());
     keywordButtons = new JRadioButton[RUN_KEYWORD_NAMES.length];
     String keywords = " " + cleanNBOKeylist(
-        dialog.inputFileHandler.get47Keywords(), false) + " ";
+        dialog.inputFileHandler.get47KeywordsNoFile(), false) + " ";
     for (int i = 0; i < keywordButtons.length; i++) {
       keywordButtons[i] = new JRadioButton(RUN_KEYWORD_NAMES[i] + ": " + RUN_KEYWORD_DESC[i]);
       if (NBOUtil.findKeyword(keywords, RUN_KEYWORD_NAMES[i], true) >= 0)
@@ -627,7 +627,7 @@ class NBORun {
    */
   protected String getKeywordsFromButtons() {
     String keywords = " "
-        + cleanNBOKeylist(dialog.inputFileHandler.get47Keywords(), false)
+        + cleanNBOKeylist(dialog.inputFileHandler.get47KeywordsNoFile(), false)
         + " ";
     if (keywordButtons == null)
       return keywords;
@@ -701,10 +701,9 @@ class NBORun {
    * 
    * Called from:
    * 
-   *  NBOFileHandler -- setInputFile when not RUN module "PLOT" 
-   *  NBORun.buildRunPanel  -- Run button pressed ""
-   *  NBOView.checkforCMO -- "CMO" when necessary
-   *  NBOView.ensurePlotFile -- "PLOT"
+   * NBOFileHandler -- setInputFile when not RUN module "PLOT"
+   * NBORun.buildRunPanel -- Run button pressed "" NBOView.checkforCMO -- "CMO"
+   * when necessary NBOView.ensurePlotFile -- "PLOT"
    * 
    * @param requiredKeyword
    */
@@ -727,7 +726,8 @@ class NBORun {
       // from another module
       tfJobName.setText(dialog.inputFileHandler.jobStem);
     }
-    String jobName = dialog.inputFileHandler.fixJobName(tfJobName == null ? null : tfJobName.getText().trim());
+    String jobName = dialog.inputFileHandler
+        .fixJobName(tfJobName == null ? null : tfJobName.getText().trim());
 
     // BH Q: Would it be reasonable if the NO option is chosen to put that other job name in to the jobStem field, and also copy the .47 file to that? Or use that?
     // Or, would it be better to ask this question immediately upon file loading so that it doesn't come up, and make it so that
@@ -745,7 +745,7 @@ class NBORun {
 
     jobName = (jobName.equals("") ? dialog.inputFileHandler.jobStem : jobName);
 
-    String[] fileData = dialog.inputFileHandler.update47File(jobName,
+    NBOFileData47 fileData = dialog.inputFileHandler.update47File(jobName,
         newKeywords, true);
     if (fileData == null)
       return;
@@ -759,8 +759,8 @@ class NBORun {
     NBOUtil.postAddGlobalC(sb, "LABEL_1", "FILE=" + jobName);
     //dialog.clearOutput();
     dialog.logCmd("RUN GenNBO FILE=" + jobName + " "
-        + cleanNBOKeylist(fileData[1], false));
-    
+        + cleanNBOKeylist(fileData.noFileKeywords, false));
+
     postNBO(sb, "Running GenNBO...");
   }
 

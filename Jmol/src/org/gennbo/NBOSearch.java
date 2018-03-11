@@ -452,7 +452,7 @@ class NBOSearch extends NBOView {
       labelOrb1 = "ROW";
       labelOrb2 = "COLUMN";
       orb2 = comboSearchOrb2;
-      NBOUtil.postAddGlobalI(sb, "OPERATOR", operator, null);
+      NBOUtil.postAddGlobalI(sb, "OPERATOR", opBas, null);
       NBOUtil.postAddGlobalI(sb, "BAS_1", 1, comboBasis1);
       break;
     case KEYWD_BAS1BAS2:
@@ -506,11 +506,11 @@ class NBOSearch extends NBOView {
   }
 
   private Box optionBox;
-  private JButton back;
+  private JButton backBtn;
   private JButton keyWdBtn;
-  private JRadioButton singleJob, multiJobs;
+//  private JRadioButton singleJob, multiJobs;
   protected JLabel unitLabel;
-  protected JPanel opList;
+  protected JPanel opListPanel;
   protected JRadioButton[] rBtns = new JRadioButton[12];
   protected JRadioButton radioOrbMO, radioOrbNBO;
   protected JComboBox<String> comboSearchOrb1, comboSearchOrb2, comboUnit1,
@@ -522,14 +522,14 @@ class NBOSearch extends NBOView {
   private int keywordID = KEYWD_WEBHELP;
 
   /**
-   * the radio button option selected for a given keyword
+   * the radio button option selected for a given keyword 1-based
    */
   private int optionSelected;
 
   /**
    * the OPBAS operator currently selected
    */
-  private int operator = 1;
+  private int opBas = 1;
 
   /**
    * set true when an action is going to produce a change that will require
@@ -541,20 +541,11 @@ class NBOSearch extends NBOView {
   private void resetVariables() {
     optionSelected = 0;
     keywordID = 0;
-    operator = 1;
+    opBas = 1;
   }
 
   /////////////////////////////////////////////////////////////////
 
-  //  private NBODialog dialog;
-  //  private Viewer vwr;
-
-  //  protected NBODialogSearch(NBODialog dialog) {
-  //    this.dialog = dialog;
-  //    this.vwr = dialog.vwr;
-  //  }
-  //
-  //
 
 //  private Box createSourceBox_Search() {
 //    
@@ -590,7 +581,7 @@ class NBOSearch extends NBOView {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    dialog.getNewInputFileHandler(NBOFileHandler.MODE_SEARCH);
+    dialog.getNewInputFileHandler(NBOFileHandler.MODE_SEARCH, null);
     dialog.inputFileHandler.setBrowseEnabled(false);
 
     panel.add(NBOUtil.createTitleBox(" Select Job ", dialog.new HelpBtn(
@@ -609,15 +600,15 @@ class NBOSearch extends NBOView {
     //    BorderLayout.NORTH);
     //    inputFileHandler.tfName.setText("");
 
-    back = new JButton("<html>&#8592Back</html>");
-    back.addActionListener(new ActionListener() {
+    backBtn = new JButton("<html>&#8592Back</html>");
+    backBtn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent event) {
         doBack();
       }
     });
-    back.setForeground(Color.blue);
-    back.setEnabled(false);
+    backBtn.setForeground(Color.blue);
+    backBtn.setEnabled(false);
 
     /////ALPHA-BETA SPIN/////////////////
     betaSpin = new JRadioButton("<html>&#x3B2</html>");
@@ -661,7 +652,7 @@ class NBOSearch extends NBOView {
 
     /////SELECT KEYWORD///////////
     Box optionBox2 = Box.createVerticalBox();
-    opList = new JPanel();
+    opListPanel = new JPanel();
     comboBasisOperation = new JComboBox<String>(op);
     //    comboBasisOperation.setUI(new StyledComboBoxUI(150, 350));
 
@@ -676,7 +667,7 @@ class NBOSearch extends NBOView {
     comboBasisOperation.setVisible(false);
 
     optionBox2.add(comboBasisOperation);
-    optionBox2.add(opList);
+    optionBox2.add(opListPanel);
     optionBox2.setBorder(BorderFactory.createLineBorder(Color.black));
     optionBox = Box.createVerticalBox();
     optionBox.setVisible(false);
@@ -686,7 +677,7 @@ class NBOSearch extends NBOView {
     keyWdBtn.setVisible(false);
     keyWdBtn.setRolloverEnabled(false);
     topBox.add(keyWdBtn);
-    topBox.add(back);
+    topBox.add(backBtn);
     topBox.add(dialog.new HelpBtn("a") {
       @Override
       protected String getHelpPage() {
@@ -726,19 +717,19 @@ class NBOSearch extends NBOView {
   }
 
   protected void doComboBasisOperationAction() {
-    operator = comboBasisOperation.getSelectedIndex();
-    if (operator > 0)
+    opBas = comboBasisOperation.getSelectedIndex();
+    if (opBas > 0)
       changeKey(getBasisOperationsOPBAS());
   }
 
   protected void buildHome() {
     resetVariables();
     resetCurrentOrbitalClicked();
-    opList.removeAll();
+    opListPanel.removeAll();
     comboBasisOperation.setVisible(false);
     keyWdBtn.setVisible(false);
-    opList.setLayout(new GridBagLayout());
-    opList.setBackground(Color.white);
+    opListPanel.setLayout(new GridBagLayout());
+    opListPanel.setBackground(Color.white);
     keywordID = KEYWD_WEBHELP;
     dialog.viewSettingsBox.setVisible(false);
     GridBagConstraints c = new GridBagConstraints();
@@ -760,25 +751,25 @@ class NBOSearch extends NBOView {
           keywordClicked(getNboKeywordNumber(index));
         }
       });
-      opList.add(btn, c);
+      opListPanel.add(btn, c);
       c.gridx = 1;
       String st = keyW[index].substring(keyW[index].indexOf(":") + 1);
       JTextArea jt = new JTextArea(st);
       jt.setBackground(null);
       jt.setFont(NBOConfig.searchTextAreaFont);
       jt.setEditable(false);
-      opList.add(jt, c);
+      opListPanel.add(jt, c);
       c.gridy = i + 1;
       c.gridx = 0;
       c.gridwidth = 2;
       JSeparator sp = new JSeparator(SwingConstants.HORIZONTAL);
       sp.setForeground(Color.BLACK);
       sp.setSize(350, 10);
-      opList.add(sp, c);
+      opListPanel.add(sp, c);
     }
-    opList.repaint();
-    opList.revalidate();
-    back.setEnabled(false);
+    opListPanel.repaint();
+    opListPanel.revalidate();
+    backBtn.setEnabled(false);
   }
 
   protected String getSearchHelpURL() {
@@ -844,20 +835,20 @@ class NBOSearch extends NBOView {
   private void changeKey(final String[] s) {
 
     secondPick = true;
-    back.setEnabled(true);
+    backBtn.setEnabled(true);
     dialog.viewSettingsBox.setVisible(!dialog.jmolOptionNONBO);
     keyWdBtn.setText("<html><font color=black>" + getKeyword()
         + "</font></html>");
     keyWdBtn.setVisible(true);
     dialog.runScriptQueued("isosurface delete;refresh");
-    opList.removeAll();
+    opListPanel.removeAll();
 
     ButtonGroup btnGroup = new ButtonGroup();
 
-    opList.setLayout(new BoxLayout(opList, BoxLayout.Y_AXIS));
+    opListPanel.setLayout(new BoxLayout(opListPanel, BoxLayout.Y_AXIS));
     if (keywordID == KEYWD_OPBAS) {
       comboBasisOperation.setVisible(true);
-      opList.add(comboBasisOperation);
+      opListPanel.add(comboBasisOperation);
     }
 
     for (int i = 0; i < s.length; i++) {
@@ -865,7 +856,7 @@ class NBOSearch extends NBOView {
         JLabel lab = new JLabel(s[i]);
         lab.setFont(NBOConfig.searchOpListFont);
         lab.setForeground(Color.blue);
-        opList.add(lab);
+        opListPanel.add(lab);
       } else {
         final int num = Integer.parseInt(s[i].substring(s[i].indexOf("(") + 1,
             s[i].indexOf(")"))) - 1;
@@ -877,16 +868,16 @@ class NBOSearch extends NBOView {
           }
         });
         rBtns[num].setBackground(null);
-        opList.add(rBtns[num]);
+        opListPanel.add(rBtns[num]);
         btnGroup.add(rBtns[num]);
       }
-      opList.add(new JSeparator());
+      opListPanel.add(new JSeparator());
     }
 
-    opList.add(Box.createRigidArea(new Dimension(0, (16 - s.length) * 20)));
+    opListPanel.add(Box.createRigidArea(new Dimension(0, (16 - s.length) * 20)));
 
-    opList.repaint();
-    opList.revalidate();
+    opListPanel.repaint();
+    opListPanel.revalidate();
 
   }
 

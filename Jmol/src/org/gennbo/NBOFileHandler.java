@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileFilter;
 
@@ -30,9 +32,60 @@ class NBOFileHandler extends JPanel {
 
   protected static final String sep = System.getProperty("line.separator");
 
-  protected static final String EXTENSIONS = "31;32;33;34;35;36;37;38;39;40;41;42;46;nbo";
-  protected static final String[] EXT_ARRAY = PT.split(EXTENSIONS, ";");
-  
+  private static final String[] EXT_ARRAY = PT.split("31;32;33;34;35;36;37;38;39;40;41;42;46;nbo", ";");
+
+  final static String[] MODEL_OPEN_OPTIONS = { "<Select File Type>", 
+    "[.47]   NBO Archive",
+    "[.gau]  Gaussian Input", 
+    "[.log]  Gaussian Output",
+    "[.gms]  GAMESS Input", 
+    "[.adf]  ADF Input",
+    "[.jag]  Jaguar Input",
+    "[.mm2]  MM2-Input", 
+    "[.mnd]  Dewar Type Input", 
+    "[.mp]   Molpro Input", 
+    "[.nw]   NWChem Input", 
+    "[.orc]  Orca Input", 
+    "[.pqs]  PQS Input", 
+    "[.qc]   Q-Chem Input", 
+    "[.cfi]  NBO Cartesian", 
+    "[.vfi]  NBO Valence", 
+    "[.xyz]  XYZ", 
+    "[.mol]  MOL"
+    };
+
+  final static String[] MODEL_SAVE_OPTIONS = {  "<Select File Type>",
+    "Gaussian Input             [.gau]",
+    "Gaussian Input (Cartesian) [.gau]",
+    "Gaussian Input (z-Matrix)  [.gau]",
+    "GAMESS Input               [.gms]",
+    "ADF Input                  [.adf]",
+    "Jaguar Input               [.jag]",
+    "MM2-Input                  [.mm2]",
+    "Dewar Type Input           [.mnd]",
+    "Molpro Input               [.mp]", 
+    "NWChem Input               [.nw]",
+    "Orca Input                 [.orc]",
+    "PQS Input                  [.pqs]", 
+    "Q-Chem Input               [.qc]",
+    "NBO Cartesian              [.cfi]",
+    "NBO Valence                [.vfi]",
+    "XYZ                        [.xyz]",
+    "MOL                        [.mol]"
+    };
+
+  private static final String GAUSSIAN_EXTENSIONS = ";gau;g09;com;";
+  static final String MODEL_SAVE_FILE_EXTENSIONS = ";adf;cfi;gms;jag;mm2;mnd;mol;mp;nw;orc;pqs;qc;vfi;xyz" + GAUSSIAN_EXTENSIONS;
+  static final String MODEL_OPEN_FILE_EXTENSIONS = MODEL_SAVE_FILE_EXTENSIONS + "log;47;";
+  static final String JMOL_EXTENSIONS = ";xyz;mol;";
+  //  protected static final String RUN_EXTENSIONS = "47;gau;gms";
+
+  protected final static int MODE_MODEL_OPEN = 1;
+  protected final static int MODE_RUN = 2;
+  protected final static int MODE_VIEW = 3;
+  protected final static int MODE_SEARCH = 4;
+  protected final static int MODE_MODEL_SAVE = 5;
+
   protected File inputFile;
 
 
@@ -58,30 +111,36 @@ class NBOFileHandler extends JPanel {
   protected String jobStem;
   
   
-  protected String useExt;
-  protected NBODialog dialog;
-  protected boolean canReRun;
-  protected boolean isOpenShell;
+  private String useExt;
+  private NBODialog dialog;
+  private boolean canReRun;
 
-  protected final static int MODE_MODEL_USE = 1;
-  protected final static int MODE_RUN = 2;
-  protected final static int MODE_VIEW = 3;
-  protected final static int MODE_SEARCH = 4;
-  protected final static int MODE_MODEL_SAVE = 5;
+  private NBOFileAcceptor fileAcceptor;
+  private int dialogMode;
+  protected String saveFilter;
 
-  
-  public NBOFileHandler(String jobName, String ext, final int mode, String useExt,
-      NBODialog dialog) {
+  /**
+   * Create a new instance of an file open or save JPanel
+   * 
+   * @param jobName
+   * @param mode
+   * @param dialog
+   * @param acceptor
+   */
+  NBOFileHandler(String jobName, final int mode, NBODialog dialog,
+      NBOFileAcceptor acceptor) {
+    dialogMode = mode;
+    this.useExt = (mode == MODE_MODEL_SAVE ? "" : "47");
     this.dialog = dialog;
+    fileAcceptor = acceptor;
     canReRun = true;
     fullFilePath = dialog.getWorkingPath();
-    this.useExt = useExt;
     setLayout(new GridBagLayout());
     setMaximumSize(new Dimension(350, 40));
     setPreferredSize(new Dimension(350, 40));
     setMinimumSize(new Dimension(350, 40));
     GridBagConstraints c = new GridBagConstraints();
-    boolean extShowTextFields = (mode == MODE_MODEL_SAVE || mode == MODE_MODEL_USE);
+    boolean showExtensionField = (mode == MODE_MODEL_SAVE || mode == MODE_MODEL_OPEN);
     boolean canEditTextFields = false;
     c.gridx = 0;
     c.gridy = 0;
@@ -118,14 +177,14 @@ class NBOFileHandler extends JPanel {
     c.gridy = 0;
     (tfExt = new JTextField()).setPreferredSize(new Dimension(40, 20));
     tfExt.setEditable(canEditTextFields);
-    tfExt.setText(ext); 
+    tfExt.setText(useExt);
     //    tfExt.addActionListener(new ActionListener() {
     //      @Override
     //      public void actionPerformed(ActionEvent e) {
     //        browsePressed();
     //      }
     //    });
-    if (extShowTextFields) {
+    if (showExtensionField) {
       add(tfExt, c);
       c.gridy = 1;
       add(new JLabel("  ext"), c);
@@ -142,11 +201,14 @@ class NBOFileHandler extends JPanel {
     });
     add(btnBrowse, c);
     setJobStemAndTextFieldName(jobName);
-    setInput(fullFilePath, jobName, ext);
+    setInput(fullFilePath, jobName, useExt);
   }
 
-  /*
-   * Chooser allows multiple jobs selection with *
+  /**
+   * Open a JDialog containing a JFileChooser
+   *  
+   * @return false if aborting
+   * 
    */
   protected boolean doFileBrowsePressed() {
     if (dialog.nboService.getWorkingMode() == NBODialog.DIALOG_RUN) {
@@ -156,70 +218,157 @@ class NBOFileHandler extends JPanel {
       if (i == JOptionPane.NO_OPTION)
         return false;
     }
-    
-   
-//  JFileChooser myChooser = new JFileChooser();
-//  myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt));
-//  myChooser.setFileHidingEnabled(true);
-//  myChooser.setMultiSelectionEnabled(true);
-//  
-//  String folder = tfDir.getText();
-//  File[] filesInDir = new File(folder).listFiles();
-//  List<File> files = new ArrayList<File>();
-//  String name = tfName.getText();
-//  
-//  if(name.contains("*")){
-//    String[] nameComponents = name.split("*");
-//    for(File f: filesInDir){
-//      for(int i =0; i < nameComponents.length; i++){
-//        if(!f.getName().contains(nameComponents[i])){
-//           break;
-//        }
-//      }
-//      files.add(f);
-//    }
-//  }
-//  
-//  for(File f : files){
-//  System.out.println(f.getName());
-//  }
-//  
-// for(File f : files){
-//  if (folder.length() > 0)
-//    fullFilePath = NBOUtil.getWindowsFullNameFor(folder, f.getName().length() == 0 ? " " : f.getName() + (useExt.equals("47") ? ".47" : ""), null);
-//  myChooser.setSelectedFile(new File(fullFilePath));
-//  }
-// 
-// // let chooser remember the previous folder location and thus to save time finding the folder every time
-// if (folder != null)
-//  myChooser.setCurrentDirectory(new File(folder));
-//  int button = myChooser.showDialog(this, GT._("Select"));
-//  if (button == JFileChooser.APPROVE_OPTION)
-//    return loadSelectedFile(myChooser.getSelectedFile());
-// 
-// 
- // OLD 
-    JFileChooser myChooser = new JFileChooser();
-    myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt));
-    myChooser.setFileHidingEnabled(true);
-
-    String folder = tfDir.getText();
+    final JFileChooser myChooser = new NBOFileChooser();
+    String folder = tfDir.getText().trim();
     String name = tfName.getText();
+    String ext = tfExt.getText();
+    File newFile;
     if (folder.length() > 0)
-      fullFilePath = NBOUtil.getWindowsFullNameFor(folder, name.length() == 0 ? " " : name + (useExt.equals("47") ? ".47" : ""), null);
-    myChooser.setSelectedFile(new File(fullFilePath));
-    int button = myChooser.showDialog(this, GT._("Select"));
-    if (button == JFileChooser.APPROVE_OPTION)
+      fullFilePath = NBOUtil.getWindowsFullNameFor(folder,
+          name.length() == 0 ? " " : name + (useExt.equals("47") ? ".47" : ""),
+          null);
+    switch (dialogMode) {
+    case MODE_MODEL_OPEN:
+      if (ext.length() == 0)
+        ext = "*";
+      String path = NBOUtil.getWindowsFullNameFor(folder, name, ext);
+      setFilterForDialog(myChooser, MODE_MODEL_OPEN, ext);
+      if (path.endsWith("/"))
+        path += "*.*";
+      if (!path.equals(""))
+        myChooser.setSelectedFile(new File(path));
+      if (myChooser.showDialog(this, GT._("Select")) != JFileChooser.APPROVE_OPTION)
+        break;
+      newFile = myChooser.getSelectedFile();
+      if (newFile.toString().indexOf(".") < 0) {
+        dialog.logError("File not found");
+        return false;
+      }
+      fullFilePath = newFile.getParent();
+      jobStem = NBOUtil.getJobStem(newFile);
+      ext = NBOUtil.getExt(newFile);
+      if (!PT.isOneOf(ext, MODEL_OPEN_FILE_EXTENSIONS)) {
+        dialog.logError("Invalid file extension");
+        break;
+      }
+      setInput(fullFilePath, jobStem, ext);
+      dialog.saveWorkingPath(fullFilePath);
+      fileAcceptor
+          .acceptFile(MODE_MODEL_OPEN, fullFilePath, jobStem, ext, null);
+      return true;
+    case MODE_MODEL_SAVE:
+      myChooser.addPropertyChangeListener(new PropertyChangeListener() {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+          if (evt.getPropertyName().equals("fileFilterChanged")) {
+            saveFilter = myChooser.getFileFilter().getDescription();
+          }
+        }
+
+      });
+      useExt = ext = (ext.equals("") ? "cfi" : ext);
+      setFilterForDialog(myChooser, MODE_MODEL_SAVE,
+          fileAcceptor.getDefaultFilterOption());
+      String savePath = NBOUtil.getWindowsFolderFor(folder, fullFilePath);
+      if (name.equals("") && jobStem != null)
+        savePath = tfDir.getText()
+            + "/"
+            + (jobStem.equals("") ? "new.cfi" : jobStem
+                + (ext.contains(";") ? "" : "." + ext));
+      else
+        savePath = tfDir.getText() + "/" + name + "." + ext;
+      myChooser.setSelectedFile(new File(savePath));
+      if (myChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+        break;
+      newFile = myChooser.getSelectedFile();
+      fullFilePath = newFile.getParent();
+      jobStem = NBOUtil.getJobStem(newFile);
+      ext = NBOUtil.getExt(newFile);
+      boolean isAll = (saveFilter.indexOf("(") < 0);
+      ext = (isAll ? ext 
+          : saveFilter.indexOf(",") < 0 ? saveFilter.substring(saveFilter.indexOf("(*") + 3,
+              saveFilter.length() - 1)
+          : PT.isOneOf(ext, ";gau;g09;com;") ? ext 
+          : "gau"
+          );
+      newFile = new File(fullFilePath, jobStem + "." + ext);
+      if (!PT.isOneOf(ext, MODEL_SAVE_FILE_EXTENSIONS)) {
+        dialog.logError("Invalid file extension");
+        break;
+      }
+      if (newFile.exists()
+          && JOptionPane.showConfirmDialog(null, "File " + newFile
+              + " already exists, do you want to overwrite contents?",
+              "Warning", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
+        return false;
+      dialog.inputFileHandler.setInput(fullFilePath, jobStem, ext);
+      dialog.saveWorkingPath(fullFilePath);
+      fileAcceptor.acceptFile(MODE_MODEL_SAVE, fullFilePath,
+          NBOUtil.getJobStem(newFile), ext,
+          (isAll ? null : saveFilter.substring(0, saveFilter.indexOf("(*"))));
+      return true;
+    default:
+      myChooser.setFileFilter(new FileNameExtensionFilter(useExt, useExt));
+      myChooser.setSelectedFile(new File(fullFilePath));
+      if (myChooser.showDialog(this, GT._("Select")) != JFileChooser.APPROVE_OPTION)
+        break;
       return loadSelectedFile(myChooser.getSelectedFile());
- 
-    return true;
+    }
+    return false;
   }
 
+  /**
+   * Set the file filters for the file dialog
+   * 
+   * @param chooser
+   * @param mode
+   * @param defaultExt
+   */
+  private static void setFilterForDialog(JFileChooser chooser, int mode,
+                                String defaultExt) {
+    FileNameExtensionFilter defaultFilter = null;
+    if (defaultExt != null && PT.isOneOf(defaultExt, GAUSSIAN_EXTENSIONS))
+        defaultExt = "gau";
+    String[] options = (mode == MODE_MODEL_OPEN ? MODEL_OPEN_OPTIONS
+        : MODEL_SAVE_OPTIONS);
+    FileNameExtensionFilter[] filters = new FileNameExtensionFilter[options.length - 1];
+    for (int i = 1; i < options.length; i++) {
+      String option = options[i];
+      int pt = option.indexOf("[");
+      int pt2 = option.indexOf("]");
+      String label;
+      if (pt == 0) {
+        label = option.substring(pt2 + 1).trim();
+      } else {
+        label = option.substring(0, pt).trim();
+      }
+      String ext = option.substring(pt + 1, pt2).trim().substring(1);
+      String[] a = (ext.equals("gau") ? new String[] { "gau", "g09", "com" }
+          : new String[] { ext });
+      String ext2 = (ext.equals("gau") ? " (*.gau, *.g09, *.com)" : " (*." + ext + ")");
+      filters[i - 1] = new FileNameExtensionFilter(label + ext2, a);
+      if (defaultFilter == null
+          && (ext.equals(defaultExt) || label.indexOf(defaultExt) >= 0))
+        defaultFilter = filters[i - 1];
+    }
+    for (int i = 0; i < filters.length; i++)
+      chooser.addChoosableFileFilter(filters[i]);
+    chooser.setAcceptAllFileFilterUsed(true);
+    chooser.setMultiSelectionEnabled(false);
+    chooser.setFileHidingEnabled(true);
+    if (defaultFilter != null)
+      chooser.setFileFilter(defaultFilter);
+  }
+
+  /**
+   * standard load of file after user selection
+   * @param selectedFile
+   * @return true for convenience only
+   */
   protected boolean loadSelectedFile(File selectedFile) {
     dialog.nboService.restartIfNecessary();
     inputFile = selectedFile;
-    //if(!useExt.equals("47")&&!useExt.equals("31")&&!useExt.equals("nbo")) 
-    //return false;
     if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
       return true;
     if (!useExt.equals("47")) {
@@ -232,7 +381,7 @@ class NBOFileHandler extends JPanel {
     setInputFile(inputFile);
     dialog.runPanel.doLogJobName(jobStem);
     fullFilePath = inputFile.getParent();
-    dialog.saveWorkingPath(fullFilePath.toString());
+    dialog.saveWorkingPath(fullFilePath);
     return true;
   }
 
@@ -306,10 +455,10 @@ class NBOFileHandler extends JPanel {
    * 
    * @param doAll read the whole thing; else just for keywords (stops at $COORD) 
    * 
-   * @return [ pre-keyword params, no-file keywords, post-keyword params, all keywords ]
+   * @return NBOFileData47
    */
-  protected String[] read47File(boolean doAll) {
-    String[] fileData = new String[] { "", "", "", "" };
+  private NBOFileData47 read47File(boolean doAll) {
+    NBOFileData47 fileData = new NBOFileData47();
     String nboKeywords = "";
     SB data = new SB();
     if (!NBOUtil.read47FileBuffered(inputFile, data, doAll))
@@ -337,10 +486,10 @@ class NBOFileHandler extends JPanel {
       params.append(s).append(sep).append("$END").append(sep);
     }
     dialog.logInfo("$NBO: " + nboKeywords, Logger.LEVEL_INFO);
-    fileData[0] = fix47File(preParams.toString());
-    fileData[1] = NBOUtil.removeNBOFileKeyword(nboKeywords, null);
-    fileData[2] = postParams.toString();
-    fileData[3] = nboKeywords;
+    fileData.preParams = fix47File(preParams.toString());
+    fileData.noFileKeywords = NBOUtil.removeNBOFileKeyword(nboKeywords, null);
+    fileData.postKeywordData = postParams.toString();
+    fileData.allKeywords = nboKeywords;
     return fileData;
   }
 
@@ -350,11 +499,11 @@ class NBOFileHandler extends JPanel {
    * @param data
    * @return fixed data
    */
-  public static String fix47File(String data) {
+  static String fix47File(String data) {
     return PT.rep(data, "FORMAT=PRECISE", "");     
   }
 
-  public void clear() {
+  void clear() {
     tfName.setText("");
     tfExt.setText("");
   }
@@ -402,15 +551,15 @@ class NBOFileHandler extends JPanel {
     return (ret != null && ret.startsWith("OK"));
   }
 
-  public void setBrowseEnabled(boolean b) {
+  void setBrowseEnabled(boolean b) {
     btnBrowse.setEnabled(b);
   }
 
-  public String getInputFileData(String nn) {
+  String getInputFileData(String nn) {
     return getFileData(newNBOFile(nn).toString());
   }
 
-  public File newNBOFile(String nn) {
+  File newNBOFile(String nn) {
     return NBOUtil.newNBOFile(inputFile, nn);
   }
 
@@ -420,7 +569,7 @@ class NBOFileHandler extends JPanel {
    * @param name the name to fix, or if empty, the input file name truncated to a maximum of 10 digits
    * @return fixed name replacing not-allowed characters with '_'
    */
-  public String fixJobName(String name) {
+  String fixJobName(String name) {
     if (name == null || (name = name.trim()).length() == 0)
       name = jobStem;
     for (int i = name.length(); --i >= 0;) {
@@ -431,26 +580,32 @@ class NBOFileHandler extends JPanel {
     return name;
   }
 
+  /**
+   * 
+   * @param jobName
+   * @param keywords
+   * @param isRun
+   * @return [
+   */
   
-
-  public String[] update47File(String jobName, String keywords, boolean isRun) {
+  NBOFileData47 update47File(String jobName, String keywords, boolean isRun) {
     if (!useExt.equals("47"))
       return null;
     String fileName47 = inputFile.getAbsolutePath();
-    String[] fileData = read47File(true);
+    NBOFileData47 fileData = read47File(true);
     String oldData = (isRun ? getFileData(fileName47) : null);
     String newFileData = 
-        fileData[0] 
+        fileData.preParams 
         + "$NBO\n "
         + "FILE=" + jobName + " " + keywords 
         + "  $END" 
         + sep 
-        + fileData[2];
+        + fileData.postKeywordData;
     if (writeToFile(fileName47, newFileData)) {
       if (oldData != null)
         writeToFile(fileName47 + "$", oldData);
-      fileData[1] = keywords;
-      fileData[3] = "FILE=" + jobName + " " + keywords; 
+      fileData.noFileKeywords = keywords;
+      fileData.allKeywords = "FILE=" + jobName + " " + keywords; 
       dialog.runPanel.doLogJobName(jobName);
       dialog.runPanel.doLogKeywords(keywords);
       return fileData;
@@ -468,7 +623,7 @@ class NBOFileHandler extends JPanel {
    * @param jobName
    * @return true if user agrees or does not have to; false to bail
    */
-  public boolean checkSwitch47To(String jobName) {
+  boolean checkSwitch47To(String jobName) {
     if (!jobName.equals(jobStem)) {
       int i = JOptionPane
           .showConfirmDialog(
@@ -495,7 +650,7 @@ class NBOFileHandler extends JPanel {
   /**
    * Delete all files ending with $
    */
-  public void removeAllTemporaryRunFiles() {
+  void removeAllTemporaryRunFiles() {
     File[] files = new File(fullFilePath).listFiles(new FileFilter() {
       @Override
       public boolean accept(File theFile) {
@@ -514,7 +669,7 @@ class NBOFileHandler extends JPanel {
    * 
    * @param f
    */
-  public void deleteFile(File f) {
+  void deleteFile(File f) {
     try {
       if (f.exists())
         f.delete();
@@ -524,12 +679,12 @@ class NBOFileHandler extends JPanel {
   }
 
   /**
-   * just get the keywords from the .47 file
+   * just get the keywords from the .47 file, without FILE=xxxx 
    * 
    * @return NBO keywords
    */
-  public String get47Keywords() {
-    return read47File(false)[1];
+  String get47KeywordsNoFile() {
+    return read47File(false).noFileKeywords;
   }
 
   /**
@@ -540,7 +695,7 @@ class NBOFileHandler extends JPanel {
    * 
    * @return true if .nbo file is OK
    */
-  public boolean checkNBOComplete(boolean saveErr) {
+  boolean checkNBOComplete(boolean saveErr) {
     deleteFile(newNBOFile("err$"));
     String data = getInputFileData("nbo");
     boolean isOK = data != null && data.contains("NBO analysis completed");
@@ -587,5 +742,32 @@ class NBOFileHandler extends JPanel {
       for (File f : files) 
         deleteFile(f);
     }
-  
+
+  /**
+   * 
+   * Get the proper code for the C_ESS record
+   * 
+   * @param ext
+   *        - extension to convert
+   * @param saveType
+   *        - the combo box description, indicating Cartesian or z-matrix
+   * @return one of g, gc, gz, c, v, l, a, or mm if recognhized or ext if not
+   */
+  static String getEss(String ext, String saveType) {
+    ext = ext.toLowerCase();
+    return (PT.isOneOf(ext,  GAUSSIAN_EXTENSIONS) ?
+        (saveType != null && saveType.contains("Cartesian") ? "gc" : saveType.contains("z-matrix") ? "gz" : "g")
+          : ext.equals("cfi") || ext.equals("vfi")|| ext.equals("log") ? ext.substring(0, 1)
+            : ext.equals("47") ? "a" 
+            : ext.equals("mm2") ? "mm" 
+            : ext);
+  }
+
+  private class NBOFileChooser extends JFileChooser {
+
+    NBOFileChooser() {
+      super();
+    }
+
+  }
 }

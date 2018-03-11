@@ -204,7 +204,7 @@ class NBOModel implements NBOFileAcceptor {
   void modelSetSaveParametersFromInput(NBOFileHandler nboFileHandler,
                                        String dir, String name, String ext) {
     if (saveFileHandler != null && nboFileHandler != saveFileHandler)
-      saveFileHandler.setInput(dir, name,
+      saveFileHandler.setTextFields(dir, name,
           PT.isOneOf(ext, NBOFileHandler.MODEL_SAVE_FILE_EXTENSIONS) ? ext : "");
   }
 
@@ -940,8 +940,8 @@ class NBOModel implements NBOFileAcceptor {
     if (model.length() == 0)
       return;
     String s = "";
-    dialog.inputFileHandler.setInput(null, "", "");
-    saveFileHandler.setInput(null, "", "");
+    dialog.inputFileHandler.setTextFields(null, "", "");
+    saveFileHandler.setTextFields(null, "", "");
     clearSelected(false);
     if (textBox == jtNIHInput) {
       if (model.startsWith("!")) {
@@ -967,7 +967,7 @@ class NBOModel implements NBOFileAcceptor {
         }
       }
       jtLineFormula.setText("");
-      saveFileHandler.setInput(null, model, "mol");
+      saveFileHandler.setTextFields(null, model, "mol");
       dialog.logCmd("get " + model);
       dialog.iAmLoading = true;
       if (dialog.loadModelFileNow(model) == null) {
@@ -989,7 +989,7 @@ class NBOModel implements NBOFileAcceptor {
       SB sb = new SB();
       jtNIHInput.setText("");
       s = "show " + model;
-      saveFileHandler.setInput(null, "line", "mol");
+      saveFileHandler.setTextFields(null, "line", "mol");
       NBOUtil.postAddCmd(sb, s);
       dialog.logCmd(s);
       postNBO(sb, MODE_MODEL_NEW, "model from line input...",

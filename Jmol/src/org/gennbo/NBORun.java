@@ -224,7 +224,7 @@ class NBORun {
   }
 
   protected void addNBOKeylist() {
-    if (dialog.inputFileHandler.inputFile == null)
+    if (dialog.inputFileHandler.file47 == null)
       return;
     Box jobNameOuterBox = Box.createVerticalBox();
     jobNameOuterBox.setSize(new Dimension(250, 75));
@@ -687,7 +687,7 @@ class NBORun {
       dialog.alertError("Error reading " + s + ": " + e);
     }
     dialog.modelOrigin = NBODialog.ORIGIN_NBO_ARCHIVE;
-    dialog.inputFileHandler.setInputFile(f);
+    dialog.inputFileHandler.setFile47(f);
     dialog.modelOrigin = NBODialog.ORIGIN_NBO_ARCHIVE;
     rbLocal.doClick();
     dialog.modelOrigin = NBODialog.ORIGIN_FILE_INPUT;
@@ -750,7 +750,7 @@ class NBORun {
     if (fileData == null)
       return;
     SB sb = new SB();
-    String path = dialog.inputFileHandler.inputFile.getParent();
+    String path = dialog.inputFileHandler.file47.getParent();
     String jobStem = dialog.inputFileHandler.jobStem;
     dialog.inputFileHandler.deletePlotFiles(path);
     NBOUtil.postAddGlobalC(sb, "PATH", path);
@@ -788,7 +788,7 @@ class NBORun {
    * @param req
    */
   protected void processNBO(NBORequest req) {
-    dialog.inputFileHandler.setInputFile(dialog.inputFileHandler.inputFile);
+    dialog.inputFileHandler.setFile47(dialog.inputFileHandler.file47);
     //dialog.clearOutput();
     if (!dialog.inputFileHandler.checkNBOComplete(true)) {
       dialog.logError("NBO file was corrupted or not created");

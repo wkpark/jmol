@@ -32,7 +32,7 @@ class NBOFileHandler extends JPanel {
 
   protected static final String sep = System.getProperty("line.separator");
 
-  private static final String[] EXT_ARRAY = PT.split("31;32;33;34;35;36;37;38;39;40;41;42;46;nbo", ";");
+  private static final String[] PLOT_AND_NBO_FILES = PT.split("31;32;33;34;35;36;37;38;39;40;41;42;46;nbo", ";");
 
   final static String[] MODEL_OPEN_OPTIONS = { "<Select File Type>", 
     "[.47]   NBO Archive",
@@ -86,7 +86,7 @@ class NBOFileHandler extends JPanel {
   protected final static int MODE_SEARCH = 4;
   protected final static int MODE_MODEL_SAVE = 5;
 
-  protected File inputFile;
+  protected File file47;
 
 
   protected JTextField tfDir, tfName, tfExt;
@@ -201,7 +201,7 @@ class NBOFileHandler extends JPanel {
     });
     add(btnBrowse, c);
     setJobStemAndTextFieldName(jobName);
-    setInput(fullFilePath, jobName, useExt);
+    setTextFields(fullFilePath, jobName, useExt);
   }
 
   /**
@@ -251,7 +251,7 @@ class NBOFileHandler extends JPanel {
         dialog.logError("Invalid file extension");
         break;
       }
-      setInput(fullFilePath, jobStem, ext);
+      setTextFields(fullFilePath, jobStem, ext);
       dialog.saveWorkingPath(fullFilePath);
       fileAcceptor
           .acceptFile(MODE_MODEL_OPEN, fullFilePath, jobStem, ext, null);
@@ -302,7 +302,7 @@ class NBOFileHandler extends JPanel {
               + " already exists, do you want to overwrite contents?",
               "Warning", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
         return false;
-      dialog.inputFileHandler.setInput(fullFilePath, jobStem, ext);
+      dialog.inputFileHandler.setTextFields(fullFilePath, jobStem, ext);
       dialog.saveWorkingPath(fullFilePath);
       fileAcceptor.acceptFile(MODE_MODEL_SAVE, fullFilePath,
           NBOUtil.getJobStem(newFile), ext,
@@ -368,19 +368,19 @@ class NBOFileHandler extends JPanel {
    */
   protected boolean loadSelectedFile(File selectedFile) {
     dialog.nboService.restartIfNecessary();
-    inputFile = selectedFile;
+    file47 = selectedFile;
     if (dialog.dialogMode == NBODialog.DIALOG_MODEL)
       return true;
     if (!useExt.equals("47")) {
-      setJobStemAndTextFieldName(NBOUtil.getJobStem(inputFile));
+      setJobStemAndTextFieldName(NBOUtil.getJobStem(file47));
       dialog.modelPanel.loadModelFromNBO(fullFilePath, jobStem, useExt);
       tfExt.setText(useExt);
       return true;
     }
     canReRun = true;
-    setInputFile(inputFile);
+    setFile47(file47);
     dialog.runPanel.doLogJobName(jobStem);
-    fullFilePath = inputFile.getParent();
+    fullFilePath = file47.getParent();
     dialog.saveWorkingPath(fullFilePath);
     return true;
   }
@@ -393,32 +393,32 @@ class NBOFileHandler extends JPanel {
    * Sets up the input file, currently only support for .47/model input file
    * types
    * 
-   * @param inputFile
+   * @param file47
    */
-  protected void setInputFile(File inputFile) {
-    dialog.logValue("Input file=" + inputFile);
-    clearInputFile(false); // clear CURRENT input file's server directory
-    this.inputFile = inputFile;
-    if (inputFile.getName().indexOf(".") > 0)
-      jobStem = NBOUtil.getJobStem(inputFile);
+  protected void setFile47(File file47) {
+    dialog.logValue("Input file=" + file47);
+    deletePlotAndNBOFiles(false); // clear CURRENT input file's server directory
+    this.file47 = file47;
+    if (file47.getName().indexOf(".") > 0)
+      jobStem = NBOUtil.getJobStem(file47);
     if (dialog.modelOrigin == NBODialog.ORIGIN_NBO_ARCHIVE)
-      clearInputFile(true);
-    setInput(inputFile.getParent(), jobStem, useExt);
-    if (!NBOUtil.getExt(inputFile).equals("47"))
+      deletePlotAndNBOFiles(true);
+    setTextFields(file47.getParent(), jobStem, useExt);
+    if (!NBOUtil.getExt(file47).equals("47"))
       return;
-    if (NBOUtil.fixPath(inputFile.getParent().toString()).equals(
+    if (NBOUtil.fixPath(file47.getParent().toString()).equals(
         dialog.nboService.getServerPath(null))) {
       JOptionPane.showMessageDialog(this,
           "Select a directory that does not contain the NBOServe executable,"
               + "\nor select a new location for your NBOServe executable");
       return;
     }
-    fullFilePath = inputFile.getParent();
+    fullFilePath = file47.getParent();
     boolean canLoad = true;
     boolean isOK = true;
     String msg = "";
     if (dialog.dialogMode != NBODialog.DIALOG_MODEL && dialog.dialogMode != NBODialog.DIALOG_RUN) {
-      for (String nn : EXT_ARRAY) {
+      for (String nn : PLOT_AND_NBO_FILES) {
         File f3 = newNBOFile(nn);
         if (!f3.exists() || nn.equals("36") && f3.length() == 0) {
           msg = "file " + f3 + " is missing or zero length";
@@ -453,15 +453,16 @@ class NBOFileHandler extends JPanel {
   /**
    * Read input parameters from .47 file
    * 
-   * @param doAll read the whole thing; else just for keywords (stops at $COORD) 
+   * @param doAll
+   *        read the whole thing; else just for keywords (stops at $COORD)
    * 
    * @return NBOFileData47
    */
   private NBOFileData47 read47File(boolean doAll) {
     NBOFileData47 fileData = new NBOFileData47();
-    String nboKeywords = "";
+    String allKeywords = "";
     SB data = new SB();
-    if (!NBOUtil.read47FileBuffered(inputFile, data, doAll))
+    if (!NBOUtil.read47FileBuffered(file47, data, doAll))
       return fileData;
     String s = PT.trim(data.toString(), "\t\r\n ");
     String[] tokens = PT.split(s, "$END");
@@ -477,7 +478,7 @@ class NBOFileHandler extends JPanel {
         String[] prePost = PT.split(s, "$NBO");
         if (prePost[0].length() > 0)
           params.append(s).append(sep);
-        nboKeywords = PT.trim(prePost[1], "\t\r\n ");
+        allKeywords = PT.trim(prePost[1], "\t\r\n ");
         params = postParams;
         if (!doAll)
           break;
@@ -485,51 +486,33 @@ class NBOFileHandler extends JPanel {
       }
       params.append(s).append(sep).append("$END").append(sep);
     }
-    dialog.logInfo("$NBO: " + nboKeywords, Logger.LEVEL_INFO);
-    fileData.preParams = fix47File(preParams.toString());
-    fileData.noFileKeywords = NBOUtil.removeNBOFileKeyword(nboKeywords, null);
-    fileData.postKeywordData = postParams.toString();
-    fileData.allKeywords = nboKeywords;
-    return fileData;
+    dialog.logInfo("$NBO: " + allKeywords, Logger.LEVEL_INFO);
+    return fileData.set(PT.rep(preParams.toString(), "FORMAT=PRECISE", ""),
+        allKeywords, postParams.toString());
   }
 
-  /**
-   * I cannot remember why this is important -- BH
-   * 
-   * @param data
-   * @return fixed data
-   */
-  static String fix47File(String data) {
-    return PT.rep(data, "FORMAT=PRECISE", "");     
-  }
-
-  void clear() {
-    tfName.setText("");
-    tfExt.setText("");
-  }
-
-  protected void clearInputFile(boolean andUserDir) {
+  protected void deletePlotAndNBOFiles(boolean andUserDir) {
     if (jobStem.length() == 0)
       return;
-    for (String ext : EXT_ARRAY)
+    for (String ext : PLOT_AND_NBO_FILES)
       try {
         new File(dialog.nboService.getServerPath(jobStem + "." + ext)).delete();
       } catch (Exception e) {
         // ignore
       }
     if (andUserDir)
-      for (String ext : EXT_ARRAY)
+      for (String ext : PLOT_AND_NBO_FILES)
         try {
-          NBOUtil.newNBOFile(inputFile, ext).delete();
+          NBOUtil.newNBOFile(file47, ext).delete();
         } catch (Exception e) {
           // ignore
         }
-    inputFile = null;
+    file47 = null;
     if (dialog.dialogMode == NBODialog.DIALOG_VIEW)
       dialog.viewPanel.resetView();
   }
 
-  protected void setInput(String dir, String name, String ext) {
+  protected void setTextFields(String dir, String name, String ext) {
     if (dir != null)
       tfDir.setText(dir);
     if (name != null)
@@ -538,7 +521,7 @@ class NBOFileHandler extends JPanel {
       tfExt.setText(ext);
     if (dir != null && name != null && ext != null) {
       dialog.modelPanel.modelSetSaveParametersFromInput(this, dir, name, ext);
-      inputFile = new File(dir + "\\" + name + "." + ext);
+      file47 = new File(dir + "\\" + name + "." + ext);
     }
   }
 
@@ -560,7 +543,7 @@ class NBOFileHandler extends JPanel {
   }
 
   File newNBOFile(String nn) {
-    return NBOUtil.newNBOFile(inputFile, nn);
+    return NBOUtil.newNBOFile(file47, nn);
   }
 
   /**
@@ -591,7 +574,7 @@ class NBOFileHandler extends JPanel {
   NBOFileData47 update47File(String jobName, String keywords, boolean isRun) {
     if (!useExt.equals("47"))
       return null;
-    String fileName47 = inputFile.getAbsolutePath();
+    String fileName47 = file47.getAbsolutePath();
     NBOFileData47 fileData = read47File(true);
     String oldData = (isRun ? getFileData(fileName47) : null);
     String newFileData = 
@@ -638,11 +621,11 @@ class NBOFileHandler extends JPanel {
               "Warning", JOptionPane.YES_NO_OPTION);
       if (i != JOptionPane.YES_OPTION)
         return false;
-      String data = dialog.vwr.getAsciiFileOrNull(inputFile.getAbsolutePath());
+      String data = dialog.vwr.getAsciiFileOrNull(file47.getAbsolutePath());
       setJobStemAndTextFieldName(jobName);
-      setInput(tfDir.getText(), jobName, "47");
+      setTextFields(tfDir.getText(), jobName, "47");
       if (data != null)
-        this.writeToFile(inputFile.getAbsolutePath(), data);    
+        this.writeToFile(file47.getAbsolutePath(), data);    
     }
     return true;
   }

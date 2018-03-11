@@ -1068,7 +1068,7 @@ class NBOView {
     SB sb = new SB();
     if (addPathAndJobStem) {
       NBOUtil.postAddGlobalC(sb, "PATH",
-          dialog.inputFileHandler.inputFile.getParent());
+          dialog.inputFileHandler.file47.getParent());
       NBOUtil.postAddGlobalC(sb, "JOBSTEM", dialog.inputFileHandler.jobStem);
     }
     if (addBasis)
@@ -1863,7 +1863,7 @@ class NBOView {
       orbitals.loadList(lines, list);
       break;
     case MODE_VIEW_IMAGE:
-      String fname = dialog.inputFileHandler.inputFile.getParent() + "\\"
+      String fname = dialog.inputFileHandler.file47.getParent() + "\\"
           + dialog.inputFileHandler.jobStem + ".bmp";
       String script = "image close;image id \"\" "
           + PT.esc(new File(fname).toString().replace('\\', '/'));

@@ -633,7 +633,7 @@ public class GenNBOReader extends MOReader {
     Map<String, String[]> map = new Hashtable<String, String[]>();
     String[] tokens = new String[0];
     rd();
-    int nNOs = nAOs = nOrbitals;
+    int nNOs = this.nNOs = nAOs = nOrbitals;
     String labelKey = getLabelKey(nboType);
     while (line != null && line.length() > 0) {
       tokens = PT.getTokens(line);
@@ -658,16 +658,15 @@ public class GenNBOReader extends MOReader {
         tokens[i] = PT.rep(sb.substring2(pt, pt + 10), " ","");
       map.put(key, tokens);
     }
-    nNOs = this.nNOs;
     tokens = map.get((betaOnly ? "beta_" : "") + labelKey);
     moData.put("nboLabelMap", map);
     if (tokens == null) {
       tokens = new String[nNOs];
       for (int i = 0; i < nNOs; i++)
         tokens[i] = nboType + (i + 1);
-      map.put(nboType, tokens);
+      map.put(labelKey, tokens);
       if (isOpenShell)
-        map.put("beta_" + nboType, tokens);        
+        map.put("beta_" + labelKey, tokens);        
     }
     moData.put("nboLabels", tokens);
     addBetaSet = (isOpenShell && !betaOnly && !is47File); 
@@ -691,7 +690,7 @@ public class GenNBOReader extends MOReader {
       labelKey = labelKey.substring(1);
     if (labelKey.equals("NLMO"))
       labelKey = "NBO";
-    if (labelKey.equals("MO"))
+    if (labelKey.equals("MO")) // no longer?
       labelKey = "NO";
     return labelKey;
   }
@@ -716,22 +715,22 @@ public class GenNBOReader extends MOReader {
     //boolean discardExtra = PT.isOneOf(nboType, ";NBO;NLMO;");
     boolean hasNoBeta = PT.isOneOf(nboType, ";AO;PNAO;NAO;");
     Map<String, String[]> map = (Map<String, String[]>) moData.get("nboLabelMap");
-    String labelKey = getLabelKey(ext >= 40 ? "PNBO" : nboType);
-    String[] nboLabels = map.get(labelKey);
-    int nMOs = nboLabels.length;
     int nAOs = map.get("AO").length;
-    // It is possible for nAOs > nMOs. See, for example,
-    // http://nbo6.chem.wisc.edu/jmol_nborxiv/ketamine.47
-    if (ext >= 40) {
+    String labelKey = getLabelKey(nboType);
+    String[] nboLabels = map.get(labelKey);
+    if (nboLabels == null) {
       // MO and NO need simple MO1 MO2 .. labels
-      nboLabels = new String[nMOs];
-      for (int i = 0; i < nMOs; i++)
+      nboLabels = new String[nAOs];
+      for (int i = 0; i < nAOs; i++)
         nboLabels[i] = nboType + (i + 1);
       labelKey = nboType;
-      map.put(nboType, nboLabels);
+      map.put(labelKey, nboLabels);
       if (!hasNoBeta)
-        map.put("beta_" + nboType, nboLabels);
+        map.put("beta_" + labelKey, nboLabels);
     }
+    // It is possible for nAOs > nMOs. See, for example,
+    // http://nbo6.chem.wisc.edu/jmol_nborxiv/ketamine.47
+    int nMOs = nboLabels.length;
     try {
       Lst<Map<String, Object>> orbitals = (Lst<Map<String, Object>>) moData
           .get(nboType + "_coefs");

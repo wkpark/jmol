@@ -402,18 +402,7 @@ class NBORun {
   protected void doLogKeywords(String keywords) {
     if (keywords == null)
       keywords = getKeywordsFromButtons();
-    dialog.logValue("Keywords: " + cleanKeywords(keywords));
-  }
-
-  private String cleanKeywords(String keywords) {
-    String[] tokens = PT.getTokens(keywords);
-    String ret = "";
-    for (int i = 0; i < tokens.length; i++) {
-      if (tokens[i].startsWith("_"))
-          continue;
-      ret += tokens[i] + " ";
-    }
-    return ret.trim();
+    dialog.logValue("Keywords: " + NBOUtil.cleanKeywordsNo_XXX(keywords));
   }
 
   JTextPane keywordTextPane;

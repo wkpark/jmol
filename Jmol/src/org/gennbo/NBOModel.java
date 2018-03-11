@@ -1244,8 +1244,6 @@ class NBOModel implements NBOFileAcceptor {
         dialog.logError("Return message from NBOServe was empty.");
         return;
       }
-      // temporary hack, until it is fixed in NBOPro:
-      s = s.replace('\\','/');
       s += NBOConfig.JMOL_FONT_SCRIPT;
 // backing off from this so we can see what NBO6 does and maybe not need to do this
 //      if (mode == MODE_MODEL_EDIT)

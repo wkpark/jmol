@@ -330,8 +330,11 @@ class NBOFileHandler extends JPanel {
     FileNameExtensionFilter defaultFilter = null;
     if (defaultExt != null && PT.isOneOf(defaultExt, GAUSSIAN_EXTENSIONS))
         defaultExt = "gau";
-    String[] options = (mode == MODE_MODEL_OPEN ? MODEL_OPEN_OPTIONS
+    boolean isOpen = (mode == MODE_MODEL_OPEN);
+    String[] options = (isOpen ? MODEL_OPEN_OPTIONS
         : MODEL_SAVE_OPTIONS);
+    String allFiles = (isOpen ? MODEL_OPEN_FILE_EXTENSIONS : MODEL_SAVE_FILE_EXTENSIONS);
+    String[] allExt = allFiles.substring(1, allFiles.length() - 1).split(";"); 
     FileNameExtensionFilter[] filters = new FileNameExtensionFilter[options.length - 1];
     for (int i = 1; i < options.length; i++) {
       String option = options[i];
@@ -354,6 +357,7 @@ class NBOFileHandler extends JPanel {
     }
     for (int i = 0; i < filters.length; i++)
       chooser.addChoosableFileFilter(filters[i]);
+    chooser.addChoosableFileFilter(new FileNameExtensionFilter("All NBOPro-" + (isOpen ? "Readable" : "Writable") + " Types", allExt));
     chooser.setAcceptAllFileFilterUsed(true);
     chooser.setMultiSelectionEnabled(false);
     chooser.setFileHidingEnabled(true);

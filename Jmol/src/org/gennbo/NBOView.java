@@ -1046,6 +1046,7 @@ class NBOView {
    */
   protected boolean checkForCMO() {
     String keywords = dialog.runPanel.cleanNBOKeylist(dialog.inputFileHandler.get47KeywordsNoFile(), true);
+    keywords = NBOUtil.cleanKeywordsNo_XXX(keywords);
     if (!keywords.contains("CMO")) {
       dialog.runPanel.doRunGenNBOJob("CMO");
       return false;

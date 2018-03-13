@@ -69,6 +69,7 @@ public class SelectionManager {
     BS bs = BSUtil.copy(bsSelection);
     BSUtil.deleteBits(bs, bsAtoms);
     setSelectionSet(bs, 0);
+    selectionChanged(false);
   }
 
 
@@ -128,7 +129,6 @@ public class SelectionManager {
   void setSelectionSet(BS set, int addRemove) {
     setBitSet(bsSelection, set, addRemove);
     empty = UNKNOWN;
-    selectionChanged(false);
   }
 
   private static void setBitSet(BS bsWhat, BS bs, int addRemove) {
@@ -172,10 +172,15 @@ public class SelectionManager {
         excludeSelectionSet(vwr.ms.getAtoms(T.hydrogen, null));
       if (!vwr.getBoolean(T.hetero))
         excludeSelectionSet(vwr.ms.getAtoms(T.hetero, null));
-      selectionChanged(false);
     } else {
       setSelectionSet(bs, addRemove);
+      if (!vwr.getBoolean(T.hydrogen))
+        excludeSelectionSet(vwr.ms.getAtoms(T.hydrogen, null));
+      if (!vwr.getBoolean(T.hetero))
+        excludeSelectionSet(vwr.ms.getAtoms(T.hetero, null));
+
     }
+    selectionChanged(false);
     boolean reportChime = vwr.getBoolean(T.messagestylechime);
     if (!reportChime && isQuiet)
       return;

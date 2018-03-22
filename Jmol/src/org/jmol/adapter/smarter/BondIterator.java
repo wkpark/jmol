@@ -36,7 +36,6 @@ class BondIterator extends JmolAdapterBondIterator {
 
   /**
    * @param asc 
-   * @j2sIgnoreSuperConstructor
    * 
    */
 	BondIterator(AtomSetCollection asc) {

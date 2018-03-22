@@ -38,8 +38,6 @@ public class StructureIterator extends JmolAdapterStructureIterator {
   
   /**
    * @param asc 
-   * @j2sIgnoreSuperConstructor
-   * 
    */
   StructureIterator(AtomSetCollection asc) {
     structureCount = asc.structureCount;

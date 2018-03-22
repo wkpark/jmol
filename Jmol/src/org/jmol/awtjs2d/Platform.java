@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolToJSmolInterface;
+import org.jmol.awtjs.Font;
 import org.jmol.script.ScriptContext;
 import org.jmol.viewer.Viewer;
 
@@ -15,7 +16,6 @@ import javajs.api.GenericFileInterface;
 import javajs.api.GenericMouseInterface;
 import javajs.api.GenericMenuInterface;
 import javajs.api.PlatformViewer;
-import javajs.awt.Font;
 import javajs.util.AjaxURLStreamHandlerFactory;
 import javajs.util.P3;
 import javajs.util.Rdr;

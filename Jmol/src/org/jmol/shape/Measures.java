@@ -26,6 +26,8 @@ package org.jmol.shape;
 
 import org.jmol.api.JmolMeasurementClient;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.awtjs.Font;
+
 import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Measurement;
@@ -39,7 +41,6 @@ import org.jmol.modelset.TickInfo;
 import org.jmol.viewer.JC;
 import org.jmol.script.T;
 
-import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.PT;

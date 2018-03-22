@@ -29,10 +29,11 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.BS;
+
+import org.jmol.awtjs.Font;
 import org.jmol.util.GData;
 
 import javajs.J2SRequireImport;
-import javajs.awt.Font;
 import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.T3;

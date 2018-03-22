@@ -25,9 +25,9 @@
 
 package org.jmol.render;
 
-import javajs.awt.Font;
 
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.awtjs.Font;
 import org.jmol.modelset.Text;
 import org.jmol.viewer.JC;
 

@@ -419,7 +419,7 @@ public class Rdr implements GenericLineReader {
    * @param bis
    * @return a UTF-8 string
    */
-  public static String StreamToUTF8String(BufferedInputStream bis) {
+  public static String streamToUTF8String(BufferedInputStream bis) {
     String[] data = new String[1];
     try {
       readAllAsString(getBufferedReader(bis, "UTF-8"), -1, true, data, 0);

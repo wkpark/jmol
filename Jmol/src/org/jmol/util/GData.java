@@ -2,7 +2,6 @@ package org.jmol.util;
 
 
 import javajs.api.GenericPlatform;
-import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.M3;
 import javajs.util.P3;
@@ -12,6 +11,7 @@ import javajs.util.V3;
 
 import org.jmol.api.JmolGraphicsInterface;
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.awtjs.Font;
 import org.jmol.c.STER;
 import org.jmol.viewer.Viewer;
 

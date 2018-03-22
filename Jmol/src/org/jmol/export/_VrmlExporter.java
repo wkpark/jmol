@@ -29,7 +29,6 @@ package org.jmol.export;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.awt.Font;
 import javajs.util.A4;
 import javajs.util.AU;
 import javajs.util.Lst;
@@ -41,6 +40,8 @@ import javajs.util.T3;
 import javajs.util.V3;
 
 import javajs.util.BS;
+
+import org.jmol.awtjs.Font;
 import org.jmol.util.GData;
 import org.jmol.util.Geodesic;
 import org.jmol.viewer.Viewer;

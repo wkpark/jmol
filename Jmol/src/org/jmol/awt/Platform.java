@@ -17,13 +17,13 @@ import javajs.api.GenericMenuInterface;
 import javajs.api.GenericMouseInterface;
 import javajs.api.GenericPlatform;
 import javajs.api.PlatformViewer;
-import javajs.awt.Font;
 import javajs.util.P3;
 import javajs.util.Rdr;
 
 import javax.swing.JDialog;
 
 import org.jmol.api.Interface;
+import org.jmol.awtjs.Font;
 import org.jmol.viewer.Viewer;
 
 public class Platform implements GenericPlatform {

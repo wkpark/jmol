@@ -28,7 +28,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.BArray;
 import javajs.util.Base64;
@@ -48,6 +47,7 @@ import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
+import org.jmol.awtjs.Font;
 import org.jmol.c.STER;
 import org.jmol.c.VDW;
 import org.jmol.i18n.GT;

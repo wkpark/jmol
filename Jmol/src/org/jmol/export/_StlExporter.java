@@ -28,7 +28,6 @@ package org.jmol.export;
 import java.io.ByteArrayOutputStream;
 import java.util.Map;
 
-import javajs.awt.Font;
 import javajs.util.A4;
 import javajs.util.Lst;
 import javajs.util.M4;
@@ -38,6 +37,8 @@ import javajs.util.P3;
 import javajs.util.T3;
 
 import javajs.util.BS;
+
+import org.jmol.awtjs.Font;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 

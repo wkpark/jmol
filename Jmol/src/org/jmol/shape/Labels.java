@@ -24,6 +24,7 @@
 
 package org.jmol.shape;
 
+import org.jmol.awtjs.Font;
 import org.jmol.c.PAL;
 import javajs.util.BS;
 import org.jmol.modelset.Atom;
@@ -34,7 +35,6 @@ import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
 
-import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.P3;

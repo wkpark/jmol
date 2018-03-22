@@ -39,11 +39,11 @@ package org.jmol.awtjs2d;
 
 import javajs.api.GenericColor;
 import javajs.awt.Color;
-import javajs.awt.Font;
 import javajs.util.CU;
 
 
 import org.jmol.api.GenericGraphics;
+import org.jmol.awtjs.Font;
 
 /**
  * generic 2D drawing methods -- JavaScript version

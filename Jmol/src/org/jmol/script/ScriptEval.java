@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.awt.Font;
 import javajs.util.A4;
 import javajs.util.AU;
 import javajs.util.BArray;
@@ -51,6 +50,7 @@ import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
+import org.jmol.awtjs.Font;
 import org.jmol.c.PAL;
 import org.jmol.c.STR;
 import org.jmol.c.VDW;

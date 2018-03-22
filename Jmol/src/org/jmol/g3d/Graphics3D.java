@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.jmol.api.Interface;
 import org.jmol.api.JmolRendererInterface;
+import org.jmol.awtjs.Font;
 import org.jmol.c.STER;
 import org.jmol.modelset.Atom;
 import org.jmol.script.T;
@@ -38,7 +39,6 @@ import org.jmol.util.MeshSurface;
 import org.jmol.util.Normix;
 
 import javajs.api.GenericPlatform;
-import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.M3;
 import javajs.util.M4;

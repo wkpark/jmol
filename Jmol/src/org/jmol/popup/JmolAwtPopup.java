@@ -25,8 +25,8 @@ package org.jmol.popup;
 
 import java.awt.Component;
 
-import javajs.api.PlatformViewer;
-import javajs.api.SC;
+import javajs.awt.PlatformViewer;
+import javajs.awt.SC;
 
 import javax.swing.JPopupMenu;
 

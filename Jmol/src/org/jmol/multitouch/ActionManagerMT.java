@@ -25,7 +25,7 @@ package org.jmol.multitouch;
 
 import org.jmol.script.T;
 
-import javajs.api.GenericPlatform;
+import javajs.awt.GenericPlatform;
 import javajs.awt.event.Event;
 import javajs.util.Lst;
 

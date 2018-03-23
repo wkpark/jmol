@@ -27,10 +27,10 @@ package org.jmol.awtjs2d;
 
 import java.util.Map;
 
-import org.jmol.awtjs.Font;
 import org.jmol.viewer.Viewer;
 
-import javajs.api.GenericImageDialog;
+import javajs.awt.Font;
+import javajs.awt.GenericImageDialog;
 
 /**
  * methods required by Jmol that access java.awt.Image

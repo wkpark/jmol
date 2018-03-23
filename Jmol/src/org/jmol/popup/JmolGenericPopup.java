@@ -28,7 +28,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import javajs.api.SC;
+import javajs.awt.SC;
 import javajs.util.Lst;
 import javajs.util.PT;
 

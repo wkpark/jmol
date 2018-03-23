@@ -44,8 +44,8 @@ import java.awt.image.SinglePixelPackedSampleModel;
 import java.net.URL;
 import java.util.Map;
 
-import javajs.api.GenericImageDialog;
-import javajs.api.PlatformViewer;
+import javajs.awt.GenericImageDialog;
+import javajs.awt.PlatformViewer;
 import javajs.img.BMPDecoder;
 import javajs.util.AU;
 
@@ -157,7 +157,7 @@ class Image {
     return grabPixels(imageOffscreen, width, height, null, 0, 0);
   }
 
-  public static int[] getTextPixels(String text, org.jmol.awtjs.Font font3d, Object gObj,
+  public static int[] getTextPixels(String text, javajs.awt.Font font3d, Object gObj,
                                     Object image, int width, int height,
                                     int ascent) {
     Graphics g = (Graphics) gObj;

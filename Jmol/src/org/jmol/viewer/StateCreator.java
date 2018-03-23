@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.awt.Font;
 import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.PT;
@@ -37,7 +38,6 @@ import org.jmol.api.JmolDataManager;
 import org.jmol.api.JmolModulationSet;
 import org.jmol.api.JmolScriptFunction;
 import org.jmol.api.SymmetryInterface;
-import org.jmol.awtjs.Font;
 import org.jmol.c.PAL;
 import org.jmol.c.STR;
 import org.jmol.c.VDW;

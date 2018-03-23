@@ -27,7 +27,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javajs.api.GenericImageDialog;
+import javajs.awt.GenericImageDialog;
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.T3;

@@ -23,8 +23,8 @@
  */
 package org.jmol.popup;
 
-import javajs.api.GenericMenuInterface;
-import javajs.api.SC;
+import javajs.awt.GenericMenuInterface;
+import javajs.awt.SC;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

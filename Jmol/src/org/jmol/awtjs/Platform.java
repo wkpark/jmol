@@ -1,5 +1,7 @@
 package org.jmol.awtjs;
 
+import javajs.awt.Font;
+
 
 /**
  * 

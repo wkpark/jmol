@@ -1,6 +1,6 @@
 package org.jmol.script;
 
-import javajs.api.GenericPlatform;
+import javajs.awt.GenericPlatform;
 import javajs.util.PT;
 
 import org.jmol.api.JmolScriptEvaluator;

@@ -25,8 +25,9 @@
 package org.jmol.shape;
 
 
-import org.jmol.awtjs.Font;
 import org.jmol.i18n.GT;
+
+import javajs.awt.Font;
 import javajs.util.BS;
 
 

@@ -34,8 +34,8 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javajs.api.GenericPlatform;
 import javajs.api.GenericZipTools;
+import javajs.awt.GenericPlatform;
 import javajs.util.AU;
 import javajs.util.CompoundDocument;
 import javajs.util.Lst;

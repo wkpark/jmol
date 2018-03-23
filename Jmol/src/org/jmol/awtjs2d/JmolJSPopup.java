@@ -23,10 +23,11 @@
  */
 package org.jmol.awtjs2d;
 
-import javajs.api.PlatformViewer;
-import javajs.api.SC;
 import javajs.awt.Component;
-import javajs.swing.JPopupMenu;
+import javajs.awt.PlatformViewer;
+import javajs.awt.SC;
+
+import org.jmol.awtjs.swing.JPopupMenu;
 
 import org.jmol.i18n.GT;
 import org.jmol.popup.JSSwingPopupHelper;

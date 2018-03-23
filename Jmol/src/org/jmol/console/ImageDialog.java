@@ -24,7 +24,7 @@
 package org.jmol.console;
 
 
-import javajs.api.GenericImageDialog;
+import javajs.awt.GenericImageDialog;
 import javajs.util.PT;
 
 import javax.swing.JDialog;

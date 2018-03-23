@@ -23,7 +23,7 @@
  */
 package org.jmol.g3d;
 
-import javajs.api.GenericPlatform;
+import javajs.awt.GenericPlatform;
 
 /**
  *<p>

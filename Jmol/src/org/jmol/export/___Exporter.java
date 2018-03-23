@@ -28,6 +28,7 @@ package org.jmol.export;
 import java.util.Hashtable;
 import java.util.Map;
 
+import javajs.awt.Font;
 import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.Quat;
@@ -40,7 +41,6 @@ import javajs.util.T3;
 import javajs.util.V3;
 
 import org.jmol.api.JmolRendererInterface;
-import org.jmol.awtjs.Font;
 
 import javajs.util.BS;
 import org.jmol.modelset.Atom;

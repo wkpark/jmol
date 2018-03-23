@@ -26,8 +26,8 @@ package org.jmol.modelkit;
 import java.awt.Component;
 import java.net.URL;
 
-import javajs.api.PlatformViewer;
-import javajs.api.SC;
+import javajs.awt.PlatformViewer;
+import javajs.awt.SC;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;

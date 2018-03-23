@@ -6,8 +6,8 @@ import java.util.StringTokenizer;
 
 import org.jmol.util.Logger;
 
-import javajs.api.GenericMenuInterface;
-import javajs.api.SC;
+import javajs.awt.GenericMenuInterface;
+import javajs.awt.SC;
 import javajs.util.Lst;
 import javajs.util.PT;
 import javajs.util.SB;

@@ -24,8 +24,8 @@
 package org.jmol.viewer;
 
 import javajs.J2SRequireImport;
-import javajs.api.GenericPlatform;
-import javajs.api.EventManager;
+import javajs.awt.EventManager;
+import javajs.awt.GenericPlatform;
 import javajs.awt.event.Event;
 import javajs.util.AU;
 import javajs.util.PT;

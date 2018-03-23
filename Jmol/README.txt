@@ -5,6 +5,15 @@
      with features for chemicals, crystals, materials and biomolecules.
 ==============================================================================
 
+Note 3/23/2018: All Jmol Development is moving to GitHub. 
+
+https://github.com/BobHanson/Jmol-SwingJS
+
+Bob Hanson
+
+ 
+
+
 Jmol is an open-source molecule viewer and editor written in Java.
 
 Full information is available at http://www.jmol.org/
@@ -35,10 +44,6 @@ The GNU Lesser General Public License, under which Jmol is released.
 
 1.5 === CHANGES.txt ===
 A list with a history of the feature additions in each version of Jmol.
-
-1.6 === README-CHEMDOODLE.txt ===
-Instructions about using the ChemDoodle plug-in together with Jmol applets, 
-and about the license for ChemDoodle (which is different from the Jmol license).
 
 
 2 == Batch and shell files ==

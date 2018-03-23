@@ -25,8 +25,8 @@ package jspecview.java;
 
 import java.awt.Container;
 
-import javajs.api.PlatformViewer;
-import javajs.api.SC;
+import javajs.awt.PlatformViewer;
+import javajs.awt.SC;
 
 import javax.swing.JPopupMenu;
 

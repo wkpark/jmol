@@ -4,7 +4,7 @@ import java.io.OutputStream;
 
 import javajs.api.GenericColor;
 import javajs.api.GenericFileInterface;
-import javajs.api.GenericPlatform;
+import javajs.awt.GenericPlatform;
 import javajs.util.OC;
 
 

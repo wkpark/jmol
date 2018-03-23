@@ -12,11 +12,11 @@ import java.util.Date;
 import java.util.Map;
 
 import javajs.api.GenericFileInterface;
-import javajs.api.GenericImageDialog;
-import javajs.api.GenericMenuInterface;
-import javajs.api.GenericMouseInterface;
-import javajs.api.GenericPlatform;
-import javajs.api.PlatformViewer;
+import javajs.awt.GenericImageDialog;
+import javajs.awt.GenericMenuInterface;
+import javajs.awt.GenericMouseInterface;
+import javajs.awt.GenericPlatform;
+import javajs.awt.PlatformViewer;
 import javajs.awt.Font;
 import javajs.util.P3;
 import javajs.util.Rdr;

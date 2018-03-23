@@ -53,8 +53,8 @@ import java.io.OutputStream;
 
 import javajs.api.GenericColor;
 import javajs.api.GenericFileInterface;
-import javajs.api.GenericMouseInterface;
-import javajs.api.GenericPlatform;
+import javajs.awt.GenericMouseInterface;
+import javajs.awt.GenericPlatform;
 import javajs.awt.Font;
 import javajs.util.Lst;
 import javajs.util.OC;

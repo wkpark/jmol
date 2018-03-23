@@ -45,7 +45,7 @@ import java.util.Map.Entry;
 import javajs.api.GenericColor;
 import javajs.awt.Font;
 import javajs.awt.event.Event;
-import javajs.api.EventManager;
+import javajs.awt.EventManager;
 import javajs.util.CU;
 import javajs.util.Lst;
 

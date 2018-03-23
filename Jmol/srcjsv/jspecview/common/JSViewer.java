@@ -20,11 +20,14 @@ import javajs.util.P3;
 import javajs.util.SB;
 import javajs.api.BytePoster;
 import javajs.api.GenericFileInterface;
-import javajs.api.GenericPlatform;
-import javajs.api.PlatformViewer;
+import javajs.awt.Component;
+import javajs.awt.GenericPlatform;
+import javajs.awt.PlatformViewer;
 import javajs.awt.Dimension;
+import javajs.awt.SC;
 
 import org.jmol.api.GenericGraphics;
+import org.jmol.awtjs.swing.JPopupMenu;
 import org.jmol.util.Logger;
 
 import javajs.util.PT;
@@ -2190,6 +2193,14 @@ public class JSViewer implements PlatformViewer, BytePoster  {
 			selectedPanel.showMessage(s, "Help " + value);
 		}
 		System.out.println(s);		
+	}
+
+	public void menuShowPopup(SC popup, int x, int y, boolean isTainted) {
+    try {
+    	((JPopupMenu) popup).show(isTainted ? (Component) getApplet() : null, x, y);
+    } catch (Exception e) {
+      // ignore
+    }
 	}
 
 

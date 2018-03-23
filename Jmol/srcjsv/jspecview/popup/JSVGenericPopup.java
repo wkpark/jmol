@@ -26,7 +26,7 @@ package jspecview.popup;
 import org.jmol.popup.GenericSwingPopup;
 import org.jmol.popup.PopupResource;
 
-import javajs.api.SC;
+import javajs.awt.SC;
 import javajs.util.PT;
 
 import jspecview.api.JSVPanel;

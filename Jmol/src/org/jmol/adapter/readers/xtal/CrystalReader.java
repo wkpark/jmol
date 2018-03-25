@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.util.BS;
 import javajs.util.DF;
 import javajs.util.Lst;
 import javajs.util.M3;

@@ -563,13 +563,13 @@ public class CrystalReader extends AtomSetCollectionReader {
           line.substring(line.indexOf(" OR ") + 4).trim());
       return false;
     }
-    spaceGroupName = "P1";
-    if (!isPrimitive) {
-      discardLinesUntilContains2("SPACE GROUP", "****");
-      pt = line.indexOf(":");
-      if (pt >= 0)
-        spaceGroupName = line.substring(pt + 1).trim();
-    }
+    discardLinesUntilContains2("SPACE GROUP", "****");
+    pt = line.indexOf(":");
+    if (pt >= 0)
+      spaceGroupName = line.substring(pt + 1).trim();
+    //if (isPrimitive) {
+      //spaceGroupName += " (primitive)";
+    //}
     doApplySymmetry = isProperties;
     return !isProperties;
   }

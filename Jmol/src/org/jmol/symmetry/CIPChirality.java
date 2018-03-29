@@ -703,8 +703,7 @@ public class CIPChirality {
    */
   private void init() {
     ptIDLogger = 0;
-    //lstKekuleRings.clear();
-    //bsKekuleAmbiguous = null;
+    
   }
 
   CIPData data;
@@ -748,7 +747,10 @@ public class CIPChirality {
     bsAzacyclic = getAzacyclic(data.atoms, data.bsAtoms);
 
     BS bsToDo = BSUtil.copy(data.bsAtoms);
-    boolean haveAlkenes = preFilterAtomList(data.atoms, bsToDo);
+    boolean haveAlkenes = preFilterAtomList(data.atoms, bsToDo, data.bsEnes);
+    if (haveAlkenes) 
+      data.getEneKekule();
+    System.out.println("bsKekule:" + data.bsKekuleAmbiguous);
 
     // set atom chiralities
 
@@ -860,16 +862,23 @@ public class CIPChirality {
    * @param bsToDo
    * @return whether we have any alkenes that could be EZ
    */
-  private boolean preFilterAtomList(SimpleNode[] atoms, BS bsToDo) {
+  private boolean preFilterAtomList(SimpleNode[] atoms, BS bsToDo, BS bsEnes) {
     boolean haveAlkenes = false;
     for (int i = bsToDo.nextSetBit(0); i >= 0; i = bsToDo.nextSetBit(i + 1)) {
       if (!couldBeChiralAtom(atoms[i])) {
         bsToDo.clear(i);
         continue;
       }
-      if (!haveAlkenes && couldBeChiralAlkene(atoms[i], null) != UNDETERMINED)
-        // do Rule 3, and check for rings that in the end should force removal of E/Z designations
+      switch (couldBeChiralAlkene(atoms[i], null)) {
+      case UNDETERMINED:
+        break;
+      case STEREO_Z:
+        bsEnes.set(i);
+        //$FALL-THROUGH$
+      case STEREO_M:
         haveAlkenes = true;
+        break;
+      }
     }
     return haveAlkenes;
   }

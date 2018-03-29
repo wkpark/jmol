@@ -387,6 +387,13 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         bsSelected, JC.SMILES_TYPE_SMARTS);
   }
 
+  public int[][] getSmartsMap(String smarts, BS bsSelected) throws Exception {
+    if (bsSelected == null)
+      bsSelected = bsA();
+    return getSmilesMatcher().getCorrelationMaps(smarts, ms.at, ms.ac,
+        bsSelected, JC.SMILES_TYPE_SMARTS);
+  }
+
   @SuppressWarnings({ "unchecked", "null", "unused" })
   public void setOptions(Map<String, Object> info) {
     // can be deferred

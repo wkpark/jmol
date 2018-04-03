@@ -978,7 +978,7 @@ public class SmilesSearch extends JmolMolecule {
     // The atom has passed both the atom and the bond test.
     // Add this atom to the growing list.
 
-    if (Logger.debugging && !isRingCheck) {//&& !isSilent) {
+    if (Logger.debuggingHigh && !isRingCheck) {//&& !isSilent) {
       for (int i = 0; i <= atomNum; i++)
         Logger.debug("pattern atoms " + patternAtoms[i] + " "
             + patternAtoms[i].matchingComponent);
@@ -1717,7 +1717,7 @@ public class SmilesSearch extends JmolMolecule {
       // we co-opt atom.matchingAtom here
       // because this search will never actually be run
       SmilesAtom atom = atoms[ptAtom] = new SmilesAtom().setTopoAtom(sAtom.component, ptAtom,
-          sAtom.symbol, sAtom.getCharge());
+          sAtom.symbol, sAtom.getCharge(), i);
       atom.implicitHydrogenCount = n;
       if (isForMF)
         continue;
@@ -1754,7 +1754,7 @@ public class SmilesSearch extends JmolMolecule {
       atom.setBonds(bonds);
       while (--n >= 0) {
         SmilesAtom atomH = atoms[++ptAtom] = new SmilesAtom().setTopoAtom(atom.component,
-            ptAtom, "H", 0);
+            ptAtom, "H", 0, -1);
         atomH.mapIndex = -i - 1;
         atomH.setBonds(new SmilesBond[1]);
         SmilesBond b = new SmilesBond(atom, atomH, Edge.BOND_COVALENT_SINGLE,

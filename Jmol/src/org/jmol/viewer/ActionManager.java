@@ -1851,7 +1851,7 @@ public class ActionManager implements EventManager {
     case PICKING_INVERT_STEREO:
       if (bnd(clickAction, ACTION_assignNew)) {
         vwr.invertRingAt(atomIndex, true);
-        vwr.setStatusAtomPicked(atomIndex, "invert stereo for atomIndex=" + atomIndex, null, true);
+        vwr.setStatusAtomPicked(atomIndex, "invert stereo for atomIndex=" + atomIndex, null, false);
       }
       return;
     case PICKING_DELETE_ATOM:

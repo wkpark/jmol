@@ -1416,7 +1416,7 @@ public class MathExt {
               asMap = SV.bValue(args[2]);
               break;
             }
-            boolean justOne = (!asMap && (!allMappings || !isSMARTS));
+            boolean justOne = (!asMap && (!allMappings || !isSMARTS && !pattern.equals("chirality")));
             try {
               ret = e.getSmilesExt().getSmilesMatches(pattern, smiles, null,
                   null,

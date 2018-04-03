@@ -45,6 +45,7 @@ import javajs.awt.GenericMouseInterface;
 import javajs.awt.GenericPlatform;
 import javajs.awt.PlatformViewer;
 import javajs.util.AU;
+import javajs.util.BS;
 import javajs.util.CU;
 import javajs.util.DF;
 import javajs.util.JSJSONParser;
@@ -95,7 +96,6 @@ import org.jmol.c.STER;
 import org.jmol.c.STR;
 import org.jmol.c.VDW;
 import org.jmol.i18n.GT;
-import javajs.util.BS;
 import org.jmol.minimize.Minimizer;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
@@ -121,6 +121,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.GData;
 import org.jmol.util.JmolMolecule;
 import org.jmol.util.Logger;
+import org.jmol.util.Node;
 import org.jmol.util.Parser;
 import org.jmol.util.Rectangle;
 import org.jmol.util.TempArray;
@@ -385,6 +386,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       bsSelected = bsA();
     return getSmilesMatcher().getSubstructureSet(smarts, ms.at, ms.ac,
         bsSelected, JC.SMILES_TYPE_SMARTS);
+  }
+
+  public BS getSmartsMatchForNodes(String smarts, Node[] atoms) throws Exception {
+    return getSmilesMatcher().getSubstructureSet(smarts, atoms, atoms.length,
+        null, JC.SMILES_TYPE_SMARTS);
   }
 
   public int[][] getSmartsMap(String smarts, BS bsSelected) throws Exception {
@@ -7669,7 +7675,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       undoMoveActionClear(atomIndex, AtomCollection.TAINT_COORD, true);
     invertSelected(null, null, atomIndex, bs);
     if (isClick)
-      setStatusAtomPicked(atomIndex, "inverted: " + Escape.eBS(bs), null, true);
+      setStatusAtomPicked(atomIndex, "inverted: " + Escape.eBS(bs), null, false);
   }
 
   public void invertSelected(P3 pt, P4 plane, int iAtom, BS bsAtoms) {
@@ -9743,17 +9749,34 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return getSmilesMatcher().getSubstructureSetArray(pattern, ms.at, ms.ac, bsSelected, null, flags);
   }
 
+  public BS[] getSubstructureSetArrayForNodes(String pattern, Node[] nodes, int flags) throws Exception {
+    return getSmilesMatcher().getSubstructureSetArray(pattern, nodes, nodes.length, null, null, flags);
+  }
+
   public String getPdbID() {
     return (ms.getInfo(am.cmi, "isPDB") == Boolean.TRUE ? (String) ms.getInfo(am.cmi, "pdbID") : null);
   }
   
   /**
    * get a value from the current model's Model.auxiliaryInfo
+   * 
    * @param key
-   * @return value, or null if there is no SINGLE current model 
+   * @return value, or null if there is no SINGLE current model
    */
   public Object getModelInfo(String key) {
     return ms.getInfo(am.cmi, key);
+  }
+
+  public Node[] getSmilesAtoms(String smiles) throws Exception {
+    return getSmilesMatcher().getAtoms(smiles);
+  }
+
+  public String[] calculateChiralityForSmiles(String smiles) {
+    try {
+      return Interface.getSymmetry(this, "ms").calculateCIPChiralityForSmiles(this, smiles);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
 }

@@ -4161,5 +4161,6 @@ public class ModelSet extends BondCollection {
       s += at[i].getCIPChirality(false);
     return s;
   }
+
 }
 

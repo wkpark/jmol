@@ -5377,6 +5377,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       // nciCalculation special params.testFlag = 2 "absolute" calc.
       // GIF reducedColors
       // plugin-in use variable
+      // skip CIPChirality tracking
       return g.testFlag2;
     case T.testflag3:
       // isosurface numbers

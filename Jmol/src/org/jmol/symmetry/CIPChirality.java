@@ -1575,7 +1575,7 @@ public class CIPChirality {
         bsPath.set(atomIndex);
         htPathPoints.put(Integer.valueOf(atomIndex), Integer.valueOf(rootDistance));
       }
-      if (Logger.debugging) {
+      if (doTrack) {
         if (sphere < MAX_PATH) // Logger
           myPath = (parent != null ? parent.myPath + "-" : "") + this; // Logger
         if (Logger.debuggingHigh)

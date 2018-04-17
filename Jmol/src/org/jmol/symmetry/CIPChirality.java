@@ -89,6 +89,9 @@ import org.jmol.viewer.JC;
  * 
  * - reports atom descriptor along with the rule that ultimately decided it
  * 
+ * - fills _M.CIPInfo with detailed information about how each ligand was decided
+ *   (feature turned off by set testflag2)
+ * 
  * Primary 236-compound Chapter-9 validation set (AY-236) provided by Andrey
  * Yerin, ACD/Labs (Moscow).
  * 

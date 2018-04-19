@@ -75,12 +75,15 @@ public final class JC {
 
   public static String getCIPChiralityName(int flags) {
     switch (flags) {
+    // going with ACD Labs idea E/Z and e/z, where e/z is the special case -- NOT pseudochiral 
     case CIP_CHIRALITY_seqcis_FLAG:
-    case CIP_CHIRALITY_seqCis_FLAG:
       return "Z";
+    case CIP_CHIRALITY_seqCis_FLAG:
+      return "z";
     case CIP_CHIRALITY_seqtrans_FLAG:
-    case CIP_CHIRALITY_seqTrans_FLAG:
       return "E";
+    case CIP_CHIRALITY_seqTrans_FLAG:
+      return "e";
     case CIP_CHIRALITY_M_FLAG:
       return "M";
     case CIP_CHIRALITY_P_FLAG:
@@ -115,8 +118,12 @@ public final class JC {
     switch (c) {
     case 'Z':
       return CIP_CHIRALITY_seqcis_FLAG;
+    case 'z':
+      return CIP_CHIRALITY_seqCis_FLAG;
     case 'E':
       return CIP_CHIRALITY_seqtrans_FLAG;
+    case 'e':
+      return CIP_CHIRALITY_seqTrans_FLAG;
     case 'R':
       return CIP_CHIRALITY_R_FLAG;
     case 'S':

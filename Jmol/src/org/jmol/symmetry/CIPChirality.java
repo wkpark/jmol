@@ -1091,7 +1091,7 @@ public class CIPChirality {
     if (c != NO_CHIRALITY
         && (isAxial || !data.bsAtropisomeric.get(a.getIndex())
             && !data.bsAtropisomeric.get(b.getIndex()))) {
-      if (isAxial && ((ruleA >= RULE_5) != (ruleB >= RULE_5))) {
+      if (isAxial == ((ruleA >= RULE_5) != (ruleB >= RULE_5))) {
         // only one of the ends may be enantiomeric to make this m or p 
         // see AY236.70 and AY236.170
         //
@@ -1114,9 +1114,11 @@ public class CIPChirality {
         //
         // planar flip is unchanged; also m/p
         // 
-
         c |= JC.CIP_CHIRALITY_PSEUDO_FLAG;
-      } 
+      } else if (!isAxial) {
+        c ^= JC.CIP_CHIRALITY_PSEUDO_FLAG;          
+      }
+    
       // could check here for nonaxial enes, but we do not do that in Jmol 
       // - if neither or both of the ends are enantiomeric,
       // this is seqcis or seqtrans, otherwise secCis, seqTrans 

@@ -1416,7 +1416,7 @@ public class Atom extends Point3fi implements Node {
       flags = group.chain.model.ms.getAtomCIPChiralityCode(this);
       formalChargeAndFlags |= ((flags == 0 ? JC.CIP_CHIRALITY_NONE : flags) << CIP_CHIRALITY_OFFSET);
     }
-    return (JC.getCIPChiralityName(flags));
+    return JC.getCIPChiralityName(flags);
   }
 
   public String getCIPChiralityRule() {

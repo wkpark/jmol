@@ -2357,6 +2357,10 @@ public class CIPChirality {
       int score = (best == null ? IGNORE : best == bsA ? A_WINS : B_WINS);
       if (best != null) {
         if (currentRule == RULE_5) {
+          // this is our check for self-enantiomorphic ligands
+          // if the two ligands are each self-enatiomorphic (first chiral sphere r,s only, no R,S),
+          // then we need to switch to R/S mode.
+          // This is tested as (A(R) > B(R)) == (A(S) > B(S))
           if ((compareLikeUnlike(listRS[STEREO_S], b.listRS[STEREO_S]) == listRS[STEREO_S])
               == (best == bsA))
           parent.isRule5Pseudo = !parent.isRule5Pseudo;
@@ -2388,8 +2392,7 @@ public class CIPChirality {
         return listRS[currentRule == RULE_5 ? STEREO_R : 0];
       BS bs;
       listRS = new BS[] { null, bs = rank4bAndRead(null), rank4bAndRead(bs)};
-      if (true || Logger.debuggingHigh)
-        Logger.info("getBest " + currentRule + " " + this + " " + listRS[STEREO_R] + listRS[STEREO_S] + " " + myPath);      
+      Logger.info("getBest " + currentRule + " " + this + " " + listRS[STEREO_R] + listRS[STEREO_S] + " " + myPath);      
       bs = compareLikeUnlike(listRS[STEREO_R], listRS[STEREO_S]);
       return listRS[0] = (currentRule == RULE_5 || bs == null ? listRS[STEREO_R] : bs);
     }

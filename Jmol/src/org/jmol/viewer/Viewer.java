@@ -8727,7 +8727,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (addHydrogen)
       bsSelected.or(addHydrogens(bsSelected, isLoad2D, isSilent));
 
-    if (bsSelected.cardinality() > JC.MINIMIZATION_ATOM_MAX) {
+    if (ff.equals("MMFF") && bsSelected.cardinality() > JC.MINIMIZATION_ATOM_MAX) {
       Logger.error("Too many atoms for minimization (>"
           + JC.MINIMIZATION_ATOM_MAX + ")");
       return;

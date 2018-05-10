@@ -800,8 +800,9 @@ public class ActionManager implements EventManager {
       break;
     }
     int action = Binding.LEFT | Binding.SINGLE | Binding.DRAG | moved.modifiers;
-    if (!labelMode && !b.isUserAction(action))
+    if (!labelMode && !b.isUserAction(action)) {
       checkMotionRotateZoom(action, current.x, 0, 0, false);
+    }
     if (vwr.getBoolean(T.navigationmode)) {
       // if (vwr.getBooleanProperty("showKeyStrokes", false))
       // vwr.evalStringQuiet("!set echo bottom left;echo "

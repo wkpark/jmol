@@ -127,6 +127,8 @@ import org.jmol.util.Rectangle;
 import org.jmol.util.TempArray;
 import org.jmol.util.Triangulator;
 import org.jmol.viewer.binding.Binding;
+
+import com.sun.glass.ui.Cursor;
 /*
  * 
  * ****************************************************************
@@ -4260,8 +4262,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (!hoverEnabled)
       return;
     if (g.modelKitMode) {
-      if (ms.isAtomAssignable(atomIndex))
+      if (ms.isAtomAssignable(atomIndex)) {
         highlight(BSUtil.newAndSetBit(atomIndex));
+      }
       refresh(REFRESH_SYNC_MASK, "hover on atom");
       return;
     }
@@ -4308,8 +4311,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   void hoverOff() {
     try {
-      if (g.modelKitMode)
-        highlight(null);
+      if (g.modelKitMode) {
+       highlight(null);
+      }
       if (!hoverEnabled)
         return;
       boolean isHover = (hoverText != null || hoverAtomIndex >= 0);
@@ -7781,9 +7785,16 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     refresh(REFRESH_SYNC_MASK, "highlightBond");
   }
 
+  public int atomHighlighted = -1;
+  
   public void highlight(BS bs) {
-    if (bs != null)
+    atomHighlighted = (bs != null && bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
+    if (bs == null) {
+      setCursor(Cursor.CURSOR_DEFAULT);
+    } else {
       shm.loadShape(JC.SHAPE_HALOS);
+      setCursor(Cursor.CURSOR_POINTING_HAND);
+    }
     setShapeProperty(JC.SHAPE_HALOS, "highlight", bs);
   }
 
@@ -9777,6 +9788,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return Interface.getSymmetry(this, "ms").calculateCIPChiralityForSmiles(this, smiles);
     } catch (Exception e) {
       return null;
+    }
+  }
+
+  public void assignAtom(int atomIndex, String element) {
+    if (atomIndex < 0)
+      atomIndex = atomHighlighted;
+    if (ms.isAtomAssignable(atomIndex)) {
+      script("assign atom ({" + atomIndex + "}) \"" + element + "\""); 
     }
   }
 

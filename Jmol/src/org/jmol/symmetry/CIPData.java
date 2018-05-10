@@ -20,24 +20,15 @@ import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 
 public class CIPData {
-
-
   
   /**
    * measure of planarity in a trigonal system, in Angstroms
    * 
    */
   static final float TRIGONALITY_MIN = 0.2f;
-
-
   
   Viewer vwr;
   
-  /**
-   * also set auxiliary (single-atom only)
-   */
-  boolean setAuxiliary;
-
   /**
    * bit set of all biphenyl-like connections
    */
@@ -102,6 +93,8 @@ public class CIPData {
 
   BS bsAzacyclic;
   
+  public boolean testRule6New;
+  
   public CIPData() {
   }
 
@@ -115,7 +108,7 @@ public class CIPData {
   }
   
   protected void init() {
-    setAuxiliary = vwr.getBoolean(T.testflag1);
+    testRule6New = vwr.getBoolean(T.testflag1);
     try {
       // four ortho groups required:      bsAtropisomer = match("[!H](.t3:-20,20)a1(.t3).[!H](.t1:-20,20)a(.t1)a1(.t1)(.t2:-20,20)(.t3)(.t4:-20,20)-{a}2(.t1)(.t2)(.t3)(.t4)a(.t2)[!H](.t2).a2(.t4)[!H](.t4)", bsAtoms);
       // three ortho groups required:     bsAtropisomer = match("[!H](.t3:-20,20)a1(.t3).[!H](.t1:-20,20)a(.t1){a}1(.t1)(.t2:-20,20)(.t3)-{a}(.t1)(.t2)(.t3)a(.t2)[!H](.t2)", bsAtoms);
@@ -420,6 +413,7 @@ public class CIPData {
   // temporary fields
 
   protected V3 vNorm = new V3(), vTemp = new V3();
+
 
 //  public boolean canBeChiralBond(SimpleEdge bond) {
 //    return !htKekuleBonds.containsKey(Integer.valueOf(bond.hashCode()));

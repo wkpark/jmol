@@ -48,6 +48,11 @@ import org.jmol.viewer.JC;
  * https://iupac.org/projects/project-details/?project_nr=2001-043-1-800
  * http://www.sbcs.qmul.ac.uk/iupac/bibliog/BBerrors.html
  * 
+ * Settable options:
+ * 
+ * set testflag1    use advanced in/out-sensitive Rule 6 (r,r-bicyclo[2.2.2]octane)
+ * set testflag2    turn off tracking (saving of _M.CIPInfo) for speed 
+ * 
  * Features include:
  * 
  * - deeply validated
@@ -92,6 +97,9 @@ import org.jmol.viewer.JC;
  * 
  * - fills _M.CIPInfo with detailed information about how each ligand was decided
  *   (feature turned off by set testflag2)
+ * 
+ * - generates advanced Rule 6 descriptors for cubane and the like. (Generally 'r')
+ *   using set testflag1
  * 
  * Primary 236-compound Chapter-9 validation set (AY-236) provided by Andrey
  * Yerin, ACD/Labs (Moscow).
@@ -146,7 +154,10 @@ import org.jmol.viewer.JC;
  * 
  * code history:
  *
+ * 5/9/18 Jmol 14.29.14 fixes minor Rule 5 bug and adds advanced Rule 6 in/out testflag1 option (900 lines)  
+ *  
  * 5/1/18  Jmol 14.29.14 fixes enantiomorphic Rule 5 R/S check for BH64_85
+ * 
  * 4/25/18 Jmol 14.29.14 fixes spiroallene Rule 6 issue for BH64_84
  * 
  * 4/23/18 Jmol 14.29.14 fixes Rule 2 for JM_008, involving mass and duplicates (824 lines)
@@ -389,19 +400,19 @@ public class CIPChirality {
   //
   // Some nuances I've learned along the way here, some of which are still being checked:
   //
-  // 1. Rule 1a had to be revised to account for Kekule bias using averaging 
-  // 2. Rule 1b had to be revised to account for Kekule bias (AY-236.215). Note that this 
+  // 1. Rule 1a Had to be revised to account for Kekule bias using averaging. 
+  // 2. Rule 1b Had to be revised to account for Kekule bias (AY-236.215). Note that this 
   //            rule may only be applied AFTER Rule 1a has been applied exhaustively. In  
   //            my mind it deserves its own number for this reason. See AY-236.53, 
   //            (1S,5R)-bicyclo[3.1.0]hex-2-ene, for example.
   // 3. Rule 2  This rule is simple to implement; must be executed only for ties from 1a and 1b.  
-  // 4. Rule 3  requires the concept of "auxiliary" (temporary, digraph-specific) descriptors.
+  // 4. Rule 3  Requires the concept of "auxiliary" (temporary, digraph-specific) descriptors.
+  //            This involves the initial generation of all auxiliary descriptors, including r/s and R/S at
+  //            branching points. In the course of doing this, all rules, 1-6, must be employed
+  //            at these auxiliary centers using the already-created digraph.   
   //            This concept of auxiliary descriptors is the key to not having an analysis
   //            blow up or somehow require complex, impossible iteration.
-  // 5. Rule 4a needs to be addressed exhaustively prior to Rules 4b and 4c. This involves
-  //            the initial generation of all auxiliary descriptors, including r/s and R/S at
-  //            branching points. In the course of doing this, all rules, 1-5, must be employed
-  //            at these auxiliary centers using the already-created digraph. This rule serves to
+  // 5. Rule 4a needs to be addressed exhaustively prior to Rules 4b and 4c. This rule serves to
   //            avoid the need for Rule 4b for all except the most unusual cases, where, for example,
   //            there are two otherwise identical branches, but one can be identified as S and the
   //            other only r or no-stereo, but not R. Thus, only branches that end up as R/R, R/S, S/S,
@@ -415,7 +426,11 @@ public class CIPChirality {
   // 7. Rule 4c Again, this subrule must be invoked only after Rule 4b is completed.
   // 8. Rule 5  Final setting of pseudoasymmetry (r/s, m/p) is done along the same line as Rule 4b,
   //            but in this case by setting the reference descriptor to "R" for both sequences.
-  // 9. Rule 6  This new rule takes care of all spiro and high-symmetry cases.  
+  //            The S-reference must also be checked to see if these are self-enantiomorphic ligands.
+  // 9. Rule 6  This new rule takes care of all spiro and high-symmetry cases. An optional  
+  //            "advanced in/out" version assigns 'r' to bridgehead carbons of bicyclo[2.2.2]octane,
+  //            adamantane, tetrahedrane, cubane, and like-topology compounds, and 's' if a stereocenter
+  //            is pointing "in" instead of "out". 
 
   /**
    * The basic idea is to switch from a tree metaphor to a "twisted strand" or
@@ -654,7 +669,6 @@ public class CIPChirality {
   int ptIDLogger;
 
   boolean havePseudoAuxiliary;
-
   
   public CIPChirality() {
     // for reflection
@@ -919,7 +933,7 @@ public class CIPChirality {
    * @return if and E/Z test, [0:none, 1: atoms[0] is higher, 2: atoms[1] is
    *         higher] otherwise [0:none, 1:R, 2:S]
    */
-  private int getAtomChiralityLimited(SimpleNode atom, CIPAtom cipAtom,
+  int getAtomChiralityLimited(SimpleNode atom, CIPAtom cipAtom,
                                       SimpleNode parentAtom) {
     int rs = NO_CHIRALITY;
     bsNeedRule.clearAll();
@@ -932,8 +946,8 @@ public class CIPChirality {
         cipAtom.htPathPoints = (cipAtom.parent = new CIPAtom().create(
             parentAtom, null, true, false, false)).htPathPoints;
       } else {
-        if (!(root = cipAtom = new CIPAtom().create(atom, null, false, false,
-            false)).isSP3) {
+        if (!(root = cipAtom = (cipAtom == null ? new CIPAtom().create(atom, null, false, false,
+            false) : cipAtom)).isSP3) {
           // This is a root-atom call. 
           // Just checking here that center has 4 covalent bonds or is trigonal pyramidal.
           return NO_CHIRALITY;
@@ -946,6 +960,10 @@ public class CIPChirality {
           //                + " CIPChirality for " + cipAtom + "-----"); // Logger
           int nPrioritiesPrev = cipAtom.nPriorities;
           switch (currentRule) {
+          case RULE_2:
+            if (cipAtom.rule6refIndex >= 0)
+              bsNeedRule.set(RULE_2);
+            break;
           case RULE_3:
             // We need to create auxiliary descriptors PRIOR to Rule 3, 
             // as seqcis and seqtrans are auxiliary only
@@ -981,7 +999,7 @@ public class CIPChirality {
           case RULE_6:
             // We only need to do Rule 6 under certain conditions.
             bsNeedRule.setBitTo(RULE_6,
-                ((rs = cipAtom.setupRule6(false)) != NO_CHIRALITY));
+                (cipAtom.rule6refIndex < 0 && (rs = cipAtom.setupRule6(false)) != NO_CHIRALITY));
             break;
           }
           if (!bsNeedRule.get(currentRule))
@@ -1217,6 +1235,30 @@ public class CIPChirality {
         end1, end2, winner2) : data.isCis(winner1, end1, end2, winner2));
   }
 
+  class CIPPriority implements Comparable<CIPPriority> {
+
+    private String priorityString;
+    int descriptor;
+    private int sphere;
+    
+    CIPPriority(String priorityString, int descriptor) {
+     this.priorityString = priorityString;
+     sphere = priorityString.length();
+      this.descriptor = descriptor;
+    }
+    
+    @Override
+    public int compareTo(CIPPriority o) {
+      return (sphere < o.sphere ? -1 : sphere > o.sphere ? 1 : priorityString
+          .compareTo(o.priorityString));
+    }
+    
+    @Override
+    public String toString() {
+      return descriptor + " " + priorityString;
+    }
+  }
+  
   class CIPAtom implements Comparable<CIPAtom>, Cloneable {
 
     /**
@@ -1288,7 +1330,7 @@ public class CIPChirality {
      * updating lstSmallRings
      * 
      */
-    int atomIndex;
+    int atomIndex = -1;
 
     /**
      * true atom covalent bond count; cached for better performance
@@ -1497,6 +1539,8 @@ public class CIPChirality {
      */
     int rule6refIndex = -1;
 
+    private BS bsSubs;
+
      CIPAtom() {
       // had a problem in JavaScript that the constructor of an inner function cannot
       // access this.b$ yet. That assignment is made after construction.
@@ -1528,10 +1572,21 @@ public class CIPChirality {
       return (atoms[0].isDuplicate ? 2 : 1);
     }
 
+    /**
+     * The original Rule 6 implementation; allows 
+     * cubane, tetrahedrane, and bicyclo[2.2.2]octane to be ns. 
+     * 
+     * 
+     * @param isAux
+     * 
+     * @return NO_CHIRALITY or descriptor
+     */
     int setupRule6(boolean isAux) {
       if (nPriorities > 2
           || (isAux ? countDuplicates(atomIndex) : nRootDuplicates) <= 2)
         return NO_CHIRALITY;
+      if (data.testRule6New)
+        return setupRule6New();
       // we have more than two root-duplicates and priorities array is one of:
       // [0 0 0 0] CIP Helv Chim. Acta 1966 #33 -- double spiran
       // [0 0 0 0] CIP 1982 S4
@@ -1544,6 +1599,7 @@ public class CIPChirality {
       // we need to presort again
       if (checkS4)
         saveRestorePriorities(false);
+      root.bsSubs = new BS();
       sortSubstituents(Integer.MIN_VALUE);
       if (!sortSubstituents(0))
         return NO_CHIRALITY;
@@ -1562,6 +1618,63 @@ public class CIPChirality {
       int rs1 = data.checkHandedness(this);
       //System.out.println("Rule 6 S4  gives " + rs + " " + rs1);
       return rs1 == rs ? rs : NO_CHIRALITY;
+    }
+
+
+    /**
+     * New Rule 6 implementation for cubane rrrrrrrr
+     * 
+     * @return descriptor
+     */
+    private int setupRule6New() {
+      // we have more than two root-duplicates and priorities array is one of:
+      // [0 0 0 0] CIP Helv Chim. Acta 1966 #33 -- double spiran
+      // [0 0 0 0] CIP 1982 S4
+      // [0 0 2 2] P-93.5.3.2 spiro
+      // [0 1 1 1] or [0 0 0 3] CIP Helv. Chim. Acta 1966 #32 -- C3-symmetric
+      int i1 = (priorities[0] == priorities[1] ? 0 : 1);
+      int i2 = (priorities[2] != priorities[3] ? 3 : 4);
+      int istep = (priorities[2] == priorities[1] ? 1 : 2);
+      int rsRM = 0, rsSP = 0;
+      BS bsSubs = new BS();
+      for (int i = i1; i < i2; i++)
+        bsSubs.set(atoms[i].atomIndex);
+      if (nPriorities == 1)
+        i2 = 2; // actually, we only want two for double spiran or S4
+      
+      // Check result of promoting each undifferentiated ligand.
+      // Exit if two R or two S are found
+      //  
+      
+      for (int i = i1; i < i2; i += istep) {
+        CIPAtom cipAtom = new CIPAtom().create(atom, null, false, false, false);
+        cipAtom.setNode();
+        for (int j = 0; j < 4; j++) {
+          cipAtom.atoms[j] = (CIPAtom) atoms[j].clone();
+          cipAtom.priorities[j] = priorities[j];
+        }
+        cipAtom.rule6refIndex = atoms[i].atomIndex;
+        cipAtom.bsSubs = bsSubs;
+        int rs = getAtomChiralityLimited(atom, cipAtom, null);
+        currentRule = RULE_6;
+        if (rs == NO_CHIRALITY)
+          continue;
+        if ((rs & JC.CIP_CHIRALITY_PSEUDO_FLAG) == 0) {
+          // If it is not r/s, check for more than one R or S
+          if (rs == STEREO_R || rs == STEREO_M) {
+            if (rsRM == 0) {
+              rsRM = rs;
+              continue;
+            }
+          } else if (rsSP == 0) {
+            rsSP = rs;
+            continue;
+          }
+        }
+        atoms = cipAtom.newAtoms;
+        return rs;
+      }
+      return NO_CHIRALITY;
     }
 
     private void saveRestorePriorities(boolean isRestore) {
@@ -2001,12 +2114,9 @@ public class CIPChirality {
         if (a.atom != null)
           bsTemp.set(p);
         if (currentRule == RULE_RS) {
-//          if (!isRule5RSPermanent)
             continue;
         } 
-        //else {
-          a.cipPriority = p;
-        //}
+        a.cipPriority = p;
         priorities[pt] = p;
       }
 
@@ -2073,6 +2183,7 @@ public class CIPChirality {
                 || isDuplicate && b.isDuplicate)
           break;
 
+        
         // We are done if one of these is terminal 
         // (for the next sphere, unless one is a duplicate -- Custer Rule 1b "duplicate > nonduplicate").
 
@@ -2172,7 +2283,7 @@ public class CIPChirality {
     public int compareTo(CIPAtom b) {
       int score;
       if (currentRule == RULE_RS) {
-         return ((score = compareRule4bRef(b)) != TIED ? score : 
+         return ((score = compareRuleRS(b)) != TIED ? score : 
            (score = breakTie(b, sphere)) < 0 ? A_WINS : score == TIED ? TIED : B_WINS);
       }
       return (b == null ? A_WINS
@@ -2230,7 +2341,7 @@ public class CIPChirality {
         // can be terminal when we are checking the two groups on an alkene end
         return (isTerminal || b.isTerminal ? TIED : compareRule4b5(b));    
       case RULE_RS:
-        return compareRule4bRef(b);
+        return compareRuleRS(b);
       case RULE_4c:
         return compareRules4ac(b, " s r p m");
       case RULE_6:
@@ -2284,15 +2395,22 @@ public class CIPChirality {
 
     /**
      * Chapter 9 Rule 2. atomic mass, with possible reversal due to use of mass
-     * numbers
+     * numbers. Also checks for temporary Rule 6 promotion
+		 * for augmented Rule 6 (rrrrrrrr cubane)
      * 
      * @param b
      * @return 0 (TIED), -1 (A_WINS), or 1 (B_WINS)
      */
     private int compareRule2(CIPAtom b) {
-      return (getMass() == b.getMass() ? TIED
-          : mass > b.mass ? A_WINS : B_WINS);
-}
+      return (atomIndex == b.atomIndex? TIED : getMass() > b.getMass() ? A_WINS
+          : mass < b.mass ? B_WINS
+              : root.rule6refIndex < 0 ? TIED 
+              : !root.bsSubs.get(atomIndex) 
+              || !root.bsSubs.get(b.atomIndex) ?
+                  TIED
+              : 
+                root.rule6refIndex == atomIndex ? A_WINS : root.rule6refIndex == b.atomIndex ? B_WINS : TIED);
+    }
 
     /**
      * Chapter 9 Rule 3. E/Z.
@@ -2338,7 +2456,9 @@ public class CIPChirality {
      * @param b
      * @return A_WINS, B_WINS, or TIED
      */
-    private int compareRule4bRef(CIPAtom b) {
+    private int compareRuleRS(CIPAtom b) {
+      if (b == null)
+        return A_WINS; // can happen in Rule 6?  AY236_184
       rule4bRefSorted = b.rule4bRefSorted = root.rule4Ref;
       return rule4Type == b.rule4Type ? TIED
           : rule4Type == root.rule4Ref ? A_WINS : B_WINS;
@@ -2408,7 +2528,7 @@ public class CIPChirality {
     }
 
     /**
-     * A queue-based sphere-ordered implementation that 
+     * A thread-based sphere-ordered implementation that 
      * takes into account that lists cross the boundaries of branches.
      * 
      * @param bsR
@@ -2419,91 +2539,71 @@ public class CIPChirality {
       boolean isS = (bsR != null);
       int ref = (isS ? STEREO_S : STEREO_R);
       BS list = new BS();
+      Lst<CIPPriority> threads = new Lst<CIPPriority>();
       root.rule4Ref = ref;
       boolean isRule5 = (currentRule == RULE_5);
       currentRule = RULE_RS;
-//      isRule5RSPermanent = (!isS && currentRule == RULE_5 && TESTING_RULE_5_PERMANENCE);
-//      if (isRule5RSPermanent) {
-//        sortSubstituents(0);
-//        isRule5RSPermanent = false;
-//      }
-      if (rule4Type == NO_CHIRALITY || rule4Type == ref) {
-        if (rule4Type == ref)
-          list.set(0);
-        String lastPrior = null;
-        int nrs = (rule4Type == NO_CHIRALITY ? 0 : 1);
-        // We construct a temporary queue of all nodes that are equivalent,
-        // rankings after previous rules (4a or 4c), regardless of which branch they come from.
-        Lst<CIPAtom> temp = new Lst<CIPAtom>(); 
-        Lst<CIPAtom> q = new Lst<CIPAtom>();
-        q.addLast(this);
-        while (q.size() != 0) {
-          // Process this list breadth-first, across all atoms sphere by sphere
-          // and ranking by ranking. 
-          CIPAtom next = q.removeItemAt(0);
-          CIPAtom[] atoms = next.newAtoms;
-          if (atoms == null)
-            atoms = next.atoms;
-          if (atoms != null) {
-            for (int i = 0; i < 4; i++) {
-              CIPAtom ai = atoms[i];
-              if (ai == null || ai.atom == null || ai.isTerminal
-                  || ai.isDuplicate)
-                continue;
-              if (ai.rule4Type == 0) {
-                q.addLast(ai);
-                continue;
-              }
-              if (ai.rule4bRefSorted != ref)
-                ai.sortSubstituents(0);
-              String prior = ai.getPriorityString();
-              if (temp.isEmpty() || prior.equals(lastPrior)) {
-                temp.addLast(ai);
-              } else {
-                nrs = processTempQueue(temp, q, nrs, list, ref, isRule5);
-                if (nrs < 0)
-                  break;
-              }
-              lastPrior = prior;
-            }
-            if (!temp.isEmpty())
-              nrs = processTempQueue(temp, q, nrs, list, ref, isRule5);
-            if (nrs < 0)
-              break;
-          }
-        }
+      addPriorityThreads(threads, ref);
+      Collections.sort(threads);
+      for (int i = 0, n = threads.size(); i < n; i++) {
+        if (Logger.debugging)
+          Logger.info("" + ref + " " + this + " " + threads.get(i).toString());
+        if (threads.get(i).descriptor == ref)
+          list.set(i);
       }
       currentRule = (isRule5 ? RULE_5 : RULE_4b);
       return list;
     }
 
-    private int processTempQueue(Lst<CIPAtom> temp, Lst<CIPAtom> q, int nrs,
-                                 BS list, int ref, boolean isRule5) {
-      int n = temp.size();
-      if (n > 1)
-        Collections.sort(temp);
-      for (int i = 0; i < n; i++) {
-        CIPAtom ai = temp.get(i);
-        q.addLast(ai);
-        if (ai.rule4Type == ref) {
-          // "l"
-          list.set(nrs);
-        } else if (nrs == 0 && !isRule5) {// || false && isS && bsR.get(nrs)) { // nicer to have a full listing
-          // "u"
-          // Note that if this is the first descriptor and it does not match the ref,
-          // then we can exit, because that will never win in R or S check.
-          // In addition, if we already have the reference, we are building the S-ref
-          // list, and we just found a "u" that does not match the R list. In that case, 
-          // we exit, since we have just found "the first difference" in like/unlike
-          // descriptors, and, because of that, we know for a fact it has already lost.
-          nrs = -1;
-          break;
-        }
-        nrs++;
+    /**
+     * Create a list of priorities 01011101... that allows the list of 
+     * descriptors to be generated in order.  
+     *  
+     * @param threads
+     * @param ref
+     */
+    private void addPriorityThreads(Lst<CIPPriority> threads, int ref) {
+      if (atom == null || isTerminal || isDuplicate)
+        return;
+      if (rule4Type != 0)
+        threads.addLast(new CIPPriority(getPriorityString(), rule4Type));
+      if (rule4bRefSorted != ref) {
+        rule4bRefSorted = ref;
+        sortSubstituents(0);
       }
-      temp.clear();
-      return nrs;
+      for (int i = 0; i < 4; i++)
+        if (newAtoms[i] != null)
+          newAtoms[i].addPriorityThreads(threads, ref);
     }
+
+//    private int processTempQueue(Lst<CIPAtom> temp, Lst<CIPAtom> q, int nrs,
+//                                 BS list, int ref, boolean isRule5) {
+//      int n = temp.size();
+//      if (n > 1)
+//        Collections.sort(temp);
+//      for (int i = 0; i < n; i++) {
+//        CIPAtom ai = temp.get(i);
+//        System.out.println("q adding " + ai);
+//        q.addLast(ai);
+//        if (ai.rule4Type == ref) {
+//          // "l"
+//          list.set(nrs);
+//        } else if (nrs == 0 && !isRule5) {// || false && isS && bsR.get(nrs)) { // nicer to have a full listing
+//          // "u"
+//          // Note that if this is the first descriptor and it does not match the ref,
+//          // then we can exit, because that will never win in R or S check.
+//          // In addition, if we already have the reference, we are building the S-ref
+//          // list, and we just found a "u" that does not match the R list. In that case, 
+//          // we exit, since we have just found "the first difference" in like/unlike
+//          // descriptors, and, because of that, we know for a fact it has already lost.
+//          nrs = -1;
+//          break;
+//        }
+//        nrs++;
+//      }
+//      temp.clear();
+//      return nrs;
+//    }
 
     /**
      * Produce a simple string that gives the current ranking of the node
@@ -2515,8 +2615,10 @@ public class CIPChirality {
     private String getPriorityString() {
       String s = "";
       CIPAtom a = this;
-      while ((a = a.parent) != null)
-        s = a.cipPriority + s;
+      while (a != null) {
+        s = "" + a.cipPriority + (a.rule4Type == 0 ? 3 : a.rule4Type == root.rule4Ref ? 1 : 2) + "." + s;
+        a = a.parent;
+      }
       return s;
     }
 
@@ -2771,8 +2873,9 @@ public class CIPChirality {
         CIPAtom atom1 = (CIPAtom) clone();
         if (atom1.setNode()) {
           atom1.addReturnPath(null, this);
-          int rule = RULE_1a;
-          for (; rule <= RULE_6; rule++)
+          int rule = RULE_1a; 
+          for (; rule <= RULE_6; rule++) 
+            // two C3 groups....
             if ((!skipRules4And5 || rule < RULE_4a || rule > RULE_5)
                 && atom1.auxSort(rule))
               break;

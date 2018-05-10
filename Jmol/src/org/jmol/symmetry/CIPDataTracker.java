@@ -72,7 +72,7 @@ public class CIPDataTracker extends CIPData {
   void track(CIPChirality cip, CIPAtom a, CIPAtom b, int sphere,
              int finalScore, int mode) {
     // don't track intra-ligand setting
-    if (a.rootSubstituent == b.rootSubstituent)
+    if (a == null  || b == null || a.rootSubstituent == b.rootSubstituent)
       return;
     CIPTracker t;
     CIPAtom a1, b1;

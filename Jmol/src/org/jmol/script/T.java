@@ -981,8 +981,9 @@ public class T {
   public final static int cartoonladders                 = booleanparam | 42;
   public final static int cartoonribose                  = booleanparam | 43;
   public final static int cartoonrockets                 = booleanparam | 44;
-  public final static int celshading                     = booleanparam | 46;
-  public final static int chaincasesensitive             = booleanparam | 47;
+  public final static int celshading                     = booleanparam | 45;
+  public final static int chaincasesensitive             = booleanparam | 46;
+  public final static int ciprule6full                   = booleanparam | 47;
   public final static int colorrasmol                    = booleanparam | 48;
   public final static int debugscript                    = booleanparam | 49;
   public final static int defaultstructuredssp           = booleanparam | 50;
@@ -2566,6 +2567,7 @@ public class T {
        "cartoonRockets",
        "cartoonSteps",
        "chainCaseSensitive",
+       "cipRule6Full",
        "colorRasmol",
        "debugScript",
        "defaultStructureDssp",
@@ -3624,6 +3626,7 @@ public class T {
         cartoonrockets,                     //        "cartoonRockets"
         cartoonsteps,                       //        
         chaincasesensitive,                 //        "chainCaseSensitive"
+        ciprule6full,
         colorrasmol,                        //        "colorRasmol"
         debugscript,                        //        "debugScript"
         defaultstructuredssp,               //        "defaultStructureDssp"

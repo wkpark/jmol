@@ -213,6 +213,7 @@ public class GlobalSettings {
     setB("cartoonLadders", cartoonRibose);
     setB("cartoonRockets", cartoonRockets);
     setB("chainCaseSensitive", chainCaseSensitive);
+    setB("cipRule6Full", cipRule6Full);
     setI("bondingVersion", bondingVersion);
     setO("dataSeparator", dataSeparator);
     setB("debugScript", debugScript);
@@ -552,6 +553,7 @@ public class GlobalSettings {
   boolean cartoonLadders = false;
   boolean cartoonRibose = false;
   boolean chainCaseSensitive = false;
+  boolean cipRule6Full = false;
   int hermiteLevel = 0;
   boolean highResolutionFlag = false;
   public boolean rangeSelected = false;
@@ -933,7 +935,7 @@ public class GlobalSettings {
       + ";antialiasdisplay;antialiasimages;antialiastranslucent;appendnew;axescolor"
       + ";axesposition;axesmolecular;axesorientationrasmol;axesunitcell;axeswindow;axis1color;axis2color"
       + ";axis3color;backgroundcolor;backgroundmodel;bondsymmetryatoms;boundboxcolor;cameradepth"
-      + ";bondingversion;contextdepthmax;debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;"
+      + ";bondingversion;ciprule6full;contextdepthmax;debug;debugscript;defaultlatttice;defaults;defaultdropscript;diffusepercent;"
       + ";exportdrivers;exportscale"
       + ";_filecaching;_filecache;fontcaching;fontscaling;forcefield;language"
       + ";hbondsDistanceMaximum;hbondsangleminimum" // added Jmol 14.24.2

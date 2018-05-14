@@ -5259,6 +5259,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return g.cartoonRockets;
     case T.chaincasesensitive:
       return g.chainCaseSensitive || chainCaseSpecified;
+    case T.ciprule6full:
+      return g.cipRule6Full;
     case T.debugscript:
       return g.debugScript;
     case T.defaultstructuredssp:
@@ -5373,6 +5375,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case T.strutsmultiple:
       return g.strutsMultiple;
     case T.testflag1:
+      // CIPChirality -- turns off tracking (skip   creation of _M.CIPInfo for speed tests)
       // no PNGJ caching
       // debug mouse actions
       return g.testFlag1;
@@ -5380,8 +5383,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       // passed to MOCalcuation, but not used
       // nciCalculation special params.testFlag = 2 "absolute" calc.
       // GIF reducedColors
-      // plugin-in use variable
-      // skip CIPChirality tracking
+      // plug-in use variable
       return g.testFlag2;
     case T.testflag3:
       // isosurface numbers
@@ -6191,6 +6193,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.ciprule6full:
+      // 14.29.14
+      g.cipRule6Full = value;
+      break;
     case T.autoplaymovie:
       // 14.29.2
       g.autoplayMovie = value;

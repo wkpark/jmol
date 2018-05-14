@@ -128,7 +128,6 @@ import org.jmol.util.TempArray;
 import org.jmol.util.Triangulator;
 import org.jmol.viewer.binding.Binding;
 
-import com.sun.glass.ui.Cursor;
 /*
  * 
  * ****************************************************************
@@ -7796,10 +7795,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public void highlight(BS bs) {
     atomHighlighted = (bs != null && bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
     if (bs == null) {
-      setCursor(Cursor.CURSOR_DEFAULT);
+      setCursor(GenericPlatform.CURSOR_DEFAULT);
     } else {
       shm.loadShape(JC.SHAPE_HALOS);
-      setCursor(Cursor.CURSOR_POINTING_HAND);
+      setCursor(GenericPlatform.CURSOR_HAND);
     }
     setShapeProperty(JC.SHAPE_HALOS, "highlight", bs);
   }

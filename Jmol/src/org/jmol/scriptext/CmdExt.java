@@ -5477,8 +5477,8 @@ public class CmdExt extends ScriptExt {
       throws ScriptException {
 
     Object odata = (property == null || tok == (T.dssr | T.allfloat) ?
-      e.getBitsetProperty(bs, tok, null, null, property, null,
-          false, Integer.MAX_VALUE, false) 
+      e.getBitsetProperty(bs, null, tok, null, null, property,
+          null, false, Integer.MAX_VALUE, false) 
           : vwr.getDataObj(property, bs, JmolDataManager.DATA_TYPE_AF));
     if (odata == null || !AU.isAF(odata))
       return (bs == null ? null  : new float[bs.cardinality()]);

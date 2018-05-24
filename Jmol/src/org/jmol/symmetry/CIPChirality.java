@@ -26,6 +26,7 @@
 
 package org.jmol.symmetry;
 
+import java.awt.Graphics2D;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -2124,14 +2125,13 @@ public class CIPChirality {
         // This allows C to still beat H in this sphere, but had it been {O (O} C} and {O O C}, then 
         // we would be done.
 
-        int score = (currentRule > RULE_1a ? TIED : unlikeDuplicates(b));
+        int score = (currentRule > RULE_1b ? TIED : unlikeDuplicates(b));
         if (score != TIED) {
           finalScore = score * (sphere + 1); // COUNT_LINE
           if (doTrack)
             data.track(CIPChirality.this, this, b, sphere, finalScore, false);
           break;
         }
-
         // Phase II -- shallow check only
         //
         // Compare only in the current substitutent sphere. 
@@ -2283,9 +2283,7 @@ public class CIPChirality {
      */
 
     private int compareRule1b(CIPAtom b) {
-      return b.isDuplicate != isDuplicate 
-          ? TIED
-          : Integer.compare(rootDistance, b.rootDistance);
+      return Integer.compare(rootDistance, b.rootDistance);
     }
 
     /**

@@ -6032,7 +6032,7 @@ public class ScriptEval extends ScriptExpr {
         if (chk)
           continue;
         Map<String, Object> info = vwr.getSymTemp().getSpaceGroupInfo(vwr.ms,
-            null, -1);
+            null, -1, false);
         Object[] op = (info == null ? null : (Object[]) info.get("operations"));
         if (symop == 0 || op == null || op.length < Math.abs(symop))
           invArg();
@@ -6140,7 +6140,8 @@ public class ScriptEval extends ScriptExpr {
                     // -n means number of seconds, not degreesPerSecond
                     -endDegrees / degreesPerSecond
                         : degreesPerSecond);
-
+    if (q == null && endDegrees < 0 && rate > 0)
+      rate = -rate;
     if (dihedralList != null) {
       if (!isSpin) {
         vwr.setDihedrals(dihedralList, null, 1);

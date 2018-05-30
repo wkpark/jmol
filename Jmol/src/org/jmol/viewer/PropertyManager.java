@@ -179,6 +179,7 @@ public class PropertyManager implements JmolPropertyManager {
     "validationInfo"  , atomExpression, "{visible}",
     "service"    , "<hashTable>", "",
     "CIFInfo"        , "<filename>", "",
+    "spacegroupInfo", "<name>", "",
 
   };
 
@@ -234,7 +235,8 @@ public class PropertyManager implements JmolPropertyManager {
   private final static int PROP_VAL_INFO = 43;
   private final static int PROP_SERVICE = 44;
   private final static int PROP_CIF_INFO = 45;
-  private final static int PROP_COUNT = 46;
+  private final static int PROP_SPACEGROUP_INFO = 46;
+  private final static int PROP_COUNT = 47;
 
   //// static methods used by Eval and Viewer ////
 
@@ -837,6 +839,8 @@ public class PropertyManager implements JmolPropertyManager {
       return getAnnotationInfo(myParam, T.domains);
     case PROP_VAL_INFO:
       return getAnnotationInfo(myParam, T.validation);
+    case PROP_SPACEGROUP_INFO:
+      return getSpaceGroupInfo(myParam);
     case PROP_SERVICE:
       myParam = SV.oValue(myParam);
       @SuppressWarnings("unchecked")
@@ -862,6 +866,10 @@ public class PropertyManager implements JmolPropertyManager {
       if (data[i].length() > 0)
         info.append("\n getProperty ").append(data[i]);
     return info.toString();
+  }
+
+  private Object getSpaceGroupInfo(Object name) {
+    return vwr.getSymTemp().getSpaceGroupInfo(vwr.ms, name.toString(), -1, true);
   }
 
   private Object getImage(String params, boolean asBytes) {

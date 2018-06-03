@@ -6999,7 +6999,7 @@ public class ScriptEval extends ScriptExpr {
           pt = new P3();
           int ijk = var.asInt();
           if (ijk >= 100)
-            SimpleUnitCell.ijkToPoint3f(ijk, pt, -1);
+            SimpleUnitCell.ijkToPoint3f(ijk, pt, -1, 0);
         }
         if (!chk)
           vwr.setDefaultLattice(pt);

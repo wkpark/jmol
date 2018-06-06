@@ -481,10 +481,16 @@ public class SimpleUnitCell {
     if (abcabg != null) {
       if (params == null)
         params = new float[6];
-      String[] tokens = PT.split(abcabg.replace(',', '='), "=");
-      if (tokens.length >= 12)
-        for (int i = 0; i < 6; i++)
-          params[i] = PT.parseFloat(tokens[i * 2 + 1]);
+      if (abcabg.indexOf("=") >= 0) {
+        String[] tokens = PT.split(abcabg.replace(",", " "), "=");
+        if (tokens.length == 7) {
+          for (int i = 0; i < 6; i++)
+            if (Float.isNaN(params[i] = PT.parseFloat(tokens[i + 1])))
+                return null;
+        } else {
+          return null;
+        }
+      }
     }
     if (ucnew == null)
       return null;

@@ -826,7 +826,7 @@ public class Symmetry implements SymmetryInterface {
    * @return [origin va vb vc]
    */
   @Override
-  public Object getConventionalUnitCell(String latticeType) {
+  public T3[] getConventionalUnitCell(String latticeType) {
     return (unitCell == null || latticeType == null ? null : unitCell.getConventionalUnitCell(latticeType));
   }
 

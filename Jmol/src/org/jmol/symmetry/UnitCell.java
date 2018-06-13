@@ -671,8 +671,17 @@ class UnitCell extends SimpleUnitCell {
       m = symTemp.getSpaceGroupOperation(i);
       ((SymmetryOperation) m).doFinalize();
       if (strans != null) {
+        String[] atrans = PT.split(strans+"0,0,0",",");
         float[] ftrans = new float[3];
-        PT.parseFloatArrayInfested(PT.split(strans+"0,0,0",","), ftrans);
+        for (int j = 0; j < 3; j++) {
+          String s = atrans[j];
+          int sfpt = s.indexOf("/"); 
+          if (sfpt >= 0) {
+            ftrans[j] = PT.parseFloat(s.substring(0, sfpt)) / PT.parseFloat(s.substring(sfpt));
+          } else {
+            ftrans[j] = PT.parseFloat(s);
+          }
+        }
         P3 ptrans = P3.new3(ftrans[0], ftrans[1], ftrans[2]);
         m.setTranslation(ptrans);
       }

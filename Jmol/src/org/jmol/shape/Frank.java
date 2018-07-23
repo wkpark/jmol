@@ -90,7 +90,7 @@ public class Frank extends Shape {
       x <<= 1;
       y <<= 1;
     }      
-    vwr.hoverOnPt(x, y, GT._("Click for menu..."), null, null);
+    vwr.hoverOnPt(x, y, GT.$("Click for menu..."), null, null);
     return true;
   }
   

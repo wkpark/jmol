@@ -3089,7 +3089,7 @@ public class ScriptCompiler extends ScriptTokenParser {
         + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand)
         : errorLine)
         + " <<<<";
-    errorMessage = GT._("script compiler ERROR: ")
+    errorMessage = GT.$("script compiler ERROR: ")
         + errorMessage
         + ScriptError.getErrorLineMessage(null, filename, lineCurrent,
             iCommand, lineInfo);

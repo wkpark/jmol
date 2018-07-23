@@ -4275,7 +4275,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     shm.loadShape(JC.SHAPE_HOVER);
     if (isLabel && ms.at[atomIndex].isVisible(JC.VIS_LABEL_FLAG)) {
       setShapeProperty(JC.SHAPE_HOVER, "specialLabel",
-          GT._("Drag to move label"));
+          GT.$("Drag to move label"));
     }
     setShapeProperty(JC.SHAPE_HOVER, "text", null);
     setShapeProperty(JC.SHAPE_HOVER, "target", Integer.valueOf(atomIndex));
@@ -8171,7 +8171,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return getOutputManager().getClipboardText();
     } catch (Error er) {
       // unsigned applet will not have this interface
-      return GT._("clipboard is not accessible -- use signed applet");
+      return GT.$("clipboard is not accessible -- use signed applet");
     }
   }
 
@@ -9332,7 +9332,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         g.appendNew = true;
     }
     if (!isSilent)
-      scriptStatus(GT.i(GT._("{0} hydrogens added"), pts.length));
+      scriptStatus(GT.i(GT.$("{0} hydrogens added"), pts.length));
     return bsB;
   }
 

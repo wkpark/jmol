@@ -65,10 +65,10 @@ public class GT implements Translator {
   
   @Override
   public String translate(String s) {
-    return _(s);
+    return $(s);
   }
   
-  public GT(Viewer vwr, String langCode) {
+  public GT(Viewer vr, String langCode) {
     /**
      * @j2sIgnore
      * 
@@ -161,14 +161,14 @@ public class GT implements Translator {
           + " using files for language:" + la + " country:" + la_co
           + " variant:" + la_co_va);
     if (!ignoreApplicationBundle)
-      addBundles(vwr, "Jmol", la_co_va, null, null);
-    addBundles(vwr, "JmolApplet", la_co_va, null, null);
+      addBundles(vr, "Jmol", la_co_va, null, null);
+    addBundles(vr, "JmolApplet", la_co_va, null, null);
     if (!ignoreApplicationBundle)
-      addBundles(vwr, "Jmol", null, la_co, null);
-    addBundles(vwr, "JmolApplet", null, la_co, null);
+      addBundles(vr, "Jmol", null, la_co, null);
+    addBundles(vr, "JmolApplet", null, la_co, null);
     if (!ignoreApplicationBundle)
-      addBundles(vwr, "Jmol", null, null, la);
-    addBundles(vwr, "JmolApplet", null, null, la);
+      addBundles(vr, "Jmol", null, null, la);
+    addBundles(vr, "JmolApplet", null, null, la);
   }
 
   public static Language[] getLanguageList(GT gt) {
@@ -204,7 +204,7 @@ public class GT implements Translator {
     return getTextWrapper().doTranslate;
   }
 
-  public static String _(String string) {
+  public static String $(String string) {
     return getTextWrapper().getString(string);
   }
 

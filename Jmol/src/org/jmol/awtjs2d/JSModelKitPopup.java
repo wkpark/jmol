@@ -87,7 +87,7 @@ public class JSModelKitPopup extends JmolGenericPopup {
 
   @Override
   public String menuSetCheckBoxOption(SC item, String name, String what) {
-    String element = GT._("Element?");
+    String element = GT.$("Element?");
     /**
      * @j2sNative
      * 

@@ -531,6 +531,9 @@ all support for previous versions removed
     <jar destfile="build/JmolData.jar"
          manifest="manifest/applicationData.txt">
       <fileset dir="${classes.dir}" >
+        <exclude name="**/Test*.class" />
+        <exclude name="**/jmol/jcamp/**" />
+        <exclude name="**/jmol/applet/*" /> 
         <exclude name="**/.*" />
         <exclude name="**/*.dx" />
         <exclude name="**/Test*.class" />
@@ -541,6 +544,8 @@ all support for previous versions removed
         <include name="javajs/export/**" />
         <include name="javajs/img/**" />
         <include name="javajs/util/**" />
+        <include name="**/org/gennbo/**" />
+        <include name="**/org/apache/**" />
         <include name="org/qcschema/**" />
         <include name="**/jmol/**" />
         <exclude name="**/jmol/_documents/**" />

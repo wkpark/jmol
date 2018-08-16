@@ -729,7 +729,9 @@ public class SymmetryDesc {
         s = " " + strCoord(ftrans, op.isBio);
         // set ITA Table 2.1.2.1
         if (fx != 0 && fy != 0 && fz != 0) {
-          if (fx == 1 / 4f && fy == 1 / 4f && fz == 1 / 4f) {
+          if ((fx == 1 / 4f || fx == 3 /4f)
+              && (fy == 1 / 4f || fy == 3 /4f)
+              && (fz == 1 / 4f || fz == 3 /4f)) {
             // diamond
             info1 = "d-";
           } else if (fx == 1 / 2f && fy == 1 / 2f && fz == 1 / 2f) {

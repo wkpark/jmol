@@ -23,7 +23,6 @@
  */
 package org.gennbo;
 
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -42,7 +41,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.FilenameFilter;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 import javax.swing.SwingConstants;
 import javajs.util.PT;
@@ -68,7 +77,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.jmol.c.CBK;
-import javajs.util.BS;
+import org.jmol.java.BS;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
@@ -83,7 +92,7 @@ public class NBODialog extends JDialog {
 
   protected JLabel licenseInfo;
 
-  private JButton helpBtn,helpBtn_M,helpBtn_R,helpBtn_V, helpBtn_S;
+  private JButton helpBtn;
 
   private JDialog settingsDialog;
   private JPanel topPanel;
@@ -118,6 +127,10 @@ public class NBODialog extends JDialog {
   final private static String[] dialogNames = new String[] { "Home", "Model",
       "Run", "View", "Search", "Settings", "Help" };
 
+  protected static String getDialogName(int type) {
+    return dialogNames[type];
+  }
+
   protected static final int ORIGIN_UNKNOWN = 0;
   protected static final int ORIGIN_NIH = 1;
   protected static final int ORIGIN_LINE_FORMULA = 2;
@@ -140,7 +153,6 @@ public class NBODialog extends JDialog {
    * @param jmolOptions
    */
   protected void setJmolOptions(Map<String, Object> jmolOptions) {
-    setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     String options = ("" + (jmolOptions == null ? "" : jmolOptions
         .get("options"))).toUpperCase();
     if (options.equals("VIEW"))
@@ -164,7 +176,7 @@ public class NBODialog extends JDialog {
 
 //  /**
 //   * Tracks the last resonance structure type (nrtstra, nrtstrb, alpha, beta);
-//   * reset to ## by openPanel()
+//   * reset to “alpha” by openPanel()
 //   */
 //  private String rsTypeLast = "alpha";
 
@@ -182,7 +194,7 @@ public class NBODialog extends JDialog {
   protected JSplitPane centerPanel;
   protected JPanel modulePanel;
 
-  protected JLabel statusLabel;
+  protected JLabel statusLab;
   protected JTextPane jpNBODialog;
 
   
@@ -204,13 +216,18 @@ public class NBODialog extends JDialog {
   private boolean isOpenShell;  
   
   private boolean isCaretEnabled = true;
-
+  
   protected void setCaretEnabled(boolean tf) {
     isCaretEnabled = tf;
     if (tf)
       log("\n", 'b');
   }
-
+  
+  /**
+   * An array that stores all original 47 file copies that we will need to restore back to our 47 file before
+   * switching modules or exiting Jmol.
+   */
+  private List<File47AndFileCopy> filecopy;
 
   /**
    * Creates a dialog for getting info related to output frames in nbo format.
@@ -233,7 +250,7 @@ public class NBODialog extends JDialog {
     nboPlugin = plugin;
     nboService = new NBOService(this, vwr, !jmolOptionNONBO);
     config = new NBOConfig(this);
-    setIconImage(nboPlugin.getIcon("nbo6logo20x20").getImage());
+    setIconImage(nboPlugin.getIcon("nbo7logo").getImage());
     setLayout(new BorderLayout());
       if (!jmolOptionNOSET)
         runScriptQueued(NBOConfig.DEFAULT_SCRIPT);
@@ -241,6 +258,8 @@ public class NBODialog extends JDialog {
     modelPanel = new NBOModel(this);
     runPanel = new NBORun(this);
     viewPanel = searchPanel = new NBOSearch(this);
+    
+    filecopy=new ArrayList<File47AndFileCopy>();
     
     createDialog(jmolFrame);
 
@@ -259,30 +278,28 @@ public class NBODialog extends JDialog {
     }
     if (type == DIALOG_CONFIG) {
       settingsDialog.setVisible(true);
-      settingsDialog.setTitle("Settings " + (nboService.isReady() ? "OK" : " not connected"));
       return;
     }
 
-    boolean wasWorking = (nboService.getWorkingMode() == DIALOG_RUN);
-    if (wasWorking) {
-      System.out.println(nboService.currentRequest.toString());
+    if (nboService.isWorking()) {
       int i = JOptionPane.showConfirmDialog(this,
-          "NBOServe is working. Cancel currently running job?\n", "Message", JOptionPane.YES_NO_OPTION);
+          "NBOServe is working. Cancel current job?\n"
+              + "This could affect input/output files\n"
+              + "if GenNBO is running.", "Message", JOptionPane.YES_NO_OPTION);
       if (i == JOptionPane.NO_OPTION) {
         return;
       }
     }
 
-    //clearOutput();
-    logCmd("Entering " + dialogNames[type]);
-
+    logCmd("Entering " + getDialogName(type));
+    
+    //Commented out by fzy on the demand of Professor Frank. restarting NBOServe when switching between modules
+    //can cause NBOServe to lose important job parameters from initial RUN results that must have
+    //preceded before a switch to VIEW or SEARCH
+//    nboService.restart();
+    nboService.restartIfNecessary();
     nboService.clearQueue();
-    boolean ok = nboService.restart();
 
-    if (wasWorking)
-      inputFileHandler.checkNBOComplete(false);
-    if (!ok)
-      return;    
     if (!checkEnabled()) {
       doOpenPanel(DIALOG_CONFIG);
       return;
@@ -326,7 +343,11 @@ public class NBODialog extends JDialog {
       setThis(searchButton);
       break;
     }
-    resetDivider();
+    //To accommodate the newly added Vibrate button at Model module.
+//    if(dialogMode==DIALOG_MODEL)
+//      centerPanel.setDividerLocation(400);
+//    else
+     resetDivider();
     if (topPanel != null)
       topPanel.add(icon, BorderLayout.EAST);
     setStatus("");
@@ -336,7 +357,7 @@ public class NBODialog extends JDialog {
   }
 
   /**
-   * Rest all variables that might be an issue
+   * Reset all variables that might be an issue
    * 
    */
   private void resetModuleVariables() {
@@ -345,20 +366,28 @@ public class NBODialog extends JDialog {
 
     viewPanel.resetCurrentOrbitalClicked();
     resetVariables_c();
+    restore47filesFromFileCopy();
     
   }
 
   private void createDialog(JFrame jmolFrame) {
     dialogMode = DIALOG_HOME;
     Rectangle bounds = jmolFrame.getBounds();
-    if (bounds.height < 630)
-      jmolFrame.setSize(bounds.width, 630);
+    //height changed by fzy from 630 to 662 so that the "Save Model" panel in "Model" module isn't being truncated
+    if (bounds.height < 662)
+    {
+      //512
+      //bounds.width
+      bounds.setBounds(bounds.x, bounds.y, 580, 662);
+      jmolFrame.setSize(bounds.width, bounds.height);
+    }
     // createDialog(Math.max(570, 615);
     setBounds(bounds.x + bounds.width, bounds.y, 650,
-        Math.max(bounds.height, 630));
+        Math.max(bounds.height, 662));
     addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent e) {
+        nboService.closeProcess(false);
         close();
       }
     });
@@ -389,7 +418,7 @@ public class NBODialog extends JDialog {
     config.buildSettingsPanel(settingsPanel);
     settingsDialog.add(settingsPanel);
     this.setVisible(true);
-    if (!jmolOptionNONBO && nboService.cantStartServer)
+    if (!jmolOptionNONBO && nboService.isOffLine())
       settingsDialog.setVisible(true);
   }
 
@@ -441,9 +470,6 @@ public class NBODialog extends JDialog {
     viewButton = new JButton("View");
     searchButton = new JButton("Search");
     helpBtn = new HelpBtn(null);
-
-
-
 
     JPanel p = new JPanel(new BorderLayout());
     if (!jmolOptionNONBO) {
@@ -507,7 +533,7 @@ public class NBODialog extends JDialog {
 
     p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
     //Header stuff////////////
-    ImageIcon imageIcon = nboPlugin.getIcon("nbo6logo");
+    ImageIcon imageIcon = nboPlugin.getIcon("nbo7logo20x20");
 
     Image image = imageIcon.getImage();
     Image newimg = image.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
@@ -516,7 +542,7 @@ public class NBODialog extends JDialog {
     Box b = Box.createHorizontalBox();
 
     b.add(lab);
-    lab = new JLabel("NBOServe (v6) toolbox");
+    lab = new JLabel("NBOPro@Jmol toolbox");
     b.add(lab);
     b.add(Box.createRigidArea(new Dimension(370, 0)));
     icon.setOpaque(true);
@@ -532,7 +558,7 @@ public class NBODialog extends JDialog {
     lab.setForeground(Color.red);
     p.add(lab);
     lab.setAlignmentX(0.5f);
-    lab = new JLabel("Frank Weinhold, Dylan Phillips, Eric Glendening, and Robert Hanson");
+    lab = new JLabel("Frank Weinhold, Dylan Phillips, Foo Zhi Yuan, Eric Glendening and Robert Hanson");
     lab.setAlignmentX(0.5f);
     p.add(lab);
     //Body/////////////
@@ -540,8 +566,6 @@ public class NBODialog extends JDialog {
     GridBagConstraints c = new GridBagConstraints();
     p2.setBorder(BorderFactory.createLineBorder(Color.black));
     JButton btn = new JButton("Model");
-    dialogMode = DIALOG_MODEL;
-    helpBtn_M = new HelpBtn("model_help.htm"); 
 
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
@@ -563,11 +587,6 @@ public class NBODialog extends JDialog {
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Create & edit molecular model and input files"),
         c);
-    c.gridx = 6;
-    c.gridy = 0;
-    c.gridwidth = 1;
-    c.gridheight = 1;
-    p2.add(helpBtn_M, c);
 
     c.gridx = 5;
     c.gridwidth = 1;
@@ -580,16 +599,15 @@ public class NBODialog extends JDialog {
     tp.setEditable(false);
     tp.setBackground(null);
     tp.setPreferredSize(new Dimension(430, 60));
-
     c.gridx = 1;
     c.gridy = 1;
     c.gridwidth = 3;
     c.fill = GridBagConstraints.HORIZONTAL;
     p2.add(tp, c);
+
     c.weightx = 0;
 
     //RUN/////////////
-    helpBtn_R = new HelpBtn("run_help.htm");
     btn = new JButton("Run");
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
@@ -610,26 +628,18 @@ public class NBODialog extends JDialog {
     c.gridy = 2;
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Launch NBO analysis for chosen archive file"), c);
-    
-    c.gridx = 6;
-    c.gridy = 2;
-    c.gridwidth = 1;
-    c.gridheight = 1;
-    p2.add(helpBtn_R, c);
-
     lab.setFont(NBOConfig.homeTextFont);
     tp = new JTextPane();
     tp.setContentType("text/html");
     tp.setBackground(null);
     tp.setText("<HTML><center>Eric Glendening, Jay Badenhoop, Alan Reed, John Carpenter, Jon Bohmann, "
-        + "Christine Morales, and Frank Weinhold</center></HTML>");
+        + "Christine Morales, P. Karafiloglou, C. R. Landis, and Frank Weinhold</center></HTML>");
     c.gridx = 1;
     c.gridy = 3;
     c.gridwidth = 3;
     p2.add(tp, c);
-    
+
     //VIEW//////////////
-    helpBtn_V = new HelpBtn("view_help.htm");
     btn = new JButton("View");
     btn.addActionListener(new ActionListener() {
       @Override
@@ -649,14 +659,7 @@ public class NBODialog extends JDialog {
     c.gridx = 1;
     c.gridy = 4;
     c.gridwidth = 3;
-    p2.add(lab = new JLabel(" Display NBO orbitals in 1D/2D/3D imagery"), c);
-    
-    c.gridx = 6;
-    c.gridy = 4;
-    c.gridwidth = 1;
-    c.gridheight = 1;
-    p2.add(helpBtn_V, c);
-    
+    p2.add(lab = new JLabel("  Display NBO orbitals in 1D/2D/3D imagery"), c);
     lab.setFont(NBOConfig.homeTextFont);
     tp = new JTextPane();
     tp.setMaximumSize(new Dimension(430, 60));
@@ -670,7 +673,6 @@ public class NBODialog extends JDialog {
     p2.add(tp, c);
 
     //SEARCH/////////////
-    helpBtn_S = new HelpBtn("search_help.htm");
     btn = new JButton("Search");
     btn.setForeground(Color.WHITE);
     btn.setBackground(Color.BLUE);
@@ -679,6 +681,7 @@ public class NBODialog extends JDialog {
     btn.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
+
         doOpenPanel(DIALOG_SEARCH);
       }
     });
@@ -690,13 +693,6 @@ public class NBODialog extends JDialog {
     c.gridy = 6;
     c.gridwidth = 3;
     p2.add(lab = new JLabel("  Search NBO output interactively"), c);
-    
-    c.gridx = 6;
-    c.gridy = 6;
-    c.gridwidth = 1;
-    c.gridheight = 1;
-    p2.add(helpBtn_S, c);
-    
     lab.setFont(NBOConfig.homeTextFont);
     tp = new JTextPane();
     tp.setMaximumSize(new Dimension(430, 60));
@@ -707,7 +703,6 @@ public class NBODialog extends JDialog {
     c.gridy = 7;
     c.gridwidth = 3;
     p2.add(tp, c);
-    
     p.add(p2);
     JTextPane t = new JTextPane();
     t.setContentType("text/html");
@@ -723,7 +718,7 @@ public class NBODialog extends JDialog {
   }
 
   private void resetDivider() {
-    centerPanel.setDividerLocation(365);
+    centerPanel.setDividerLocation(360);
   }
 
   private void createOutputDialog() {
@@ -754,18 +749,18 @@ public class NBODialog extends JDialog {
     p1.setBorder(null);
     s.add(p1, BorderLayout.CENTER);
     JPanel box = new JPanel(new GridLayout(2, 1));
-    statusLabel = new JLabel();
-    statusLabel.setForeground(Color.red);
-    statusLabel.setBackground(Color.white);
-    statusLabel.setFont(NBOConfig.statusFont);
-    statusLabel.setOpaque(true);
-    box.add(statusLabel);
+    statusLab = new JLabel();
+    statusLab.setForeground(Color.red);
+    statusLab.setBackground(Color.white);
+    statusLab.setFont(NBOConfig.statusFont);
+    statusLab.setOpaque(true);
+    box.add(statusLab);
     Box box2 = Box.createHorizontalBox();
     JButton clear = new JButton("Clear");
     clear.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        clearOutput();
+        doClearOutput();
       }
     });
     box2.add(clear);
@@ -811,11 +806,12 @@ public class NBODialog extends JDialog {
   }
 
   public void close() {
-    boolean wasWorking = (nboService.getWorkingMode() == DIALOG_RUN);
-    nboService.closeProcess(false);
-    if (wasWorking)
-      inputFileHandler.checkNBOComplete(false);
-    runScriptQueued("select off;initialize;");
+    restore47filesFromFileCopy();
+    removeAll48Files();
+    if (modulePanel != null)
+      inputFileHandler.clearInputFile(false);
+    runScriptQueued("select off");
+    dispose();
   }
 
   private void setThis(JButton btn) {
@@ -852,11 +848,8 @@ public class NBODialog extends JDialog {
     case PICK:
       // 1-based atom numbers
       int[] picked = NBOUtil.getAtomsPicked(data);
-
-      if (picked[0] < 0){
-        System.out.println("the first item is less than 0");
+      if (picked[0] < 0)
         return; // not an atom or a bond -- maybe draw picking is on
-      }
       switch (dialogMode) {
       case DIALOG_MODEL:
         modelPanel.notifyPick(picked);
@@ -903,8 +896,18 @@ public class NBODialog extends JDialog {
       iAmLoading = false;
       if (NBOConfig.nboView)
         runScriptQueued("select 1.1;color bonds lightgrey;"
-            + "wireframe 0.1;select none"); 
-      isOpenShell = vwr.ms.getModelAuxiliaryInfo(0).containsKey("isOpenShell");
+            + "wireframe 0.1;select none");
+//      by fzy
+//      isOpenShell = vwr.ms.getModelAuxiliaryInfo(0).containsKey("isOpenShell");
+      isOpenShell=false;
+      List<String> l=new ArrayList<String>(vwr.ms.getModelAuxiliaryInfo(0).keySet());
+      int i;
+      for(i=0;i<l.size();i++)
+      {
+        if(l.get(i).trim().equals("isOpenShell"))
+          isOpenShell=true;
+      }
+      
       switch (dialogMode) {
       case DIALOG_MODEL:
         modelPanel.notifyFileLoaded();
@@ -926,7 +929,7 @@ public class NBODialog extends JDialog {
   /**
    * clear output panel
    */
-  protected void clearOutput() {
+  protected void doClearOutput() {
     nboOutputBodyText = "";
     // String fontFamily = jpNBOLog.getFont().getFamily();
     if (jpNBODialog != null)
@@ -967,11 +970,9 @@ public class NBODialog extends JDialog {
   }
 
   void setLicense(String data) {
-//    boolean lost = (data.length() == 2); 
     String[] lines = PT.split(data, "\n");
     licenseInfo.setText("<html><div style='text-align: center'>" + lines[1]
         + "</html>");
-    repaint();
   }
 
   //  protected Component getComponentatPoint(Point p, Component top){
@@ -986,7 +987,7 @@ public class NBODialog extends JDialog {
 
   protected void setStatus(String statusInfo) {
     boolean isBusy = (statusInfo != null && statusInfo.length() > 0);
-    statusLabel.setText(statusInfo);
+    statusLab.setText(statusInfo);
     centerPanel.setCursor(Cursor
         .getPredefinedCursor(isBusy ? Cursor.WAIT_CURSOR
             : Cursor.DEFAULT_CURSOR));
@@ -1018,7 +1019,7 @@ public class NBODialog extends JDialog {
   private long runStartTime;
 
   protected synchronized void doShowRunTime() {
-    String t = statusLabel.getText();
+    String t = statusLab.getText();
     int pt = t.indexOf("...");
     if (pt < 0)
       return;
@@ -1028,7 +1029,7 @@ public class NBODialog extends JDialog {
       int seconds = (time % 60000) / 1000;
       String s = "00" + seconds;
       s = minutes + ":" + s.substring(s.length() - 2);
-      statusLabel.setText(t.substring(0, pt + 3) + " " + s);
+      statusLab.setText(t.substring(0, pt + 3) + " " + s);
     } catch (Exception e) {
       if (runTimer != null) {
         runTimer.stop();
@@ -1046,15 +1047,10 @@ public class NBODialog extends JDialog {
    */
   protected void showSelected(String s) {
     BS bs = new BS();
-    try {
     for (String x : PT.getTokens(s))
       bs.set((Integer.parseInt(x) - 1));
-    
     String script = "select on " + bs + ";";
     runScriptQueued(script);
-    } catch (NumberFormatException e) {
-      System.out.println("NBODialog showSelected issue with " + s);
-    }
   }
 
 
@@ -1112,10 +1108,6 @@ public class NBODialog extends JDialog {
    *        p, b, r ("red"), i, etc.
    */
   protected synchronized void log(String line, char chFormat) {
-    if (line == null) {
-      System.out.println("NBODialog.log null");
-      return;
-    }
     if (dontLog(line, chFormat))
       return;
     if (line.equals("\n") || line.trim().length() >= 1) {
@@ -1173,9 +1165,7 @@ public class NBODialog extends JDialog {
     
     saveOrientation = false;
     iAmLoading = true;
-    String path = f.getAbsolutePath();
-    String s = "load \"" + path.replace('\\', '/') + "\""
-        + (path.indexOf(".47") >= 0 ? " filter 'NOMO' " : "")
+    String s = "load \"" + f.getAbsolutePath().replace('\\', '/') + "\""
         + NBOConfig.JMOL_FONT_SCRIPT;
     if (saveOrientation)
       s = "save orientation o1;" + s + ";restore orientation o1";
@@ -1211,7 +1201,7 @@ public class NBODialog extends JDialog {
   }
 
   String evaluateJmolString(String expr) {
-    return vwr.evaluateExpressionAsVariable(expr).asString(); 
+    return vwr.evaluateExpressionAsVariable(expr).asString();
   }
 
   protected String getJmolFilename() {
@@ -1219,15 +1209,13 @@ public class NBODialog extends JDialog {
   }
 
   /**
-   * 
-   * Create a new input file handler.
+   * not used for MODEL
    * 
    * @param mode
-   * @param acceptor  will be NBOModel
    */
-  protected void getNewInputFileHandler(int mode, NBOFileAcceptor acceptor) {
+  protected void getNewInputFileHandler(int mode) {
     inputFileHandler = new NBOFileHandler(inputFileHandler == null ? ""
-        : inputFileHandler.jobStem, mode, this, acceptor);
+        : inputFileHandler.jobStem, "47", mode, "47", this);
   }
 
   /**
@@ -1267,9 +1255,124 @@ public class NBODialog extends JDialog {
 
   }
   
+  void insertNewFileCopy(File47AndFileCopy filePair)
+  {
+    if(filePair!=null)
+    {
+      filecopy.add(filePair);
+    }
+  }
   
+  /*
+   * When switching modules, this method is being called to restore the 47 files to its 
+   * original state using data from file copy.
+   */
+  void restore47filesFromFileCopy()
+  {
+    int i;
+    FileInputStream sourceFilecopy=null;
+    FileOutputStream destinationFile47=null;
+    for(i=0;i<filecopy.size();i++)
+    {
+      File47AndFileCopy filePair=filecopy.get(i);
+      
+      String file47_path=filePair.getFile47();
+      String fileCopy_path=filePair.getFilecopy();
+      
+      File filecopy=new File(fileCopy_path);
+      File file47=new File(file47_path);
+    
+      try
+      {
+        sourceFilecopy=new FileInputStream(filecopy);
+        destinationFile47=new FileOutputStream(file47,false);
+        destinationFile47.getChannel().transferFrom(sourceFilecopy.getChannel(),0,sourceFilecopy.getChannel().size());
+      }
+      catch(IOException ex)
+      {
+        logInfo("Could not restore file " + file47_path+" to its original state.\nThe file47 might now be corrupted.", Logger.LEVEL_ERROR);
+      }
+      finally
+      {
+        try
+        {
+          if(sourceFilecopy!=null)
+          {
+            sourceFilecopy.close();
+          }
+          if(destinationFile47!=null)
+          {
+            destinationFile47.close();
+          }
+          
+        }
+        catch(IOException ex)
+        {
+          logInfo("Could not close file " + file47_path, Logger.LEVEL_ERROR);
+        }
+      }
+      
+    }
+    
+    for(i=0;i<filecopy.size();i++)
+    {
+      String fileCopy_path=filecopy.get(i).getFilecopy();
+      File file=new File(fileCopy_path);
+      file.delete();
+    }
+    
+    filecopy.clear();
+    
+  }
   
+  /*
+   * This method return a list of files in the given directory with extension .48
+   */
+  private File[] finder(String directory)
+  {
+    File dir = new File(directory);
 
+    return dir.listFiles(new FilenameFilter() { 
+             public boolean accept(File dir, String filename)
+                  { return filename.endsWith(".48"); }
+    } );
+  }
+  
+  
+  void removeAll48Files()
+  {
+    int i;
+    String ExecutablePath=nboService.getServerPath(null);
+    String userWorkingPath=getWorkingPath();
+    if(userWorkingPath!=null && userWorkingPath!="")
+    {
+      Path path=Paths.get(userWorkingPath);
+      if(Files.exists(path))
+      {
+        File f[]=finder(userWorkingPath);
+        for(i=0;i<f.length;i++)
+        {
+          f[i].delete();
+        }
+      }
+    }
+    if(ExecutablePath!=null && ExecutablePath!="")
+    {
+      Path exec=Paths.get(ExecutablePath);
+      if(Files.exists(exec))
+      {
+        File f[]=finder(ExecutablePath);
+        for(i=0;i<f.length;i++)
+        {
+          f[i].delete();
+        }
+      }
+    }
+  }
+  
+  
+  
+  
   
   protected boolean isOpenShell() {
     return isOpenShell;

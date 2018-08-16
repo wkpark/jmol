@@ -33,7 +33,7 @@ public class Language {
    * even though we set doTranslate false. That ensures that the language name
    * IN THIS LIST is untranslated, but it provides the code xgettext needs in
    * order to provide the list of names that will need translation by translators
-   * (the .po files). Later, in JmolPopup.updateLanguageMenu(), GT._() is used
+   * (the .po files). Later, in JmolPopup.updateLanguageMenu(), GT.$() is used
    * again to create the actual, localized menu item name.
    *
    * list order:

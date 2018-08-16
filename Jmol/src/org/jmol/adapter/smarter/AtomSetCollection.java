@@ -525,6 +525,8 @@ public class AtomSetCollection {
 
   public int getLastAtomSetAtomIndex() {
     //Logger.debug("atomSetCount=" + atomSetCount);
+    if (ac < atomSetAtomCounts[iSet])
+      System.out.println("???");
     return ac - atomSetAtomCounts[iSet];
   }
 

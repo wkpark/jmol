@@ -60,6 +60,7 @@ when the Jmol or JSpecView code is modified, is as follows:
     </classpath>
   </taskdef>
 
+	
   <!-- pull developer-specific settings from their home directory -->
   <property file="${user.home}/.jmol.build.properties" />
   <!-- compile options -->

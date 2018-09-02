@@ -78,7 +78,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.gennbo.NBODialog.HelpBtn;
 import org.jmol.awt.AwtColor;
 import org.jmol.i18n.GT;
-import org.jmol.java.BS;
+import javajs.util.BS;
 import org.jmol.util.C;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Viewer;

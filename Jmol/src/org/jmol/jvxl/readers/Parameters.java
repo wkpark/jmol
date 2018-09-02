@@ -187,12 +187,13 @@ public class Parameters {
   final static int SURFACE_MLP = 17 | NO_ANISOTROPY | HAS_MAXGRID | IS_SLABBABLE;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY | IS_SLABBABLE;
   final static int SURFACE_NCI = 20 | NO_ANISOTROPY | HAS_MAXGRID | IS_POINTMAPPABLE | IS_SLABBABLE;
-  final static int SURFACE_INTERSECT = 21 | NO_ANISOTROPY | HAS_MAXGRID | IS_SLABBABLE;
+  final static int SURFACE_INTERSECT_ATOM = 21 | NO_ANISOTROPY | HAS_MAXGRID | IS_SLABBABLE;
+  final static int SURFACE_INTERSECT_FILE = 22 | NO_ANISOTROPY | HAS_MAXGRID | IS_SLABBABLE;
 
   // mapColor only:
 
-  final static int SURFACE_NOMAP = 21 | IS_SOLVENTTYPE | NO_ANISOTROPY | IS_SLABBABLE;
-  final static int SURFACE_PROPERTY = 22 | IS_SOLVENTTYPE | NO_ANISOTROPY | IS_SLABBABLE;
+  final static int SURFACE_NOMAP = 23 | IS_SOLVENTTYPE | NO_ANISOTROPY | IS_SLABBABLE;
+  final static int SURFACE_PROPERTY = 24 | IS_SOLVENTTYPE | NO_ANISOTROPY | IS_SLABBABLE;
 
   void initialize() {
     addHydrogens = false;
@@ -231,6 +232,7 @@ public class Parameters {
     fileIndex = 1;
     readAllData = true;
     fileName = "";
+    filesData = null;
     fullyLit = false;
     functionInfo = null;
     iAddGridPoints = false;
@@ -538,7 +540,7 @@ public class Parameters {
     isEccentric = isAnisotropic = false;
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
     solventRadius = Math.abs(radius);
-    dataType = (intersection != null ? SURFACE_INTERSECT
+    dataType = (intersection != null ? SURFACE_INTERSECT_ATOM
         : "nomap" == propertyName ? SURFACE_NOMAP
             : "molecular" == propertyName ? SURFACE_MOLECULAR
                 : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
@@ -550,7 +552,7 @@ public class Parameters {
       cutoff = 0.0f;
 
     switch (dataType) {
-    case Parameters.SURFACE_INTERSECT:
+    case Parameters.SURFACE_INTERSECT_ATOM:
       calculationType = "VDW intersection";
       break;
     case Parameters.SURFACE_NOMAP:
@@ -681,12 +683,12 @@ public class Parameters {
   int qmOrbitalType;
   int qmOrbitalCount;
   
-  final public static int QM_TYPE_UNKNOWN = 0;
-  final public static int QM_TYPE_GAUSSIAN = 1;
-  final public static int QM_TYPE_SLATER = 2;
-  final public static int QM_TYPE_NCI_PRO = 3;
-  final public static int QM_TYPE_NCI_SCF = 4;
-  final public static int QM_TYPE_VOLUME_DATA = 5;
+  final static int QM_TYPE_UNKNOWN = 0;
+  final static int QM_TYPE_GAUSSIAN = 1;
+  final static int QM_TYPE_SLATER = 2;
+  final static int QM_TYPE_NCI_PRO = 3;
+  final static int QM_TYPE_NCI_SCF = 4;
+  final static int QM_TYPE_VOLUME_DATA = 5;
   
   public Map<String, Object> moData;
   public final static int MO_MAX_GRID = 80;
@@ -745,13 +747,12 @@ public class Parameters {
         // qm_moNumber < 0 means this is an RHF electron density calculation 
         // through orbital -qm_moNumber
         if (title == null) {
-          title = new String[6];
+          title = new String[5];
           title[0] = "%F";
           title[1] = "Model %M  MO %I/%N %T";
           title[2] = "?Energy = %E %U";
           title[3] = "?Symmetry = %S";
           title[4] = "?Occupancy = %O";
-          title[5] = "?%L";
         }
       }
     }
@@ -853,6 +854,7 @@ public class Parameters {
   public float pointSize;
   public boolean isModelConnected;
   public BS surfaceAtoms;
+  public Object[] filesData; // originally [ String[] names, float[] factors ]
   
   void setMapRanges(SurfaceReader surfaceReader, boolean haveData) {
     if (!colorDensity)

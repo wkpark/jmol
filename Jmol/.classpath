@@ -9,8 +9,8 @@
 	<classpathentry kind="lib" path="jars/netscape.jar"/>
 	<classpathentry kind="lib" path="screensaver/jars/saverbeans-api.jar"/>
 	<classpathentry kind="lib" path="jars/junit.jar"/>
-	<classpathentry kind="lib" path="jars/JSpecView.jar"/>
 	<classpathentry kind="lib" path="jars/naga-3_0.jar"/>
 	<classpathentry kind="lib" path="jars/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="tools/jsch.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

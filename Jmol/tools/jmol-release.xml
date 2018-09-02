@@ -12,6 +12,13 @@
     </classpath>
   </taskdef>
 
+	
+    <input
+      message="Please enter your username."
+      addproperty="ssh.user"
+    />
+
+	
   <property name="sendZip"         value="true" />
   <property name="dist.dir"        value="build/dist" />
   <property name="src.dir"         value="src" />
@@ -98,26 +105,19 @@ Release Note: When releasing stable version, remove "-beta"
       addproperty="uploadPath"
     />
 
-<!-- 	
+  	<!--
   	<input
       message="Filepath  ${uploadPath0} ?"
       validargs="y,n"
       defaultvalue="y"
       addproperty="do.scp"
     />
--->  	
     <condition property="do.abort">
       <equals arg1="n" arg2="${do.scp}"/>
     </condition>
     <fail if="do.abort">Build aborted by user.</fail>
-
+-->
     <!-- Ask user for username and password -->
-    <input
-      message="${uploadPath} for ${version} Please enter your username."
-      addproperty="ssh.user"
-    >
-    	<!-- handler type="secure"/ -->
-    </input>
     <input
       message="Please enter your password."
       addproperty="ssh.password"

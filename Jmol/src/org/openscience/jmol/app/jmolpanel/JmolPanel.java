@@ -224,7 +224,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     numWindows++;
 
     try {
-      say("history file is " + historyFile.getFile().getAbsolutePath());
+        say("history file is " + historyFile.getFile().getAbsolutePath());
       say("user properties file is " + jmolApp.userPropsFile.getAbsolutePath());
     } catch (Exception e) {
     }
@@ -874,7 +874,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
         if (p != null)
           continue;
         String path = bundle.getString(key);
-        if (path == null | path.length() == 0)
+        if (path == null | path.length() == 0 || path.indexOf("disabled") >= 0)
           continue;
         try {
           p = getAndRegisterPlugin(key, path);
@@ -906,6 +906,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       throw new RuntimeException(ex.toString());
     }
     mb.add(pluginMenu);
+    pluginMenu.setEnabled(pluginMenu.getPopupMenu().getComponentCount() > 0);
   }
   
   
@@ -1484,17 +1485,17 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     @Override
     public void actionPerformed(ActionEvent e) {
 
-      recentFiles.setVisible(true);
-      String selection = recentFiles.getFile();
-      if (selection == null || selection.length() == 0)
-        return;
-      if (selection.endsWith(" (*)"))
-        vwr.openFileAsyncSpecial(
-            selection.substring(0, selection.length() - 4), 1 + 8);
-      else
-        vwr.openFileAsyncSpecial(selection, 8);
+        recentFiles.setVisible(true);
+        String selection = recentFiles.getFile();
+        if (selection == null || selection.length() == 0)
+          return;
+        if (selection.endsWith(" (*)"))
+          vwr.openFileAsyncSpecial(
+              selection.substring(0, selection.length() - 4), 1 + 8);
+        else
+          vwr.openFileAsyncSpecial(selection, 8);
+      }
     }
-  }
 
   class ScriptWindowAction extends AbstractAction {
 
@@ -1693,7 +1694,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       int pt = (fullPathName == null ? -1 : fullPathName.lastIndexOf("|"));
       if (pt > 0)
         fullPathName = fullPathName.substring(0, pt);
-      recentFiles.notifyFileOpen(fullPathName);
+        recentFiles.notifyFileOpen(fullPathName);
       frame.setTitle(title);
     }
     if (atomSetChooser == null) {

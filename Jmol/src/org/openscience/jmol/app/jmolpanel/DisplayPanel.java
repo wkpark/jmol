@@ -88,6 +88,10 @@ public class DisplayPanel extends JPanel
     setDoubleBuffered(false);
   }
 
+  public void say(String msg) {
+    jmolPanel.say(msg);
+  }
+  
   void setViewer(Viewer vwr) {
     this.vwr = vwr;
     updateSize(false);

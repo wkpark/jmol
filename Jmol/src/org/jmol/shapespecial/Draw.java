@@ -424,24 +424,30 @@ public void initShape() {
     if (isModelPoints)
       vData.addLast(new Object[] { key, pts });
     for (int i = 0, n = pts.size(); i < n; i++) {
-      SV v = pts.get(i);
+      Object o = pts.get(i);
       P3 pt;
-      switch (v.tok) {
-      case T.bitset:
-        if (!isModelPoints && ((BS) v.value).isEmpty())
-          continue;
-        pt = vwr.ms.getAtomSetCenter((BS) v.value);
-        break;
-      case T.point3f:
-        if (isModelPoints)
-          continue;
-        //$FALL-THROUGH$
-      default:
-        pt = SV.ptValue(v);
+      if (o instanceof P3) {
+        // from Draw HKL
+        pt = (P3) o;
+      } else {
+        SV v = (SV) o;
+        switch (v.tok) {
+        case T.bitset:
+          if (!isModelPoints && ((BS) v.value).isEmpty())
+            continue;
+          pt = vwr.ms.getAtomSetCenter((BS) v.value);
+          break;
+        case T.point3f:
+          if (isModelPoints)
+            continue;
+          //$FALL-THROUGH$
+        default:
+          pt = SV.ptValue(v);
+        }
       }
       if (isModelPoints) {
         pts.set(i, SV.getVariable(pt));
-      } else {       
+      } else {
         vData.addLast(new Object[] { key, pt });
       }
     }

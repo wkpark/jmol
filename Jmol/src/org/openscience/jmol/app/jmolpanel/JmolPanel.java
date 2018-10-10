@@ -274,7 +274,10 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     if (modelAdapter != null)
       vwrOptions.put("modelAdapter", modelAdapter);
     this.vwrOptions = vwrOptions;
+    say(GT.$("Initializing 3D display...4"));
     vwr = new Viewer(vwrOptions);
+    say(GT.$("Initializing 3D display...5"));
+
     display.setViewer(vwr);
     myStatusListener.setViewer(vwr);
 
@@ -549,7 +552,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     Logger.info(str);
   }
 
-  private void say(String message) {
+  void say(String message) {
     if (jmolApp.haveDisplay)
       if (splash == null) {
         report(message);

@@ -77,14 +77,13 @@ public class JvxlCoder {
     jvxlData.nPointsY = counts[1];
     jvxlData.nPointsZ = counts[2];
     jvxlData.jvxlVolumeDataXml = volumeData.setVolumetricXml();
-    return jvxlGetFileVwr(null, jvxlData, null, title, null, true, 1, null, null);
+    return jvxlGetFile(jvxlData, null, title, null, true, 1, null, null);
   }
 
   private static boolean haveXMLUtil;
   
   /**
    * 
-   * @param vwr  for JSmol initInterface
    * @param jvxlData
    * @param meshData
    * @param title
@@ -95,17 +94,11 @@ public class JvxlCoder {
    * @param comment
    * @return JVXL file XML 
    */
-  public static String jvxlGetFileVwr(Viewer vwr, JvxlData jvxlData,
-                                   MeshData meshData, String[] title,
-                                   String msg, boolean includeHeader,
-                                   int nSurfaces, String state, String comment) {
-    if (!haveXMLUtil) {
-      // creating an instance prevents pre-loading by JavaScript
-      if (vwr.isJS)
-        Interface.getInterface("javajs.util.XmlUtil", vwr, "show");
-      haveXMLUtil = true;  
-    }
-    
+  public static String jvxlGetFile(JvxlData jvxlData, MeshData meshData,
+                                   String[] title, String msg,
+                                   boolean includeHeader, int nSurfaces,
+                                   String state, String comment) {
+    checkHaveXMLUtil();
     SB data = new SB();
     if ("TRAILERONLY".equals(msg)) {
       XmlUtil.closeTag(data, "jvxlSurfaceSet");
@@ -201,6 +194,15 @@ public class JvxlCoder {
     return jvxlSetCompressionRatio(data, jvxlData, len);
   }
 
+  private static void checkHaveXMLUtil() {
+    if (!haveXMLUtil) {
+      // creating an instance prevents pre-loading by JavaScript
+      if (Viewer.isJS)
+        Interface.getInterface("javajs.util.XmlUtil", null, "show");
+      haveXMLUtil = true;  
+    }
+  }
+
   private static void appendEncodedBitSetTag(SB sb, String name, BS bs, int count, Object[] attribs) {
     if (count < 0)
       count = BSUtil.cardinalityOf(bs);
@@ -278,6 +280,7 @@ public class JvxlCoder {
   public static String jvxlGetInfoData(JvxlData jvxlData, boolean vertexDataOnly) {
     if (jvxlData.jvxlSurfaceData == null)
       return "";
+    checkHaveXMLUtil();
     Lst<String[]> attribs = new  Lst<String[]>();
      
     int nSurfaceInts = jvxlData.nSurfaceInts;// jvxlData.jvxlSurfaceData.length();

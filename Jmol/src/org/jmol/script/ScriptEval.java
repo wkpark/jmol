@@ -1948,7 +1948,7 @@ public class ScriptEval extends ScriptExpr {
    */
   @Override
   public void loadFileResourceAsync(String fileName) throws ScriptException {
-    loadFileAsync(null, fileName, -Math.abs(fileName.hashCode()), false);    
+    loadFileAsync(null, fileName, -Math.abs(fileName.hashCode()), false);
   }
   
   /**
@@ -1986,15 +1986,17 @@ public class ScriptEval extends ScriptExpr {
       prefix = "cache://local" + prefix;
     String key = pc + "_" + i + "_" + filename;
     String cacheName;
-    if (thisContext == null || thisContext.htFileCache == null) {
+    if (thisContext == null) {
       pushContext(null, "loadFileAsync");
+    }
+    if (thisContext.htFileCache == null) {
       thisContext.htFileCache = new Hashtable<String, String>();
     }
     cacheName = thisContext.htFileCache.get(key);
     if (cacheName != null && cacheName.length() > 0) {
       // file has been loaded
       fileLoadThread = null;
-      popContext(false, false);
+      //no, problems with isosurface "?" map "?": popContext(false, false);
       vwr.queueOnHold = false;
       if ("#CANCELED#".equals(cacheName) || "#CANCELED#".equals(vwr.fm.cacheGet(cacheName, false)))
         evalError("#CANCELED#", null);
@@ -3020,7 +3022,7 @@ public class ScriptEval extends ScriptExpr {
       if (byCorner || isCenterParameter(index)) {
         // boundbox CORNERS {expressionOrPoint1} {expressionOrPoint2}
         // boundbox {expressionOrPoint1} {vector}
-        P3 pt2 = (byCorner ? centerParameter(index, ret) : getPoint3f(index, true));
+        P3 pt2 = (byCorner ? centerParameter(index, ret) : getPoint3f(index, true, true));
         index = iToken + 1;
         if (!chk)
           vwr.ms.setBoundBox(pt1, pt2, byCorner, scale);
@@ -4313,7 +4315,7 @@ public class ScriptEval extends ScriptExpr {
         if (tok == T.trajectory)
           htParams.put("isTrajectory", Boolean.TRUE);
         if (isPoint3f(i)) {
-          P3 pt = getPoint3f(i, false);
+          P3 pt = getPoint3f(i, false, true);
           i = iToken + 1;
           // first last stride
           htParams.put("firstLastStep", new int[] { (int) pt.x, (int) pt.y,
@@ -4535,14 +4537,13 @@ public class ScriptEval extends ScriptExpr {
             .append(filename.substring(1)).append(" = ")
             .append(PT.esc((String) o)).append(";\n    ").appendSB(loadScript);
         htParams.put("fileData", o);
-      } else if ((vwr.testAsync || vwr.isJS)
-          && (isAsync || filename.startsWith("?"))
-          || vwr.apiPlatform.forceAsyncLoad(filename)) {
-        localName = null;
-        filename = loadFileAsync("LOAD" + (isAppend ? "_APPEND_" : "_"),
-            filename, i, !isAppend && pc != pcResume);
+      } else {
+        filename = checkFileExists("LOAD" + (isAppend ? "_APPEND_" : "_"), 
+            isAsync, filename, filePt, !isAppend && pc != pcResume);
         // on first pass, a ScriptInterruption will be thrown; 
         // on the second pass, we will have the file name, which will be cache://localLoad_n__m
+        if (filename.startsWith("cache://")) 
+          localName = null;
       }
     }
 
@@ -4715,6 +4716,25 @@ public class ScriptEval extends ScriptExpr {
 
   }
 
+  public String checkFileExists(String prefix, boolean isAsync, String filename, int i, boolean doClear) throws ScriptException {
+    if (chk || filename.startsWith("cache://")) 
+       return filename;
+    if ((vwr.testAsync || vwr.isJS)
+        && (isAsync || filename.startsWith("?"))
+        || vwr.apiPlatform.forceAsyncLoad(filename)) {
+      filename = loadFileAsync(prefix, filename, i, doClear);
+      // on first pass, a ScriptInterruption will be thrown; 
+      // on the second pass, we will have the file name, which will be cache://localLoad_n__m
+    }
+
+    String[] fullPathNameOrError = vwr.getFullPathNameOrError(filename);
+    filename = fullPathNameOrError[0];
+    if (fullPathNameOrError[1] != null)
+      errorStr(ScriptError.ERROR_fileNotFoundException, filename
+          + ":" + fullPathNameOrError[1]);
+    return filename;
+  }
+
   private void addFilterAttribute(Map<String, Object> htParams, String filter,
                                   String key) {
     String val = PT.getQuotedOrUnquotedAttribute(filter, key);
@@ -4794,7 +4814,7 @@ public class ScriptEval extends ScriptExpr {
           pt = P3.new3(0, -1, 1);
         }
         if (isPoint3f(++i)) {
-          pt = getPoint3f(i, false);
+          pt = getPoint3f(i, false, true);
           i = iToken + 1;
         } else if (tokAt(i) == T.bitset) {
           bs = (BS) getToken(i).value;
@@ -5412,7 +5432,7 @@ public class ScriptEval extends ScriptExpr {
     case T.leftbrace:
       // {X, Y, Z} deg or {x y z deg}
       if (isPoint3f(i)) {
-        axis.setT(getPoint3f(i, true));
+        axis.setT(getPoint3f(i, true, true));
         i = iToken + 1;
         degrees = floatParameter(i++);
       } else {
@@ -6468,12 +6488,7 @@ public class ScriptEval extends ScriptExpr {
             remotePath = paramAsStr(++i);
           filename = paramAsStr(++i);
         }
-        if ((vwr.isJS || vwr.testAsync)
-            && (isAsync || filename.startsWith("?"))) {
-          filename = loadFileAsync("SCRIPT_", filename, i, true);
-          // on first pass a ScriptInterruption will be thrown; 
-          // on the second pass we will have the file name, which will be cache://local_n__m
-        }
+        filename = checkFileExists("SCRIPT_", isAsync, filename, i, true);
         if ((tok = tokAt(++i)) == T.check) {
           isCheck = true;
           tok = tokAt(++i);
@@ -6509,7 +6524,7 @@ public class ScriptEval extends ScriptExpr {
         i = -i;
       }
     } else if (filename != null && isAsync) {
-      filename = loadFileAsync("SCRIPT_", filename, i, true);
+      filename = checkFileExists("SCRIPT_", true, filename, i, true);
     }
     if (i < 0) {
       if (tokAt(i = -i) == T.leftparen) {
@@ -7323,7 +7338,7 @@ public class ScriptEval extends ScriptExpr {
       case T.offset:
         propertyName = "offset";
         if (isPoint3f(pt)) {
-          P3 pt3 = getPoint3f(pt, false);
+          P3 pt3 = getPoint3f(pt, false, true);
           // minus 1 here means from Jmol, not from PyMOL
           propertyValue = new float[] { -1, pt3.x, pt3.y, pt3.z, 0, 0, 0 };
           pt = iToken + 1;
@@ -7407,7 +7422,7 @@ public class ScriptEval extends ScriptExpr {
         str = "offset";
         if (isPoint3f(2)) {
           // PyMOL offsets -- {x, y, z} in angstroms
-          P3 pt = getPoint3f(2, false);
+          P3 pt = getPoint3f(2, false, true);
           // minus 1 here means from Jmol, not from PyMOL
           propertyValue = new float[] { -1, pt.x, pt.y, pt.z, 0, 0, 0 };
         } else if (isArrayParameter(2)) {
@@ -7888,7 +7903,7 @@ public class ScriptEval extends ScriptExpr {
       i = 2;
     }
     if (isPoint3f(i)) {
-      P3 pt = getPoint3f(i, true);
+      P3 pt = getPoint3f(i, true, true);
       bs = (iToken + 1 < slen ? atomExpressionAt(++iToken)
           : null);
       checkLast(iToken);

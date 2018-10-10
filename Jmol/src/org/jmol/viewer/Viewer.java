@@ -202,7 +202,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public boolean autoExit = false;
   public boolean haveDisplay = false;
 
-  public boolean isJS, isWebGL;
+  static public boolean isJS, isWebGL;
   public boolean isSingleThreaded;
   public boolean queueOnHold = false;
 
@@ -489,6 +489,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     }
     apiPlatform = (GenericPlatform) o;
     display = info.get("display");
+
     isSingleThreaded = apiPlatform.isSingleThreaded();
     noGraphicsAllowed = checkOption2("noDisplay", "-n");
     headless = apiPlatform.isHeadless();
@@ -2524,10 +2525,13 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public void zap(boolean notify, boolean resetUndo, boolean zapModelKit) {
+
     clearThreads();
     if (mm.modelSet == null) {
       mm.zap();
+
     } else {
+
       //setBooleanProperty("appendNew", true);
       ligandModelSet = null;
       clearModelDependentObjects();
@@ -2604,12 +2608,15 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     }
     reset(true);
     selectAll();
+
     rotatePrev1 = rotateBondIndex = -1;
     movingSelected = false;
     slm.noneSelected = Boolean.FALSE;
     setHoverEnabled(true);
+
     setSelectionHalosEnabled(false);
     tm.setCenter();
+
     am.initializePointers(1);
     setBooleanProperty("multipleBondBananas", false);
     if (!ms.getMSInfoB("isPyMOL")) {
@@ -2619,6 +2626,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     setBackgroundModelIndex(-1);
     setFrankOn(getShowFrank());
     startHoverWatcher(true);
+
     setTainted(true);
     finalizeTransformParameters();
   }

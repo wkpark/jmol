@@ -13,36 +13,25 @@ from Jmol and, though separate projects, provide the files in Jmol for final dis
 Required checkouts include:
 
 svn+ssh://svn.code.sf.net/p/smol/code, Trunk:trunk
-svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecView
-svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecViewLib
 
 Relevant files created in this project by build scripts in those projects include:
 
   appletweb/jsmol.zip
-  jars/JSpecView.jar
   
   appletweb/jsmol.zip is created using:
 
    JSmol/build_11_fromjmol.xml
-   JSmol/build_12_fromjspecview.xml 
    JSmol/build_13_tojs.xml
    
-  jars/JSpecView.jar is created using 
-
-   JSpecviewLib/build.xml
-   JSpecview/build.xml
-
 Note that if you modify Jmol source without also running the JSmol build scripts, 
 then JSmol will not reflect your modifications.
 
 The overall sequence for full HTML5 code creation
 when the Jmol or JSpecView code is modified, is as follows:
 
-1) Do all coding modifications in the Jmol and JSpecView projects. Never modify JSmol/src.
+1) Do all coding modifications in the Jmol project. Never modify JSmol/src.
 2) use jmol/buildmin.xml to create the JAR files.
-2) Build JSpecViewLib and JSpecView if there are changes there. 
-   The JSpecView*.jar files will be copied into this project.
-3) Build JSmol using the build_11.., build_12.., build_13.. 
+3) Build JSmol using the build_11.. and build_13.. 
    jsmol.zip will be created and copied to jmol/appletweb/.
 
 4) for distribution, then 
@@ -461,6 +450,7 @@ Release Note: When releasing stable version, remove "-beta"
         <include name="**/license.txt" />
         <include name="**/*.jpg" />
         <include name="**/*.gif" />
+        <include name="**/*.po" />
       	<include name="**/*.png" />
         <include name="**/*.html" />
         <include name="**/*.js" />
@@ -541,10 +531,7 @@ all support for previous versions removed
       <fileset dir="src">
         <include name="org/jmol/minimize/forcefield/data/*.txt" />
         <include name="jmol75x29x8.gif" />
-      </fileset>
-    </copy>
-    <copy todir="${applet.classes.dir}" >
-      <fileset dir="src">
+        <include name="org/jmol/translation/JmolApplet/*.po" />
         <include name="org/jmol/quantum/*.txt" />
       </fileset>
     </copy>
@@ -688,8 +675,6 @@ all support for previous versions removed
         <exclude name="**/app/JmolData.class" />
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/*"/>
-      <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
-      <fileset dir="src/org/jmol/translation/JmolApplet" includes="Messages*.class"/>
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-dir" value="build" />
@@ -729,8 +714,6 @@ all support for previous versions removed
         <exclude name="**/openscience/jmol/app/webexport/**" />
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/cli/** **/naga/**" />
-      <fileset dir="src/org/jmol/translation/Jmol" includes="Messages*.class"/>
-      <fileset dir="src/org/jmol/translation/JmolApplet" includes="Messages*.class"/>
     </jar>
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-dir" value="build" />
@@ -834,19 +817,6 @@ all support for previous versions removed
   	
     <echo message="Creating JmolApplet0*.jar" />
   	
-  	<!-- 
-    <for list="${all.JmolApplet.languages}" delimiter=","
-         param="current.Jmol.language">
-      <sequential>
-        <jar destfile="build/JmolApplet0_i18n_@{current.Jmol.language}.jar"
-             manifest="manifest/applet_i18n.txt" >
-          <fileset dir="${applet.classes.dir}">
-            <include name="org/jmol/translation/JmolApplet/@{current.Jmol.language}/**" />
-          </fileset>
-        </jar>
-      </sequential>
-    </for>
-    -->
     <jar destfile="build/JmolApplet0_Image.jar" manifest="manifest/applet.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/dialog/**" />
@@ -1075,7 +1045,6 @@ all support for previous versions removed
         <exclude name="org/jmol/multitouch/jni/*" />
         <exclude name="org/jmol/multitouch/sparshui/*" />
         <exclude name="org/jmol/popup/**/*" />
-        <exclude name="org/jmol/translation/**/*" />
         <exclude name="org/openscience/**/*" />
       	<!-- just need sparshUI gestureType.class -->
         <exclude name="com/sparshui/client/*" />
@@ -1111,21 +1080,7 @@ all support for previous versions removed
     </jar>
 
   	<echo message="Creating JmolAppletsigned0*.jar" />
-  	
-  	<!--
-    <for list="${all.JmolApplet.languages}" delimiter=","
-         param="current.Jmol.language">
-      <sequential>
-        <jar destfile="build/JmolAppletSigned0_i18n_@{current.Jmol.language}.jar"
-             manifest="manifest/applet_i18nSigned.txt" >
-             <fileset dir="${applet.classes.dir}">
-               <include name="org/jmol/translation/JmolApplet/@{current.Jmol.language}/**" />
-             </fileset>
-        </jar>
-      </sequential>
-    </for>
-	-->
-    <jar destfile="build/JmolAppletSigned0_Console.jar" manifest="manifest/appletSigned.txt">
+      <jar destfile="build/JmolAppletSigned0_Console.jar" manifest="manifest/appletSigned.txt">
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/console/**" />
       </fileset>

@@ -324,7 +324,7 @@ public class CIPData {
         BS bsRing = lstSmallRings[j];
         if (!bsRing.get(i)) 
           continue;
-        nRings.addLast(bsRing);
+				nRings.addLast(bsRing);
         if (j == 0) {
           addAzacyclicN(i);
           continue out;

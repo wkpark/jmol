@@ -525,8 +525,6 @@ public class AtomSetCollection {
 
   public int getLastAtomSetAtomIndex() {
     //Logger.debug("atomSetCount=" + atomSetCount);
-    if (ac < atomSetAtomCounts[iSet])
-      System.out.println("???");
     return ac - atomSetAtomCounts[iSet];
   }
 
@@ -1174,6 +1172,11 @@ public class AtomSetCollection {
     } else {
       bsAtoms.setBits(i0, i0 + nnow);
     }
+  }
+
+  public void checkNoEmptyModel() {
+    while (atomSetCount > 0 && atomSetAtomCounts[atomSetCount - 1] == 0)
+      atomSetCount--;
   }
 
 

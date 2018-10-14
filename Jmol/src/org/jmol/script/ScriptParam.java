@@ -214,7 +214,7 @@ abstract public class ScriptParam extends ScriptError {
     return null;
   }
 
-   public boolean isCenterParameter(int i) {
+  public boolean isCenterParameter(int i) {
     int tok = tokAt(i);
     return (tok == T.dollarsign || tok == T.leftbrace
         || tok == T.expressionBegin || tok == T.point3f || tok == T.bitset);
@@ -363,6 +363,26 @@ abstract public class ScriptParam extends ScriptError {
       plane.scale4(-1);
     }
     return plane;
+  }
+
+  public Lst<P3> getPointOrCenterVector(T t) throws ScriptException {
+    Lst<P3> data = new Lst<P3>();
+    P3 pt;
+    BS bs;
+    Lst<SV> pts = ((SV) t).getList();
+    if (pts == null)
+      invArg();
+    for (int j = 0; j < pts.size(); j++) {
+      if ((pt = SV.ptValue(pts.get(j))) != null) {
+        data.addLast(pt);
+      } else if ((bs = SV.getBitSet(pts.get(j), true)) != null) {
+        data.addLast(bs.cardinality() == 1 ? P3.newP(vwr.ms.at[bs.nextSetBit(0)]) 
+            : vwr.ms.getAtomSetCenter(bs));
+      } else {
+        invArg();
+      }
+    }
+    return data;
   }
 
   public P4 hklParameter(int i) throws ScriptException {
@@ -561,7 +581,8 @@ abstract public class ScriptParam extends ScriptError {
     int t = iToken;
     isOK = true;
     try {
-      isOK = (getPoint3f(i, true, false) != null);
+      if (getPoint3f(i, true, false) == null)
+        isOK = false;
     } catch (Exception e) {
       isOK = false;
     }
@@ -1011,26 +1032,6 @@ abstract public class ScriptParam extends ScriptError {
     if (i > 0)
       return vwr.ms.getAtomPointVector(((ScriptExpr) this).atomExpressionAt(i));
     return null;
-  }
-
-  public Lst<P3> getPointOrCenterVector(T t) throws ScriptException {
-      Lst<P3> data = new Lst<P3>();
-      P3 pt;
-      BS bs;
-      Lst<SV> pts = ((SV) t).getList();
-      if (pts == null)
-        invArg();
-      for (int j = 0; j < pts.size(); j++) {
-        if ((pt = SV.ptValue(pts.get(j))) != null) {
-          data.addLast(pt);
-        } else if ((bs = SV.getBitSet(pts.get(j), true)) != null) {
-          data.addLast(bs.cardinality() == 1 ? P3.newP(vwr.ms.at[bs.nextSetBit(0)]) 
-              : vwr.ms.getAtomSetCenter(bs));
-        } else {
-          invArg();
-        }
-      }
-      return data;
   }
 
   /**

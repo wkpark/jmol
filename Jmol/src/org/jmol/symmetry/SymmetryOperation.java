@@ -179,9 +179,7 @@ public class SymmetryOperation extends M4 {
   }
 
   void doFinalize() {
-    m03 /= 12;
-    m13 /= 12;
-    m23 /= 12;
+    div12(this);
     if (modDim > 0) {
       double[][] a = rsvs.getArray();
       for (int i = a.length - 1; --i >= 0;)
@@ -190,6 +188,13 @@ public class SymmetryOperation extends M4 {
     isFinalized = true;
   }
   
+  private static M4 div12(M4 op) {
+    op.m03 /= 12;
+    op.m13 /= 12;
+    op.m23 /= 12;
+    return op;
+  }
+
   String getXyz(boolean normalized) {
     return (normalized && modDim == 0 || xyzOriginal == null ? xyz : xyzOriginal);
   }
@@ -358,6 +363,12 @@ public class SymmetryOperation extends M4 {
     xyz = getXYZFromMatrix(this, true, false, false);
     //System.out.println("testing " + xyz + " " + this + "\n" + Escape.eAF(linearRotTrans));
     return true;
+  }
+
+  public static M4 getMatrixFromXYZ(String xyz) {
+    float[] linearRotTrans = new float[16];
+    xyz = getMatrixFromString(null, xyz, linearRotTrans, false);
+    return (xyz == null ? null : div12(M4.newA16(linearRotTrans)));  
   }
 
   /**

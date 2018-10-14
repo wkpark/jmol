@@ -104,6 +104,7 @@ import org.jmol.modelset.LabelToken;
 import org.jmol.modelset.Measurement;
 import org.jmol.modelset.MeasurementData;
 import org.jmol.modelset.MeasurementPending;
+import org.jmol.modelset.Model;
 import org.jmol.modelset.ModelSet;
 import org.jmol.modelset.Orientation;
 import org.jmol.modelset.StateScript;
@@ -9803,6 +9804,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       return null;
     }
   }
+
+  public Model getModelForAtomIndex(int iatom) {
+    return ms.am[ms.at[iatom].mi];
+  }
+
 
   public void assignAtom(int atomIndex, String element) {
     if (atomIndex < 0)

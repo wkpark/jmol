@@ -140,6 +140,8 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
   public boolean debugging;
   protected boolean requiresBSFilter;
 
+  public M3 primitiveToCrystal;
+
   public AtomSetCollection asc;
   protected BufferedReader reader;
   protected GenericBinaryDocument binaryDoc;
@@ -272,7 +274,6 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
         finalizeReaderASCR();
     } catch (Throwable e) {
       Logger.info("Reader error: " + e);
-      if (!vwr.isJS)
         e.printStackTrace();
       setError(e);
     }
@@ -509,7 +510,7 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
      * @j2sNative
      * 
      * if (e.getMessage)
-     *  s = e.getMessage()
+     *  s = e.getMessage();
      * else
      *  s = e.toString();
      */
@@ -521,7 +522,6 @@ public abstract class AtomSetCollectionReader implements GenericLineReader {
     else
       asc.errorMessage = "Error reading file at line " + ptLine
           + ":\n" + line + "\n" + s;
-    if (!vwr.isJS)
       e.printStackTrace();
   }
 

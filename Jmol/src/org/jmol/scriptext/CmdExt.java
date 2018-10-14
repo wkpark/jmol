@@ -239,7 +239,6 @@ public class CmdExt extends ScriptExt {
       e.vwr.setStringProperty("_errormessage", "" + ex);
       if (se.thisContext == null) {
         Logger.error("Error evaluating context " + ex);
-        if (!vwr.isJS)
           ex.printStackTrace();
       }
       return false;
@@ -3502,7 +3501,7 @@ public class CmdExt extends ScriptExt {
         translucentLevel = getColorTrans(eval, i, true, colorArgb);
         i = eval.iToken;
         continue;
-      case T.flat:
+      case T.flat: // removed in Jmol 14.4 -- never documented; restored in Jmol 14.29.21
       case T.collapsed:
         // COLLAPSED
         // COLLAPSED [faceCenterOffset]
@@ -3823,7 +3822,7 @@ public class CmdExt extends ScriptExt {
         if (chk)
           return "";
         // if (isApplet)
-        // evalError(GT._("The {0} command is not available for the applet.",
+        // evalError(GT.$("The {0} command is not available for the applet.",
         // "WRITE CLIPBOARD"));
       } else if (PT.isOneOf(val.toLowerCase(), JC.IMAGE_TYPES)) {
         if (tokAtArray(pt + 1, args) == T.integer
@@ -5111,7 +5110,7 @@ public class CmdExt extends ScriptExt {
             if (u == null)
               u = vwr.getSymTemp();
             u.toFromPrimitive(true,
-                stype.length() == 0 ? 'P' : stype.charAt(0), oabc);
+                stype.length() == 0 ? 'P' : stype.charAt(0), oabc, (M3) vwr.getCurrentModelAuxInfo().get("primitiveToCrystal"));
             if (!isPrimitive) {
               SimpleUnitCell.getReciprocal(oabc, oabc, scale);
             }

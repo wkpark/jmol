@@ -81,7 +81,6 @@ import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 
 public class ScriptEval extends ScriptExpr {
-
   
   /*
    * To make this a bit more manageable, I separated ScriptEvaluator into four parts:
@@ -326,7 +325,7 @@ public class ScriptEval extends ScriptExpr {
 
   // specific to current statement:
   
-  protected int pc; // program counter
+  public int pc; // program counter
   public String thisCommand;
   public String fullCommand;
   private int lineEnd;
@@ -1016,7 +1015,7 @@ public class ScriptEval extends ScriptExpr {
 
   private JmolParallelProcessor parallelProcessor;
 
-  private int pcResume = -1;
+  public int pcResume = -1;
 
   @Override
   @SuppressWarnings("unchecked")
@@ -1948,7 +1947,7 @@ public class ScriptEval extends ScriptExpr {
    */
   @Override
   public void loadFileResourceAsync(String fileName) throws ScriptException {
-    loadFileAsync(null, fileName, -Math.abs(fileName.hashCode()), false);
+    loadFileAsync(null, fileName, -Math.abs(fileName.hashCode()), false);    
   }
   
   /**
@@ -4540,10 +4539,10 @@ public class ScriptEval extends ScriptExpr {
       } else {
         filename = checkFileExists("LOAD" + (isAppend ? "_APPEND_" : "_"), 
             isAsync, filename, filePt, !isAppend && pc != pcResume);
-        // on first pass, a ScriptInterruption will be thrown; 
-        // on the second pass, we will have the file name, which will be cache://localLoad_n__m
         if (filename.startsWith("cache://")) 
           localName = null;
+        // on first pass, a ScriptInterruption will be thrown; 
+        // on the second pass, we will have the file name, which will be cache://localLoad_n__m
       }
     }
 
@@ -4719,7 +4718,7 @@ public class ScriptEval extends ScriptExpr {
   public String checkFileExists(String prefix, boolean isAsync, String filename, int i, boolean doClear) throws ScriptException {
     if (chk || filename.startsWith("cache://")) 
        return filename;
-    if ((vwr.testAsync || vwr.isJS)
+    if ((vwr.testAsync || Viewer.isJS)
         && (isAsync || filename.startsWith("?"))
         || vwr.apiPlatform.forceAsyncLoad(filename)) {
       filename = loadFileAsync(prefix, filename, i, doClear);
@@ -6476,19 +6475,20 @@ public class ScriptEval extends ScriptExpr {
         if (filename.equalsIgnoreCase("inline")) {
           theScript = parameterExpressionString(++i, (doStep ? slen - 1 : 0));
           i = iToken;
+        } else {
+          while (filename.equalsIgnoreCase("localPath")
+              || filename.equalsIgnoreCase("remotePath")
+              || filename.equalsIgnoreCase("scriptPath")) {
+            if (filename.equalsIgnoreCase("localPath"))
+              localPath = paramAsStr(++i);
+            else if (filename.equalsIgnoreCase("scriptPath"))
+              scriptPath = paramAsStr(++i);
+            else
+              remotePath = paramAsStr(++i);
+            filename = paramAsStr(++i);
+          }
+          filename = checkFileExists("SCRIPT_", isAsync, filename, i, true);
         }
-        while (filename.equalsIgnoreCase("localPath")
-            || filename.equalsIgnoreCase("remotePath")
-            || filename.equalsIgnoreCase("scriptPath")) {
-          if (filename.equalsIgnoreCase("localPath"))
-            localPath = paramAsStr(++i);
-          else if (filename.equalsIgnoreCase("scriptPath"))
-            scriptPath = paramAsStr(++i);
-          else
-            remotePath = paramAsStr(++i);
-          filename = paramAsStr(++i);
-        }
-        filename = checkFileExists("SCRIPT_", isAsync, filename, i, true);
         if ((tok = tokAt(++i)) == T.check) {
           isCheck = true;
           tok = tokAt(++i);
@@ -6524,7 +6524,7 @@ public class ScriptEval extends ScriptExpr {
         i = -i;
       }
     } else if (filename != null && isAsync) {
-      filename = checkFileExists("SCRIPT_", true, filename, i, true);
+      filename = checkFileExists("SCRIPT_", isAsync, filename, i, true);
     }
     if (i < 0) {
       if (tokAt(i = -i) == T.leftparen) {
@@ -6546,8 +6546,9 @@ public class ScriptEval extends ScriptExpr {
       chk = isCmdLine_c_or_C_Option = true;
     pushContext(null, "SCRIPT");
     contextPath += " >> " + filename;
-    if (theScript == null ? compileScriptFileInternal(filename, localPath,
-        remotePath, scriptPath) : compileScript(null, theScript, false)) {
+    if (theScript == null
+        ? compileScriptFileInternal(filename, localPath, remotePath, scriptPath)
+        : compileScript(null, theScript, false)) {
       this.pcEnd = pcEnd;
       this.lineEnd = lineEnd;
       while (pc < lineNumbers.length && lineNumbers[pc] < lineNumber)
@@ -6559,10 +6560,9 @@ public class ScriptEval extends ScriptExpr {
 
       if (contextVariables == null)
         contextVariables = new Hashtable<String, SV>();
-      contextVariables.put(
-          "_arguments",
-          (params == null ? SV.getVariableAI(new int[] {}) : SV
-              .getVariableList(params)));
+      contextVariables.put("_arguments",
+          (params == null ? SV.getVariableAI(new int[] {})
+              : SV.getVariableList(params)));
       contextVariables.put("_argcount",
           SV.newI(params == null ? 0 : params.size()));
 

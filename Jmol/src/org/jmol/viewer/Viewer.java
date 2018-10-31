@@ -203,7 +203,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public boolean autoExit = false;
   public boolean haveDisplay = false;
 
-  static public boolean isJS, isWebGL;
+  static public boolean isJS, isSwingJS, isWebGL;
   public boolean isSingleThreaded;
   public boolean queueOnHold = false;
 

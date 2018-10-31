@@ -37,6 +37,7 @@ import javajs.util.BS;
 import org.jmol.modelset.BondSet;
 import org.jmol.util.BSUtil;
 import org.jmol.util.Escape;
+import org.jmol.viewer.Viewer;
 
 import javajs.api.JSONEncodable;
 import javajs.util.Lst;
@@ -274,10 +275,11 @@ public class SV extends T implements JSONEncodable {
       return newV(barray, x);
     if (x instanceof ScriptContext)
       return newV(context, x);
+      // not necessary for SwingJS
+    if (isASV(x))
+      return getVariableAV((SV[]) x);
     // rest are specific array types supported
     // DO NOT ADD MORE UNLESS YOU CHANGE isArray(), above
-    if (x instanceof SV[])
-      return getVariableAV((SV[]) x);
     if (AU.isAI(x))
       return getVariableAI((int[]) x);
     if (AU.isAB(x))
@@ -303,6 +305,19 @@ public class SV extends T implements JSONEncodable {
     if (AU.isAFloat(x))
       return newV(listf, x);
     return newJSVar(x);
+  }
+
+  private static boolean isASV(Object x) {
+    if (!Viewer.isSwingJS) {
+      /**
+       * @j2sNative
+       * 
+       * return x && x[0] && x[0].__CLASS_NAME__ == "JS.SV";
+       * 
+       */
+      {}
+    }
+    return  x instanceof SV[];
   }
 
   /**

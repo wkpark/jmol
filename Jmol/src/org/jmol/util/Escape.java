@@ -408,7 +408,9 @@ public class Escape {
       sb.append("[");
       int imax = ((String[]) info).length;
       for (int i = 0; i < imax; i++) {
-        sb.append(sep).append(PT.esc(((String[]) info)[i]));
+        // this fix, from PT.esc to toReadable, is not necessary
+        // for SwingJS
+        sb.append(sep).append(toReadable(null, ((String[]) info)[i]));
         sep = ",";
       }
       sb.append("]");

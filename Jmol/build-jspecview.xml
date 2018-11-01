@@ -16,18 +16,19 @@
 	  </then></if>
 
 	<property name="debug" value="off" />
-	<property file="TODO.txt" prefix="TODO.txt" />
-	<property file="build_info.properties"/>
+	<property file="jsv/TODO.txt" prefix="TODO.txt" />
+	<property file="jsv/build_info.properties"/>
 	<property name="build.number" 		value="${build.major.number}.${build.minor.number}.${build.revision.number}"/>	
+	<property name="manifest.dir" 		value="jsv/manifests"/>
 	<property name="src.dir"     		value="src"/>
 	<property name="lib.dir"     		value="jars"/>
 	<property name="bin.dir" 			value="bin"/>
     <property name="build.dir"   		value="build"/>
-    <property name="extras.dir"         value="extras-jspecview" />
+    <property name="extras.dir"         value="jsv/extras" />
     <property name="dist.dir"           value="dist" />
     <property name="dist.zip"           value="${dist.dir}/jspecview.zip" />
 
-	<property name="selfsign.store" value="certificate/JSVcertificate.store" />
+	<property name="selfsign.store" value="jsv/certificate/JSVcertificate.store" />
 	<property name="selfsign.storetype" value="jks" />
 	<property name="selfsign.storepass" value="JSV2013" />
 	<property name="selfsign.alias" value="JSVcertificate" />
@@ -37,7 +38,6 @@
         <pathelement location="bin"/>
         <pathelement location="${lib.dir}/netscape.jar"/>
     	<!-- pathelement location="${lib.dir}/${itext.jar}"/ -->
-        <path refid="jspecviewlib.classpath"/>
     </path>
 
 	<target name="current-number">
@@ -45,7 +45,7 @@
 	</target>
 
 	<target name="revision">
-	    <propertyfile  file="build_info.properties">
+	    <propertyfile  file="jsv/build_info.properties">
 	    	<entry key="build.revision.number" type="int" operation="+" value="1" pattern="0"/>
 	    </propertyfile>
 	</target>
@@ -69,7 +69,7 @@
 		<antcall target="revision" />
         <mkdir dir="${build.dir}"/>
 	    <copy todir="${bin.dir}/jspecview/common" >
-	      <fileset dir="">
+	      <fileset dir="jsv">
 	        <include name="TODO.txt" />
 	      </fileset>
 			  <filterchain>
@@ -77,12 +77,12 @@
 			      <comment value="#" />
 			    </striplinecomments>
 			    <linecontains>
-			      <contains value="Jmol.___" />
+			      <contains value="___" />
 			    </linecontains>
 			  </filterchain>
 	    </copy>
 	    <unjar dest="${bin.dir}" src="${lib.dir}/netscape.jar"/>
-        <jar destfile="${build.dir}/JSpecView.app.${build.number}_unsigned.jar" manifest="manifests/application.txt">
+        <jar destfile="${build.dir}/JSpecView.app.${build.number}_unsigned.jar" manifest="${manifest.dir}/application.txt">
 		   	<fileset dir="${bin.dir}">
 		      <include name="**/*"/>
 			  <exclude name="jspecview/*js*/*"/>
@@ -105,7 +105,7 @@
         <mkdir dir="${build.dir}"/>
 		
 	    <copy todir="${bin.dir}/jspecview/common" >
-	      <fileset dir="">
+	      <fileset dir="jsv">
 	        <include name="TODO.txt" />
 	      </fileset>
 			  <filterchain>
@@ -119,7 +119,7 @@
 	    </copy>
 
 	    <unjar dest="${bin.dir}" src="${lib.dir}/netscape.jar"/>
-        <jar destfile="${build.dir}/JSpecView.applet.${build.number}_unsigned.jar" manifest="manifests/applet.txt">
+        <jar destfile="${build.dir}/JSpecView.applet.${build.number}_unsigned.jar" manifest="${manifest.dir}/applet.txt">
         	<fileset dir="${bin.dir}">
         		<exclude name="jspecview/application/**/*"/>
   		        <exclude name="javajs/swing/**/*"/>
@@ -146,7 +146,7 @@
     <antcall target="revision" />
         <mkdir dir="${build.dir}"/>
 	    <unjar dest="${bin.dir}" src="${lib.dir}/netscape.jar"/>
-        <jar destfile="${build.dir}/JSpecViewAppletSigned.jar" manifest="manifests/appletSigned.txt">
+        <jar destfile="${build.dir}/JSpecViewAppletSigned.jar" manifest="${manifest.dir}/appletSigned.txt">
         	<fileset dir="${bin.dir}">
   		      <exclude name="jspecview/application/**/*"/>
   		      <exclude name="javajs/swing/**/*"/>

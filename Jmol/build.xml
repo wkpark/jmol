@@ -6,9 +6,9 @@
 
 Developer note from Bob Hanson, 12/2016
 
-The Jmol project uses resources from two other projects, JSmol and JSpecView.
-You can modify Jmol without those projects, but both of these projects share code
-from Jmol and, though separate projects, provide the files in Jmol for final distribution.
+The Jmol project uses resources from the JSmol project.
+You can modify Jmol without this project, but then your distribution will not 
+have the jsmol.zip file.
 
 Required checkouts include:
 
@@ -27,7 +27,7 @@ Note that if you modify Jmol source without also running the JSmol build scripts
 then JSmol will not reflect your modifications.
 
 The overall sequence for full HTML5 code creation
-when the Jmol or JSpecView code is modified, is as follows:
+when the Jmol code is modified, is as follows:
 
 1) Do all coding modifications in the Jmol project. Never modify JSmol/src.
 2) use jmol/buildmin.xml to create the JAR files.
@@ -36,8 +36,9 @@ when the Jmol or JSpecView code is modified, is as follows:
 
 4) for distribution, then 
 
-	a) run jmol/builddist.xml
-	b) run jmol/tools/jmol-release.xml
+	a) run buld-jspecview.xml if you have modified that code
+	b) run jmol/builddist.xml
+	c) run jmol/tools/jmol-release.xml
 
   -->
 	
@@ -591,7 +592,6 @@ all support for previous versions removed
         <uptodate targetfile="${appjars.dir}">
           <srcfiles dir="${lib.dir}" includes="${naga.jar}"/>
           <srcfiles dir="${lib.dir}" includes="${commons-cli.jar}"/>
-          <srcfiles dir="${lib.dir}" includes="JSpecView.jar"/>
         </uptodate>
         <uptodate targetfile="build/libjars.timestamp"
                   srcfile="${appjars.dir}"/>
@@ -624,7 +624,6 @@ all support for previous versions removed
     <!-- unjar dest="${appjars.dir}" src="${lib.dir}/${itext.jar}"/ -->
     <unjar dest="${appjars.dir}" src="${lib.dir}/${naga.jar}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/${commons-cli.jar}"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/JSpecView.jar"/>
   	<delete dir="${appjars.dir}/javajs" />
   	<delete dir="${appjars.dir}/org/jmol" />
   	<delete dir="${appjars.dir}/org/apache/tools" />
@@ -1373,9 +1372,8 @@ all support for previous versions removed
         <include name="Jmol.jar" />
         <include name="JmolData.jar" />
         <include name="JmolLib.jar" />
-      </fileset>
-      <fileset dir="jars">
         <include name="JSpecView.jar" />
+        <include name="jspecview.properties" />
       </fileset>
       <fileset dir=".">
         <include name="jmol" />
@@ -1902,50 +1900,5 @@ all support for previous versions removed
     </exec>
   </target>
 	
-	<target name="buildJSpecView">
-
-		<echo message="getting application icons and resources"/>
-        <copy todir="${bin.dir}/jspecview/java/icons">
-          <fileset dir="${src.dir}/jspecview/java/icons"/>
-        </copy>
-        <copy todir="${bin.dir}/jspecview/application/icons">
-          <fileset dir="${src.dir}/jspecview/application/icons"/>
-        </copy>
-        <mkdir dir="${bin.dir}/jspecview/application/resources"/>
-        <copy todir="${bin.dir}/jspecview/application/resources">
-          <fileset dir="${src.dir}/jspecview/application/resources"/>
-        </copy>	
-	</target>
-	
-	<target name="make-jspecview-application-jar" description="Make JSpecView application jar">
-		<antcall target="revision" />
-	    <copy todir="bin/jspecview/common" >
-	      <fileset dir="">
-	        <include name="TODO.txt" />
-	      </fileset>
-			  <filterchain>
-			    <striplinecomments>
-			      <comment value="#" />
-			    </striplinecomments>
-			    <linecontains>
-			      <contains value="Jmol.___" />
-			    </linecontains>
-			  </filterchain>
-	    </copy>
-	    <unjar dest="bin" src="bin/netscape.jar"/>
-        <jar destfile="${build.dir}/${ant.project.name}.app.${build.number}_unsigned.jar" manifest="manifests/application.txt">
-		   	<fileset dir="${bin.dir}">
-		      <include name="**/*"/>
-			  <exclude name="jspecview/*js*/*"/>
-		   	</fileset>
-        	<fileset dir="${jsvlib.dir}">
-  		      <include name="**/*"/>
-    		  <exclude name="org/jmol/awtjs/swing/**/*"/>
-            </fileset>
-        </jar>
-		<copy overwrite="true" file="${build.dir}/${ant.project.name}.app.${build.number}_unsigned.jar"
-			tofile="${build.dir}/JSpecView.jar">
-		</copy>
-</target>
   	
 </project>

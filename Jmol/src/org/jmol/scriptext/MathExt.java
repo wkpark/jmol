@@ -2390,7 +2390,7 @@ public class MathExt {
   private boolean evaluatePlane(ScriptMathProcessor mp, SV[] args, int tok)
       throws ScriptException {
     if (tok == T.hkl && args.length != 3 || tok == T.intersection
-        && args.length != 2 && args.length != 3 || args.length == 0
+        && args.length != 2 && args.length != 3 && args.length != 4 || args.length == 0
         || args.length > 4)
       return false;
     P3 pt1, pt2, pt3;
@@ -2444,7 +2444,7 @@ public class MathExt {
         return mp.addXPt4(e.getHklPlane(P3.new3(SV.fValue(args[0]),
             SV.fValue(args[1]), SV.fValue(args[2]))));
       case T.intersection:
-        pt1 = mp.ptValue(args[0], null);
+        pt1 = mp.ptValue(args[0], null); 
         pt2 = mp.ptValue(args[1], null);
         if (pt1 == null || pt2 == null)
           return mp.addXStr("");
@@ -2464,11 +2464,34 @@ public class MathExt {
         pt3 = mp.ptValue(args[2], null);
         if (pt3 == null)
           return mp.addXStr("");
+        // intersection(ptLine, vLine, ptCenter, radius)
         // intersection(ptLine, vLine, pt2); 
-        // IE intersection of plane perp to line through pt2
+        //    IE intersection of plane perp to line through pt2
         V3 v = new V3();
+        pt3 = P3.newP(pt3);
+        if (args.length == 3) {
+          // intersection(ptLine, vLine, pt2); 
+          // IE intersection of plane perp to line through pt2
+          Measure.projectOntoAxis(pt3, pt1, vLine, v);
+          return mp.addXPt(pt3);
+        }
+        // intersection(ptLine, vLine, ptCenter, radius)
+        // IE intersection of a pine with a sphere -- return list of 0, 1, or 2 points
+        float r = SV.fValue(args[3]);
+        P3 ptCenter = P3.newP(pt3);
         Measure.projectOntoAxis(pt3, pt1, vLine, v);
-        return mp.addXPt(pt3);
+        float d = ptCenter.distance(pt3);
+        Lst<P3> l = new Lst<P3>();
+        if (d == r) {
+          l.addLast(pt3);
+        } else if (d < r) {
+          d = (float) Math.sqrt(r * r - d * d);
+          v.scaleAdd2(d, vLine, pt3);
+          l.addLast(P3.newP(v));
+          v.scaleAdd2(-d, vLine, pt3);
+          l.addLast(P3.newP(v));
+        }
+        return mp.addXList(l);
       }
       switch (args[0].tok) {
       case T.integer:

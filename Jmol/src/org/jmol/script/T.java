@@ -706,6 +706,7 @@ public class T {
   public final static int write            = 32 | 0 << 9 | mathfunc | scriptCommand;
   public final static int __               = 33 | 0 << 9 | mathfunc | mathproperty; // same as getProperty 
   public final static int pointgroup       = 34 | 0 << 9 | mathfunc;
+  public final static int intersection     = 35 | 0 << 9 | mathfunc;
 
 
   // xxx(a)
@@ -766,10 +767,10 @@ public class T {
   // xxx(a,b,c)
   
   public final static int hkl          = 1 | 3 << 9 | mathfunc;
-  public final static int intersection = 2 | 3 << 9 | mathfunc;
   public final static int prompt       = 3 | 3 << 9 | mathfunc | mathExpressionCommand;
   public final static int random       = 4 | 3 << 9 | mathfunc;
   public final static int select       = 5 | 3 << 9 | mathfunc | mathproperty | atomExpressionCommand;
+
 
   // ___.xxx(a,b,c)
   

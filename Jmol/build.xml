@@ -4,6 +4,11 @@
   -->
 <!--
 
+Developer note from Bob Hanson, 1/2019
+
+JmolApplet*.jar no longer included in JSmol.zip
+
+
 Developer note from Bob Hanson, 12/2016
 
 The Jmol project uses resources from the JSmol project.
@@ -675,6 +680,9 @@ all support for previous versions removed
       </fileset>
       <fileset dir="${appjars.dir}" includes="**/*"/>
     </jar>
+
+    <echo message="Creating Jmol.jar -- if this fails, check to see that build/Jmol.jar is not open." />
+
     <antcall target="sign-jar-file">
       <param name="sign-jar-file-dir" value="build" />
       <param name="sign-jar-file-name"  value="Jmol.jar" />
@@ -1383,6 +1391,16 @@ all support for previous versions removed
         <include name="*.txt" />
       </fileset>
     </copy>
+	    <copy todir="build/dist/jmol-${version}/applet" >
+	      <fileset dir="build">
+	        <include name="*Applet*.jar" />
+	      </fileset>
+	    </copy>
+	    <copy todir="build/dist/jmol-${version}/applet" >
+	      <fileset dir="jnlp">
+	        <include name="*.jnlp" />
+	      </fileset>
+	    </copy>
     <copy file="src/org/jmol/viewer/Jmol.properties" tofile="build/dist/jmol-${version}/CHANGES.txt" />
     <chmod perm="ugo+rx">
       <fileset dir="build/dist/jmol-${version}">

@@ -149,7 +149,8 @@ abstract class ScriptTokenParser {
       }
     }
 
-    if ((isNewSet || isSetBrace) && size < ptNewSetModifier + 2) {
+    // must avoid roll-over to negative number in JavaScript
+    if ((isNewSet || isSetBrace) && ptNewSetModifier != Integer.MAX_VALUE && size < ptNewSetModifier + 2) {
       if (!isNewSet || !haveMacro)
         return commandExpected();
       htUserFunctions.put((String) atokenInfix[0].value, Boolean.TRUE);

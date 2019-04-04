@@ -5,12 +5,12 @@
 	<classpathentry kind="src" path="examples/externalAppletControls"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry excluding="org/jmol/screensaver/JmolScreensaver.java" kind="src" path="screensaver/src/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="jars/netscape.jar"/>
 	<classpathentry kind="lib" path="screensaver/jars/saverbeans-api.jar"/>
 	<classpathentry kind="lib" path="jars/junit.jar"/>
 	<classpathentry kind="lib" path="jars/naga-3_0.jar"/>
 	<classpathentry kind="lib" path="jars/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="tools/jsch.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1769,7 +1769,7 @@ public class MathExt {
         propertyName = "atomInfo." + propertyName;
     }
     Object propertyValue = "";
-    if (propertyName.equalsIgnoreCase("fileContents") && args.length > 2) {
+    if (propertyName.equalsIgnoreCase("fileContents") && args.length >= 2) {
       String s = SV.sValue(args[1]);
       for (int i = 2; i < args.length; i++)
         s += "|" + SV.sValue(args[i]);

@@ -163,13 +163,17 @@ public enum ScriptToken {
 
   public static Map<String, ScriptToken> htParams;
 
-  public static ScriptToken getScriptToken(String name) {
+  private static Map<String, ScriptToken> getParams() {
     if (htParams == null) {
       htParams = new Hashtable<String, ScriptToken>();
       for (ScriptToken item : values())
         htParams.put(item.name(), item);
     }
-    ScriptToken st = htParams.get(name.toUpperCase());
+    return htParams;
+  }
+  
+  public static ScriptToken getScriptToken(String name) {
+    ScriptToken st = getParams().get(name.toUpperCase());
     return (st == null ? UNKNOWN : st);
   }
 
@@ -183,7 +187,7 @@ public enum ScriptToken {
       if (st != null)
         list.addLast(st);
     } else {
-      for (Entry<String, ScriptToken> entry : htParams.entrySet())
+      for (Entry<String, ScriptToken> entry : getParams().entrySet())
         if ((name == null || entry.getKey().startsWith(name)) 
         		&& entry.getValue().tip != null)
           list.addLast(entry.getValue());

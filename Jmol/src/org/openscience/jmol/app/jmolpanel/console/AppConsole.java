@@ -1020,7 +1020,8 @@ public class AppConsole extends JmolConsole implements EnterListener, JmolDropEd
     public synchronized void insertString(int offs, String str, AttributeSet a)
         throws BadLocationException {
       int ichNewline = str.indexOf('\n');
-      if (ichNewline != 0) {
+      if (ichNewline != 0 || str != "\n" && str.length() > 0) {
+        // BH 2019.04.17 fixes problem of pasting lines starting with "\n" not working
         if (offs < offsetAfterPrompt) {
           offs = getLength();
         }

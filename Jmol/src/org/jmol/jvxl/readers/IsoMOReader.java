@@ -208,9 +208,16 @@ class IsoMOReader extends AtomDataReader {
         energy = (Float) mo.get("energy");
     }
 
-    if (line.indexOf("%E") >= 0)
-      line = PT.formatStringS(line, "E", energy != null && ++rep != 0 ? ""
-          + energy : "");
+    if (line.indexOf("%E") >= 0) {
+      line = PT.formatStringS(line, "E",
+          energy != null && ++rep != 0 ? "" + energy : "");
+    } else if (energy != null) {
+        String s = PT.formatStringF(line, "E", energy.floatValue());
+        if (s != line) {
+          line = s;
+          rep++;
+        }
+    }
     if (line.indexOf("%U") >= 0)
       line = PT.formatStringS(line, "U",
           energy != null && params.moData.containsKey("energyUnits")
@@ -366,7 +373,6 @@ class IsoMOReader extends AtomDataReader {
 
   private boolean qSetupDone;
 
-  @SuppressWarnings("unchecked")
   private boolean setupCalculation() {
     qSetupDone = true;
     switch (params.qmOrbitalType) {

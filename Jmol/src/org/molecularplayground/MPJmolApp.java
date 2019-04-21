@@ -127,6 +127,8 @@ public class MPJmolApp implements JsonNioClient {
   }
   
   public MPJmolApp(int port) {
+    System.out.println("MPJmolApp alive");
+    System.err.println("MPJmolApp alive on err");
     startJsonNioKiosk(port);
   }
 
@@ -146,6 +148,8 @@ public class MPJmolApp implements JsonNioClient {
       String script = "cd \"\"; " + viewer.getFileAsString3("MPJmolAppConfig.spt", false, null) + ";";
       Logger.info("startJsonNioKiosk on port " + port);
       Logger.info(script);
+      System.out.println(script);
+      System.err.println(script);
       if (script.indexOf("java.io") >= 0)
         script = "";
       String s = PT.rep(script.toLowerCase(), " ", "");
@@ -173,7 +177,7 @@ public class MPJmolApp implements JsonNioClient {
       }
       Logger.info("startJsonNioKiosk: " + defaultScript + script);
       viewer.scriptWait(defaultScript + script);
-      contentDisabled = JsonNioService.getJmolValueAsString(viewer, "NIOcontentDisabled").equals("true");
+      contentDisabled = false;//JsonNioService.getJmolValueAsString(viewer, "NIOcontentDisabled").equals("true");
       Logger.info("startJsonNioKiosk: contentDisabled=" + contentDisabled);
       
       service = JmolPanel.getJsonNioServer();

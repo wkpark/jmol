@@ -351,8 +351,10 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   }
 
   private void setEnabled() {
-    contentDisabled = (getJmolValueAsString(vwr, "NIOcontentDisabled").equals("true"));
+    System.out.println("OK -- JSONNIOSERVICE");
+    contentDisabled = false;//(getJmolValueAsString(vwr, "NIOcontentDisabled").equals("true"));
     motionDisabled = (getJmolValueAsString(vwr, "NIOmotionDisabled").equals("true"));
+    System.out.println("JsonNIOService setEnabled contentdisabled=" + contentDisabled + " motionDisabled=" + motionDisabled);
   } 
 
   public static String getJmolValueAsString(Viewer vwr, String var) {

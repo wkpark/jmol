@@ -16,7 +16,7 @@ This server is then also called by a web page for web-based interaction
 
 */
 
-setlogfile "dblog"
+set logfile "c:/temp/dblog.txt"
 log "$CLEAR$"
   
 allowRemote = false

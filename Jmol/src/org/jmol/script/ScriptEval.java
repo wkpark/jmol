@@ -3896,6 +3896,11 @@ public class ScriptEval extends ScriptExpr {
     if (chk && !isCmdLine_c_or_C_Option)
       return;
     String name = ((String) getToken(0).value).toLowerCase();
+    if (tokAt(1) == T.opEQ && tokAt(2) == T.none) {
+      // _xxx = null;
+      vwr.removeFunction(name);
+      return;
+    }
     if (!vwr.isFunction(name))
       error(ERROR_commandExpected);
     Lst<SV> params = (slen == 1 || slen == 3 && tokAt(1) == T.leftparen

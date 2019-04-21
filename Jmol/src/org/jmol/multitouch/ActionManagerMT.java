@@ -29,8 +29,6 @@ import javajs.awt.GenericPlatform;
 import javajs.awt.event.Event;
 import javajs.util.Lst;
 
-
-
 import org.jmol.api.Interface;
 import org.jmol.api.JmolTouchSimulatorInterface;
 import org.jmol.util.Logger;

@@ -298,11 +298,11 @@ public class PanelData implements EventManager {
 		nSpectra = spectra.size();
 		this.spectra = spectra;
 		commonFilePath = spectra.get(0).getFilePath();
-		for (int i = 0; i < nSpectra; i++)
-			if (!commonFilePath.equalsIgnoreCase(spectra.get(i).getFilePath())) {
-				commonFilePath = null;
-				break;
-			}
+		  for (int i = 0; i < nSpectra; i++)
+		    if (!commonFilePath.equalsIgnoreCase(spectra.get(i).getFilePath())) {
+		      commonFilePath = null;
+		      break;
+		    }
 		setGraphSets(LinkMode.NONE);
 	}
 
@@ -462,12 +462,9 @@ public class PanelData implements EventManager {
 		if (withCoords && coordStr != null)
 			drawCoordinates(gFront, top, thisWidth - right, top - 20);
 		if (addFilePath && taintedAll) {
-			String s = (commonFilePath != null ? commonFilePath
-					: graphSets.size() == 1 && currentGraphSet.getTitle(true) != null ? getSpectrum()
-							.getFilePath() : null);
-			if (s != null) {
-				printFilePath(gMain, left, height, s);
-			}
+			printFilePath(gMain, left, height, commonFilePath != null ? commonFilePath
+          : graphSets.size() == 1 && currentGraphSet.getTitle(true) != null ? getSpectrum()
+              .getFilePath() : null);
 		}
 		if (isPrinting) {
 			printVersion(gMain, height);
@@ -497,6 +494,8 @@ public class PanelData implements EventManager {
 	}
 
 	public void printFilePath(Object g, int x, int y, String s) {
+	  if (s == null)
+	    return;
 		x *= scalingFactor;
 		y *= scalingFactor;
 		if (s.indexOf("?") > 0)
@@ -1304,7 +1303,7 @@ public class PanelData implements EventManager {
 		Object[][] data = new Object[numSpectra][];
 		String f1 = getSpectrumAt(0).getFilePath();
 		String f2 = getSpectrumAt(numSpectra - 1).getFilePath();
-		boolean useFileName = !f1.equals(f2);
+		boolean useFileName = f1 != null && f2 != null && !f1.equals(f2);
 
 		for (int index = 0; index < numSpectra; index++) {
 			Object[] cols = new Object[3];

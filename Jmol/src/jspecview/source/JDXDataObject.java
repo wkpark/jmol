@@ -29,7 +29,17 @@ public abstract class JDXDataObject extends JDXHeader {
   protected String filePathForwardSlash;
   public boolean isSimulation;
   
+  protected String inlineData;
 
+  public void setInlineData(String data) {
+    inlineData = data;
+    
+  }
+  
+  public String getInlineData() {
+    return inlineData;
+  }
+  
   public String sourceID = "";
 
   public void setFilePath(String filePath) {
@@ -37,6 +47,10 @@ public abstract class JDXDataObject extends JDXHeader {
   		filePathForwardSlash = (this.filePath = filePath.trim()).replace('\\','/');
   }
 
+  /**
+   * The path to the file
+   * @return path to file or [inline] (if loaded inline)
+   */
   public String getFilePath() {
     return filePath;
   }

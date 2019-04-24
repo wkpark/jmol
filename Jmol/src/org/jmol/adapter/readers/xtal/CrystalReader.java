@@ -415,7 +415,6 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
     discardLinesUntilContains("X(");
     float f = (line.indexOf("AU") >= 0 ? ANGSTROMS_PER_BOHR : 1);
-    System.out.println(f);
     discardLinesUntilContains("**");
     for (int i = 1; i <= n; i++) {
       if (isTLAP) {
@@ -439,17 +438,18 @@ public class CrystalReader extends AtomSetCollectionReader {
           f * parseFloatStr(tokens[1]), 
           f * parseFloatStr(tokens[2]));
       String type = null;
-      switch (tokens[3]) {
-      case "(3,-3)":
+      switch ("-3,-1,+1,+3".indexOf(tokens[3].substring(3,5))) {
+      /////////0..3..6..9
+      case 0:
         type = "nuclei";
         break;
-      case "(3,-1)":
+      case 3:
         type = "bonds";
         break;
-      case "(3,+1)":
+      case 6:
         type = "rings";
         break;
-      case "(3,+3)":
+      case 9:
         type = "cages";
         break;
       default:
@@ -458,35 +458,92 @@ public class CrystalReader extends AtomSetCollectionReader {
       }
       float rho = parseFloatStr(tokens[4]);
       float lap = parseFloatStr(tokens[5]);
-      float[] eigenvalues = new float[] {parseFloatStr(tokens[6]), parseFloatStr(tokens[7]), parseFloatStr(tokens[8])};
+      float[] evalues = new float[] {parseFloatStr(tokens[6]), parseFloatStr(tokens[7]), parseFloatStr(tokens[8])};
 
       Lst<Object> entry = htCriticalPoints.get(type);      
       if (entry == null) {
         htCriticalPoints.put(type,  entry = new Lst<Object>());
       }
-      while(rd().length() == 0) {}
-      // could dissect out atom info here. 
-      String line1 = line, line2 = rd(), line3 = rd();
-      String[] info = new String[] { line1.substring(0,52).trim(), 
-          line2.substring(0,52).trim(), 
-          line3.substring(0,52).trim() };
-      tokens = PT.getTokens(line1.substring(53)
-          + line2.substring(53) 
-          + line3.substring(53));
-      double[][] eigenvectors = fill3x3(tokens, 0);
       
-//      Tensor t = new Tensor().setFromAsymmetricTensor(l, "cp", "cp_" + i);
+//TLAP molecule:
+//   1.435   0.000  -0.082  (3,+3)   -0.150    0.061     0.078    0.100    0.516
+//
+// ( C   1   1.437 AU )                                 -0.216    0.000    0.976
+//                                                      -0.000   -1.000   -0.000
+//                                                      -0.976    0.000   -0.216
+
+//TLAP crystal:
+//   1.048   5.052   3.192  (3,-1)   -0.120    0.131    -3.596   -0.410    1.701
+//
+// ( C   1   0  0  0   1.111 AU )                       -0.945   -0.021    0.326
+//                                                       0.079    0.953    0.291
+//                                                      -0.317    0.301   -0.900
+
+      
+      
+      while(rd().length() == 0) {}
+      Lst<Object> list = new Lst<Object>();
+      
+      String line1 = line, line2 = rd(), line3 = rd();
+      String eigenInfo =  getCPAtomInfo(line1, list)  
+          + getCPAtomInfo(line2, list)
+          + getCPAtomInfo(line3, list);
+      tokens = PT.getTokens(eigenInfo);
+      double[][] ev = fill3x3(tokens, 0);
+      //      Tensor t = new Tensor().setFromAsymmetricTensor(l, "cp", "cp_" + i);
+      P3[] evpts = new P3[3];
+      evpts[0] = P3.new3((float) ev[0][0], (float) ev[0][1], (float) ev[0][2]);
+      evpts[1] = P3.new3((float) ev[1][0], (float) ev[1][1], (float) ev[1][2]);
+      evpts[2] = P3.new3((float) ev[2][0], (float) ev[2][1], (float) ev[2][2]);
       Map<String, Object> m = new Hashtable<String, Object>();
+      m.put("id", "cp_" + i);
       m.put("point", pt);
       m.put("rho",  Float.valueOf(rho));
       m.put("lap",  Float.valueOf(lap));
-      m.put("eigenvalues",  eigenvalues);
-      m.put("eigenvectors", eigenvectors);
-      m.put("info", info);
+      m.put("eigenvalues",  evalues);
+      m.put("eigenvectors", evpts);
+      m.put("atominfo", list);
       entry.addLast(m);
       Logger.info("CRYSTAL TOPOND critical point " + type + " " + pt);
     }
 
+  }
+
+  /**
+   * Process a CP data line
+   * 
+   * @param line full TOPOND data line
+   * @param list entries to fill with information
+   * @return matrix information for eigenvectors
+   */
+  private String getCPAtomInfo(String line, Lst<Object> list) {
+    // tokens (molecular):
+    // ( C   1   1.437 AU )                                 -0.216    0.000    0.976
+    // 0 1   2   3     4  5 
+    // tokens (crystal):
+    // ( C   1   0  0  0   1.111 AU )                       -0.945   -0.021    0.326
+    // 0 1   2   3  4  5      6  7  8
+    Map<String, Object> atomInfo = new Hashtable<String, Object>();
+    String data = line.substring(0, 52).trim();
+    String[] tokens = PT.getTokens(data);
+    if (tokens.length == 6 || tokens.length == 9) {
+      String element = tokens[1];
+      int atomno = parseIntStr(tokens[2]);
+      int pt = 3;
+      P3 cellOffset = (tokens.length == 9 ? P3.new3(
+          parseFloatStr(tokens[pt++]), parseFloatStr(tokens[pt++]),
+          parseFloatStr(tokens[pt++])) : null);
+      float dist = parseFloatStr(tokens[pt++]);
+      if (tokens[pt].equals("AU"))
+        dist *= ANGSTROMS_PER_BOHR;
+      atomInfo.put("element", element);
+      atomInfo.put("atomno",  Integer.valueOf(atomno));
+      if (cellOffset != null)
+        atomInfo.put("cellOffset", cellOffset);
+      atomInfo.put("d", Float.valueOf(dist));
+      list.addLast(atomInfo);
+    }
+    return line.substring(53);
   }
 
   private void newLattice(boolean isConv) throws Exception {

@@ -185,7 +185,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	@Override
 	public void loadInline(String data) {
 		// newAppletPanel();
-		siOpenDataOrFile(data, null, null, null, -1, -1, true, null, null);
+		siOpenDataOrFile(data, "[inline]", null, null, -1, -1, true, null, null);
 		appletFrame.validateContent(3);
 	}
 

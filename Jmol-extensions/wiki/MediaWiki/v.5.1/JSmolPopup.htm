@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>JSmol popup</title>
+<link href="Jmol.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+html , body { height:100%; overflow:hidden; margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; background-color:beige; }
+#controls { display:table; width:100%; margin-top:0.3em; }
+#controls > div { display:table-cell; padding-left:0.5ex; }
+#controls h1 { font-weight:normal; font-size:1em; margin:0; padding:0; }
+#controls input { font-size:0.9em; margin:0 0.5ex; }
+</style>
+<script type="text/javascript" src="JSmol.min.js"></script>
+<script type="text/javascript">
+var ww = screen.width, hh = screen.height, mm = parseInt(0.95*Math.min(ww,hh));
+if (ww<500 || hh<500) { // 500px is the popup size
+	window.resizeTo(mm,mm);
+	window.moveTo(4,4);
+}
+
+var s_state = '';
+var extensionDir = opener.extensionDir;
+if (opener.JSmolCloneData.type == 'WebGL') {
+  document.writeln('<script src="' + extensionDir + 'JSmol.GLmol.min.js" type="text/javascript"><'+'/script>');
+}
+
+if (opener.JSmolCloneData.loadFile) {
+  s_state = opener.JSmolCloneData.loadFile;
+} else {
+  s_state = opener.JSmolCloneData.state.replace(/zoomLarge true/i,'zoomLarge false');
+}
+
+var t = opener.JSmolCloneData.tit || '';
+if (t.trim()) { document.title = t; }
+var c = opener.JSmolCloneData.cap || '';
+if (!c.trim()) { c = t; }
+
+var Info0 = {
+	use: opener.JSmolCloneData.type || 'HTML5',
+	disableJ2SLoadMonitor: true, 
+	disableInitialConsole: true, 
+	debug: false,
+	jarPath: extensionDir + 'java',
+	j2sPath: extensionDir + 'j2s',
+	jarFile: 'JmolAppletSigned0.jar',
+	isSigned: 'true',
+	serverURL: extensionDir + 'php/jsmol.php',
+	coverCommand: null,
+	coverImage: null,
+	addSelectionOptions: false,
+	readyFunction: null,
+	defaultModel: null,
+	coverTitle: 'Loading ... Please wait.',
+	deferApplet: false, // true == the model should not be loaded until the image is clicked 
+	deferUncover: false, // true == the image should remain until command execution is complete
+	width:'100%', 
+	height:'calc(100% - 2.5em)',
+	script: s_state + 'set platformSpeed ' + opener.JSmolCloneData.platformSpeed
+};
+Jmol._alertNoBinary = false;
+delete Jmol._tracker; // avoid error messages on AWS
+Jmol.setLinkCss("JSmolLnk");
+Jmol.setButtonCss("JSmolBtn");
+JSmolPopup = Jmol.getApplet('JSmolClone', Info0);
+</script>
+</head>
+<body>
+
+<div id='controls'>
+	<div>
+	<script type="text/javascript">
+	var bT = opener.JSmolControlBtns.toggle || 'Toggle:';
+	var bS = opener.JSmolControlBtns.spin || 'spin';
+	var bQ = opener.JSmolControlBtns.quality || 'quality';
+	// var bF = opener.JSmolControlBtns.full || 'load full';
+	document.writeln(bT);
+	Jmol.jmolButton(JSmolPopup, "if(_spinning);spin off;spinflag = false;else;spin on;spinflag = true;endif", bS);
+	Jmol.jmolButton(JSmolPopup, "set refreshing off;if(antialiasDisplayFlag);antialiasDisplayFlag = false;set antialiasDisplay off;set cartoonFancy off;else;antialiasDisplayFlag = true;set antialiasDisplay on;set cartoonFancy on;endif;set refreshing on;refresh;", bQ);
+ 	// Jmol.jmolButton(JSmolPopup, "load", bF);
+	</script>
+	</div>
+	<div>
+		<h1>
+		<script type="text/javascript">
+		document.write(c);
+		</script>
+		</h1>
+	</div>
+</div>
+</body>

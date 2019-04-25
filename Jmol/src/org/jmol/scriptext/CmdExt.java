@@ -887,7 +887,8 @@ public class CmdExt extends ScriptExt {
         boolean wf = vwr.g.waitForMoveTo;
         s = "set waitformoveto true;" + s
             + ";set waitformoveto " + wf;
-        s = "capture " + (isTransparent ? "transparent " : "") + PT.esc(fileName) + " LOOP;"
+        s = "capture " + (isTransparent ? "transparent " : "") + PT.esc(fileName) 
+            + (looping ? " LOOP;": ";")
              + s + ";capture end;";
         e.cmdScript(0, null, s);
         return;
@@ -898,7 +899,7 @@ public class CmdExt extends ScriptExt {
       if (streaming) {
         params.put("streaming", Boolean.TRUE);
         if (!looping)
-          showString(GT.o(GT.$("Note: Enable looping using {0}"),
+          showString(GT.o(GT.$("Note: Enable looping using the LOOP keyword just after the file name or {0}"),
               new Object[] { "ANIMATION MODE LOOP" }));
         showString(GT.o(GT.$("Animation delay based on: {0}"),
             new Object[] { "ANIMATION FPS " + fps }));

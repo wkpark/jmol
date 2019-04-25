@@ -940,6 +940,16 @@ public class CmdExt extends ScriptExt {
 
 
   private void centerAt() throws ScriptException {
+
+    //center {*}   # mean coordinate
+    //select *; centerAt AVERAGE  # same
+    //
+    //center        # boundbox, not mean
+    //boundbox *;centerAt BOUNDBOX #same
+    //
+    //center {2 2 2}   # center at a given point
+    //centerAt ABSOLUTE {2 2 2}  #same
+
     int tok = getToken(1).tok;
     switch (tok) {
     case T.absolute:
@@ -962,7 +972,7 @@ public class CmdExt extends ScriptExt {
       checkLength(2);
     }
     if (!chk && !vwr.isJmolDataFrame())
-        vwr.tm.setCenterAt(tok, pt);
+      vwr.tm.setCenterAt(tok, pt);
   }
 
   private void compare() throws ScriptException {

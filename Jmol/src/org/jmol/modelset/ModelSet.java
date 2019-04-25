@@ -1318,9 +1318,10 @@ public class ModelSet extends BondCollection {
   }
 
   public P3 getAverageAtomPoint() {
-    if (averageAtomPoint == null)
-      averageAtomPoint = getAtomSetCenter(vwr.getAllAtoms());
-    return averageAtomPoint;
+    return (getAtomSetCenter(vwr.bsA()));
+//    if (averageAtomPoint == null)
+//      averageAtomPoint = getAtomSetCenter(vwr.getAllAtoms());
+//    return averageAtomPoint;
   }
 
   protected void setAPm(BS bs, int tok, int iValue, float fValue,
@@ -3046,7 +3047,7 @@ public class ModelSet extends BondCollection {
   }
 
   public void deleteAtoms(BS bs) {
-    averageAtomPoint = null;
+    //averageAtomPoint = null;
     if (bs == null)
       return;
     BS bsBonds = new BS();
@@ -3671,7 +3672,7 @@ public class ModelSet extends BondCollection {
         }
       }
     }
-    averageAtomPoint = null;
+    //averageAtomPoint = null;
     /* but we would need to somehow indicate this in the state
     if (ellipsoids != null)
       for (int i = bs.nextSetBit(0); i >= 0 && i < ellipsoids.length; i = bs.nextSetBit(i + 1))

@@ -34,6 +34,8 @@ todo:
 
 add JSME to St. Olaf 24/7 OleNMR system portal for comparisons.
 
+RL 04/25/2019
+  - update to About dialog box
 
 BH 04/13/2017
  -feature: Allow JSpecView to close when embedded

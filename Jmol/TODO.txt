@@ -3,7 +3,7 @@ Feel free to add to this file any time! Don't worry about sync problems.
 Put new items at top, please.
 
 Jmol.___JSVDate="$Date: 2017-04-14 11:34:29 -0500 (Fri, 14 Apr 2017) $"
-Jmol.___JSVSvnRev="$LastChangedRevision: 1764 $"
+Jmol.___JSVSvnRev="$LastChangedRevision$"
 Jmol.___JSVVersion="14.2.8"
 
 Note:

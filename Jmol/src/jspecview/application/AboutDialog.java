@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2016 The University of the West Indies
+/* Copyright (c) 2002-2019 The University of the West Indies
  *
  * Contact: robert.lancashire@uwimona.edu.jm
  *
@@ -120,7 +120,7 @@ public class AboutDialog extends JDialog {
     txt = drawMessage(message, "Arial", Font.BOLD, 12);
     p.add(txt);
 
-    message = "Copyright (c) 2002-2017, Department of Chemistry\nUniversity of the West Indies, Mona Campus\nJAMAICA";
+    message = "Copyright (c) 2002-2019, Department of Chemistry\nUniversity of the West Indies, Mona Campus\nJAMAICA";
     txt = drawMessage(message, "Arial", Font.PLAIN, 12);
     p.add(txt);
 

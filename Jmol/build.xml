@@ -60,10 +60,10 @@ when the Jmol code is modified, is as follows:
   <property file="${user.home}/.jmol.build.properties" />
   <!-- compile options -->
   <property name="build.sysclasspath" value="ignore" />
-  <property name="build.compiler" value="javac1.7" />
+  <property name="build.compiler" value="javac1.6" />
   <!-- for some reason, I can't get ant to use this ${java.version}
        property as the value of the source parameter -->
-  <property name="java.version" value="1.7" />
+  <property name="java.version" value="1.6" />
   <property name="debug" value="on" />
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
@@ -446,7 +446,7 @@ Release Note: When releasing stable version, remove "-beta"
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="src" destdir="${classes.dir}" encoding="UTF8"
            debug="${debug}" deprecation="${deprecation}"
-           optimize="${optimization}" source="1.7" target="1.7">
+           optimize="${optimization}" source="1.6" target="1.6">
       <classpath refid="project.class.path" />
       <exclude name="astex/**/*.java"/>
       <exclude name="java_cup/**/*.java"/>
@@ -485,11 +485,11 @@ Release Note: When releasing stable version, remove "-beta"
       </fileset>
     </copy>
 
-    <property name="build.compiler" value="javac1.7" />
+    <property name="build.compiler" value="javac1.6" />
   	
     <!-- 
 
-bh 20190420  changed to 1.7, 1.7      	
+bh 20190420  changed to 1.6, 1.6      	
 bh 20131124  changed to 1.6, 1.6
   	
 mth 20040713 ... with the Sun Java 1.5 compiler the default
@@ -530,7 +530,7 @@ all support for previous versions removed
     <javac srcdir="src" destdir="${applet.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
            optimize="${optimization}"
-           source="1.7" target="1.7" encoding="UTF8"
+           source="1.6" target="1.6" encoding="UTF8"
            includesfile="applet.classes"
            classpathref="applet-project.class.path" />
 
@@ -557,7 +557,7 @@ all support for previous versions removed
     <mkdir dir="${apisio.classes.dir}"/>
     <javac srcdir="src" destdir="${apisio.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
-           optimize="${optimization}" source="1.7" encoding="UTF8"
+           optimize="${optimization}" source="1.6" encoding="UTF8"
            includesfile="apisio.classes"
            classpathref="apisio-project.class.path" />
     <copy todir="${apisio.classes.dir}" >
@@ -1844,7 +1844,7 @@ all support for previous versions removed
     <mkdir dir="${test-classes.dir}"/>
     <javac srcdir="test" destdir="${test-classes.dir}"
            debug="off" deprecation="on"
-           optimize="off" source="1.7" encoding="UTF8">
+           optimize="off" source="1.6" encoding="UTF8">
       <classpath>
         <pathelement location="build/Jmol.jar" />
         <pathelement location="./jars/junit.jar" />

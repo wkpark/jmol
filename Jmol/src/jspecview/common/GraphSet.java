@@ -1721,6 +1721,7 @@ class GraphSet implements XYScaleConverter {
 		double xMax = pi.getXMax();
 		if (xMin == xMax)
 			return;
+//		System.out.println("gs drawPeak " + xMin + " " + xMax + " " + tickSize);
 		drawBar(g, pi, xMin, xMax, null, tickSize);
 	}
 
@@ -1826,10 +1827,10 @@ class GraphSet implements XYScaleConverter {
 		double r = xMax + xMin;
 		double d = Math.abs(xMax - xMin);
 		double range = Math.abs(toX(xPixel1) - toX(xPixel0));
-		if (tickSize > 0 && d > range / 20) {
+		if (false && tickSize > 0 && d > range / 20) {
 			d = range / 20;
-			xMin = r / 2 - d;
-			xMax = r / 2 + d;
+			xMin = r / 2 - d/2;
+			xMax = r / 2 + d/2;
 		}
 
 		int x1 = toPixelX(xMin);

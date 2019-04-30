@@ -914,7 +914,7 @@ public class FileManager implements BytePoster {
     if (name == null)
       return new String[] { null };
     boolean doSetPathForAllFiles = (pathForAllFiles.length() > 0);
-    if (name.startsWith("?") || name.startsWith("http://?")) {
+    if (name.startsWith("?") || name.startsWith("http://?")|| name.startsWith("https://?")) {
       if (!vwr.isJS && (name = vwr.dialogAsk("Load", name, null)) == null)
         return new String[] { isFullLoad ? "#CANCELED#" : null };
       doSetPathForAllFiles = false;
@@ -1091,7 +1091,7 @@ public class FileManager implements BytePoster {
   }
 
   public static String getLocalPathForWritingFile(Viewer vwr, String file) {
-    if (file.startsWith("http://"))
+    if (file.startsWith("http://") || file.startsWith("https://"))
       return file;
     file = PT.rep(file, "?", "");
     if (file.indexOf("file:/") == 0)

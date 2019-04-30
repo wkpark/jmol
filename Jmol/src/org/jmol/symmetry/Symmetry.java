@@ -836,4 +836,10 @@ public class Symmetry implements SymmetryInterface {
     return (unitCell == null ? null : unitCell.getInfo());
   }
 
+  @Override
+  public void setUnitCell(Symmetry uc) {
+    unitCell = UnitCell.cloneUnitCell(uc.unitCell);   
+  }
+
+
 }

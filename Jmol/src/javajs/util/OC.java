@@ -334,6 +334,12 @@ public class OC extends OutputStream implements GenericOutputChannel {
       return (sb == null ? null : sb.toString());
     }
     closed = true;
+    if (!isLocalFile) {
+      String ret = postByteArray(); // unsigned applet could do this
+      if (ret == null || ret.startsWith("java.net"))
+        byteCount = -1;
+      return ret;
+    }
     J2SObjectInterface jmol = null;
     Object _function = null;
     /**
@@ -342,15 +348,7 @@ public class OC extends OutputStream implements GenericOutputChannel {
      *            jmol = self.J2S || Jmol; _function = (typeof this.fileName == "function" ?
      *            this.fileName : null);
      * 
-     */
-    {
-      if (!isLocalFile) {
-        String ret = postByteArray(); // unsigned applet could do this
-        if (ret.startsWith("java.net"))
-          byteCount = -1;
-        return ret;
-      }
-    }
+     */{}
     if (jmol != null) {
       Object data = (sb == null ? toByteArray() : sb.toString());
       if (_function == null)

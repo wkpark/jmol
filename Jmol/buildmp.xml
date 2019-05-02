@@ -2,14 +2,16 @@
 <project name="MPJmolApp" default="jar" basedir=".">
 	<property name="src.dir" value="src"/>
 	<property name="build.dir" value="build"/>
-	<property name="lib.dir" value="lib"/>
+	<property name="lib.dir" value="jars"/>
 	<property name="jar.dir" value="${build.dir}"/>
 	<property name="classes.dir" value="${build.dir}/classes"/>
 	<property name="main-class" value="org.molecularplayground.MPJmolApp"/>
+	<property name="appjars.dir" value="build/appjars" />
+
 	
 	<path id="compile.classpath">
 	 <fileset dir="${build.dir}" includes="Jmol.jar"/> 
-<!--		<fileset dir="${lib.dir}" includes="**/*.jar"/>   -->
+ 	 <fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
 	
 	<target name="init">
@@ -38,6 +40,7 @@
 				<attribute name="Main-Class" value="${main-class}"/>
 				<attribute name="Class-Path" value="${jar.classpath}"/>
 			</manifest>
+		    <fileset dir="${appjars.dir}" includes="**/*"/>
 		</jar>
 	</target>
 	

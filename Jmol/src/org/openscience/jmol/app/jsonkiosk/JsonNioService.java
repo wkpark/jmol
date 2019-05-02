@@ -79,49 +79,51 @@ import naga.packetwriter.RawPacketWriter;
  * by Adam Williams, U-Mass Amherst see http://MolecularPlayground.org and
  * org.openscience.jmol.molecularplayground.MPJmolApp.java
  * 
+ * Note that all transmissions must have one and only one new-line terminator. It must follow the closing brace.
+ * 
  * Sent from Jmol (via outSocket): 
  * 
  * version 1:
- *   {"magic" : "JmolApp", "role" : "out"}  (socket initialization for messages TO jmol)
- *   {"magic" : "JmolApp", "role" : "in"}   (socket initialization for messages FROM jmol)
+ *   {"magic" : "JmolApp", "role" : "out"}\n  (socket initialization for messages TO jmol)
+ *   {"magic" : "JmolApp", "role" : "in"}\n   (socket initialization for messages FROM jmol)
  * version 2:
- *   {"type" : "login", "source" : "Jmol"}  (socket initialization for messages TO/FROM jmol)
+ *   {"type" : "login", "source" : "Jmol"}\n  (socket initialization for messages TO/FROM jmol)
  * both versions:
- *   {"type" : "script", "event" : "done"}  (script completed)
+ *   {"type" : "script", "event" : "done"}\n  (script completed)
  *   
  * Sent to Jmol (via inSocket):
  * 
- *   {"type" : "banner", "mode" : "ON" or "OFF" }   (set banner for kiosk)
- *   {"type" : "banner", "text" : bannerText }      (set banner for kiosk)
- *   {"type" : "command", "command" : command, "var": vname, "data":vdata}
+ *   {"type" : "banner", "mode" : "ON" or "OFF" }\n   (set banner for kiosk)
+ *   {"type" : "banner", "text" : bannerText }\n      (set banner for kiosk)
+ *   {"type" : "command", "command" : command, "var": vname, "data":vdata}\n
  *       (script command request, with optional definition of a Jmol user variable prior to execution)
- *   {"type" : "content", "id" : id }            (load content request)
- *   {"type" : "move", "style" : (see below) }   (mouse command request)
- *   {"type" : "quit" }                          (shut down request)
- *   {"type" : "sync", "sync" : (see below) }    (sync command request)
+ *   {"type" : "content", "id" : id }\n            (load content request)
+ *   {"type" : "move", "style" : (see below) }\n   (mouse command request)
+ *   {"type" : "quit" }\n                          (shut down request)
+ *   {"type" : "sync", "sync" : (see below) }\n    (sync command request)
  *   {"type" : "touch",                          (a raw touch event)
  *        "eventType" : eventType,
  *        "touchID"   : touchID,
  *        "iData"     : idata,
  *        "time"      : time,
- *        "x" : x, "y" : y, "z" : z }
+ *        "x" : x, "y" : y, "z" : z }\n
  *    
  *   For details on the "touch" type, see org.jmol.viewer.ActionManagerMT::processEvent
  *   Content is assumed to be in a location determined by the Jmol variable
  *   nioContentPath, with %ID% being replaced by some sort of ID number of tag provided by
  *   the other half of the system. That file contains more JSON code:
  *   
- *   {"startup_script" : scriptFileName, "banner_text" : text } 
+ *   {"startup_script" : scriptFileName, "banner_text" : text }\n 
  *   
  *   An additional option "banner" : "off" turns off the title banner.
  *   The startup script must be in the same directory as the .json file, typically as a .spt file
  *   
  *   Move commands include:
  *   
- *   {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY }
- *   {"type" : "move", "style" : "translate", "x" : deltaX, "y", deltaY }
- *   {"type" : "move", "style" : "zoom", "scale" : scale }  (1.0 = 100%)
- *   {"type" : "sync", "sync" : syncText }
+ *   {"type" : "move", "style" : "rotate", "x" : deltaX, "y", deltaY }\n
+ *   {"type" : "move", "style" : "translate", "x" : deltaX, "y", deltaY }\n
+ *   {"type" : "move", "style" : "zoom", "scale" : scale }\n                     (1.0 = 100%)
+ *   {"type" : "sync", "sync" : syncText }\n
  *   
  *   Note that all these moves utilize the Jmol sync functionality originally intended for
  *   applets. So any valid sync command may be used with the "sync" style. These include 
@@ -223,10 +225,11 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         }
         startService(port, client, vwr, myName, 1);
       }
+      msg = msg.trim();
       if (msg.startsWith("Mouse:"))
         msg = "{\"type\":\"sync\", \"sync\":\""
             + msg.substring(6) + "\"}";
-      sendMessage(null, msg, null);
+        sendMessage(null, msg, null);
     } catch (IOException e) {
       // ignore
     }
@@ -506,11 +509,12 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   protected void processMessage(byte[] packet, NIOSocket socket) {
     try {
       String msg = new String(packet);
-      Logger.info("JNIOS received " + msg);
+      System.out.println("JsonNioService msg=" + msg);
       if (vwr == null) {
         return;
       }
       JSONObject json = new JSONObject(msg);
+      System.out.println("JsonNioService json=" + json);
       if (version == 1) {
       if (socket != null && json.has("magic")
           && json.getString("magic").equals("JmolApp")
@@ -531,6 +535,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       throws Exception {
     if (json == null)
       json = new JSONObject(msg);
+    System.out.println("JsonNioService processJSON msg=" + msg + " type=" + json.getString("type"));
     int pt = ("banner...." + "command..." + "content..." + "move......"
         + "quit......" + "sync......" + "touch.....").indexOf(json
         .getString("type"));
@@ -603,6 +608,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     case 30: // move
       pt = ("rotate...." + "translate." + "zoom......").indexOf(json
           .getString("style"));
+      System.out.println("JsonNioService processJSON move motionDisabled=" + motionDisabled + " paused=" + isPaused);
       if (motionDisabled)
         break;
       if (pt != 0 && !isPaused)
@@ -612,6 +618,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       case 0: // rotate
         float dx = (float) json.getDouble("x");
         float dy = (float) json.getDouble("y");
+        System.out.println("JsonNioService rotate xy " + dx + " " + dy);
         float dxdy = dx * dx + dy * dy;
         boolean isFast = (dxdy > swipeCutoff);
         boolean disallowSpinGesture = vwr
@@ -640,6 +647,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
           }
           if (msg == null)
             msg = "Mouse: rotateXYBy " + dx + " " + dy;
+          
+          System.out.println("JsonNioService syncScript " + msg);
           syncScript(msg);
         }
         previousMoveTime = now;
@@ -730,7 +739,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         }
         msg = json.toString();
       }
-      msg += "\r\n";
+      // this is critical:
+      msg += "\n";
       Logger.info(Thread.currentThread().getName() + " sending " + msg + " to " + socket);
       socket.write(msg.getBytes("UTF-8"));
     } catch (Throwable e) {

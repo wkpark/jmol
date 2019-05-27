@@ -1,7 +1,8 @@
 package org.jmol.awtjs2d;
 
 
-import javajs.awt.PlatformViewer;
+import org.jmol.api.PlatformViewer;
+
 import javajs.util.P3;
 
 /**

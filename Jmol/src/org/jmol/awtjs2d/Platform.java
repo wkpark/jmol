@@ -4,18 +4,18 @@ import java.io.BufferedInputStream;
 import java.net.URL;
 import java.util.Map;
 
+import org.jmol.api.GenericMenuInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolToJSmolInterface;
+import org.jmol.api.PlatformViewer;
 import org.jmol.script.ScriptContext;
 import org.jmol.viewer.Viewer;
 
 import javajs.api.GenericFileInterface;
 import javajs.awt.Font;
 import javajs.awt.GenericImageDialog;
-import javajs.awt.GenericMenuInterface;
 import javajs.awt.GenericMouseInterface;
 import javajs.awt.GenericPlatform;
-import javajs.awt.PlatformViewer;
 import javajs.util.AjaxURLStreamHandlerFactory;
 import javajs.util.P3;
 import javajs.util.Rdr;

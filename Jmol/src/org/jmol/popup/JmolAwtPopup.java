@@ -25,15 +25,15 @@ package org.jmol.popup;
 
 import java.awt.Component;
 
-import javajs.awt.PlatformViewer;
-import javajs.awt.SC;
-
 import javax.swing.JPopupMenu;
 
+import org.jmol.api.PlatformViewer;
 import org.jmol.i18n.GT;
 import org.jmol.popup.JmolGenericPopup;
 import org.jmol.popup.PopupResource;
 import org.jmol.viewer.Viewer;
+
+import javajs.awt.SC;
 
 public class JmolAwtPopup extends JmolGenericPopup {
 
@@ -60,7 +60,7 @@ public class JmolAwtPopup extends JmolGenericPopup {
   }
   
   @Override
-  public String menuSetCheckBoxOption(SC item, String name, String what) {
+  public String menuSetCheckBoxOption(SC item, String name, String what, boolean TF) {
     // n/a
     return null;
   }

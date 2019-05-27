@@ -156,6 +156,9 @@ public class CmdExt extends ScriptExt {
     case T.minimize:
       minimize();
       break;
+    case T.modelkitmode:
+      modelKitMode();
+      break;
     case T.modulation:
       modulation();
       break;
@@ -198,6 +201,11 @@ public class CmdExt extends ScriptExt {
   }
 
 
+  private void modelKitMode() {
+    // TODO
+    
+  }
+
   private void macro() throws ScriptException {
     String key = e.optParameterAsString(1);
     if (key.length() == 0)
@@ -233,7 +241,7 @@ public class CmdExt extends ScriptExt {
       // TODO: This will disallow some motion commands
       //       within a TRY/CATCH block in JavaScript, and
       //       the code will block. 
-      se.allowJSThreads = false;
+      se.setAllowJSThreads(false);
       se.dispatchCommands(false, false, false);
     } catch (Exception ex) {
       e.vwr.setStringProperty("_errormessage", "" + ex);
@@ -937,8 +945,7 @@ public class CmdExt extends ScriptExt {
       msg = "canceled";
     Logger.info(msg);
   }
-
-
+  
   private void centerAt() throws ScriptException {
 
     //center {*}   # mean coordinate
@@ -972,7 +979,7 @@ public class CmdExt extends ScriptExt {
       checkLength(2);
     }
     if (!chk && !vwr.isJmolDataFrame())
-      vwr.tm.setCenterAt(tok, pt);
+        vwr.tm.setCenterAt(tok, pt);
   }
 
   private void compare() throws ScriptException {
@@ -2542,7 +2549,7 @@ public class CmdExt extends ScriptExt {
         }
         if (!chk)
           vwr.getMinimizer(true).setProperty("constraint",
-              new Object[] { aList, new int[n], Float.valueOf(targetValue) });
+              new Object[] { aList, Float.valueOf(targetValue) });
         return;
       case T.criterion:
         crit = floatParameter(++i);
@@ -3111,7 +3118,7 @@ public class CmdExt extends ScriptExt {
       break;
     }
     st = statementSave;
-    if (chk) // just in case we later mp.add parameter options to this
+    if (chk) // just in case we later add parameter options to this
       return "";
 
     // if not just drawing check to see if there is already a plot of this type
@@ -3883,13 +3890,14 @@ public class CmdExt extends ScriptExt {
       // type may be defined already, but that could be from a file name extension
       // here we override that
       // write PDB "xxx.pdb"
-      String s = SV.sValue(tokenAt(++pt, args));
-      if (s.length() > 0 && s.charAt(0) != '.') {
-        if (val == null) {
-          System.out.println("??");
-          type = val.toUpperCase();
-        }
-      }
+      SV.sValue(tokenAt(++pt, args));
+//    System.out.println(val);
+//    if (s.length() > 0 && s.charAt(0) != '.') {
+//      if (val == null) {
+//        System.out.println("??");
+//        type = val.toUpperCase();
+//      }
+//    }
     }
 
     // set the file name
@@ -5300,14 +5308,12 @@ public class CmdExt extends ScriptExt {
     if (pt == null) {
       if (atomIndex < 0)
         return;
-      vwr.sm.modifySend(atomIndex,
-          vwr.ms.at[atomIndex].mi, 1, e.fullCommand);
+      vwr.sm.modifySend(atomIndex, vwr.ms.at[atomIndex].mi, 1, e.fullCommand);
       // After this next command, vwr.modelSet will be a different instance
       vwr.ms.assignAtom(atomIndex, type, true, true);
       if (!PT.isOneOf(type, ";Mi;Pl;X;"))
         vwr.ms.setAtomNamesAndNumbers(atomIndex, -ac, null);
-      vwr.sm.modifySend(atomIndex,
-          vwr.ms.at[atomIndex].mi, -1, "OK");
+      vwr.sm.modifySend(atomIndex, vwr.ms.at[atomIndex].mi, -1, "OK");
       vwr.refresh(Viewer.REFRESH_SYNC_MASK, "assignAtom");
       return;
     }
@@ -5323,9 +5329,8 @@ public class CmdExt extends ScriptExt {
     }
     try {
       bs = vwr.addHydrogensInline(bs, vConnections, pts);
-      // new ModelSet here
       int atomIndex2 = bs.nextSetBit(0);
-        vwr.ms.assignAtom(atomIndex2, type, false, (atomIndex >= 0));
+      vwr.ms.assignAtom(atomIndex2, type, false, (atomIndex >= 0));
       atomIndex = atomIndex2;
     } catch (Exception ex) {
       //
@@ -5343,7 +5348,7 @@ public class CmdExt extends ScriptExt {
       BS bsAtoms = vwr.ms.assignBond(bondIndex, type);
       if (bsAtoms == null || type == '0')
         vwr.refresh(Viewer.REFRESH_SYNC_MASK, "setBondOrder");
-      else
+      else if (vwr.getBoolean(T.mkaddhydrogens))
         vwr.addHydrogens(bsAtoms, false, true);
       vwr.sm.modifySend(bondIndex, modelIndex, -2, "" + type);
     } catch (Exception ex) {

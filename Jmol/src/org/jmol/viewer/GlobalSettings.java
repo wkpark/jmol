@@ -615,6 +615,7 @@ public class GlobalSettings {
   public String measureDistanceUnits = "nanometers";
   boolean measurementLabels = true;
   boolean messageStyleChime = false;
+  public boolean mkAddHydrogens = true; // whether the modelkit mode adds hydrogens or not
   boolean monitorEnergy = false;
   public float modulationScale = 1;
   boolean multiProcessor = true;
@@ -941,7 +942,8 @@ public class GlobalSettings {
       + ";hbondsDistanceMaximum;hbondsangleminimum" // added Jmol 14.24.2
       + ";jmolinjspecview;legacyautobonding;legacyhaddition;legacyjavafloat"
       + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
-      + ";loadformat;loadligandformat;smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
+      + ";loadformat;loadligandformat;mkaddhydrogens"
+      + ";smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
       + ";nodelay;pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;platformspeed"
       + ";preservestate;refreshing;repaintwaitms;rotationradius;selectallmodels"
       + ";showaxes;showaxis1;showaxis2;showaxis3;showboundbox;showfrank;showtiming;showunitcell"
@@ -963,7 +965,11 @@ public class GlobalSettings {
       + ";modelkitmode;autoplaymovie;allowaudio;allowgestures;allowkeystrokes;allowmultitouch;allowmodelkit"
       //  oops these were in some state scripts but should not have been
       + ";dodrop;hovered;historylevel;imagestate;iskiosk;useminimizationthread"
-      + ";showkeystrokes;saveproteinstructurestate;testflag1;testflag2;testflag3;testflag4" + ";")
+      + ";showkeystrokes;saveproteinstructurestate;testflag1;testflag2;testflag3;testflag4"
+      // removed in Jmol 14.29.18
+      + ";selecthetero;selecthydrogen;"
+      
+      + ";")
       .toLowerCase();
 
   Object getAllVariables() {

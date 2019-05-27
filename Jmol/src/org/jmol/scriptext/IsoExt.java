@@ -2044,7 +2044,7 @@ public class IsoExt extends ScriptExt {
       case T.addhydrogens:
         propertyName = "addHydrogens";
         propertyValue = Boolean.TRUE;
-        sbCommand.append(" mp.addHydrogens");
+        sbCommand.append(" addHydrogens");
         break;
       case T.angstroms:
         propertyName = "angstroms";

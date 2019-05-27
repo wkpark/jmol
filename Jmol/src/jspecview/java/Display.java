@@ -9,12 +9,13 @@ import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
 
 import javajs.awt.GenericPlatform;
-import javajs.awt.PlatformViewer;
 import javajs.util.P3;
 import javajs.util.PT;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+
+import org.jmol.api.PlatformViewer;
 
 
 /**

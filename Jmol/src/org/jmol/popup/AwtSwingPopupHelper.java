@@ -23,9 +23,6 @@
  */
 package org.jmol.popup;
 
-import javajs.awt.GenericMenuInterface;
-import javajs.awt.SC;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -43,6 +40,10 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+
+import org.jmol.api.GenericMenuInterface;
+
+import javajs.awt.SC;
 
 /**
  * all popup-related awt/swing class references are in this file.
@@ -96,7 +97,7 @@ public class AwtSwingPopupHelper implements
     }
     if (buttonGroup == null)
       buttonGroup = new ButtonGroup();
-    buttonGroup.add((AbstractButton) item);
+    buttonGroup.add(((AwtSwingComponent) item).ab);
   }
 
   @Override

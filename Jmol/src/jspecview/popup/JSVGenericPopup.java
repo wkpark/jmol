@@ -76,6 +76,12 @@ abstract public class JSVGenericPopup extends GenericSwingPopup implements
 
 	// //// JmolPopupInterface methods //////
 
+  @Override
+  public void jpiSetProperty(String name, Object value) {
+    // TODO
+    
+  }
+
 	// private final static int MENUITEM_HEIGHT = 20;
 
 	@Override
@@ -331,7 +337,7 @@ abstract public class JSVGenericPopup extends GenericSwingPopup implements
 	}
 
 	@Override
-	protected String menuSetCheckBoxOption(SC item, String name, String what) {
+	protected String menuSetCheckBoxOption(SC item, String name, String what, boolean TF) {
 		// not used in JSV
 		return null;
 	}

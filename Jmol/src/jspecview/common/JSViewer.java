@@ -22,11 +22,11 @@ import javajs.api.BytePoster;
 import javajs.api.GenericFileInterface;
 import javajs.awt.Component;
 import javajs.awt.GenericPlatform;
-import javajs.awt.PlatformViewer;
 import javajs.awt.Dimension;
 import javajs.awt.SC;
 
 import org.jmol.api.GenericGraphics;
+import org.jmol.api.PlatformViewer;
 import org.jmol.awtjs.swing.JPopupMenu;
 import org.jmol.util.Logger;
 

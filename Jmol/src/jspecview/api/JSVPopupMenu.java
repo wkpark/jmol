@@ -1,7 +1,8 @@
 package jspecview.api;
 
 
-import javajs.awt.GenericMenuInterface;
+import org.jmol.api.GenericMenuInterface;
+
 import javajs.util.Lst;
 import jspecview.common.PanelNode;
 

@@ -25,13 +25,14 @@ package jspecview.java;
 
 import java.awt.Container;
 
-import javajs.awt.PlatformViewer;
-import javajs.awt.SC;
-
 import javax.swing.JPopupMenu;
 
 import org.jmol.popup.AwtSwingPopupHelper;
 import org.jmol.popup.PopupResource;
+
+import javajs.awt.SC;
+
+import org.jmol.api.PlatformViewer;
 import org.jmol.popup.AwtSwingComponent;
 
 import jspecview.common.JSViewer;
@@ -70,7 +71,7 @@ public class AwtPopup extends JSVGenericPopup  {
 	}
   
   @Override
-  protected String menuSetCheckBoxOption(SC item, String name, String what) {
+  protected String menuSetCheckBoxOption(SC item, String name, String what, boolean TF) {
     // ModelKit only
     return null;
   }

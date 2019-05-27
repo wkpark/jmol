@@ -1,4 +1,6 @@
-package javajs.awt;
+package org.jmol.api;
+
+import javajs.awt.SC;
 
 
 
@@ -15,5 +17,7 @@ public interface GenericMenuInterface {
   public void menuFocusCallback(String name, String actionCommand, boolean b);
   public void menuCheckBoxCallback(SC source);
 
- 
+  public void jpiSetProperty(String name, Object value);
+
+
 }

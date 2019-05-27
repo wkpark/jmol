@@ -13,15 +13,16 @@ import java.util.Map;
 
 import javajs.api.GenericFileInterface;
 import javajs.awt.GenericImageDialog;
-import javajs.awt.GenericMenuInterface;
 import javajs.awt.GenericMouseInterface;
 import javajs.awt.GenericPlatform;
-import javajs.awt.PlatformViewer;
 import javajs.awt.Font;
 import javajs.util.P3;
 import javajs.util.Rdr;
 
 import javax.swing.JDialog;
+
+import org.jmol.api.GenericMenuInterface;
+import org.jmol.api.PlatformViewer;
 
 import jspecview.api.JSVPanel;
 

@@ -45,13 +45,13 @@ import java.net.URL;
 import java.util.Map;
 
 import javajs.awt.GenericImageDialog;
-import javajs.awt.PlatformViewer;
 import javajs.img.BMPDecoder;
 import javajs.util.AU;
 
 import javax.swing.JPanel;
 
 import org.jmol.api.Interface;
+import org.jmol.api.PlatformViewer;
 import org.jmol.console.ImageDialog;
 import org.jmol.viewer.Viewer;
 

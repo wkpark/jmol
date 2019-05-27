@@ -23,14 +23,9 @@
  */
 package org.jmol.awtjs2d;
 
-//import java.net.URL;
-
-import javajs.awt.Component;
-import javajs.awt.PlatformViewer;
-import javajs.awt.SC;
-
 import org.jmol.awtjs.swing.JPopupMenu;
 
+import org.jmol.api.PlatformViewer;
 import org.jmol.i18n.GT;
 import org.jmol.modelkit.ModelKitPopupResourceBundle;
 import org.jmol.popup.JSSwingPopupHelper;
@@ -40,7 +35,12 @@ import org.jmol.popup.PopupResource;
 import org.jmol.util.Elements;
 import org.jmol.viewer.Viewer;
 
+import javajs.awt.Component;
+import javajs.awt.SC;
+
 public class JSModelKitPopup extends JmolGenericPopup {
+
+  private boolean hasUnitCell;
 
   public JSModelKitPopup() {
     helper = new JSSwingPopupHelper(this);
@@ -53,6 +53,13 @@ public class JSModelKitPopup extends JmolGenericPopup {
     PopupResource bundle = new ModelKitPopupResourceBundle(null, null);
     initialize((Viewer) vwr, bundle, bundle.getMenuName());
     GT.setDoTranslate(doTranslate);
+  }
+
+  @Override
+  public void jpiUpdateComputedMenus() {
+    hasUnitCell = vwr.getCurrentUnitCell() != null;
+    SC menu = htMenus.get("XtalMenu");
+    menu.setEnabled(hasUnitCell);
   }
 
   @Override
@@ -86,7 +93,7 @@ public class JSModelKitPopup extends JmolGenericPopup {
   }
 
   @Override
-  public String menuSetCheckBoxOption(SC item, String name, String what) {
+  public String menuSetCheckBoxOption(SC item, String name, String what, boolean TF) {
     String element = GT.$("Element?");
     /**
      * @j2sNative

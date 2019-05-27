@@ -4,6 +4,9 @@ package javajs.awt;
 import java.net.URL;
 import java.util.Map;
 
+import org.jmol.api.GenericMenuInterface;
+import org.jmol.api.PlatformViewer;
+
 
 
 import javajs.api.GenericFileInterface;

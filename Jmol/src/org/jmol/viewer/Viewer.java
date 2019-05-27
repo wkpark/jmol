@@ -40,10 +40,8 @@ import javajs.api.GenericCifDataParser;
 import javajs.api.GenericZipTools;
 import javajs.awt.Dimension;
 import javajs.awt.Font;
-import javajs.awt.GenericMenuInterface;
 import javajs.awt.GenericMouseInterface;
 import javajs.awt.GenericPlatform;
-import javajs.awt.PlatformViewer;
 import javajs.util.AU;
 import javajs.util.BS;
 import javajs.util.CU;
@@ -67,6 +65,7 @@ import javajs.util.V3;
 import org.jmol.adapter.readers.quantum.NBOParser;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.AtomIndexIterator;
+import org.jmol.api.GenericMenuInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAnnotationParser;
@@ -85,6 +84,7 @@ import org.jmol.api.JmolScriptManager;
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.api.JmolStatusListener;
 import org.jmol.api.JmolViewer;
+import org.jmol.api.PlatformViewer;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.atomdata.AtomData;
@@ -4479,9 +4479,12 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case 'b':
     case 'm':
       // atom, bond, or main -- ignored      
-      if (modelkitPopup == null
-          && (modelkitPopup = apiPlatform.getMenuPopup(null, type)) == null)
-        return;
+      if (modelkitPopup == null) {
+        if ((modelkitPopup = apiPlatform.getMenuPopup(null, type)) == null)
+          return;
+      } else {
+        modelkitPopup.jpiUpdateComputedMenus();
+      }
       modelkitPopup.jpiShow(x, y);
       break;
     }
@@ -5221,6 +5224,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   @Override
   public boolean getBoolean(int tok) {
     switch (tok) {
+    case T.mkaddhydrogens:
+      return g.mkAddHydrogens;
     case T.nbocharges:
       return g.nboCharges;
     case T.hiddenlinesdashed:
@@ -6201,6 +6206,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
+    case T.mkaddhydrogens:
+      // 14.29.45
+      g.mkAddHydrogens = value;
+      break;
     case T.ciprule6full:
       // 14.29.14
       g.cipRule6Full = value;

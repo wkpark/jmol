@@ -28,12 +28,13 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import javajs.awt.SC;
 import javajs.util.Lst;
 import javajs.util.PT;
 
 import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
+
+import javajs.awt.SC;
 import javajs.util.BS;
 import org.jmol.modelset.Group;
 import org.jmol.script.T;
@@ -68,7 +69,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   //}
 
   protected Viewer vwr;
-  protected int updateMode;
+  protected int updateMode = UPDATE_ALL;
   protected Properties menuText = new Properties();
 
   private SC frankPopup;
@@ -120,11 +121,17 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
 
   protected void initialize(Viewer vwr, PopupResource bundle, String title) {
     this.vwr = vwr;
-    initSwing(title, bundle, vwr.html5Applet, vwr.isJS, 
+    initSwing(title, bundle, vwr.html5Applet, Viewer.isJS, 
         vwr.getBooleanProperty("_signedApplet"), vwr.isWebGL);
   }
 
   ////// JmolPopupInterface methods //////
+
+  @Override
+  public void jpiSetProperty(String name, Object value) {
+    // TODO
+    
+  }
 
   private final static int MENUITEM_HEIGHT = 20;
 
@@ -161,8 +168,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     menuShowPopup(popupMenu, thisx, thisy);
   }
 
-  @Override
   @SuppressWarnings("unchecked")
+  @Override
   public void jpiUpdateComputedMenus() {
     if (updateMode == UPDATE_NEVER)
       return;
@@ -273,13 +280,14 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     if (!basename.endsWith("P!"))
       return false;
     if (basename.indexOf("??") >= 0) {
-      what = menuSetCheckBoxOption(item, basename, what);
+      what = menuSetCheckBoxOption(item, basename, what, TF);
     } else {
       if (!TF)
         return true;
       what = "set picking " + basename.substring(0, basename.length() - 2);
     }
-    appRunScript(what);
+    if (what != null)
+      appRunScript(what);
     return true;
   }
 
@@ -289,7 +297,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
     // JavaScript does not have to re-insert the menu
     // because it never gets removed in the first place.
     // first entry is just the main item
-    if (vwr.isJS || nFrankList < 2)
+    if (Viewer.isJS || nFrankList < 2) // TODO BOBJOB
       return;
     for (int i = nFrankList; --i > 0;) {
       Object[] f = frankList[i];
@@ -344,7 +352,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
           break;
         SC menu = htMenus.get(id.substring(i, iNew));
         frankList[nFrankList++] = new Object[] { menu.getParent(), menu,
-            Integer.valueOf(vwr.isJS ? 0 : menuGetListPosition(menu)) };
+            Integer.valueOf(Viewer.isJS ? 0 : menuGetListPosition(menu)) };
         menuAddSubMenu(frankPopup, menu);
         i = iNew + 1;
       }
@@ -991,7 +999,7 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
         setText("JAVAprocessors", GT.i(GT.$("{0} processors"), n));
       setText("JAVAmemTotal",
           GT.i(GT.$("{0} MB total"), convertToMegabytes(runtime.totalMemory())));
-      //     memFree.setText(GT.i(GT._("{0} MB free"), convertToMegabytes(runtime.freeMemory())));
+      //     memFree.setText(GT.i(GT.$("{0} MB free"), convertToMegabytes(runtime.freeMemory())));
       setText("JAVAmemMax",
           GT.i(GT.$("{0} MB maximum"), convertToMegabytes(runtime.maxMemory())));
     }

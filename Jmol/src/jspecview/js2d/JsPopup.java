@@ -23,10 +23,10 @@
  */
 package jspecview.js2d;
 
+import org.jmol.api.PlatformViewer;
 import org.jmol.popup.JSSwingPopupHelper;
 import org.jmol.popup.PopupResource;
 
-import javajs.awt.PlatformViewer;
 import javajs.awt.SC;
 
 import jspecview.common.JSViewer;

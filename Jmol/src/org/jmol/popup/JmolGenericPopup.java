@@ -26,16 +26,14 @@ package org.jmol.popup;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Properties;
 
+import javajs.awt.SC;
+import javajs.util.BS;
 import javajs.util.Lst;
 import javajs.util.PT;
 
 import org.jmol.i18n.GT;
 import org.jmol.i18n.Language;
-
-import javajs.awt.SC;
-import javajs.util.BS;
 import org.jmol.modelset.Group;
 import org.jmol.script.T;
 import org.jmol.util.Elements;
@@ -55,7 +53,7 @@ import org.jmol.viewer.Viewer;
  * org.jmol.awtjs2d.JSModelKitPopup (via org.jmol.awtjs2d.JSPopup)
  * 
  */
-abstract public class JmolGenericPopup extends GenericSwingPopup {
+abstract public class JmolGenericPopup extends JmolSwingPopup {
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
 
@@ -68,12 +66,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   //  Sygstem.out.println("JmolPopup " + this + " finalize");
   //}
 
-  protected Viewer vwr;
   protected int updateMode = UPDATE_ALL;
-  protected Properties menuText = new Properties();
 
-  private SC frankPopup;
-  private int nFrankList = 0;
   private int itemMax = 25;
   private int titleWidthMax = 20;
   private String nullModelSetName, modelSetName;
@@ -119,53 +113,36 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   private Lst<String> cnmrPeaks;
   private Lst<String> hnmrPeaks;
 
-  protected void initialize(Viewer vwr, PopupResource bundle, String title) {
-    this.vwr = vwr;
-    initSwing(title, bundle, vwr.html5Applet, Viewer.isJS, 
-        vwr.getBooleanProperty("_signedApplet"), vwr.isWebGL);
-  }
-
   ////// JmolPopupInterface methods //////
 
-  @Override
-  public Object jpiSetProperty(String name, Object value) {
-    return null;
-    
-  }
-
   private final static int MENUITEM_HEIGHT = 20;
-
+  
   @Override
   public void jpiDispose() {
-    helper.menuClearListeners(popupMenu);
+    super.jpiDispose();
     helper.menuClearListeners(frankPopup);
-    popupMenu = frankPopup = thisPopup = null;
+    frankPopup = null;
   }
 
   @Override
-  public SC jpiGetMenuAsObject() {
-    return popupMenu;
+  protected PopupResource getBundle(String menu) {
+    return new MainPopupResourceBundle(strMenuStructure = menu,
+        menuText);
   }
 
+
   @Override
-  public void jpiShow(int x, int y) {
-    // main entry point from Viewer
-    // called via JmolPopupInterface
-    if (!vwr.haveDisplay)
-      return;
-    show(x, y, false);
-    if (x < 0) {
+  protected boolean showFrankMenu() {
+      // frank has been clicked
       getViewerData();
       setFrankMenu(currentMenuItemId);
-      thisx = -x - 50;
+      thisx = -thisx - 50;
       if (nFrankList > 1) {
-        thisy = y - nFrankList * MENUITEM_HEIGHT;
+        thisy -= nFrankList * MENUITEM_HEIGHT;
         menuShowPopup(frankPopup, thisx, thisy);
-        return;
+        return false;
       }
-    }
-    appRestorePopupMenu();
-    menuShowPopup(popupMenu, thisx, thisy);
+      return true;
   }
 
   @SuppressWarnings("unchecked")
@@ -227,8 +204,9 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   }
 
   @Override
-  protected String appFixLabel(String label) {
-    return label;
+  protected String appGetMenuAsString(String title) {
+    return (new MainPopupResourceBundle(strMenuStructure, null))
+        .getMenuAsText(title);
   }
 
   @Override
@@ -262,36 +240,6 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   }
 
   @Override
-  protected boolean appGetBooleanProperty(String name) {
-    return vwr.getBooleanProperty(name);
-  }
-
-  @Override
-  protected String appGetMenuAsString(String title) {
-    return (new MainPopupResourceBundle(strMenuStructure, null))
-        .getMenuAsText(title);
-  }
-
-  @Override
-  protected boolean appIsSpecialCheckBox(SC item, String basename, String what,
-                                         boolean TF) {
-    if (appGetBooleanProperty(basename) == TF)
-      return true;
-    if (!basename.endsWith("P!"))
-      return false;
-    if (basename.indexOf("??") >= 0) {
-      what = menuSetCheckBoxOption(item, basename, what, TF);
-    } else {
-      if (!TF)
-        return true;
-      what = "set picking " + basename.substring(0, basename.length() - 2);
-    }
-    if (what != null)
-      appRunScript(what);
-    return true;
-  }
-
-  @Override
   protected void appRestorePopupMenu() {
     thisPopup = popupMenu;
     // JavaScript does not have to re-insert the menu
@@ -305,11 +253,6 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
           ((Integer) f[2]).intValue());
     }
     nFrankList = 1;
-  }
-
-  @Override
-  protected void appRunScript(String script) {
-    vwr.evalStringQuiet(script);
   }
 
   /**

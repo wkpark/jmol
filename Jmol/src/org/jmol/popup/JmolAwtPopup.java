@@ -25,15 +25,9 @@ package org.jmol.popup;
 
 import java.awt.Component;
 
-import javax.swing.JPopupMenu;
-
-import org.jmol.api.PlatformViewer;
-import org.jmol.i18n.GT;
-import org.jmol.popup.JmolGenericPopup;
-import org.jmol.popup.PopupResource;
-import org.jmol.viewer.Viewer;
-
 import javajs.awt.SC;
+
+import javax.swing.JPopupMenu;
 
 public class JmolAwtPopup extends JmolGenericPopup {
 
@@ -41,15 +35,6 @@ public class JmolAwtPopup extends JmolGenericPopup {
     helper = new AwtSwingPopupHelper(this);
   }
 
-  @Override
-  public void jpiInitialize(PlatformViewer vwr, String menu) {
-    boolean doTranslate = GT.setDoTranslate(true);
-    PopupResource bundle = new MainPopupResourceBundle(strMenuStructure = menu,
-        menuText);
-    initialize((Viewer) vwr, bundle, bundle.getMenuName());
-    GT.setDoTranslate(doTranslate);
-  }
-  
   @Override
   protected void menuShowPopup(SC popup, int x, int y) {
     try {

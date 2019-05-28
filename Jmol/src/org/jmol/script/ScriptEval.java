@@ -828,6 +828,22 @@ public class ScriptEval extends ScriptExpr {
     return o;
   }
 
+  public static SV runUserAction(String functionName, Object[] params, Viewer vwr) {
+    ScriptEval ev = (new ScriptEval()).setViewer(vwr);
+    JmolScriptFunction func = vwr.getFunction(functionName.toLowerCase());
+    if (func == null)
+      return null;
+    try {
+      Lst<SV> svparams = SV.getVariableAO(params).getList();
+      ev.restoreFunction(func, svparams, null);
+      ev.dispatchCommands(false, true, false);
+    } catch (ScriptException e) {
+      return null;
+    }
+    SV ret = ev.getContextVariableAsVariable("_retval", false);
+    return (ret == null ? SV.vT : ret);
+  }
+    
   private Object evaluate(Object expr, boolean asVariable, boolean compileOnly) {
     try {
       if (expr instanceof String) {
@@ -5780,7 +5796,7 @@ public class ScriptEval extends ScriptExpr {
     cmdGoto(false);
   }
 
-  private void cmdRotate(boolean isSpin, boolean isSelected)
+  public void cmdRotate(boolean isSpin, boolean isSelected)
       throws ScriptException {
 
     // rotate is a full replacement for spin
@@ -5880,6 +5896,9 @@ public class ScriptEval extends ScriptExpr {
     boolean axesOrientationRasmol = vwr.getBoolean(T.axesorientationrasmol);
     for (int i = 1; i < slen; ++i) {
       switch (tok = getToken(i).tok) {
+      case T.rotate:
+        // from MODELKIT - ignore
+        continue;
       case T.define:
       case T.bitset:
       case T.expressionBegin:

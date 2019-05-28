@@ -97,6 +97,7 @@ import org.jmol.c.STR;
 import org.jmol.c.VDW;
 import org.jmol.i18n.GT;
 import org.jmol.minimize.Minimizer;
+import org.jmol.modelkit.ModelKitPopup;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -2610,7 +2611,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     reset(true);
     selectAll();
 
-    rotatePrev1 = rotateBondIndex = -1;
+    if (modelkit != null)
+      modelkit.initializeForModel();
     movingSelected = false;
     slm.noneSelected = Boolean.FALSE;
     setHoverEnabled(true);
@@ -4385,10 +4387,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         + (option.length() == 1 ? "" : option.substring(1, 2));
     switch (pickingMode) {
     case ActionManager.PICKING_ASSIGN_ATOM:
-      setAtomPickingOption(option);
+      getModelkit(false).setAtomPickingOption(option);
       break;
     case ActionManager.PICKING_ASSIGN_BOND:
-      setBondPickingOption(option);
+      getModelkit(false).setBondPickingOption(option);
       break;
     default:
       Logger.error("Bad picking mode: " + strMode + "_" + option);
@@ -4496,7 +4498,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return modelkitPopup;
   }
     
-
+  public void setRotateBondIndex(int i) {
+    if (modelkit != null)
+      modelkit.setRotateBondIndex(i);
+  }
+    
   public String getMenu(String type) {
     getPopupMenu();
     if (type.equals("\0")) {
@@ -6825,8 +6831,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       setNavigationMode(false);
       selectAll();
       // setShapeProperty(JmolConstants.SHAPE_LABELS, "color", "RED");
-      setAtomPickingOption("C");
-      setBondPickingOption("p");
+      getModelkit(false).setAtomPickingOption("C");
+      getModelkit(false).setBondPickingOption("p");
       if (!isApplet)
         popupMenu(0, 0, 'm');
       if (isChange)
@@ -7283,7 +7289,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public JmolAppConsoleInterface appConsole;
   JmolScriptEditorInterface scriptEditor;
-  GenericMenuInterface jmolpopup, modelkit;
+  GenericMenuInterface jmolpopup;
+  ModelKitPopup modelkit;
   private GenericMenuInterface modelkitPopup;
   private Map<String, Object> headlessImageParams;
  
@@ -7497,6 +7504,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
                                            Lst<P3> finalPoints,
                                            float[] dihedralList, M4 m4) {
     // Eval: rotate INTERNAL
+
+    if (eval == null)
+      eval = this.eval;
 
     if (headless) {
       if (isSpin && endDegrees == Float.MAX_VALUE)
@@ -7738,8 +7748,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     // cannot synchronize this -- it's from the mouse and the event queue
     if (deltaZ == 0)
       return;
-    if (x == Integer.MIN_VALUE)
-      rotateBondIndex = -1;
+    if (x == Integer.MIN_VALUE && modelkit != null)
+      modelkit.initializeBondRotation();
     if (isJmolDataFrame())
       return;
     if (deltaX == Integer.MIN_VALUE) {
@@ -7762,8 +7772,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     movingSelected = true;
     stopMinimization();
     // note this does not sync with applets
-    if (rotateBondIndex >= 0 && x != Integer.MIN_VALUE) {
-      actionRotateBond(deltaX, deltaY, x, y);
+    if (x != Integer.MIN_VALUE && modelkit != null && modelkit.getRotateBondIndex() >= 0) {
+      modelkit.actionRotateBond(deltaX, deltaY, x, y);
     } else {
       bsSelected = setMovableBitSet(bsSelected, !asAtoms);
       if (!bsSelected.isEmpty()) {
@@ -7820,82 +7830,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       setCursor(GenericPlatform.CURSOR_HAND);
     }
     setShapeProperty(JC.SHAPE_HALOS, "highlight", bs);
-  }
-
-  private int rotateBondIndex = -1;
-
-  public void setRotateBondIndex(int index) {
-    boolean haveBond = (rotateBondIndex >= 0);
-    if (!haveBond && index < 0)
-      return;
-    rotatePrev1 = -1;
-    bsRotateBranch = null;
-    if (index == Integer.MIN_VALUE)
-      return;
-    rotateBondIndex = index;
-    highlightBond(index, false);
-
-  }
-
-  int getRotateBondIndex() {
-    return rotateBondIndex;
-  }
-
-  private int rotatePrev1 = -1;
-  private int rotatePrev2 = -1;
-  private BS bsRotateBranch;
-
-  void actionRotateBond(int deltaX, int deltaY, int x, int y) {
-    // called by actionManager
-    if (rotateBondIndex < 0)
-      return;
-    BS bsBranch = bsRotateBranch;
-    Atom atom1, atom2;
-    if (bsBranch == null) {
-      Bond b = ms.bo[rotateBondIndex];
-      atom1 = b.atom1;
-      atom2 = b.atom2;
-      undoMoveActionClear(atom1.i, AtomCollection.TAINT_COORD, true);
-      P3 pt = P3.new3(x, y, (atom1.sZ + atom2.sZ) / 2);
-      tm.unTransformPoint(pt, pt);
-      if (atom2.getCovalentBondCount() == 1
-          || pt.distance(atom1) < pt.distance(atom2)
-          && atom1.getCovalentBondCount() != 1) {
-        Atom a = atom1;
-        atom1 = atom2;
-        atom2 = a;
-      }
-      if (Measure.computeAngleABC(pt, atom1, atom2, true) > 90
-          || Measure.computeAngleABC(pt, atom2, atom1, true) > 90) {
-        bsBranch = getBranchBitSet(atom2.i, atom1.i, true);
-      }
-      if (bsBranch != null)
-        for (int n = 0, i = atom1.bonds.length; --i >= 0;) {
-          if (bsBranch.get(atom1.getBondedAtomIndex(i)) && ++n == 2) {
-            bsBranch = null;
-            break;
-          }
-        }
-      if (bsBranch == null) {
-        bsBranch = ms.getMoleculeBitSetForAtom(atom1.i);
-      }
-      bsRotateBranch = bsBranch;
-      rotatePrev1 = atom1.i;
-      rotatePrev2 = atom2.i;
-    } else {
-      atom1 = ms.at[rotatePrev1];
-      atom2 = ms.at[rotatePrev2];
-    }
-    V3 v1 = V3.new3(atom2.sX - atom1.sX, atom2.sY - atom1.sY, 0);
-    V3 v2 = V3.new3(deltaX, deltaY, 0);
-    v1.cross(v1, v2);
-    float degrees = (v1.z > 0 ? 1 : -1) * v2.length();
-
-    BS bs = BSUtil.copy(bsBranch);
-    bs.andNot(slm.getMotionFixedAtoms());
-
-    rotateAboutPointsInternal(eval, atom1, atom2, 0, degrees, false, bs, null,
-        null, null, null);
   }
 
   public void refreshMeasures(boolean andStopMinimization) {
@@ -8894,16 +8828,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return g.multiProcessor && isParallel;
   }
 
-  private void setAtomPickingOption(String option) {
-    if (haveDisplay)
-      acm.setAtomPickingOption(option);
-  }
-
-  private void setBondPickingOption(String option) {
-    if (haveDisplay)
-      acm.setBondPickingOption(option);
-  }
-
   void undoClear() {
     actionStates.clear();
     actionStatesRedo.clear();
@@ -8922,7 +8846,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     getStateCreator().undoMoveAction(action, n);
   }
 
-  void undoMoveActionClear(int taintedAtom, int type, boolean clearRedo) {
+  public void undoMoveActionClear(int taintedAtom, int type, boolean clearRedo) {
     // called by actionManager
     if (g.preserveState)
       getStateCreator().undoMoveActionClear(taintedAtom, type, clearRedo);
@@ -9827,9 +9751,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       script("assign atom ({" + atomIndex + "}) \"" + element + "\""); 
     }
   }
-  public GenericMenuInterface getModelkit(boolean andShow) {
+  public ModelKitPopup getModelkit(boolean andShow) {
     if (modelkit == null) {
-      modelkit = apiPlatform.getMenuPopup(null, 'm');
+      modelkit = (ModelKitPopup) apiPlatform.getMenuPopup(null, 'm');
     } else if (andShow) { 
       modelkit.jpiUpdateComputedMenus();
     }

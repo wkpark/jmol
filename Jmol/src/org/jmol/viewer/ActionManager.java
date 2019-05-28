@@ -24,42 +24,44 @@
   package org.jmol.viewer;
   
   import javajs.J2SRequireImport;
-  import javajs.awt.EventManager;
-  import javajs.awt.GenericPlatform;
-  import javajs.awt.event.Event;
-  import javajs.util.AU;
-  import javajs.util.PT;
-  import java.util.Map;
+import javajs.awt.EventManager;
+import javajs.awt.GenericPlatform;
+import javajs.awt.event.Event;
+import javajs.util.AU;
+import javajs.util.PT;
+import java.util.Map;
   
   import org.jmol.api.Interface;
-  import org.jmol.i18n.GT;
-  import javajs.util.BS;
-  import org.jmol.modelset.Atom;
-  import org.jmol.modelset.AtomCollection;
-  import org.jmol.modelset.MeasurementPending;
-  import org.jmol.script.T;
-  import org.jmol.thread.HoverWatcherThread;
-  import org.jmol.util.BSUtil;
-  import org.jmol.util.C;
-  import org.jmol.util.Escape;
-  import org.jmol.util.Logger;
-  import org.jmol.util.Point3fi;
+import org.jmol.i18n.GT;
+import javajs.util.BS;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.AtomCollection;
+import org.jmol.modelset.MeasurementPending;
+import org.jmol.script.SV;
+import org.jmol.script.ScriptEval;
+import org.jmol.script.T;
+import org.jmol.thread.HoverWatcherThread;
+import org.jmol.util.BSUtil;
+import org.jmol.util.C;
+import org.jmol.util.Escape;
+import org.jmol.util.Logger;
+import org.jmol.util.Point3fi;
   
   import javajs.util.P3;
   
   import org.jmol.util.Rectangle;
-  import org.jmol.viewer.binding.Binding;
-  import org.jmol.viewer.binding.JmolBinding;
+import org.jmol.viewer.binding.Binding;
+import org.jmol.viewer.binding.JmolBinding;
   
   @J2SRequireImport({ org.jmol.i18n.GT.class })
   public class ActionManager implements EventManager {
-  
+
     protected Viewer vwr;
     protected boolean haveMultiTouchInput;  
     protected boolean isMultiTouch;
     
     public Binding b;
-  
+
     private Binding jmolBinding;
     private Binding pfaatBinding;
     private Binding dragBinding;
@@ -82,9 +84,9 @@
       LEFT_DRAGGED = Binding.getMouseAction(1, Binding.LEFT, Event.DRAGGED);
       dragGesture = new Gesture(20, vwr);
     }
-  
+
     protected Thread hoverWatcherThread;
-  
+
     public void checkHover() {
       if (zoomTrigger) {
         zoomTrigger = false;
@@ -105,7 +107,7 @@
         vwr.hoverOn(atomIndex, isLabel);
       }
     }
-  
+
     /**
      * 
      * Specific to ActionManagerMT -- for processing SparshUI gestures
@@ -121,7 +123,7 @@
                              P3 pt, long time) {
       // see subclass
     }
-  
+
     /**
      * 
      * @param desc
@@ -138,14 +140,14 @@
         b.bindName(mouseAction, name);
       }
     }
-  
+
     protected void clearBindings() {
       setBinding(jmolBinding = new JmolBinding());
       pfaatBinding = null;
       dragBinding = null;
       rasmolBinding = null;
     }
-  
+
     void unbindAction(String desc, String name) {
       if (desc == null && name == null) {
         clearBindings();
@@ -160,11 +162,11 @@
       if (name == null)
         b.unbindUserAction(desc);
     }
-  
+
     //// Gestures
     
     private Gesture dragGesture;
-  
+
     /*
      * a "Jmol action" is one of these:
      * 
@@ -221,15 +223,15 @@
     public final static int ACTION_translate = 45;
     public final static int ACTION_wheelZoom = 46;
     public final static int ACTION_count = 47;
-  
+
     final static String[] actionInfo = new String[ACTION_count];
     final static String[] actionNames = new String[ACTION_count];
-  
+
     static void newAction(int i, String name, String info) {
       actionInfo[i] = info;
       actionNames[i] = name;
     }
-  
+
     void createActions() {
       if (actionInfo[ACTION_assignNew] != null)
         return;
@@ -355,46 +357,47 @@
       newAction(ACTION_translate, "_translate", GT.$("translate"));
       newAction(ACTION_wheelZoom, "_wheelZoom", GT.$("zoom"));
     }
-  
+
     public static String getActionName(int i) {
       return (i < actionNames.length ? actionNames[i] : null);
     }
-  
+
     public static int getActionFromName(String name) {
       for (int i = 0; i < actionNames.length; i++)
         if (actionNames[i].equalsIgnoreCase(name))
           return i;
       return -1;
     }
-  
+
     public String getBindingInfo(String qualifiers) {
       return b.getBindingInfo(actionInfo, actionNames, qualifiers);
     }
-  
+
     protected void setBinding(Binding newBinding) {
       // overridden in ActionManagerMT
       b = newBinding;
     }
-  
+
     boolean bnd(int mouseAction, int... jmolActions) {
       for (int i = jmolActions.length; --i >= 0;)
         if (b.isBound(mouseAction, jmolActions[i]))
           return true;
       return false;
     }
-  
+
     private boolean isDrawOrLabelAction(int a) {
       return (drawMode && bnd(a, ACTION_dragDrawObject, ACTION_dragDrawPoint) 
           || labelMode && bnd(a, ACTION_dragLabel));
     }
-  
+
     /**
      * picking modes set picking....
      */
     
     private int apm = PICKING_IDENTIFY;
     private int bondPickingMode;
-  
+
+    public final static int PICKING_MK_RESET = -1;
     public final static int PICKING_OFF = 0;
     public final static int PICKING_IDENTIFY = 1;
     public final static int PICKING_LABEL = 2;
@@ -432,7 +435,7 @@
     public final static int PICKING_ROTATE_BOND = 34;
     public final static int PICKING_IDENTIFY_BOND = 35;
     public final static int PICKING_DRAG_LIGAND = 36;
-  
+
     /**
      * picking styles
      */
@@ -443,7 +446,7 @@
     public final static int PICKINGSTYLE_SELECT_DRAG = 3;
     public final static int PICKINGSTYLE_MEASURE_ON = 4;
     public final static int PICKINGSTYLE_MEASURE_OFF = 5;
-  
+
     private final static String[] pickingModeNames;
     static {
       pickingModeNames = "off identify label center draw spin symmetry deleteatom deletebond atom group chain molecule polymer structure site model element measure distance angle torsion sequence navigate connect struts dragselected dragmolecule dragatom dragminimize dragminimizemolecule invertstereo assignatom assignbond rotatebond identifybond dragligand".split(" ");
@@ -453,14 +456,14 @@
       return (pickingMode < 0 || pickingMode >= pickingModeNames.length ? "off"
           : pickingModeNames[pickingMode]);
     }
-  
+
     public final static int getPickingMode(String str) {
       for (int i = pickingModeNames.length; --i >= 0;)
         if (str.equalsIgnoreCase(pickingModeNames[i]))
           return i;
       return -1;
     }
-  
+
     private final static String[] pickingStyleNames;
     
     static {
@@ -471,25 +474,28 @@
       return (pickingStyle < 0 || pickingStyle >= pickingStyleNames.length ? "toggle"
           : pickingStyleNames[pickingStyle]);
     }
-  
+
     public final static int getPickingStyleIndex(String str) {
       for (int i = pickingStyleNames.length; --i >= 0;)
         if (str.equalsIgnoreCase(pickingStyleNames[i]))
           return i;
       return -1;
     }
-  
+
     int getAtomPickingMode() {
       return apm;
     }
-  
+
     void setPickingMode(int pickingMode) {
       boolean isNew = false;
       switch (pickingMode) {
-      case -1: // from  set modelkit OFF
+      case PICKING_MK_RESET: 
+        // from  set modelkit OFF only
         isNew = true;
         bondPickingMode = PICKING_IDENTIFY_BOND;
         pickingMode = PICKING_IDENTIFY;
+        vwr.setStringProperty("pickingStyle", "toggle");
+        vwr.setBooleanProperty("bondPicking", false);
         break;
       case PICKING_IDENTIFY_BOND:
       case PICKING_ROTATE_BOND:
@@ -510,53 +516,33 @@
       if (isNew)
         resetMeasurement();
     }
-  
-    void setAtomPickingOption(String option) {
-      switch (apm) {
-      case PICKING_ASSIGN_ATOM:
-        pickAtomAssignType = option;
-        isPickAtomAssignCharge = (pickAtomAssignType.equals("Pl") || pickAtomAssignType
-            .equals("Mi"));
-        break;
-      }
-    }
-  
-    void setBondPickingOption(String option) {
-      switch (bondPickingMode) {
-      case PICKING_ASSIGN_BOND:
-        pickBondAssignType = Character.toLowerCase(option.charAt(0));
-        break;
-      }
-    }
-  
+
     private int pickingStyle;
     private int pickingStyleSelect = PICKINGSTYLE_SELECT_JMOL;
     private int pickingStyleMeasure = PICKINGSTYLE_MEASURE_OFF;
     private int rootPickingStyle = PICKINGSTYLE_SELECT_JMOL;
-    private String pickAtomAssignType = "C";
-    private char pickBondAssignType = 'p';
-    private boolean isPickAtomAssignCharge;
-  
+    
+    
     public String getPickingState() {
       // the pickingMode is not reported in the state. But when we do an UNDO,
       // we want to restore this.
       String script = ";set modelkitMode " + vwr.getBoolean(T.modelkitmode)
           + ";set picking " + getPickingModeName(apm);
       if (apm == PICKING_ASSIGN_ATOM)
-        script += "_" + pickAtomAssignType;
+        script += "_" + vwr.getModelkit(false).getAtomPickingType();
       script += ";";
       if (bondPickingMode != PICKING_OFF)
         script += "set picking " + getPickingModeName(bondPickingMode);
       if (bondPickingMode == PICKING_ASSIGN_BOND)
-        script += "_" + pickBondAssignType;
+        script += "_" + vwr.getModelkit(false).getBondPickingType();
       script += ";";
       return script;
     }
-  
+
     int getPickingStyle() {
       return pickingStyle;
     }
-  
+
     void setPickingStyle(int pickingStyle) {
       this.pickingStyle = pickingStyle;
       if (pickingStyle >= PICKINGSTYLE_MEASURE_ON) {
@@ -592,8 +578,8 @@
       if (!b.name.equals("drag"))
         predragBinding = b;
     }
-  
-  
+
+
     
     private final static long MAX_DOUBLE_CLICK_MILLIS = 700;
     protected final static long MININUM_GESTURE_DELAY_MILLISECONDS = 10;
@@ -601,54 +587,54 @@
     public final static float DEFAULT_MOUSE_DRAG_FACTOR = 1f;
     public final static float DEFAULT_MOUSE_WHEEL_FACTOR = 1.15f;
     public final static float DEFAULT_GESTURE_SWIPE_FACTOR = 1f;
-  
-  
+
+
     protected int xyRange = 10; // BH 2019.04.21 was 0
-  
+
     private float gestureSwipeFactor = DEFAULT_GESTURE_SWIPE_FACTOR;
     protected float mouseDragFactor = DEFAULT_MOUSE_DRAG_FACTOR;
     protected float mouseWheelFactor = DEFAULT_MOUSE_WHEEL_FACTOR;
-  
+
     void setGestureSwipeFactor(float factor) {
       gestureSwipeFactor = factor;
     }
-  
+
     void setMouseDragFactor(float factor) {
       mouseDragFactor = factor;
     }
-  
+
     void setMouseWheelFactor(float factor) {
       mouseWheelFactor = factor;
     }
-  
+
     protected final MouseState current = new MouseState("current");
     protected final MouseState moved = new MouseState("moved");
     private final MouseState clicked = new MouseState("clicked");
     private final MouseState pressed = new MouseState("pressed");
     private final MouseState dragged = new MouseState("dragged");
-  
+
     protected void setCurrent(long time, int x, int y, int mods) {
       vwr.hoverOff();
       current.set(time, x, y, mods);
     }
-  
+
     int getCurrentX() {
       return current.x;
     }
-  
+
     int getCurrentY() {
       return current.y;
     }
-  
+
     protected int pressedCount;
     protected int clickedCount;
-  
+
     private boolean drawMode;
     private boolean labelMode;
     private boolean dragSelectedMode;
     private boolean measuresEnabled = true;
     private boolean haveSelection;
-  
+
     public void setMouseMode() {
       drawMode = labelMode = false;
       dragSelectedMode = vwr.getDragSelected();
@@ -658,7 +644,7 @@
         default:
           return;
         case PICKING_ASSIGN_ATOM:
-          measuresEnabled = !isPickAtomAssignCharge;
+          measuresEnabled = !vwr.getModelkit(false).isPickAtomAssignCharge();
           return;
         case PICKING_DRAW:
           drawMode = true;
@@ -683,16 +669,16 @@
         }
       exitMeasurementMode(null);
     }
-  
+
     protected void clearMouseInfo() {
       // when a second touch is made, this clears all record of first touch
       pressedCount = clickedCount = 0;
       dragGesture.setAction(0, 0);
       exitMeasurementMode(null);
     }
-  
+
     private boolean hoverActive = false;
-  
+
     private MeasurementPending mp;
     private int dragAtomIndex = -1;
     
@@ -702,28 +688,28 @@
       setAtomsPicked(BSUtil.newAndSetBit(iatom), "Label picked for atomIndex = " + iatom);
     }
     
-  
+
     private boolean rubberbandSelectionMode = false;
     private final Rectangle rectRubber = new Rectangle();
-  
+
     private boolean isAltKeyReleased = true;
     private boolean keyProcessing;
-  
+
     protected boolean isMultiTouchClient;
     protected boolean isMultiTouchServer;
-  
+
     public boolean isMTClient() {
       return isMultiTouchClient;
     }
-  
+
     public boolean isMTServer() {
       return isMultiTouchServer;
     }
-  
+
     public void dispose() {
       clear();
     }
-  
+
     public void clear() {
       startHoverWatcher(false);
       if (predragBinding != null)
@@ -732,7 +718,7 @@
       vwr.setPickingStyle(null, rootPickingStyle);
       isAltKeyReleased = true;
     }
-  
+
     synchronized public void startHoverWatcher(boolean isStart) {
       if (vwr.isPreviewOnly)
         return;
@@ -754,7 +740,7 @@
         // is possible -- seen once hoverWatcherThread.start() had null pointer.
       }
     }
-  
+
     /**
      * only NONE (-1) is implemented; it just stops the hoverWatcher thread so
      * that the vwr references are all removed
@@ -766,7 +752,7 @@
         startHoverWatcher(false);
       }
     }
-  
+
     /**
      * called by MouseManager.keyPressed
      * 
@@ -821,7 +807,7 @@
       keyProcessing = false;
       return true;
     }
-  
+
     @Override
     public void keyReleased(int key) {
       switch (key) {
@@ -853,7 +839,7 @@
         break;
       }
     }
-  
+
     @Override
     public void mouseEnterExit(long time, int x, int y, boolean isExit) {
       if (vwr.tm.stereoDoubleDTI)
@@ -862,18 +848,18 @@
       if (isExit)
         exitMeasurementMode("mouseExit"); //otherwise pending measurement can be left over.
     }
-  
+
     private int pressAction;
     private int dragAction;
     private int clickAction;
-  
+
     private void setMouseActions(int count, int buttonMods, boolean isRelease) {
       pressAction = Binding.getMouseAction(count, buttonMods,
           isRelease ? Event.RELEASED : Event.PRESSED);
       dragAction = Binding.getMouseAction(count, buttonMods, Event.DRAGGED);
       clickAction = Binding.getMouseAction(count, buttonMods, Event.CLICKED);
     }
-  
+
     /**
      * 
      * @param mode
@@ -978,7 +964,7 @@
         return;
       }
     }
-  
+
     private void checkPressedAction(int x, int y, long time) {
       int buttonMods = Binding.getButtonMods(pressAction);
       boolean isDragSelectedAction = bnd(
@@ -993,7 +979,7 @@
       setMouseActions(pressedCount, buttonMods, false);
       if (Logger.debuggingHigh && vwr.getBoolean(T.testflag1))
         Logger.debug(Binding.getMouseActionName(pressAction, false));
-  
+
       if (isDrawOrLabelAction(dragAction) && vwr.checkObjectDragged(Integer.MIN_VALUE, 0, x, y, dragAction))
         return;
       checkUserAction(pressAction, x, y, 0, 0, time, Event.PRESSED);
@@ -1049,7 +1035,7 @@
       //      vwr.rotateArcBall(x, y, 0);
       checkMotionRotateZoom(dragAction, x, 0, 0, true);
     }
-  
+
     private void checkDragWheelAction(int dragWheelAction, int x, int y,
                                       int deltaX, int deltaY, long time, int mode) {
       int buttonmods = Binding.getButtonMods(dragWheelAction);
@@ -1061,17 +1047,17 @@
         if (newAction > 0)
           dragWheelAction = newAction;
       }
-  
+
       if (isRubberBandSelect(dragWheelAction)) {
         calcRectRubberBand();
         vwr.refresh(Viewer.REFRESH_SYNC_MASK, "rubberBand selection");
         return;
       }
-  
+
       if (checkUserAction(dragWheelAction, x, y, deltaX, deltaY, time, mode))
         return;
-  
-      if (vwr.getRotateBondIndex() >= 0) {
+
+      if (vwr.getModelkit(false).getRotateBondIndex() >= 0) {
         if (bnd(dragWheelAction, ACTION_rotateBranch)) {
           vwr.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, x, y, null, false,
               false);
@@ -1124,7 +1110,7 @@
           return;
         }
       }
-  
+
       if (dragAtomIndex >= 0 && mode == Event.DRAGGED
           && bnd(clickAction, ACTION_assignNew) && apm == PICKING_ASSIGN_ATOM) {
         int nearestAtomIndex = vwr.findNearestAtomIndexMovable(x, y, false);
@@ -1147,7 +1133,7 @@
         vwr.refresh(Viewer.REFRESH_SYNC_MASK, "assignNew");
         return;
       }
-  
+
       if (!drawMode && !labelMode && bnd(dragWheelAction, ACTION_translate)) {
         vwr.translateXYBy(deltaX, deltaY);
         return;
@@ -1167,7 +1153,7 @@
         dragSelected(dragWheelAction, deltaX, deltaY, false);
         return;
       }
-  
+
       if (isDrawOrLabelAction(dragWheelAction)) {
         setMotion(GenericPlatform.CURSOR_MOVE, true);
         if (vwr.checkObjectDragged(dragged.x, dragged.y, x, y, dragWheelAction)) {
@@ -1225,7 +1211,7 @@
         return;
       }
     }
-  
+
     /**
      * change actual coordinates of selected atoms from set dragSeleted TRUE or
      * set PICKING DRAGSELECTED
@@ -1243,7 +1229,7 @@
      * @param isPickingDrag
      */
     private void dragSelected(int a, int deltaX, int deltaY, boolean isPickingDrag) {
-  
+
       // see footnotes below for ^, $, #, and *
       //
       // settings:^    set picking dragSelected             set dragSelected 
@@ -1259,7 +1245,7 @@
       // * rotate requires   set allowRotateSelected TRUE
       // $ set dragSelected allows setting of a new molecule with double-click when    set picking SELECT
       // $ set picking dragSelected allows measurements with double-click, as usual
-  
+
       setMotion(GenericPlatform.CURSOR_MOVE, true);
       if (bnd(a, ACTION_rotateSelected) && vwr.getBoolean(T.allowrotateselected))
         vwr.rotateSelected(getDegrees(deltaX, true), getDegrees(deltaY, false),
@@ -1271,8 +1257,8 @@
             (isPickingDrag && bnd(a, ACTION_dragZ) ? -deltaY : Integer.MIN_VALUE),
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, true, false);
     }
-  
-  
+
+
     private void checkReleaseAction(int x, int y, long time, boolean dragRelease) {
       if (Logger.debuggingHigh && vwr.getBoolean(T.testflag1))
         Logger.debug(Binding.getMouseActionName(pressAction, false));
@@ -1311,11 +1297,11 @@
       if (haveSelection && dragSelectedMode && bnd(dragAction, ACTION_dragSelected))
         vwr.moveSelected(Integer.MAX_VALUE, 0, Integer.MIN_VALUE,
             Integer.MIN_VALUE, Integer.MIN_VALUE, null, false, false);
-  
+
       if (dragRelease
           && checkUserAction(pressAction, x, y, 0, 0, time, Event.RELEASED))
         return;
-  
+
       if (vwr.getBoolean(T.allowgestures)) {
         if (bnd(dragAction, ACTION_swipe)) {
           float speed = getExitRate();
@@ -1326,10 +1312,10 @@
             vwr.log("$NOW$ swipe " + dragGesture + " " + speed);
           return;
         }
-  
+
       }
     }
-  
+
     private void checkClickAction(int x, int y, long time, int clickedCount) {
       // points are always picked up first, then atoms
       // so that atom picking can be superceded by draw picking
@@ -1372,11 +1358,11 @@
       }
       if (isBond)
         clickedCount = 1;
-  
+
       if (nearestPoint != null && Float.isNaN(nearestPoint.x))
         return;
       int nearestAtomIndex = findNearestAtom(x, y, nearestPoint, clickedCount > 0);
-  
+
       if (clickedCount == 0 && apm != PICKING_ASSIGN_ATOM) {
         // mouse move
         if (mp == null)
@@ -1390,12 +1376,12 @@
         return;
       }
       setMouseMode();
-  
+
       if (bnd(clickAction, ACTION_stopMotion)) {
         vwr.tm.stopMotion();
         // continue checking --- no need to exit here
       }
-  
+
       if (vwr.getBoolean(T.navigationmode)
           && apm == PICKING_NAVIGATE
           && bnd(clickAction, ACTION_pickNavigate)) {
@@ -1403,7 +1389,7 @@
             * 100f / vwr.getScreenHeight() - 50f);
         return;
       }
-  
+
       // bond change by clicking on a bond
       // bond deletion by clicking a bond
       if (isBond) {
@@ -1423,7 +1409,7 @@
             toggleMeasurement();
           return;
         }
-  
+
         if (bnd(clickAction, ACTION_setMeasure)) {
           if (mp != null) {
             addToMeasurement(nearestAtomIndex, nearestPoint, true);
@@ -1449,7 +1435,7 @@
         return;
       }
     }
-  
+
     private void pickLabel(int iatom) {
       String label = vwr.ms.at[iatom].atomPropertyString(vwr,  T.label);
       if (pressedCount == 2) {
@@ -1462,7 +1448,7 @@
         setAtomsPicked(BSUtil.newAndSetBit(iatom), "Label picked for atomIndex = " + iatom + ": " + label);
       }
     }
-  
+
     private boolean checkUserAction(int mouseAction, int x, int y, int deltaX,
                                     int deltaY, long time, int mode) {
       if (!b.isUserAction(mouseAction))
@@ -1518,7 +1504,7 @@
       }
       return !passThrough;
     }
-  
+
     /**
      * 
      * @param mouseAction
@@ -1545,7 +1531,7 @@
       setMotion(cursor, isDrag);
       return (isZoom || isSlideZoom);
     }
-  
+
     private float getExitRate() {
       long dt = dragGesture.getTimeDifference(2);
       return (isMultiTouch ? (dt > (MININUM_GESTURE_DELAY_MILLISECONDS << 3) ? 0 :
@@ -1553,19 +1539,19 @@
         : (dt > MININUM_GESTURE_DELAY_MILLISECONDS ? 0 : dragGesture
           .getSpeedPixelsPerMillisecond(4, 2)));
     }
-  
+
     private boolean isRubberBandSelect(int action) {
       // drag and wheel and release
       action = action & ~Binding.DRAG | Binding.CLICK;
       return (rubberbandSelectionMode
           && bnd(action, ACTION_selectToggle, ACTION_selectOr, ACTION_selectAndNot));
     }
-  
+
     Rectangle getRubberBand() {
       return (rubberbandSelectionMode && rectRubber.x != Integer.MAX_VALUE ? rectRubber
           : null);
     }
-  
+
     private void calcRectRubberBand() {
       int factor = (vwr.antialiased ? 2 : 1);
       if (current.x < pressed.x) {
@@ -1583,7 +1569,7 @@
         rectRubber.height = (current.y - pressed.y) * factor;
       }
     }
-  
+
     /**
      * Transform a screen pixel change to an angular change
      * such that a full sweep of the dimension (up to 500 pixels)
@@ -1597,19 +1583,19 @@
       return delta / Math.min(500, isX ? vwr.getScreenWidth() 
           : vwr.getScreenHeight()) * 180 * mouseDragFactor;
     }
-  
+
     private boolean isZoomArea(int x) {
       return x > vwr.getScreenWidth() * (vwr.tm.stereoDoubleFull || vwr.tm.stereoDoubleDTI ? 2 : 1)
           * SLIDE_ZOOM_X_PERCENT / 100f;
     }
-  
+
     private Point3fi getPoint(Map<String, Object> t) {
       Point3fi pt = new Point3fi();
       pt.setT((P3) t.get("pt"));
       pt.mi = (short) ((Integer) t.get("modelIndex")).intValue();
       return pt;
     }
-  
+
     private int findNearestAtom(int x, int y, Point3fi nearestPoint,
                                 boolean isClicked) {
       int index = (drawMode || nearestPoint != null ? -1 : vwr
@@ -1617,7 +1603,7 @@
       return (index >= 0 && (isClicked || mp == null)
           && !vwr.slm.isInSelectionSubset(index) ? -1 : index);
     }
-  
+
     private boolean isSelectAction(int action) {
       return (bnd(action, ACTION_pickAtom)
           || !drawMode
@@ -1629,24 +1615,24 @@
           || bnd(action, ACTION_pickPoint, ACTION_selectToggle, ACTION_selectAndNot,
               ACTION_selectOr, ACTION_selectToggleExtended, ACTION_select));
     }
-  
+
     //////////// specific actions ////////////////
-  
+
     private MeasurementPending measurementQueued;
     public boolean zoomTrigger;
-  
+
     private void enterMeasurementMode(int iAtom) {
       vwr.setPicked(iAtom, true);
       vwr.setCursor(GenericPlatform.CURSOR_CROSSHAIR);
       vwr.setPendingMeasurement(mp = getMP());
       measurementQueued = mp;
     }
-  
+
     private MeasurementPending getMP() {
       return ((MeasurementPending) Interface
           .getInterface("org.jmol.modelset.MeasurementPending", vwr, "mouse")).set(vwr.ms);
     }
-  
+
     private int addToMeasurement(int atomIndex, Point3fi nearestPoint,
                                  boolean dblClick) {
       if (atomIndex == -1 && nearestPoint == null || mp == null) {
@@ -1659,14 +1645,14 @@
       return (measurementCount == 4 && !dblClick ? measurementCount
           : mp.addPoint(atomIndex, nearestPoint, true));
     }
-  
+
     private void resetMeasurement() {
       // doesn't reset the measurement that is being picked using
       // double-click, just the one using set picking measure.
       exitMeasurementMode(null);
       measurementQueued = getMP();
     }
-  
+
     void exitMeasurementMode(String refreshWhy) {
       if (mp == null)
         return;
@@ -1675,7 +1661,7 @@
       if (refreshWhy != null)
         vwr.refresh(Viewer.REFRESH_SYNC_MASK, refreshWhy);
     }
-  
+
     private void getSequence() {
       int a1 = measurementQueued.getAtomIndex(1);
       int a2 = measurementQueued.getAtomIndex(2);
@@ -1688,14 +1674,14 @@
         Logger.error(e.toString());
       }
     }
-  
+
     private void minimize(boolean dragDone) {
       int iAtom = dragAtomIndex;
       if (dragDone)
         dragAtomIndex = -1;
       vwr.dragMinimizeAtom(iAtom);
     }
-  
+
     private int queueAtom(int atomIndex, Point3fi ptClicked) {
       int n = measurementQueued.addPoint(atomIndex, ptClicked, true);
       if (atomIndex >= 0)
@@ -1703,7 +1689,7 @@
             + vwr.getAtomInfo(atomIndex), null, false);
       return n;
     }
-  
+
     protected void setMotion(int cursor, boolean inMotion) {
       switch (vwr.currentCursor) {
       case GenericPlatform.CURSOR_WAIT:
@@ -1714,7 +1700,7 @@
       if (inMotion)
         vwr.setInMotion(true);
     }
-  
+
     protected void zoomByFactor(int dz, int x, int y) {
       if (dz == 0)
         return;
@@ -1725,14 +1711,14 @@
       zoomTrigger = true;
       startHoverWatcher(true);
     }
-  
+
     
     /// methods that utilize vwr.script
-  
+
     private void runScript(String script) {
       vwr.script(script);
     }
-  
+
     private void atomOrPointPicked(int atomIndex, Point3fi ptClicked) {
       // atomIndex < 0 is off structure.
       // if picking spin or picking symmetry is on, then 
@@ -1901,21 +1887,23 @@
       vwr.clearClickCount();
       vwr.setStatusAtomPicked(atomIndex, null, null, false);
     }
-  
+
     private void assignNew(int x, int y) {
       // H C + -, etc.
       // also check valence and add/remove H atoms as necessary?
+      boolean isCharge = vwr.getModelkit(false).isPickAtomAssignCharge();
+      String atomType = vwr.getModelkit(false).getAtomPickingType();
       if (mp.count == 2) {
         vwr.undoMoveActionClear(-1, T.save, true);
         runScript("assign connect "
             + mp.getMeasurementScript(" ", false));
-      } else if (pickAtomAssignType.equals("Xx")) {
+      } else if (atomType.equals("Xx")) {
         exitMeasurementMode("bond dropped");
       } else {
         if (pressed.inRange(xyRange, dragged.x, dragged.y)) {
           String s = "assign atom ({" + dragAtomIndex + "}) \""
-              + pickAtomAssignType + "\"";
-          if (isPickAtomAssignCharge) {
+              + atomType + "\"";
+          if (isCharge) {
             s += ";{atomindex=" + dragAtomIndex + "}.label='%C'; ";
             vwr.undoMoveActionClear(dragAtomIndex,
                 AtomCollection.TAINT_FORMALCHARGE, true);
@@ -1923,7 +1911,7 @@
             vwr.undoMoveActionClear(-1, T.save, true);
           }
           runScript(s);
-        } else if (!isPickAtomAssignCharge) {
+        } else if (!isCharge) {
           vwr.undoMoveActionClear(-1, T.save, true);
           Atom a = vwr.ms.at[dragAtomIndex];
           if (a.getElementNumber() == 1) {
@@ -1932,30 +1920,30 @@
             P3 ptNew = P3.new3(x, y, a.sZ);
             vwr.tm.unTransformPoint(ptNew, ptNew);
             runScript("assign atom ({" + dragAtomIndex + "}) \""
-                + pickAtomAssignType + "\" " + Escape.eP(ptNew));
+                + atomType + "\" " + Escape.eP(ptNew));
           }
         }
       }
       exitMeasurementMode(null);
     }
-  
+
     private void bondPicked(int index) {    
       if (bondPickingMode == PICKING_ASSIGN_BOND)
         vwr.undoMoveActionClear(-1, T.save, true);
       
       switch (bondPickingMode) {
       case PICKING_ASSIGN_BOND:
-        runScript("assign bond [{" + index + "}] \"" + pickBondAssignType
+        runScript("assign bond [{" + index + "}] \"" + vwr.getModelkit(false).getBondPickingType()
             + "\"");
         break;
       case PICKING_ROTATE_BOND:
-        vwr.setRotateBondIndex(index);
+          vwr.setRotateBondIndex(index);
         break;
       case PICKING_DELETE_BOND:
         vwr.deleteBonds(BSUtil.newAndSetBit(index));
       }
     }
-  
+
     private void checkTwoAtomAction(Point3fi ptClicked, int atomIndex) {
       boolean isSpin = (apm == PICKING_SPIN);
       if (vwr.tm.spinOn || vwr.tm.navOn
@@ -1998,13 +1986,13 @@
       else
         runScript("draw symop " + s + ";show symop " + s);
     }
-  
+
     private void reset() {
       runScript("!reset");
     }
-  
+
     private boolean selectionWorking = false;
-  
+
     private void selectAtoms(String item) {
       if (mp != null || selectionWorking)
         return;
@@ -2028,12 +2016,12 @@
       }
       selectionWorking = false;
     }
-  
+
     private void setAtomsPicked(BS bs, String msg) {
       vwr.select(bs, false, 0, false);
       vwr.setStatusAtomPicked(-1, msg, null, false);
     }
-  
+
     private void selectRb(int action) {
       BS bs = vwr.ms.findAtomsInRectangle(rectRubber);
       if (bs.length() > 0) {
@@ -2048,7 +2036,7 @@
       }
       vwr.refresh(Viewer.REFRESH_SYNC_MASK, "mouseReleased");
     }
-  
+
     private void toggleMeasurement() {
       if (mp == null)
         return;
@@ -2058,52 +2046,71 @@
             + mp.getMeasurementScript(" ", true));
       exitMeasurementMode(null);
     }
-  
+
     private void zoomTo(int atomIndex) {
       runScript("zoomTo (atomindex=" + atomIndex + ")");
       vwr.setStatusAtomPicked(atomIndex, null, null, false);
     }
-  
+
     @Override
     public boolean keyTyped(int keyChar, int modifiers) {
       return false;
     }
-  
+
+    public boolean userActionEnabled(int action) {
+      return vwr.isFunction(getActionName(action).toLowerCase());
+    }
+
+    /**
+     * If the user has created a function to handle this action, 
+     * run it and cancel action processing if that function returns an explicit FALSE;
+     * 
+     * @param action
+     * @param params
+     * @return true to continue with the standard action
+     */
+    public boolean userAction(int action, Object[] params) {
+      if (!userActionEnabled(action))
+          return false;
+      SV result = ScriptEval.runUserAction(getActionName(action), params, vwr);
+      return !SV.vF.equals(result);
+    }
+
   }
-  
+
   class MotionPoint {
     int index;
     int x;
     int y;
     long time;
-  
+
     void set(int index, int x, int y, long time) {
       this.index = index;
       this.x = x;
       this.y = y;
       this.time = time;
     }
-  
+
     @Override
     public String toString() {
       return "[x = " + x + " y = " + y + " time = " + time + " ]";
     }
   }
-  
+
   class Gesture {
     private int action;
     MotionPoint[] nodes;
     private int ptNext;
     private long time0;
     private Viewer vwr;
-  
+
     public Gesture(int nPoints, Viewer vwr) {
       this.vwr = vwr;
       nodes = new MotionPoint[nPoints];
       for (int i = 0; i < nPoints; i++)
         nodes[i] = new MotionPoint();
     }
-  
+
     void setAction(int action, long time) {
       this.action = action;
       ptNext = 0;
@@ -2111,14 +2118,14 @@
       for (int i = 0; i < nodes.length; i++)
         nodes[i].index = -1;
     }
-  
+
     int add(int action, int x, int y, long time) {
       this.action = action;
       getNode(ptNext).set(ptNext, x, y, time - time0);
       ptNext++;
       return ptNext;
     }
-  
+
     public long getTimeDifference(int nPoints) {
       nPoints = getPointCount2(nPoints, 0);
       if (nPoints < 2)
@@ -2127,7 +2134,7 @@
       MotionPoint mp0 = getNode(ptNext - nPoints);
       return mp1.time - mp0.time;
     }
-  
+
     public float getSpeedPixelsPerMillisecond(int nPoints, int nPointsPrevious) {
       nPoints = getPointCount2(nPoints, nPointsPrevious);
       if (nPoints < 2)
@@ -2138,7 +2145,7 @@
       float dy = ((float) (mp1.y - mp0.y)) / vwr.getScreenHeight() * 360;
       return (float) Math.sqrt(dx * dx + dy * dy) / (mp1.time - mp0.time);
     }
-  
+
     int getDX(int nPoints, int nPointsPrevious) {
       nPoints = getPointCount2(nPoints, nPointsPrevious);
       if (nPoints < 2)
@@ -2147,7 +2154,7 @@
       MotionPoint mp0 = getNode(ptNext - nPoints - nPointsPrevious);
       return mp1.x - mp0.x;
     }
-  
+
     int getDY(int nPoints, int nPointsPrevious) {
       nPoints = getPointCount2(nPoints, nPointsPrevious);
       if (nPoints < 2)
@@ -2156,11 +2163,11 @@
       MotionPoint mp0 = getNode(ptNext - nPoints - nPointsPrevious);
       return mp1.y - mp0.y;
     }
-  
+
     int getPointCount() {
       return ptNext;
     }
-  
+
     private int getPointCount2(int nPoints, int nPointsPrevious) {
       if (nPoints > nodes.length - nPointsPrevious)
         nPoints = nodes.length - nPointsPrevious;
@@ -2170,11 +2177,11 @@
           break;
       return n;
     }
-  
+
     MotionPoint getNode(int i) {
       return nodes[(i + nodes.length + nodes.length) % nodes.length];
     }
-  
+
     @Override
     public String toString() {
       if (nodes.length == 0)
@@ -2183,4 +2190,4 @@
           + " " + nodes[0];
     }
   }
-  
+

@@ -28,23 +28,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javajs.awt.Font;
-import javajs.util.AU;
-import javajs.util.BArray;
-import javajs.util.Base64;
-import javajs.util.Lst;
-import javajs.util.M3;
-import javajs.util.M4;
-import javajs.util.Measure;
-import javajs.util.P3;
-import javajs.util.P4;
-import javajs.util.PT;
-import javajs.util.Quat;
-import javajs.util.SB;
-import javajs.util.T3;
-import javajs.util.V3;
-
-import org.jmol.api.GenericMenuInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.SymmetryInterface;
@@ -52,8 +35,8 @@ import org.jmol.atomdata.RadiusData;
 import org.jmol.c.STER;
 import org.jmol.c.VDW;
 import org.jmol.i18n.GT;
-import javajs.util.BS;
 import org.jmol.minimize.Minimizer;
+import org.jmol.modelkit.ModelKitPopup;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.AtomCollection;
 import org.jmol.modelset.Bond;
@@ -92,6 +75,23 @@ import org.jmol.viewer.TransformManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.viewer.Viewer.ACCESS;
 
+import javajs.awt.Font;
+import javajs.util.AU;
+import javajs.util.BArray;
+import javajs.util.BS;
+import javajs.util.Base64;
+import javajs.util.Lst;
+import javajs.util.M3;
+import javajs.util.M4;
+import javajs.util.Measure;
+import javajs.util.P3;
+import javajs.util.P4;
+import javajs.util.PT;
+import javajs.util.Quat;
+import javajs.util.SB;
+import javajs.util.T3;
+import javajs.util.V3;
+
 public class CmdExt extends ScriptExt {
 
   final static int ERROR_invalidArgument = 22;
@@ -110,7 +110,7 @@ public class CmdExt extends ScriptExt {
       st[0].value = prepareBinaryOutput((SV) st[0]);
       return null;
     case T.assign:
-      assign();
+      assign(1);
       break;
     case T.cache:
       cache();
@@ -203,13 +203,18 @@ public class CmdExt extends ScriptExt {
 
 
   /**
+   * Configure the ModelKitPopup for Crystallographic symmetry viewing and structure editing
+   * 
    * new 14.29.45
+   * 
+   * see modelkit.ModelKitPopup.java
+   *
    * 
    * @throws ScriptException
    */
   private void modelkit() throws ScriptException {
     boolean isOn = true;
-    int i = 1;
+    int i = 0;
     switch (tokAt(1)) {
     case T.off:
       isOn = false;
@@ -219,19 +224,32 @@ public class CmdExt extends ScriptExt {
       if (!chk)
         vwr.setBooleanProperty("modelkitmode", isOn);
       return;
-    case T.set:
-      break;
-    default:
-      i = 0;
-      break;
+    case T.rotate:
+      e.cmdRotate(false, false);
+      return;
+    case T.rotateSelected:
+      e.cmdRotate(false, true);
+      return;
+    case T.assign:
+      assign(2);
+      return;
     }
-    GenericMenuInterface m = vwr.getModelkit(false);
-
+    ModelKitPopup kit = vwr.getModelkit(false);
     int tok = 0;
     while ((tok = tokAt(++i)) != T.nada) {
       String key = paramAsStr(i).toLowerCase();
       Object value = null;
       switch (tok) {
+      case T.mode:
+        value = paramAsStr(++i).toLowerCase();
+        if (!PT.isOneOf((String) value, ModelKitPopup.MODE_OPTIONS))
+          invArg();
+        break;
+      case T.unitcell:
+        value = paramAsStr(++i).toLowerCase();
+        if (!PT.isOneOf((String) value, ModelKitPopup.UNITCELL_OPTIONS))
+          invArg();
+        break;
       case T.symop:
         switch (tokAt(++i)) {
         case T.string:
@@ -250,8 +268,8 @@ public class CmdExt extends ScriptExt {
         i = e.iToken;
         break;
       case T.symmetry:
-        // none, local, full
         value = paramAsStr(++i).toLowerCase();
+        if (PT.isOneOf((String) value, ModelKitPopup.SYMMETRY_OPTIONS))
         break;
       case T.offset:
         value = paramAsStr(i + 1);
@@ -266,22 +284,29 @@ public class CmdExt extends ScriptExt {
         i = e.iToken;
         break;
       default:
-        if (PT.isOneOf(key, ";allowelementchange;addhydrogen;addhydrogens;")) {
+        if (PT.isOneOf(key, ModelKitPopup.BOOLEAN_OPTIONS)) {
           isOn = (tok == T.nada || tokAt(++i) == T.on);
           value = Boolean.valueOf(isOn);
           break;
         }
-        if (PT.isOneOf(key, ";view;edit;noxtal;pack;extend")) {
-          value = Boolean.valueOf(true);
+        if (PT.isOneOf(key, ModelKitPopup.MODE_OPTIONS)) {
+          value = key;
+          key = "mode";
+          break;
+        }
+        if (PT.isOneOf(key, ModelKitPopup.UNITCELL_OPTIONS)) {
+          value = key;
+          key = "unitcell";
           break;
         }
         invArg();
       }
       if (value != null && !chk)
-        m.jpiSetProperty(key, value);
+        kit.setProperty(key, value);
     }
   }
 
+  
   private void macro() throws ScriptException {
     String key = e.optParameterAsString(1);
     if (key.length() == 0)
@@ -4381,7 +4406,11 @@ public class CmdExt extends ScriptExt {
     String str = paramAsStr(1);
     String filter = null;
     int filterLen = 0;
-    if (slen > 2 && tokAt(slen - 2) == T.divide) {
+    if (slen > 3 && tokAt(slen - 3) == T.divide  && tokAt(slen - 2) == T.opNot) {
+      filter = "!/" + paramAsStr(slen - 1);
+      slen -= 3;
+      filterLen = 3;
+    } else if (slen > 2 && tokAt(slen - 2) == T.divide) {
       filter = "/" + paramAsStr(slen - 1);
       slen -= 2;
       filterLen = 2;
@@ -5057,11 +5086,12 @@ public class CmdExt extends ScriptExt {
   private String filterShow(String msg, String name) {
     if (name == null)
       return msg;
-    name = name.substring(1).toLowerCase();
+    boolean isNot = name.startsWith("!/");
+    name = name.substring(isNot ? 2 : 1).toLowerCase();
     String[] info = PT.split(msg, "\n");
     SB sb = new SB();
     for (int i = 0; i < info.length; i++)
-      if (info[i].toLowerCase().indexOf(name) >= 0)
+      if ((info[i].toLowerCase().indexOf(name) < 0) == isNot)
         sb.append(info[i]).appendC('\n');
     return sb.toString();
   }
@@ -5337,16 +5367,16 @@ public class CmdExt extends ScriptExt {
   ///////// private methods used by commands ///////////
 
   
-  private void assign() throws ScriptException {
-    int atomsOrBonds = tokAt(1);
+  private void assign(int i) throws ScriptException {
+    int atomsOrBonds = tokAt(i++);
     int index = -1, index2 = -1;
-    if (atomsOrBonds == T.atoms && tokAt(2) == T.string) {
+    if (atomsOrBonds == T.atoms && tokAt(i) == T.string) {
       // new Jmol 14.29.28
       // assign "C" {0 0 0}
       e.iToken++;
       
     } else {
-      index = atomExpressionAt(2).nextSetBit(0);
+      index = atomExpressionAt(i).nextSetBit(0);
       if (index < 0) {
         return;
       }
@@ -5386,7 +5416,7 @@ public class CmdExt extends ScriptExt {
         return;
       vwr.sm.modifySend(atomIndex, vwr.ms.at[atomIndex].mi, 1, e.fullCommand);
       // After this next command, vwr.modelSet will be a different instance
-      vwr.ms.assignAtom(atomIndex, type, true, true);
+      vwr.getModelkit(false).setProperty("assignAtom", new Object[] { type, new int[] { atomIndex, 1, 1 }});
       if (!PT.isOneOf(type, ";Mi;Pl;X;"))
         vwr.ms.setAtomNamesAndNumbers(atomIndex, -ac, null);
       vwr.sm.modifySend(atomIndex, vwr.ms.at[atomIndex].mi, -1, "OK");
@@ -5406,7 +5436,7 @@ public class CmdExt extends ScriptExt {
     try {
       bs = vwr.addHydrogensInline(bs, vConnections, pts);
       int atomIndex2 = bs.nextSetBit(0);
-      vwr.ms.assignAtom(atomIndex2, type, false, (atomIndex >= 0));
+      vwr.getModelkit(false).setProperty("assignAtom", new Object[] { type, new int[] { atomIndex2, -1, atomIndex}});
       atomIndex = atomIndex2;
     } catch (Exception ex) {
       //
@@ -5421,11 +5451,9 @@ public class CmdExt extends ScriptExt {
       modelIndex = vwr.ms.bo[bondIndex].atom1.mi;
       vwr.sm.modifySend(bondIndex, modelIndex, 2,
           e.fullCommand);
-      BS bsAtoms = vwr.ms.assignBond(bondIndex, type);
+      BS bsAtoms = (BS) vwr.getModelkit(false).setProperty("assignBond",  new int[] { bondIndex, type });
       if (bsAtoms == null || type == '0')
         vwr.refresh(Viewer.REFRESH_SYNC_MASK, "setBondOrder");
-      else if (true)//vwr.getBoolean(T.mkaddhydrogens))
-        vwr.addHydrogens(bsAtoms, false, true);
       vwr.sm.modifySend(bondIndex, modelIndex, -2, "" + type);
     } catch (Exception ex) {
       Logger.error("assignBond failed");
@@ -5441,8 +5469,8 @@ public class CmdExt extends ScriptExt {
     vwr.sm.modifySend(index, modelIndex, 2, e.fullCommand);
     vwr.ms.connect(connections);
     // note that vwr.ms changes during the assignAtom command 
-    vwr.ms.assignAtom(index, ".", true, true);
-    vwr.ms.assignAtom(index2, ".", true, true);
+    vwr.getModelkit(false).setProperty("assignAtom",  new Object[] { ".", new int[] {index, 1, 1} });
+    vwr.getModelkit(false).setProperty("assignAtom",  new Object[] { ".", new int[] {index2, 1, 1} });
     vwr.sm.modifySend(index, modelIndex, -2, "OK");
     vwr.refresh(Viewer.REFRESH_SYNC_MASK, "assignConnect");
   }

@@ -3043,7 +3043,7 @@ public class ModelSet extends BondCollection {
       // 6) add hydrogen atoms
 
     }
-    if (vwr.getBoolean(T.mkaddhydrogens))
+    if (true)//vwr.getBoolean(T.mkaddhydrogens))
       vwr.addHydrogens(bsA, false, true);
   }
 

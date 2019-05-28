@@ -4478,17 +4478,24 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case 'a':
     case 'b':
     case 'm':
-      // atom, bond, or main -- ignored      
-      if (modelkitPopup == null) {
-        if ((modelkitPopup = apiPlatform.getMenuPopup(null, type)) == null)
+      // atom, bond, or main -- ignored
+      if (getModelkitPopup() == null) {
           return;
-      } else {
-        modelkitPopup.jpiUpdateComputedMenus();
       }
       modelkitPopup.jpiShow(x, y);
       break;
     }
   }
+
+  public GenericMenuInterface getModelkitPopup() {
+    if (modelkitPopup == null) {
+      modelkitPopup = apiPlatform.getMenuPopup(null, 'm');
+    } else {
+      modelkitPopup.jpiUpdateComputedMenus();
+    }
+    return modelkitPopup;
+  }
+    
 
   public String getMenu(String type) {
     getPopupMenu();
@@ -5224,8 +5231,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   @Override
   public boolean getBoolean(int tok) {
     switch (tok) {
-    case T.mkaddhydrogens:
-      return g.mkAddHydrogens;
     case T.nbocharges:
       return g.nboCharges;
     case T.hiddenlinesdashed:
@@ -6206,10 +6211,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private void setBooleanPropertyTok(String key, int tok, boolean value) {
     boolean doRepaint = true;
     switch (tok) {
-    case T.mkaddhydrogens:
-      // 14.29.45
-      g.mkAddHydrogens = value;
-      break;
     case T.ciprule6full:
       // 14.29.14
       g.cipRule6Full = value;

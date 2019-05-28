@@ -615,7 +615,6 @@ public class GlobalSettings {
   public String measureDistanceUnits = "nanometers";
   boolean measurementLabels = true;
   boolean messageStyleChime = false;
-  public boolean mkAddHydrogens = true; // whether the modelkit mode adds hydrogens or not
   boolean monitorEnergy = false;
   public float modulationScale = 1;
   boolean multiProcessor = true;
@@ -942,7 +941,7 @@ public class GlobalSettings {
       + ";hbondsDistanceMaximum;hbondsangleminimum" // added Jmol 14.24.2
       + ";jmolinjspecview;legacyautobonding;legacyhaddition;legacyjavafloat"
       + ";loglevel;logfile;loggestures;logcommands;measurestylechime"
-      + ";loadformat;loadligandformat;mkaddhydrogens"
+      + ";loadformat;loadligandformat"
       + ";smilesurlformat;pubchemformat;nihresolverformat;edsurlformat;edsurlcutoff;multiprocessor;navigationmode;"
       + ";nodelay;pathforallfiles;perspectivedepth;phongexponent;perspectivemodel;platformspeed"
       + ";preservestate;refreshing;repaintwaitms;rotationradius;selectallmodels"

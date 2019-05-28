@@ -1038,7 +1038,6 @@ public class T {
   public final static int messagestylechime              = booleanparam | 103;
   public final static int minimizationrefresh            = booleanparam | 104;
   public final static int minimizationsilent             = booleanparam | 105;
-  public final static int mkaddhydrogens                 = booleanparam | 106;
   public final static int modulateoccupancy              = booleanparam | 108;  // 14.3.13
   public final static int monitorenergy                  = booleanparam | 109;
   public final static int multiplebondbananas            = booleanparam | 110;
@@ -2627,7 +2626,6 @@ public class T {
        "messageStyleChime",
        "minimizationRefresh",
        "minimizationSilent",
-       "mkAddHydrogens",
        "modelkitMode",
        "modelkit",
        "modulateOccupancy",
@@ -3688,7 +3686,6 @@ public class T {
         messagestylechime,                  //        "messageStyleChime"
         minimizationrefresh,                //        "minimizationRefresh"
         minimizationsilent,                 //        "minimizationSilent"
-        mkaddhydrogens,
         modelkitmode,                       //        "modelkitMode"
         -1,
         modulateoccupancy,

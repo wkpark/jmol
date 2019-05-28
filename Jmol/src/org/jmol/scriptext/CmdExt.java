@@ -4539,7 +4539,7 @@ public class CmdExt extends ScriptExt {
       if (!chk) {
         Object o = vwr.getSymTemp().getSymmetryInfoAtom(vwr.ms,
             vwr.getAllAtoms().nextSetBit(0), xyz, iop, pt1, pt2, type, 0, 0,
-            nth);
+            nth, 0);
         msg = (o instanceof Map ? SV.getVariable(o).asString() : o.toString());
       }
       break;
@@ -5132,7 +5132,7 @@ public class CmdExt extends ScriptExt {
             if (stype == null)
               stype = (String) vwr.getSymTemp().getSymmetryInfoAtom(vwr.ms,
                   vwr.getFrameAtoms().nextSetBit(0), null, 0, null, null, null,
-                  T.lattice, 0, -1);
+                  T.lattice, 0, -1, 0);
             if (u == null)
               u = vwr.getSymTemp();
             u.toFromPrimitive(true,
@@ -5348,7 +5348,7 @@ public class CmdExt extends ScriptExt {
       BS bsAtoms = vwr.ms.assignBond(bondIndex, type);
       if (bsAtoms == null || type == '0')
         vwr.refresh(Viewer.REFRESH_SYNC_MASK, "setBondOrder");
-      else if (vwr.getBoolean(T.mkaddhydrogens))
+      else if (true)//vwr.getBoolean(T.mkaddhydrogens))
         vwr.addHydrogens(bsAtoms, false, true);
       vwr.sm.modifySend(bondIndex, modelIndex, -2, "" + type);
     } catch (Exception ex) {

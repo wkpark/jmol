@@ -787,7 +787,7 @@ abstract public class BondCollection extends AtomCollection {
     return bsAtoms;
   }
 
-  protected void removeUnnecessaryBonds(Atom atom, boolean deleteAtom) {
+  public void removeUnnecessaryBonds(Atom atom, boolean deleteAtom) {
     BS bs = new BS();
     BS bsBonds = new BS();
     Bond[] bonds = atom.bonds;

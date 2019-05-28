@@ -7283,10 +7283,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public JmolAppConsoleInterface appConsole;
   JmolScriptEditorInterface scriptEditor;
-  GenericMenuInterface jmolpopup;
+  GenericMenuInterface jmolpopup, modelkit;
   private GenericMenuInterface modelkitPopup;
   private Map<String, Object> headlessImageParams;
-
+ 
   public String getChimeInfo(int tok) {
     return getPropertyManager().getChimeInfo(tok, bsA());
   }
@@ -9827,6 +9827,16 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       script("assign atom ({" + atomIndex + "}) \"" + element + "\""); 
     }
   }
+  public GenericMenuInterface getModelkit(boolean andShow) {
+    if (modelkit == null) {
+      modelkit = apiPlatform.getMenuPopup(null, 'm');
+    } else if (andShow) { 
+      modelkit.jpiUpdateComputedMenus();
+    }
+    return modelkit;
+  }
+    
+    
 
 }
 

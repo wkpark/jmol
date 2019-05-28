@@ -128,8 +128,8 @@ abstract public class JmolGenericPopup extends GenericSwingPopup {
   ////// JmolPopupInterface methods //////
 
   @Override
-  public void jpiSetProperty(String name, Object value) {
-    // TODO
+  public Object jpiSetProperty(String name, Object value) {
+    return null;
     
   }
 

@@ -44,6 +44,7 @@ import javajs.util.SB;
 import javajs.util.T3;
 import javajs.util.V3;
 
+import org.jmol.api.GenericMenuInterface;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolDataManager;
 import org.jmol.api.SymmetryInterface;
@@ -157,7 +158,7 @@ public class CmdExt extends ScriptExt {
       minimize();
       break;
     case T.modelkitmode:
-      modelKitMode();
+      modelkit();
       break;
     case T.modulation:
       modulation();
@@ -201,9 +202,84 @@ public class CmdExt extends ScriptExt {
   }
 
 
-  private void modelKitMode() {
-    // TODO
-    
+  /**
+   * new 14.29.45
+   * 
+   * @throws ScriptException
+   */
+  private void modelkit() throws ScriptException {
+    boolean isOn = true;
+    int i = 1;
+    switch (tokAt(1)) {
+    case T.off:
+      isOn = false;
+      //$FALL-THROUGH$
+    case T.nada:
+    case T.on:
+      if (!chk)
+        vwr.setBooleanProperty("modelkitmode", isOn);
+      return;
+    case T.set:
+      break;
+    default:
+      i = 0;
+      break;
+    }
+    GenericMenuInterface m = vwr.getModelkit(false);
+
+    int tok = 0;
+    while ((tok = tokAt(++i)) != T.nada) {
+      String key = paramAsStr(i).toLowerCase();
+      Object value = null;
+      switch (tok) {
+      case T.symop:
+        switch (tokAt(++i)) {
+        case T.string:
+        case T.none:
+          value = paramAsStr(i);
+          break;
+        case T.matrix4f:
+          value = getToken(i).value;
+          break;
+        case T.integer:
+          value = Integer.valueOf(getToken(i).intValue);
+          break;
+        default:
+          invArg();
+        }
+        i = e.iToken;
+        break;
+      case T.symmetry:
+        // none, local, full
+        value = paramAsStr(++i).toLowerCase();
+        break;
+      case T.offset:
+        value = paramAsStr(i + 1);
+        if (value.equals("none")) {
+          ++i;
+          break;
+        }
+        //$FALL-THROUGH$
+      case T.center:
+      case T.point:
+        value = e.atomCenterOrCoordinateParameter(++i, null);
+        i = e.iToken;
+        break;
+      default:
+        if (PT.isOneOf(key, ";allowelementchange;addhydrogen;addhydrogens;")) {
+          isOn = (tok == T.nada || tokAt(++i) == T.on);
+          value = Boolean.valueOf(isOn);
+          break;
+        }
+        if (PT.isOneOf(key, ";view;edit;noxtal;pack;extend")) {
+          value = Boolean.valueOf(true);
+          break;
+        }
+        invArg();
+      }
+      if (value != null && !chk)
+        m.jpiSetProperty(key, value);
+    }
   }
 
   private void macro() throws ScriptException {

@@ -1,4 +1,4 @@
-/* Copyright (c) 2002-2019 The University of the West Indies
+/* Copyright (c) 2002-2016 The University of the West Indies
  *
  * Contact: robert.lancashire@uwimona.edu.jm
  *

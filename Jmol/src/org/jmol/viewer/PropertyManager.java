@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import javajs.J2SIgnoreImport;
 import javajs.util.AU;
 import javajs.util.BArray;
 import javajs.util.Base64;
@@ -87,7 +86,6 @@ import org.jmol.viewer.binding.Binding;
  */
 
 
-@J2SIgnoreImport({ javajs.util.XmlUtil.class })
 public class PropertyManager implements JmolPropertyManager {
 
   public PropertyManager() {
@@ -179,7 +177,7 @@ public class PropertyManager implements JmolPropertyManager {
     "validationInfo"  , atomExpression, "{visible}",
     "service"    , "<hashTable>", "",
     "CIFInfo"        , "<filename>", "",
-    "spacegroupInfo", "<name>", "",
+    "modelkitInfo", "<key>","data",
 
   };
 
@@ -235,7 +233,7 @@ public class PropertyManager implements JmolPropertyManager {
   private final static int PROP_VAL_INFO = 43;
   private final static int PROP_SERVICE = 44;
   private final static int PROP_CIF_INFO = 45;
-  private final static int PROP_SPACEGROUP_INFO = 46;
+  private final static int PROP_MODELKIT_INFO = 46;
   private final static int PROP_COUNT = 47;
 
   //// static methods used by Eval and Viewer ////
@@ -748,6 +746,8 @@ public class PropertyManager implements JmolPropertyManager {
     Object myParam = (iHaveParameter ? paramInfo : getDefaultPropertyParam(id));
     //myParam may now be a bitset
     switch (id) {
+    case PROP_MODELKIT_INFO:
+      return vwr.getModelkitProperty(myParam.toString());
     case PROP_APPLET_INFO:
       return getAppletInfo();
     case PROP_ANIMATION_INFO:
@@ -839,8 +839,6 @@ public class PropertyManager implements JmolPropertyManager {
       return getAnnotationInfo(myParam, T.domains);
     case PROP_VAL_INFO:
       return getAnnotationInfo(myParam, T.validation);
-    case PROP_SPACEGROUP_INFO:
-      return getSpaceGroupInfo(myParam);
     case PROP_SERVICE:
       myParam = SV.oValue(myParam);
       @SuppressWarnings("unchecked")
@@ -866,10 +864,6 @@ public class PropertyManager implements JmolPropertyManager {
       if (data[i].length() > 0)
         info.append("\n getProperty ").append(data[i]);
     return info.toString();
-  }
-
-  private Object getSpaceGroupInfo(Object name) {
-    return vwr.getSymTemp().getSpaceGroupInfo(vwr.ms, name.toString(), -1, true);
   }
 
   private Object getImage(String params, boolean asBytes) {
@@ -1911,8 +1905,8 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("atom1", infoA);
     info.put("atom2", infoB);
     info.put("jmol_order", "0x" + Integer.toHexString(bond.order));
-    info.put("order", Float.valueOf(PT.fVal(Edge
-        .getBondOrderNumberFromOrder(bond.order))));
+    info.put("order", Float.valueOf(Edge
+        .getBondOrderNumberFromOrder(bond.order)));
     info.put("type", Edge.getBondOrderNameFromOrder(bond.order));
     info.put("radius", Float.valueOf((float) (bond.mad / 2000.)));
     info.put("length_Ang", Float.valueOf(atom1.distance(atom2)));
@@ -2010,7 +2004,7 @@ public class PropertyManager implements JmolPropertyManager {
     info.put("date", JC.date);
     info.put("javaVendor", Viewer.strJavaVendor);
     info.put("javaVersion", Viewer.strJavaVersion
-        + (!vwr.isJS ? "" : vwr.isWebGL ? "(WebGL)" : "(HTML5)"));
+        + (!Viewer.isJS ? "" : Viewer.isWebGL ? "(WebGL)" : "(HTML5)"));
     info.put("operatingSystem", Viewer.strOSName);
     return info;
   }
@@ -2238,7 +2232,8 @@ public class PropertyManager implements JmolPropertyManager {
     // now for CONECT records...
     modelPt = -1;
     iModelLast = -1;
-    isBiomodel = false;
+    String conectKey = "" + (isMultipleModels ? modelPt : 0);
+   isBiomodel = false;
     for (int i = bs.nextSetBit(0); i >= 0; i = bs.nextSetBit(i + 1)) {
       Atom a = atoms[i];
       if (isMultipleModels && a.mi != iModelLast) {
@@ -2246,7 +2241,6 @@ public class PropertyManager implements JmolPropertyManager {
         isBiomodel = models[iModelLast].isBioModel;
         modelPt++;
       }
-      String conectKey = "" + (isMultipleModels ? modelPt : 0);
       boolean isHetero = (!isBiomodel || a.isHetero());
       boolean isCysS = !isHetero && (a.getElementNumber() == 16);
       if (isHetero || isMultipleBondPDB || isCysS) {
@@ -2559,7 +2553,7 @@ public class PropertyManager implements JmolPropertyManager {
     if (nAtoms == 0)
       return "";
     // creating an instance prevents pre-loading by JavaScript
-    if (vwr.isJS)
+    if (Viewer.isJS)
       Interface.getInterface("javajs.util.XmlUtil", vwr, "file");
     XmlUtil.openTag(sb, "molecule");
     XmlUtil.openTag(sb, "atomArray");

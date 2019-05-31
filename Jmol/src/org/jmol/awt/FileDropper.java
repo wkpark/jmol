@@ -68,11 +68,11 @@ public class FileDropper implements DropTargetListener {
   private Viewer vwr;
   private PropertyChangeListener pcl;
   private JmolStatusListener statusListener;
-  private JmolDropEditor dropEditor;
+  private JmolDropEditor dropListener;
 
   public FileDropper(JmolStatusListener statusListener, Viewer vwr, JmolDropEditor dropListener) {
     this.statusListener = statusListener; // application only
-    this.dropEditor = dropListener;
+    this.dropListener = dropListener;
     fd_oldFileName = "";
     fd_propSupport = new PropertyChangeSupport(this);
     this.vwr = vwr;
@@ -95,8 +95,8 @@ public class FileDropper implements DropTargetListener {
   }
 
   private void loadFile(String fname, int x, int y) {
-    if (dropEditor != null) {
-      dropEditor.loadFile(fname);
+    if (dropListener != null) {
+      dropListener.loadFile(fname);
       return;
     }      
     if (fname.endsWith(".URL")) {

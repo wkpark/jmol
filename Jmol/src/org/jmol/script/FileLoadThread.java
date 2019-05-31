@@ -26,7 +26,7 @@
 package org.jmol.script;
 
 import org.jmol.api.JmolScriptEvaluator;
-import org.jmol.api.JmolToJSmolInterface;
+import org.jmol.api.js.JmolToJSmolInterface;
 import org.jmol.thread.JmolThread;
 import org.jmol.viewer.Viewer;
 
@@ -79,7 +79,7 @@ class FileLoadThread extends JmolThread {
          */
         {}
         if (jmol != null)
-           jmol._loadFileAsynchronously(this, vwr.html5Applet, fileName, null);
+           jmol.loadFileAsynchronously(this, vwr.html5Applet, fileName, null);
 
         /**
          * @j2sNative

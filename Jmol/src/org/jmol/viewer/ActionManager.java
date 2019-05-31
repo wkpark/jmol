@@ -24,14 +24,16 @@
   package org.jmol.viewer;
   
   import javajs.J2SRequireImport;
-import javajs.awt.EventManager;
-import javajs.awt.GenericPlatform;
-import javajs.awt.event.Event;
+
+import org.jmol.awtjs.Event;
+
 import javajs.util.AU;
 import javajs.util.PT;
 import java.util.Map;
   
-  import org.jmol.api.Interface;
+import org.jmol.api.EventManager;
+import org.jmol.api.GenericPlatform;
+import org.jmol.api.Interface;
 import org.jmol.i18n.GT;
 import javajs.util.BS;
 import org.jmol.modelset.Atom;
@@ -1007,7 +1009,7 @@ import org.jmol.viewer.binding.JmolBinding;
         dragAtomIndex = vwr.findNearestAtomIndexMovable(x, y, true);
         if (dragAtomIndex >= 0
             && (apm == PICKING_ASSIGN_ATOM || apm == PICKING_INVERT_STEREO)
-            && vwr.ms.isAtomAssignable(dragAtomIndex)) {
+            && vwr.ms.isAtomInLastModel(dragAtomIndex)) {
           enterMeasurementMode(dragAtomIndex);
           mp.addPoint(dragAtomIndex, null, false);
         }
@@ -1057,7 +1059,7 @@ import org.jmol.viewer.binding.JmolBinding;
       if (checkUserAction(dragWheelAction, x, y, deltaX, deltaY, time, mode))
         return;
 
-      if (vwr.getModelkit(false).getRotateBondIndex() >= 0) {
+      if (vwr.g.modelKitMode && vwr.modelkit.getRotateBondIndex() >= 0) {
         if (bnd(dragWheelAction, ACTION_rotateBranch)) {
           vwr.moveSelected(deltaX, deltaY, Integer.MIN_VALUE, x, y, null, false,
               false);
@@ -1891,6 +1893,13 @@ import org.jmol.viewer.binding.JmolBinding;
     private void assignNew(int x, int y) {
       // H C + -, etc.
       // also check valence and add/remove H atoms as necessary?
+      boolean inRange = pressed.inRange(xyRange, dragged.x, dragged.y);
+      if (inRange) {
+        dragged.x = pressed.x;
+        dragged.y = pressed.y;
+      }
+      if (vwr.getModelkit(false).handleDragDrop(pressed, dragged, dragAtomIndex, mp.count))
+        return;
       boolean isCharge = vwr.getModelkit(false).isPickAtomAssignCharge();
       String atomType = vwr.getModelkit(false).getAtomPickingType();
       if (mp.count == 2) {
@@ -1900,7 +1909,7 @@ import org.jmol.viewer.binding.JmolBinding;
       } else if (atomType.equals("Xx")) {
         exitMeasurementMode("bond dropped");
       } else {
-        if (pressed.inRange(xyRange, dragged.x, dragged.y)) {
+        if (inRange) {
           String s = "assign atom ({" + dragAtomIndex + "}) \""
               + atomType + "\"";
           if (isCharge) {
@@ -1915,12 +1924,14 @@ import org.jmol.viewer.binding.JmolBinding;
           vwr.undoMoveActionClear(-1, T.save, true);
           Atom a = vwr.ms.at[dragAtomIndex];
           if (a.getElementNumber() == 1) {
-            runScript("assign atom ({" + dragAtomIndex + "}) \"X\"");
+            vwr.assignAtom(dragAtomIndex, "X", null);
+//            runScript("assign atom ({" + dragAtomIndex + "}) \"X\"");
           } else {
             P3 ptNew = P3.new3(x, y, a.sZ);
             vwr.tm.unTransformPoint(ptNew, ptNew);
-            runScript("assign atom ({" + dragAtomIndex + "}) \""
-                + atomType + "\" " + Escape.eP(ptNew));
+            vwr.assignAtom(dragAtomIndex, atomType, ptNew);
+//            runScript("assign atom ({" + dragAtomIndex + "}) \""
+//                + atomType + "\" " + Escape.eP(ptNew));
           }
         }
       }

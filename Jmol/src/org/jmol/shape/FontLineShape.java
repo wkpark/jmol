@@ -26,7 +26,7 @@ package org.jmol.shape;
 
 
 
-import javajs.awt.Font;
+import org.jmol.awtjs.swing.Font;
 
 import org.jmol.modelset.TickInfo;
 

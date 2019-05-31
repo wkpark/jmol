@@ -23,7 +23,7 @@
  */
 package org.jmol.modelset;
 
-import javajs.awt.Font;
+import org.jmol.awtjs.swing.Font;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.PT;

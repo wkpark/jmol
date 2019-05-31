@@ -35,7 +35,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javajs.api.GenericZipTools;
-import javajs.awt.GenericPlatform;
 import javajs.util.AU;
 import javajs.util.CompoundDocument;
 import javajs.util.Lst;
@@ -45,6 +44,7 @@ import javajs.util.Rdr;
 import javajs.util.SB;
 
 import org.jmol.adapter.smarter.AtomSetCollection;
+import org.jmol.api.GenericPlatform;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;

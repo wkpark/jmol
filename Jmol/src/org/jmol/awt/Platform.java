@@ -12,17 +12,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import javajs.api.GenericFileInterface;
-import javajs.awt.Font;
-import javajs.awt.GenericImageDialog;
-import javajs.awt.GenericMouseInterface;
-import javajs.awt.GenericPlatform;
+import org.jmol.awtjs.swing.Font;
+
 import javajs.util.P3;
 import javajs.util.Rdr;
 
 import javax.swing.JDialog;
 
+import org.jmol.api.GenericFileInterface;
+import org.jmol.api.GenericImageDialog;
 import org.jmol.api.GenericMenuInterface;
+import org.jmol.api.GenericMouseInterface;
+import org.jmol.api.GenericPlatform;
 import org.jmol.api.Interface;
 import org.jmol.api.PlatformViewer;
 import org.jmol.viewer.Viewer;
@@ -51,7 +52,7 @@ public class Platform implements GenericPlatform {
   @Override
   public GenericMenuInterface getMenuPopup(String menuStructure, char type) {
     GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface.getOption(
-        type == 'j' ? "popup.JmolAwtPopup" : "awt.AwtModelKitPopup", null, null);
+        type == 'j' ? "awt.AwtJmolPopup" : "awt.AwtModelKitPopup", null, null);
     if (jmolpopup != null)
       jmolpopup.jpiInitialize(vwr, menuStructure);
     return jmolpopup;
@@ -244,7 +245,7 @@ public class Platform implements GenericPlatform {
 
   @Override
   public boolean isSingleThreaded() {
-    return false;
+    return  Viewer.isSwingJS;
   }
 
   @Override

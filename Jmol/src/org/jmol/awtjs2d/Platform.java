@@ -4,18 +4,19 @@ import java.io.BufferedInputStream;
 import java.net.URL;
 import java.util.Map;
 
+import org.jmol.api.GenericFileInterface;
+import org.jmol.api.GenericImageDialog;
 import org.jmol.api.GenericMenuInterface;
+import org.jmol.api.GenericMouseInterface;
+import org.jmol.api.GenericPlatform;
 import org.jmol.api.Interface;
-import org.jmol.api.JmolToJSmolInterface;
 import org.jmol.api.PlatformViewer;
+import org.jmol.api.js.JmolToJSmolInterface;
 import org.jmol.script.ScriptContext;
 import org.jmol.viewer.Viewer;
 
-import javajs.api.GenericFileInterface;
-import javajs.awt.Font;
-import javajs.awt.GenericImageDialog;
-import javajs.awt.GenericMouseInterface;
-import javajs.awt.GenericPlatform;
+import org.jmol.awtjs.swing.Font;
+
 import javajs.util.AjaxURLStreamHandlerFactory;
 import javajs.util.P3;
 import javajs.util.Rdr;
@@ -53,13 +54,13 @@ public class Platform implements GenericPlatform {
 	   *       canvas.imgdata = this.context.getImageData(0, 0, canvas.width, canvas.height);
 	   *       canvas.buf8 = canvas.imgdata.data;
 	   *     }
-     *     this.canvas = canvas;
 	   */
 	  {
 	    this.vwr = null;
-	    this.canvas = null;
 	    context = null;
+      canvas = null;
 	  }
+    this.canvas = canvas;
 		//
 		try {
 		  URL.setURLStreamHandlerFactory(new AjaxURLStreamHandlerFactory());
@@ -114,7 +115,7 @@ public class Platform implements GenericPlatform {
   @Override
   public GenericMenuInterface getMenuPopup(String menuStructure,
                                          char type) {
-    String c = (type == 'j' ? "awtjs2d.JmolJSPopup" : "awtjs2d.JSModelKitPopup");
+    String c = (type == 'j' ? "awtjs2d.JSJmolPopup" : "awtjs2d.JSModelKitPopup");
     GenericMenuInterface jmolpopup = (GenericMenuInterface) Interface
         .getOption(c, (Viewer) vwr, "popup");
     try {
@@ -170,7 +171,7 @@ public class Platform implements GenericPlatform {
     JmolToJSmolInterface jmol = null;
 
     /**
-     * Jmol._repaint(applet,asNewThread)
+     * Jmol.repaint(applet,asNewThread)
      * 
      * should invoke
      * 
@@ -180,13 +181,13 @@ public class Platform implements GenericPlatform {
      * 
      * @j2sNative
      * 
-     *   jmol = (self.Jmol && Jmol._repaint ? Jmol : null);
+     *   jmol = (self.Jmol && Jmol.repaint ? Jmol : null);
      * 
      */
     {
     }
     if (jmol != null)
-      jmol._repaint(((Viewer) vwr).html5Applet, true);
+      jmol.repaint(((Viewer) vwr).html5Applet, true);
 
   }
 
@@ -197,7 +198,7 @@ public class Platform implements GenericPlatform {
 
 	@Override
   public void setCursor(int c, Object canvas) {
-    Jmol()._setCursor(((Viewer) vwr).html5Applet, c);
+    Jmol().setCursor(((Viewer) vwr).html5Applet, c);
 	}
 
 	// //// Image
@@ -238,6 +239,8 @@ public class Platform implements GenericPlatform {
     // from PNG and GIF and JPG image creators, also g3d.ImageRenderer.plotImage via drawImageToBuffer
     Object context2d = null;
     boolean isWebGL = (canvas == null);
+    
+    //TODO - clean this up with Jmol
     /**
      * 
      * (might be just an object with buf32 defined -- WRITE IMAGE)
@@ -245,7 +248,7 @@ public class Platform implements GenericPlatform {
      * @j2sNative
      * 
      *            if(isWebGL) { this.canvas = canvas =
-     *            Jmol._loadImage(this,"webgl",""
+     *            Jmol.loadImage(this,"webgl",""
      *            +System.currentTimeMillis(),this
      *            .vwr.html5Applet._canvas.toDataURL(),null,null); width =
      *            canvas.imageWidth; height = canvas.imageHeight;
@@ -253,14 +256,14 @@ public class Platform implements GenericPlatform {
      * 
      * 
      *            if (canvas.image && (width != canvas.width || height !=
-     *            canvas.height)) Jmol._setCanvasImage(canvas, width, height);
+     *            canvas.height)) Jmol.setCanvasImage(canvas, width, height);
      *            if (canvas.buf32) return canvas.buf32; context2d =
      *            canvas.getContext('2d');
      */
     {
       // placeholder for Eclipse referencing
-      Jmol()._loadImage(this, null, null, null, null);
-      Jmol()._setCanvasImage(canvas, width, height);
+      Jmol().loadImage(this, null, null, null, null);
+      Jmol().setCanvasImage(canvas, width, height);
     }
     int[] buf = Image.grabPixels(context2d, width, height);
     /**
@@ -325,12 +328,12 @@ public class Platform implements GenericPlatform {
 
 	@Override
   public Object newBufferedImage(Object image, int w, int h) {
-    return Jmol()._getHiddenCanvas(((Viewer) vwr).html5Applet, "stereoImage", w, h);
+    return Jmol().getHiddenCanvas(((Viewer) vwr).html5Applet, "stereoImage", w, h);
 	}
 
 	@Override
   public Object newOffScreenImage(int w, int h) {
-    return Jmol()._getHiddenCanvas(((Viewer) vwr).html5Applet, "textImage", w, h);
+    return Jmol().getHiddenCanvas(((Viewer) vwr).html5Applet, "textImage", w, h);
 	}
 
   @Override
@@ -363,7 +366,7 @@ public class Platform implements GenericPlatform {
 	   * 
 	   * @j2sNative
 	   * 
-	   * f = function(canvas, pathOrError) { vwr.loadImageData(canvas, pathOrError, echoName, sc) };
+	   * f = function(canvas, pathOrError) { vwr.loadImageData$O$S$S$O(canvas, pathOrError, echoName, sc) };
 	   * 
 	   * 
 	   */	  
@@ -371,7 +374,7 @@ public class Platform implements GenericPlatform {
 	    // this call is never made - it is just here as an Eclipse proxy for the above callback
 	    vwr.loadImageData(bytes, path, echoName, sc);
 	  }
-	  return Jmol()._loadImage(this, echoName, path, bytes, f);
+	  return Jmol().loadImage(this, echoName, path, bytes, f);
   }
 	// /// FONT
 
@@ -524,7 +527,7 @@ public class Platform implements GenericPlatform {
 
   @Override
   public boolean forceAsyncLoad(String filename) {
-    return Jmol()._isBinaryUrl(filename);
+    return Jmol().isBinaryUrl(filename);
   }
 
 

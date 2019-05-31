@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javajs.awt.Font;
+import org.jmol.awtjs.swing.Font;
 import javajs.util.A4;
 import javajs.util.AU;
 import javajs.util.BArray;
@@ -492,8 +492,9 @@ public class ScriptEval extends ScriptExpr {
    */
 
   @Override
-  public void resumeEval(ScriptContext sc) {
-
+  public void resumeEval(Object sco) {
+    
+    ScriptContext sc = (ScriptContext) sco;
     // 
     //
     //      |

@@ -1,6 +1,6 @@
 package jspecview.js2d;
 
-import javajs.awt.Dimension;
+import org.jmol.awtjs.swing.Dimension;
 import org.jmol.awtjs.swing.JComponent;
 import org.jmol.awtjs.swing.JEditorPane;
 import org.jmol.awtjs.swing.JDialog;

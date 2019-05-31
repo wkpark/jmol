@@ -24,25 +24,15 @@
 package org.jmol.awtjs2d;
 
 import org.jmol.awtjs.swing.JPopupMenu;
-
-import org.jmol.api.PlatformViewer;
-import org.jmol.i18n.GT;
 import org.jmol.modelkit.ModelKitPopup;
-import org.jmol.modelkit.ModelKitPopupResourceBundle;
-import org.jmol.popup.JSSwingPopupHelper;
-import org.jmol.popup.JmolGenericPopup;
-import org.jmol.popup.PopupResource;
-//import org.jmol.util.Elements;
 import org.jmol.util.Elements;
-import org.jmol.viewer.Viewer;
-
-import javajs.awt.Component;
-import javajs.awt.SC;
+import org.jmol.awtjs.swing.Component;
+import org.jmol.awtjs.swing.SC;
 
 public class JSModelKitPopup extends ModelKitPopup {
 
   public JSModelKitPopup() {
-    helper = new JSSwingPopupHelper(this);
+    helper = new JSPopupHelper(this);
   }
 
   @Override
@@ -57,24 +47,37 @@ public class JSModelKitPopup extends ModelKitPopup {
   }
   
   @Override
-  public String menuSetCheckBoxOption(SC item, String name, String what, boolean TF) {
-    String element = GT.$("Element?");
-    /**
-     * @j2sNative
-     * 
-     * element = prompt(element, "");
-     * 
-     */
-    {}
-    if (element == null || Elements.elementNumberFromSymbol(element, true) == 0)
-      return null;
-    updateButton(item, element, "assignAtom_" + element + "P!:??");
-    return "set picking assignAtom_" + element;
-  }
-
-  @Override
   protected Object getImageIcon(String fileName) {
     return "org/jmol/modelkit/images/" + fileName;
   }
+
+  
+  @Override
+  public void menuClickCallback(SC source, String script) {
+    /** @j2sNatve */{}
+    // Hack for old transpiler, which can skip an empty call to super
+    super.menuClickCallback(source, script);
+  }
+
+  @Override
+  public void menuCheckBoxCallback(SC source) {
+    /** @j2sNatve */{}
+    // Hack for old transpiler, which can skip an empty call to super
+    super.menuCheckBoxCallback(source);
+  }
+
+  @Override
+  protected String promptUser(String msg, String def) {
+    /**
+     * @j2sNative
+     * 
+     * return prompt(msg, def);
+     * 
+     */
+    {
+      return null;
+    }
+  }
+
 
 }

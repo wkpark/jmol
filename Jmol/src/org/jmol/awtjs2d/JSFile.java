@@ -2,22 +2,21 @@ package org.jmol.awtjs2d;
 
 import java.net.URL;
 
-import javajs.api.GenericFileInterface;
 import javajs.util.AjaxURLConnection;
 import javajs.util.OC;
 import javajs.util.PT;
 
+import org.jmol.api.GenericFileInterface;
 import org.jmol.viewer.Viewer;
 
 /**
  * 
  * A class that mimics java.io.File
  * 
- * We allow access to 
  * 
  */
 
-public class JSFile implements GenericFileInterface {
+class JSFile implements GenericFileInterface {
 
   private String name;
 	private String fullName;

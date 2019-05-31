@@ -11,17 +11,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import javajs.api.GenericFileInterface;
-import javajs.awt.GenericImageDialog;
-import javajs.awt.GenericMouseInterface;
-import javajs.awt.GenericPlatform;
-import javajs.awt.Font;
+import org.jmol.awtjs.swing.Font;
 import javajs.util.P3;
 import javajs.util.Rdr;
 
 import javax.swing.JDialog;
 
+import org.jmol.api.GenericFileInterface;
+import org.jmol.api.GenericImageDialog;
 import org.jmol.api.GenericMenuInterface;
+import org.jmol.api.GenericMouseInterface;
+import org.jmol.api.GenericPlatform;
 import org.jmol.api.PlatformViewer;
 
 import jspecview.api.JSVPanel;

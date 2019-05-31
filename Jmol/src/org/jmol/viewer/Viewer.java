@@ -38,10 +38,8 @@ import java.util.Properties;
 import javajs.J2SIgnoreImport;
 import javajs.api.GenericCifDataParser;
 import javajs.api.GenericZipTools;
-import javajs.awt.Dimension;
-import javajs.awt.Font;
-import javajs.awt.GenericMouseInterface;
-import javajs.awt.GenericPlatform;
+import org.jmol.awtjs.swing.Dimension;
+import org.jmol.awtjs.swing.Font;
 import javajs.util.AU;
 import javajs.util.BS;
 import javajs.util.CU;
@@ -50,7 +48,6 @@ import javajs.util.JSJSONParser;
 import javajs.util.Lst;
 import javajs.util.M3;
 import javajs.util.M4;
-import javajs.util.Measure;
 import javajs.util.OC;
 import javajs.util.P3;
 import javajs.util.P3i;
@@ -66,6 +63,8 @@ import org.jmol.adapter.readers.quantum.NBOParser;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.AtomIndexIterator;
 import org.jmol.api.GenericMenuInterface;
+import org.jmol.api.GenericMouseInterface;
+import org.jmol.api.GenericPlatform;
 import org.jmol.api.Interface;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolAnnotationParser;
@@ -87,6 +86,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.api.PlatformViewer;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.api.SymmetryInterface;
+import org.jmol.api.js.JSmolAppletObject;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
@@ -204,7 +204,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public boolean autoExit = false;
   public boolean haveDisplay = false;
 
-  static public boolean isJS, isSwingJS, isWebGL;
+  static public boolean isJS, isJSNoAWT, isSwingJS, isWebGL;
   public boolean isSingleThreaded;
   public boolean queueOnHold = false;
 
@@ -243,7 +243,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public GData gdata;
-  public Object html5Applet; // j2s only
+  public JSmolAppletObject html5Applet; // j2s only
 
   public ActionManager acm;
   public AnimationManager am;
@@ -465,10 +465,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (o instanceof String) {
       platform = (String) o;
       isWebGL = (platform.indexOf(".awtjs.") >= 0);
-      isJS = isWebGL || (platform.indexOf(".awtjs2d.") >= 0);
+      isJS = isJSNoAWT = isWebGL || (platform.indexOf(".awtjs2d.") >= 0);
       async = !dataOnly && !autoExit
           && (testAsync || isJS && info.containsKey("async"));
-      Object applet = null;
+      JSmolAppletObject applet = null;
       String javaver = "?";
       /**
        * @j2sNative
@@ -741,8 +741,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     gdata.destroy();
     if (jmolpopup != null)
       jmolpopup.jpiDispose();
-    if (modelkitPopup != null)
-      modelkitPopup.jpiDispose();
+    if (modelkit != null)
+      modelkit.jpiDispose();
     try {
       if (appConsole != null) {
         appConsole.dispose();
@@ -4266,32 +4266,24 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     g.removeParam("_objecthovered");
     g.setI("_atomhovered", atomIndex);
     g.setO("_hoverLabel", hoverLabel);
-    g.setUserVariable("hovered", SV.getVariable(BSUtil.newAndSetBit(atomIndex)));
+    g.setUserVariable("hovered",
+        SV.getVariable(BSUtil.newAndSetBit(atomIndex)));
     if (sm.haveHoverCallback())
       sm.setStatusAtomHovered(atomIndex, getAtomInfoXYZ(atomIndex, false));
-    if (!hoverEnabled)
+    if (!hoverEnabled || eval != null && isScriptExecuting()
+        || atomIndex == hoverAtomIndex || g.hoverDelayMs == 0
+        || !slm.isInSelectionSubset(atomIndex))
       return;
-    if (g.modelKitMode) {
-      if (ms.isAtomAssignable(atomIndex)) {
-        highlight(BSUtil.newAndSetBit(atomIndex));
-      }
-      refresh(REFRESH_SYNC_MASK, "hover on atom");
-      return;
-    }
-    if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex
-        || g.hoverDelayMs == 0)
-      return;
-    if (!slm.isInSelectionSubset(atomIndex))
-      return;
+    String label = (isLabel ? GT.$("Drag to move label")
+        : g.modelKitMode ? modelkit.getHoverLabel(atomIndex) : null);
+
     shm.loadShape(JC.SHAPE_HOVER);
-    if (isLabel && ms.at[atomIndex].isVisible(JC.VIS_LABEL_FLAG)) {
-      setShapeProperty(JC.SHAPE_HOVER, "specialLabel",
-          GT.$("Drag to move label"));
+    if (label != null
+        && (!isLabel || ms.at[atomIndex].isVisible(JC.VIS_LABEL_FLAG))) {
+      setShapeProperty(JC.SHAPE_HOVER, "specialLabel", label);
     }
-    setShapeProperty(JC.SHAPE_HOVER, "text", null);
-    setShapeProperty(JC.SHAPE_HOVER, "target", Integer.valueOf(atomIndex));
-    hoverText = null;
-    hoverAtomIndex = atomIndex;
+    setShapeProperty(JC.SHAPE_HOVER, "text", hoverText = null);
+    setShapeProperty(JC.SHAPE_HOVER, "target", Integer.valueOf(hoverAtomIndex = atomIndex));
     refresh(REFRESH_SYNC_MASK, "hover on atom");
   }
 
@@ -4481,23 +4473,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     case 'b':
     case 'm':
       // atom, bond, or main -- ignored
-      if (getModelkitPopup() == null) {
+      if (getModelkit(false) == null) {
           return;
       }
-      modelkitPopup.jpiShow(x, y);
+      modelkit.jpiShow(x, y);
       break;
     }
   }
 
-  public GenericMenuInterface getModelkitPopup() {
-    if (modelkitPopup == null) {
-      modelkitPopup = apiPlatform.getMenuPopup(null, 'm');
-    } else {
-      modelkitPopup.jpiUpdateComputedMenus();
-    }
-    return modelkitPopup;
-  }
-    
   public void setRotateBondIndex(int i) {
     if (modelkit != null)
       modelkit.setRotateBondIndex(i);
@@ -5654,7 +5637,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       // also serves to change language for callbacks and menu
       new GT(this, value);
       String language = GT.getLanguage();
-      modelkitPopup = null;
+      modelkit = null;
       if (jmolpopup != null) {
         jmolpopup.jpiDispose();
         jmolpopup = null;
@@ -7291,7 +7274,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   JmolScriptEditorInterface scriptEditor;
   GenericMenuInterface jmolpopup;
   ModelKitPopup modelkit;
-  private GenericMenuInterface modelkitPopup;
   private Map<String, Object> headlessImageParams;
  
   public String getChimeInfo(int tok) {
@@ -7803,26 +7785,29 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     movingSelected = false;
   }
 
-  public void highlightBond(int index, boolean isHover) {
-    if (isHover && !hoverEnabled)
+  public void highlightBond(int index, String msg) {
+    if (msg == null && !hoverEnabled)
       return;
     BS bs = null;
     if (index >= 0) {
       Bond b = ms.bo[index];
       int i = b.atom2.i;
-      if (!ms.isAtomAssignable(i))
+      if (!ms.isAtomInLastModel(i))
         return;
       bs = BSUtil.newAndSetBit(i);
       bs.set(b.atom1.i);
     }
+    if (modelkit != null)
+      modelkit.setActiveMenu("bondMenu");
     highlight(bs);
     refresh(REFRESH_SYNC_MASK, "highlightBond");
   }
 
   public int atomHighlighted = -1;
-  
+
   public void highlight(BS bs) {
-    atomHighlighted = (bs != null && bs.cardinality() == 1 ? bs.nextSetBit(0) : -1);
+    atomHighlighted = (bs != null && bs.cardinality() == 1 ? bs.nextSetBit(0)
+        : -1);
     if (bs == null) {
       setCursor(GenericPlatform.CURSOR_DEFAULT);
     } else {
@@ -9744,13 +9729,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
 
-  public void assignAtom(int atomIndex, String element) {
+  public void assignAtom(int atomIndex, String element, P3 ptNew) {
     if (atomIndex < 0)
       atomIndex = atomHighlighted;
-    if (ms.isAtomAssignable(atomIndex)) {
-      script("assign atom ({" + atomIndex + "}) \"" + element + "\""); 
+    if (ms.isAtomInLastModel(atomIndex)) {
+      script("assign atom ({" + atomIndex + "}) \"" + element + "\" " + (ptNew == null ? "" : Escape.eP(ptNew)));      
     }
   }
+
   public ModelKitPopup getModelkit(boolean andShow) {
     if (modelkit == null) {
       modelkit = (ModelKitPopup) apiPlatform.getMenuPopup(null, 'm');

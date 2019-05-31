@@ -28,8 +28,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import javajs.awt.Font;
-import javajs.awt.GenericPlatform;
+import org.jmol.api.GenericPlatform;
+import org.jmol.awtjs.swing.Font;
 import javajs.util.P3;
 import javajs.util.PT;
 

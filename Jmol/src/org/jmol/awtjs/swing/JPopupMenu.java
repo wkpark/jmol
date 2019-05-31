@@ -1,6 +1,6 @@
 package org.jmol.awtjs.swing;
 
-import javajs.awt.Component;
+import org.jmol.awtjs.swing.Component;
 
 public class JPopupMenu extends AbstractButton {
   
@@ -42,11 +42,11 @@ public class JPopupMenu extends AbstractButton {
    * @param y 
    */
   public void show(Component applet, int x, int y) {
+    if (applet != null)
+       tainted = true;
     /**
      * @j2sNative
      * 
-     * if (applet != null)
-     *   this.tainted = true;
      * SwingController.showMenu(this, x, y);
      * 
      */

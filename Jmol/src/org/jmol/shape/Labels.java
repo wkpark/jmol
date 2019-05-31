@@ -26,7 +26,7 @@ package org.jmol.shape;
 
 import org.jmol.c.PAL;
 
-import javajs.awt.Font;
+import org.jmol.awtjs.swing.Font;
 import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;

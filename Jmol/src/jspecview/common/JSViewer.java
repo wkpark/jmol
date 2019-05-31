@@ -19,13 +19,13 @@ import javajs.util.Lst;
 import javajs.util.P3;
 import javajs.util.SB;
 import javajs.api.BytePoster;
-import javajs.api.GenericFileInterface;
-import javajs.awt.Component;
-import javajs.awt.GenericPlatform;
-import javajs.awt.Dimension;
-import javajs.awt.SC;
+import org.jmol.awtjs.swing.Component;
+import org.jmol.awtjs.swing.Dimension;
+import org.jmol.awtjs.swing.SC;
 
+import org.jmol.api.GenericFileInterface;
 import org.jmol.api.GenericGraphics;
+import org.jmol.api.GenericPlatform;
 import org.jmol.api.PlatformViewer;
 import org.jmol.awtjs.swing.JPopupMenu;
 import org.jmol.util.Logger;

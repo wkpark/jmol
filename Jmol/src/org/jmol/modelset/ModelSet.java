@@ -3226,7 +3226,7 @@ public class ModelSet extends BondCollection {
     return i >= 0 && am[at[i].mi].isBioModel;
   }
 
-  public boolean isAtomAssignable(int i) {
+  public boolean isAtomInLastModel(int i) {
     return i >= 0 && at[i].mi == mc - 1;
   }
 

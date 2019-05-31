@@ -6,8 +6,8 @@ import java.util.Map;
 import javax.swing.SwingConstants;
 
 import jspecview.api.PlatformDialog;
-import javajs.awt.Dimension;
-import javajs.awt.Color;
+import org.jmol.awtjs.swing.Dimension;
+import org.jmol.awtjs.swing.Color;
 import org.jmol.awtjs.swing.FlowLayout;
 import org.jmol.awtjs.swing.GridBagConstraints;
 import org.jmol.awtjs.swing.GridBagLayout;
@@ -94,7 +94,7 @@ public class JsDialog extends JDialog implements PlatformDialog {
 	@Override
 	public Object addButton(String name, String text) {
 		JButton	btn = new JButton();
-		btn.setPreferredSize(new Dimension(120, 25));
+		btn.setPreferredSize(new org.jmol.awtjs.swing.Dimension(120, 25));
 		btn.setText(text);
 		btn.setName(registryKey + "/" + name);
 		btn.addActionListener(manager);

@@ -27,11 +27,6 @@ import javajs.api.EigenInterface;
 
 import javajs.api.Interface;
 
-
-
-
-//import org.jmol.script.T;
-
 final public class Measure {
 
   public final static float radiansPerDegree = (float) (2 * Math.PI / 360);

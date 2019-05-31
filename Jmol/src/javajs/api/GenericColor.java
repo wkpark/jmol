@@ -1,7 +1,7 @@
 package javajs.api;
 
 /**
- * GenericColor allows both java.awt.Color and javajs.awt.Color to be
+ * GenericColor allows both java.awt.Color and org.jmol.awtjs.swing.Color to be
  * handled by methods that need not distinguish between them. It is used
  * in the javajs package for the background color of a org.jmol.awtjs.swing.JComponent
  * 

@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import javajs.awt.Font;
+import org.jmol.awtjs.swing.Font;
 import javajs.util.BS;
 
 import org.jmol.modelset.Text;

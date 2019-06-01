@@ -1448,7 +1448,7 @@ all support for previous versions removed
 
     <copy todir="build/dist/jmol-${version}/src" >
       <fileset dir="src" />
-      <fileset dir="srcjsv" />
+<!--      <fileset dir="srcjsv" />  -->
     </copy>
 
     <copy todir="build/dist/jmol-${version}/ca-cert" >

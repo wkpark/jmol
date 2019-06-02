@@ -26,7 +26,6 @@ package org.jmol.scriptext;
 
 import java.util.Map;
 
-import javajs.J2SIgnoreImport;
 import javajs.util.AU;
 import javajs.util.Lst;
 import javajs.util.M4;
@@ -69,7 +68,6 @@ import org.jmol.util.Triangulator;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.JmolAsyncException;
 
-@J2SIgnoreImport(org.jmol.quantum.QS.class)
 public class IsoExt extends ScriptExt {
 
   public IsoExt() {
@@ -603,8 +601,9 @@ public class IsoExt extends ScriptExt {
             s = null;
             int iatom = bsAtoms.nextSetBit(0);
             if (options != 0) {
-              Object o = vwr.getSymTemp().getSymmetryInfoAtom(vwr.ms, iatom,
-                  xyz, iSym, center, target, thisId, T.point, intScale / 100f,
+              // options is T.offset, and target is an {i j k} offset from cell 555
+              Object o = vwr.getSymmetryInfo(iatom,
+                  xyz, iSym, center, target, T.point, null, intScale / 100f,
                   nth, options);
               if (o instanceof P3)
                 target = (P3) o;
@@ -614,8 +613,8 @@ public class IsoExt extends ScriptExt {
             if (thisId == null)
               thisId = "sym";
             if (s == null)
-              s = (String) vwr.getSymTemp().getSymmetryInfoAtom(vwr.ms, iatom,
-                  xyz, iSym, center, target, thisId, T.draw, intScale / 100f,
+              s = (String) vwr.getSymmetryInfo(iatom,
+                  xyz, iSym, center, target, T.draw, thisId, intScale / 100f,
                   nth, options);
           }
           eval.runScript(
@@ -1119,9 +1118,7 @@ public class IsoExt extends ScriptExt {
   @SuppressWarnings("static-access")
   private void setNBOType(Map<String, Object> moData, String type) throws ScriptException {
 
-    //         31    32    33    34    35    36    37    38    39    40    41
-    int ext = ";AO;  ;PNAO;;NAO; ;PNHO;;NHO; ;PNBO;;NBO; ;PNLMO;NLMO;;MO;  ;NO;"
-        .indexOf(";" + type + ";");
+    int ext = JC.getNBOTypeFromName(type);
     if (ext < 0)
       invArg();
     if (!moData.containsKey("nboLabels"))

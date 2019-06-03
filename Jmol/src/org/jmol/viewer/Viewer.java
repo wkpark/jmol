@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
+import org.jmol.awtjs.Event;
 import javajs.J2SIgnoreImport;
 import javajs.api.GenericCifDataParser;
 import javajs.api.GenericZipTools;
@@ -2887,6 +2887,16 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return bs;
   }
 
+  /**
+   * given a set of atoms, a subset of atoms to test, two atoms that start
+   * the branch, and whether or not to allow the branch to cycle back on
+   * itself,deliver the set of atoms constituting this branch.
+   * 
+   * @param atomIndex
+   * @param atomIndexNot
+   * @param allowCyclic
+   * @return
+   */
   public BS getBranchBitSet(int atomIndex, int atomIndexNot, boolean allowCyclic) {
     if (atomIndex < 0 || atomIndex >= ms.ac)
       return new BS();
@@ -4287,11 +4297,20 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     refresh(REFRESH_SYNC_MASK, "hover on atom");
   }
 
+  /**
+   * Hover over an arbitrary point.
+   * 
+   * @param x
+   * @param y
+   * @param text
+   * @param id optional id to set _objecthovered to
+   * @param pt optional pt to set "hovered" to 
+   */
   public void hoverOnPt(int x, int y, String text, String id, T3 pt) {
     // from draw for drawhover on
     if (eval != null && isScriptExecuting())
       return;
-    g.setO("_hoverLabel", hoverLabel);
+    g.setO("_hoverLabel", text);
     if (id != null && pt != null) {
       g.setO("_objecthovered", id);
       g.setI("_atomhovered", -1);
@@ -4313,9 +4332,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   void hoverOff() {
     try {
-      if (g.modelKitMode) {
-       highlight(null);
-      }
+      if (g.modelKitMode && acm.getBondPickingMode() != ActionManager.PICKING_ROTATE_BOND)
+        highlight(null);
       if (!hoverEnabled)
         return;
       boolean isHover = (hoverText != null || hoverAtomIndex >= 0);
@@ -4492,9 +4510,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       popupMenu(dimScreen.width - 120, 0, 'j');
       return "OK";
     }
-    return (jmolpopup == null ? "" : jmolpopup
-        .jpiGetMenuAsString("Jmol version " + getJmolVersion() + "|_GET_MENU|"
-            + type));
+    return (jmolpopup == null ? ""
+        : jmolpopup.jpiGetMenuAsString(
+            "Jmol version " + getJmolVersion() + "|_GET_MENU|" + type));
   }
 
   private Object getPopupMenu() {
@@ -5431,8 +5449,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return (g.dragSelected && !g.modelKitMode);
   }
 
-  boolean getBondPicking() {
-    return (g.bondPicking || g.modelKitMode);
+  boolean getBondsPickable() {
+    return (g.bondPicking || g.modelKitMode && getModelkitProperty("isMolecular") == Boolean.TRUE);
   }
 
   public boolean useMinimizationThread() {
@@ -7443,7 +7461,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public boolean checkObjectHovered(int x, int y) {
     return (x >= 0 && shm != null && shm.checkObjectHovered(x, y,
-        getVisibleFramesBitSet(), getBondPicking()));
+        getVisibleFramesBitSet(), getBondsPickable()));
   }
 
   boolean checkObjectDragged(int prevX, int prevY, int x, int y, int action) {
@@ -7462,9 +7480,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       if (iShape == JC.SHAPE_DRAW)
         scriptEcho((String) getShapeProperty(JC.SHAPE_DRAW, "command"));
       return true;
-    }    
+    }
     return false;
   }
+
 
   public boolean rotateAxisAngleAtCenter(JmolScriptEvaluator eval,
                                          P3 rotCenter, V3 rotAxis,
@@ -7725,13 +7744,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   private boolean showSelected;
 
   public void moveSelected(int deltaX, int deltaY, int deltaZ, int x, int y,
-                           BS bsSelected, boolean isTranslation, boolean asAtoms) {
+                           BS bsSelected, boolean isTranslation,
+                           boolean asAtoms, int modifiers) {
     // called by actionManager
     // cannot synchronize this -- it's from the mouse and the event queue
     if (deltaZ == 0)
       return;
-    if (x == Integer.MIN_VALUE && modelkit != null)
-      modelkit.setProperty("rotateBondIndex", Integer.valueOf(x));
+    if (x == Integer.MIN_VALUE)
+      setModelKitRotateBondIndex(Integer.MIN_VALUE);
     if (isJmolDataFrame())
       return;
     if (deltaX == Integer.MIN_VALUE) {
@@ -7754,8 +7774,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     movingSelected = true;
     stopMinimization();
     // note this does not sync with applets
-    if (x != Integer.MIN_VALUE && modelkit != null && modelkit.getProperty("rotateBondIndex") != null) {
-      modelkit.actionRotateBond(deltaX, deltaY, x, y);
+    if (x != Integer.MIN_VALUE && modelkit != null && modelkit.getProperty("rotateBondIndex") != null) {      
+      modelkit.actionRotateBond(deltaX, deltaY, x, y, (modifiers & Event.VK_SHIFT) != 0);
     } else {
       bsSelected = setMovableBitSet(bsSelected, !asAtoms);
       if (!bsSelected.isEmpty()) {
@@ -7766,11 +7786,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
           P3i ptScreen = tm.transformPt(ptCenter);
           P3 ptScreenNew;
           if (deltaZ != Integer.MIN_VALUE)
-            ptScreenNew = P3.new3(ptScreen.x, ptScreen.y, ptScreen.z + deltaZ
-                + 0.5f);
+            ptScreenNew = P3.new3(ptScreen.x, ptScreen.y,
+                ptScreen.z + deltaZ + 0.5f);
           else
-            ptScreenNew = P3.new3(ptScreen.x + deltaX * f + 0.5f, ptScreen.y
-                + deltaY * f + 0.5f, ptScreen.z);
+            ptScreenNew = P3.new3(ptScreen.x + deltaX * f + 0.5f,
+                ptScreen.y + deltaY * f + 0.5f, ptScreen.z);
           P3 ptNew = new P3();
           tm.unTransformPoint(ptScreenNew, ptNew);
           // script("draw ID 'pt" + Math.random() + "' " + Escape.escape(ptNew));
@@ -7785,8 +7805,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     movingSelected = false;
   }
 
-  public void highlightBond(int index, String msg) {
-    if (msg == null && !hoverEnabled)
+  /**
+   * from Sticks
+   * 
+   * @param index
+   * @param closestAtomIndex
+   */
+  public void highlightBond(int index, int closestAtomIndex, int x, int y) {//, String msg) {
+    if (!hoverEnabled)
       return;
     BS bs = null;
     if (index >= 0) {
@@ -7797,9 +7823,13 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       bs = BSUtil.newAndSetBit(i);
       bs.set(b.atom1.i);
     }
-    if (modelkit != null)
-      modelkit.setActiveMenu("bondMenu");
     highlight(bs);
+    setModelkitProperty("bondIndex", Integer.valueOf(index));
+    setModelkitProperty("screenXY", new int[] {x , y} );
+    String text = (String) setModelkitProperty("hoverLabel", Integer.valueOf(-2 - index));
+    if (text != null)
+      hoverOnPt(x, y, text, null, null);
+//    hoverOn(closestAtomIndex, false);
     refresh(REFRESH_SYNC_MASK, "highlightBond");
   }
 
@@ -7808,12 +7838,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public void highlight(BS bs) {
     atomHighlighted = (bs != null && bs.cardinality() == 1 ? bs.nextSetBit(0)
         : -1);
+    
     if (bs == null) {
       setCursor(GenericPlatform.CURSOR_DEFAULT);
     } else {
       shm.loadShape(JC.SHAPE_HALOS);
       setCursor(GenericPlatform.CURSOR_HAND);
     }
+    setModelkitProperty("highlight", bs);
     setShapeProperty(JC.SHAPE_HALOS, "highlight", bs);
   }
 
@@ -8853,7 +8885,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         }
     }
     moveSelected(deltaX, deltaY, deltaZ, Integer.MIN_VALUE, Integer.MIN_VALUE,
-        bsAtoms, true, true);
+        bsAtoms, true, true, 0);
   }
 
   public boolean isModelPDB(int i) {
@@ -9819,4 +9851,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     }
   }
 
+  /**
+   * 
+   * @param i Integer.MIN_VALUE initializes the bond index
+   */
+  public void setModelKitRotateBondIndex(int i) {
+    if (modelkit != null) {
+        modelkit.setProperty("rotateBondIndex", Integer.valueOf(i));
+    }
+  }
+    
 }

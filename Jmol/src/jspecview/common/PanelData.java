@@ -45,7 +45,7 @@ import java.util.Map.Entry;
 import javajs.api.GenericColor;
 
 import org.jmol.awtjs.Event;
-import org.jmol.awtjs.swing.Font;
+
 import javajs.util.CU;
 import javajs.util.Lst;
 
@@ -57,9 +57,9 @@ import jspecview.common.Annotation.AType;
 import jspecview.common.Spectrum.IRMode;
 import jspecview.dialog.JSVDialog;
 
-
 import org.jmol.api.EventManager;
 import org.jmol.api.GenericGraphics;
+import org.jmol.util.Font;
 import org.jmol.util.Logger;
 
 /**
@@ -299,11 +299,11 @@ public class PanelData implements EventManager {
 		nSpectra = spectra.size();
 		this.spectra = spectra;
 		commonFilePath = spectra.get(0).getFilePath();
-		  for (int i = 0; i < nSpectra; i++)
-		    if (!commonFilePath.equalsIgnoreCase(spectra.get(i).getFilePath())) {
-		      commonFilePath = null;
-		      break;
-		    }
+		for (int i = 0; i < nSpectra; i++)
+			if (!commonFilePath.equalsIgnoreCase(spectra.get(i).getFilePath())) {
+				commonFilePath = null;
+				break;
+			}
 		setGraphSets(LinkMode.NONE);
 	}
 
@@ -450,13 +450,14 @@ public class PanelData implements EventManager {
 			peakTabsOn = getBoolean(ScriptToken.PEAKTABSON);
 			
 		}
+		boolean pointsOnly = getBoolean(ScriptToken.POINTSONLY);
 		doReset = false;
 		titleDrawn = false;
 		thisWidth = width;
 		thisHeight = height;
 		for (int i = graphSets.size(); --i >= 0;)
 			graphSets.get(i).drawGraphSet(gMain, gFront, gRear, width, height, left,
-					right, top, bottom, isResized, taintedAll);
+					right, top, bottom, isResized, taintedAll, pointsOnly);
 		if (titleOn && !titleDrawn && taintedAll)
 			drawTitle(gMain, height * scalingFactor, width * scalingFactor,
 					getDrawTitle(isPrinting));

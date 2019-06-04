@@ -1,4 +1,6 @@
-package org.jmol.awtjs.swing;
+package org.jmol.api;
+
+import org.jmol.util.Font;
 
 /**
  * A generic interface for font queries.
@@ -16,6 +18,5 @@ public interface FontManager {
   Object getFontMetrics(Font font, Object graphics);
 
   Object newFont(String fontFace, boolean isBold, boolean isItalic, float fontSize);
-
 
 }

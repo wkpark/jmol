@@ -92,8 +92,6 @@ public class Spectrum extends JDXDataObject {
   private int currentSubSpectrumIndex;
   private boolean isForcedSubset;
   
-  ImageView imageView; // 2D image view
-
   public boolean isForcedSubset() {
     return isForcedSubset;
   }

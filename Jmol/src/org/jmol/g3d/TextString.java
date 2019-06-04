@@ -3,7 +3,8 @@ package org.jmol.g3d;
 import java.util.Comparator;
 
 
-import org.jmol.awtjs.swing.Font;
+import org.jmol.util.Font;
+
 import javajs.util.P3i;
 
 

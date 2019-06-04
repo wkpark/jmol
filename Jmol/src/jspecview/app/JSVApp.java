@@ -51,19 +51,18 @@ import jspecview.api.AppletFrame;
 import jspecview.api.JSVAppInterface;
 import jspecview.api.JSVPanel;
 import jspecview.api.PanelListener;
-
-import jspecview.common.JSVersion;
-import jspecview.common.Spectrum;
+import jspecview.api.js.JSVAppletObject;
+import jspecview.common.Coordinate;
 import jspecview.common.JSVFileManager;
+import jspecview.common.JSVersion;
+import jspecview.common.JSViewer;
 import jspecview.common.PanelData;
 import jspecview.common.PanelNode;
-import jspecview.common.JSViewer;
 import jspecview.common.PeakPickEvent;
 import jspecview.common.ScriptToken;
-import jspecview.common.Coordinate;
+import jspecview.common.Spectrum;
 import jspecview.common.SubSpecChangeEvent;
 import jspecview.common.ZoomEvent;
-
 import jspecview.source.JDXSource;
 
 /**
@@ -245,6 +244,15 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 		toggle(ScriptToken.COORDINATESON);
 	}
 
+  /**
+   * Method that can be called from another applet or from javascript that
+   * toggles the coordinate on a <code>JSVPanel</code>
+   */
+  @Override
+  public void togglePointsOnly() {
+    toggle(ScriptToken.POINTSONLY);
+  }
+
 	/**
 	 * Method that can be called from another applet or from javascript that
 	 * toggles the integration graph of a <code>JSVPanel</code>.
@@ -362,9 +370,9 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 	public void repaint() {
 		
 		@SuppressWarnings("unused")
-		Object applet = (vwr == null ? null : vwr.html5Applet);
+		JSVAppletObject applet = (vwr == null ? null : vwr.html5Applet);
     /**
-     * Jmol._repaint(applet,asNewThread)
+     * Jmol.repaint(applet,asNewThread)
      * 
      * should invoke 
      * 
@@ -374,10 +382,11 @@ public class JSVApp implements PanelListener, JSVAppInterface {
      * 
      * @j2sNative
      * 
-     * applet && self.Jmol && Jmol._repaint &&(Jmol._repaint(applet,true));
+     * applet && self.Jmol && Jmol.repaint &&(Jmol.repaint(applet,true));
      * 
      */
 		{
+		  
 			appletFrame.repaint();
 		}
 	}
@@ -478,8 +487,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
    */
   private void updateJSView(String msg) {
   	
-  	Object applet = this.vwr.html5Applet;
-  	@SuppressWarnings("unused")
+  	JSVAppletObject applet = vwr.html5Applet;
 		JSVPanel panel = (applet == null ? null : vwr.selectedPanel);
     /**
      * @j2sNative
@@ -488,6 +496,7 @@ public class JSVApp implements PanelListener, JSVAppInterface {
      * 
      */
     {}
+    applet._updateView(panel, msg);
   }
 
 	/**
@@ -597,9 +606,10 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 			return;
 		}
 
-		if (vwr.jsvpPopupMenu != null)
-			vwr.jsvpPopupMenu
-					.setCompoundMenu(vwr.panelNodes, vwr.allowCompoundMenu);
+		// not implemented
+//		if (vwr.jsvpPopupMenu != null)
+//			vwr.jsvpPopupMenu
+//					.setCompoundMenu(vwr.panelNodes, vwr.allowCompoundMenu);
 
 		Logger.info(appletFrame.getAppletInfo() + " File "
 				+ vwr.currentSource.getFilePath() + " Loaded Successfully");
@@ -758,7 +768,8 @@ public class JSVApp implements PanelListener, JSVAppInterface {
 		return vwr.print(fileName);
 	}
 
-	public String checkScript(String script) {
+	@Override
+  public String checkScript(String script) {
 		return vwr.checkScript(script);
 	}
 

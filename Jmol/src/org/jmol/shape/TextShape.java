@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.jmol.api.GenericPlatform;
-import org.jmol.awtjs.swing.Font;
 import javajs.util.P3;
 import javajs.util.PT;
 
@@ -37,6 +36,7 @@ import javajs.util.BS;
 
 import org.jmol.modelset.Text;
 import org.jmol.util.C;
+import org.jmol.util.Font;
 import org.jmol.util.Logger;
 
 public abstract class TextShape extends Shape {

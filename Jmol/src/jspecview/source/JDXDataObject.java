@@ -39,7 +39,7 @@ public abstract class JDXDataObject extends JDXHeader {
   public String getInlineData() {
     return inlineData;
   }
-  
+
   public String sourceID = "";
 
   public void setFilePath(String filePath) {
@@ -500,7 +500,7 @@ public abstract class JDXDataObject extends JDXHeader {
 
 
 	public double getYRef() {
-		return (!isTransmittance() ? 0.0 : Coordinate.getMaxY(xyCoords, 0, xyCoords.length) < 2 ? 1.0 : 100.0);
+		return (!isTransmittance() ? 0.0 : Coordinate.getMaxY(xyCoords, 0, xyCoords.length - 1) < 2 ? 1.0 : 100.0);
 	}
 
 	public boolean isInverted() {
@@ -769,7 +769,7 @@ public abstract class JDXDataObject extends JDXHeader {
    * @return the minimum x value in the list of coordinates
    */
   public double getMinX() {
-    return (Double.isNaN(minX) ? (minX = Coordinate.getMinX(xyCoords, 0, xyCoords.length)) : minX);
+    return (Double.isNaN(minX) ? (minX = Coordinate.getMinX(xyCoords, 0, xyCoords.length - 1)) : minX);
   }
 
   /**
@@ -779,7 +779,7 @@ public abstract class JDXDataObject extends JDXHeader {
    * @return the minimum x value in the list of coordinates
    */
   public double getMinY() {
-    return (Double.isNaN(minY) ? (minY = Coordinate.getMinY(xyCoords, 0, xyCoords.length)) : minY);
+    return (Double.isNaN(minY) ? (minY = Coordinate.getMinY(xyCoords, 0, xyCoords.length - 1)) : minY);
   }
 
   /**
@@ -789,7 +789,7 @@ public abstract class JDXDataObject extends JDXHeader {
    * @return the maximum x value in the list of coordinates
    */
   public double getMaxX() {
-    return (Double.isNaN(maxX) ? (maxX = Coordinate.getMaxX(xyCoords, 0, xyCoords.length)) : maxX);
+    return (Double.isNaN(maxX) ? (maxX = Coordinate.getMaxX(xyCoords, 0, xyCoords.length - 1)) : maxX);
   }
 
   /**
@@ -799,7 +799,7 @@ public abstract class JDXDataObject extends JDXHeader {
    * @return the maximum y value in the list of coordinates
    */
   public double getMaxY() {
-    return (Double.isNaN(maxY) ? (maxY = Coordinate.getMaxY(xyCoords, 0, xyCoords.length)) : maxY);
+    return (Double.isNaN(maxY) ? (maxY = Coordinate.getMaxY(xyCoords, 0, xyCoords.length - 1)) : maxY);
   }
 
 	double normalizationFactor = 1;

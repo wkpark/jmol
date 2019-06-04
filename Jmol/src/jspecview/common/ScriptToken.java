@@ -96,6 +96,7 @@ public enum ScriptToken {
   PLOTAREACOLOR("C", "sets the color of the plot background"), 
   PLOTCOLOR("C", "sets the color of the graph line"), 
   PLOTCOLORS("color,color,color,...", "sets the colors of multiple plots"), 
+  POINTSONLY("TF", "show points only for all data"),
   PRINT("", "prints the current spectrum"),
   REVERSEPLOT("T", "reverses the x-axis of a spectrum"), 
   SCALEBY("factor", "multiplies the y-scale of the spectrum by a factor"),
@@ -161,7 +162,7 @@ public enum ScriptToken {
     this.description = "-- " + description;
   }
 
-  public static Map<String, ScriptToken> htParams;
+  private static Map<String, ScriptToken> htParams;
 
   private static Map<String, ScriptToken> getParams() {
     if (htParams == null) {

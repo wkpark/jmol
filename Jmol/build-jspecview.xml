@@ -40,6 +40,26 @@
     	<!-- pathelement location="${lib.dir}/${itext.jar}"/ -->
     </path>
 
+	<fileset id="jmolfiles" dir="${bin.dir}">
+		<include name="javajs/**/*"/>
+		<include name="org/jmol/api/Generic*"/>
+		<include name="org/jmol/api/EventManager*"/>
+		<include name="org/jmol/api/FontManager*"/>
+		<include name="org/jmol/api/JmolSync*"/>
+		<include name="org/jmol/api/*JSV*"/>
+		<include name="org/jmol/api/*JDX*"/>
+		<include name="org/jmol/api/PlatformViewer*"/>
+		<include name="org/jmol/api/SC.class"/>
+		<include name="org/jmol/awt/AwtPopup*.class"/>
+		<include name="org/jmol/awt/AwtPopupHelper*.class"/>
+		<include name="org/jmol/awt/AwtSwingComponent*.class"/>
+		<include name="org/jmol/popup/GenericPopup*.class"/>
+		<include name="org/jmol/popup/PopupHelper*.class"/>
+		<include name="org/jmol/popup/PopupResource*.class"/>
+		<include name="org/jmol/util/Font*.class"/>
+		<include name="org/jmol/util/*Logger*.class"/>
+   	</fileset>
+
 	<target name="current-number">
 		<echo>Current build number:${build.number}</echo>
 	</target>
@@ -84,10 +104,10 @@
 	    <unjar dest="${bin.dir}" src="${lib.dir}/netscape.jar"/>
         <jar destfile="${build.dir}/JSpecView.app.${build.number}_unsigned.jar" manifest="${manifest.dir}/application.txt">
 		   	<fileset dir="${bin.dir}">
-		      <include name="**/*"/>
+		      <include name="jspecview/**/*"/>
 			  <exclude name="jspecview/*js*/*"/>
-		      <exclude name="jspecview/unused/*"/>
 		   	</fileset>
+    	   	<fileset refid="jmolfiles" />
         </jar>
 		<copy overwrite="true" file="${build.dir}/JSpecView.app.${build.number}_unsigned.jar"
 			tofile="${build.dir}/JSpecView.jar">
@@ -120,16 +140,12 @@
 
 	    <unjar dest="${bin.dir}" src="${lib.dir}/netscape.jar"/>
         <jar destfile="${build.dir}/JSpecView.applet.${build.number}_unsigned.jar" manifest="${manifest.dir}/applet.txt">
-        	<fileset dir="${bin.dir}">
-        		<exclude name="jspecview/application/**/*"/>
-  		        <exclude name="javajs/swing/**/*"/>
-  			    <exclude name="jspecview/*js*/*"/>
-  		        <exclude name="jspecview/unused/*"/>
-        	</fileset>
-        	<fileset dir="${jsvlib.dir}">
-  		      <include name="**/*"/>
-    		  <exclude name="javajs/swing/**/*"/>
-            </fileset>
+		   	<fileset dir="${bin.dir}">
+			      <include name="jspecview/**/*"/>
+        	  <exclude name="jspecview/application/**/*"/>
+			  <exclude name="jspecview/*js*/*"/>
+		   	</fileset>
+    	   	<fileset refid="jmolfiles" />
         </jar>		
 		<copy overwrite="true" file="${build.dir}/JSpecView.applet.${build.number}_unsigned.jar"
 			tofile="build/JSpecViewApplet.jar">
@@ -147,16 +163,12 @@
         <mkdir dir="${build.dir}"/>
 	    <unjar dest="${bin.dir}" src="${lib.dir}/netscape.jar"/>
         <jar destfile="${build.dir}/JSpecViewAppletSigned.jar" manifest="${manifest.dir}/appletSigned.txt">
-        	<fileset dir="${bin.dir}">
-  		      <exclude name="jspecview/application/**/*"/>
-  		      <exclude name="javajs/swing/**/*"/>
-  			  <exclude name="jspecview/*js*/*"/>
-  		      <exclude name="jspecview/unused/*"/>
-        	</fileset>
-        	<fileset dir="${jsvlib.dir}">
-  		      <include name="**/*"/>
-    		  <exclude name="javajs/swing/**/*"/>
-            </fileset>
+		   	<fileset dir="${bin.dir}">
+			      <include name="jspecview/**/*"/>
+        	  <exclude name="jspecview/application/**/*"/>
+			  <exclude name="jspecview/*js*/*"/>
+		   	</fileset>
+    	   	<fileset refid="jmolfiles" />
         </jar>    
 		
 	    <antcall target="sign-jar-file">

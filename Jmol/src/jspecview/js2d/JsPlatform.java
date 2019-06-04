@@ -11,7 +11,8 @@ import org.jmol.api.GenericMouseInterface;
 import org.jmol.api.GenericPlatform;
 import org.jmol.api.PlatformViewer;
 
-import org.jmol.awtjs.swing.Font;
+import org.jmol.util.Font;
+
 import javajs.util.P3;
 import javajs.util.AjaxURLStreamHandlerFactory;
 import javajs.util.Rdr;

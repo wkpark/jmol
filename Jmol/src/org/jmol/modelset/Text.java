@@ -23,7 +23,6 @@
  */
 package org.jmol.modelset;
 
-import org.jmol.awtjs.swing.Font;
 import javajs.util.P3;
 import javajs.util.P3i;
 import javajs.util.PT;
@@ -33,6 +32,7 @@ import javajs.util.BS;
 
 import org.jmol.shape.Shape;
 import org.jmol.util.C;
+import org.jmol.util.Font;
 import org.jmol.util.Txt;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;

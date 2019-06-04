@@ -29,7 +29,8 @@ import java.util.Map;
 
 import org.jmol.api.JmolRendererInterface;
 
-import org.jmol.awtjs.swing.Font;
+import org.jmol.util.Font;
+
 import javajs.util.CU;
 
 

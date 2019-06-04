@@ -33,7 +33,7 @@ import javax.swing.JPopupMenu;
 import org.jmol.modelkit.ModelKitPopup;
 import org.jmol.util.Elements;
 
-import org.jmol.awtjs.swing.SC;
+import org.jmol.api.SC;
 
 public class AwtModelKitPopup extends ModelKitPopup {
 

@@ -26,7 +26,6 @@ package org.jmol.shape;
 
 import org.jmol.c.PAL;
 
-import org.jmol.awtjs.swing.Font;
 import javajs.util.BS;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.LabelToken;
@@ -35,6 +34,7 @@ import org.jmol.script.SV;
 import org.jmol.script.T;
 import org.jmol.util.BSUtil;
 import org.jmol.util.C;
+import org.jmol.util.Font;
 
 import javajs.util.AU;
 import javajs.util.Lst;

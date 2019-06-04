@@ -31,9 +31,9 @@ import org.jmol.popup.PopupResource;
 
 import org.jmol.awt.AwtSwingComponent;
 import org.jmol.awt.AwtPopupHelper;
-import org.jmol.awtjs.swing.SC;
 
 import org.jmol.api.PlatformViewer;
+import org.jmol.api.SC;
 
 import jspecview.common.JSViewer;
 import jspecview.popup.JSVPopupResourceBundle;

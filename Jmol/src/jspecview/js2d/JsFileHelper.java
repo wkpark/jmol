@@ -49,20 +49,12 @@ public class JsFileHelper implements JSVFileHelper {
 	}
 
 	@Override
-	public GenericFileInterface showFileOpenDialog(Object panelOrFrame, Object[] userData) {
-	  // userData[0]: isAppend
-	  // userData[1]: script
-		
-		Object applet = vwr.html5Applet;
-		/**
-		 * @j2sNative
-		 * 
-		 * 	Jmol._loadFileAsynchronously(this, applet, "?", userData);
-		 * 
-		 */
-		{
-			System.out.println(applet);
-		}
+	/**
+	 * @param panelOrFrame
+	 * @param userData [isAppend, script]
+	 */
+	public GenericFileInterface showFileOpenDialog(Object panelOrFrame, Object[] userData) {		
+		JSViewer.jmolObject.loadFileAsynchronously(this, vwr.html5Applet, "?", userData);
 		return null;
 	}
 

@@ -38,7 +38,6 @@ import org.jmol.awtjs.Event;
 import javajs.J2SIgnoreImport;
 import javajs.api.GenericCifDataParser;
 import javajs.api.GenericZipTools;
-import org.jmol.awtjs.swing.Dimension;
 import javajs.util.AU;
 import javajs.util.BS;
 import javajs.util.CU;
@@ -86,6 +85,7 @@ import org.jmol.api.PlatformViewer;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.api.SymmetryInterface;
 import org.jmol.api.js.JSmolAppletObject;
+import org.jmol.api.js.JmolToJSmolInterface;
 import org.jmol.atomdata.AtomData;
 import org.jmol.atomdata.AtomDataServer;
 import org.jmol.atomdata.RadiusData;
@@ -244,6 +244,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public GData gdata;
   public JSmolAppletObject html5Applet; // j2s only
+  public static JmolToJSmolInterface jmolObject;
 
   public ActionManager acm;
   public AnimationManager am;
@@ -331,7 +332,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     return new Viewer(info);
   }
 
-  final Dimension dimScreen;
+  int screenWidth, screenHeight;
   final Lst<String> actionStates;
   final Lst<String> actionStatesRedo;
   VDW defaultVdw;
@@ -359,7 +360,6 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public Viewer(Map<String, Object> info) {
     commandHistory = new CommandHistory();
-    dimScreen = new Dimension(0, 0);
     rd = new RadiusData(null, 0, null, null);
     defaultVdw = VDW.JMOL;
     localFunctions = new Hashtable<String, JmolScriptFunction>();
@@ -469,11 +469,14 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       async = !dataOnly && !autoExit
           && (testAsync || isJS && info.containsKey("async"));
       JSmolAppletObject applet = null;
+      JmolToJSmolInterface jmol = null;
       String javaver = "?";
       /**
        * @j2sNative
        * 
-       *            if(self.Jmol) { applet =
+       *            if(self.Jmol) { 
+       *            jmol = Jmol;
+       *            applet =
        *            Jmol._applets[this.htmlName.split("_object")[0]]; javaver =
        *            Jmol._version; }
        * 
@@ -484,6 +487,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       }
       if (javaver != null) {
         html5Applet = applet;
+        jmolObject = jmol;
         strJavaVersion = javaver;
         strJavaVendor = "Java2Script " + (this.isWebGL ? "(WebGL)" : "(HTML5)");
       }
@@ -815,8 +819,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   }
 
   public void setWidthHeightVar() {
-    g.setI("_width", dimScreen.width);
-    g.setI("_height", dimScreen.height);
+    g.setI("_width", screenWidth);
+    g.setI("_height", screenHeight);
   }
 
   void saveModelOrientation() {
@@ -2718,11 +2722,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   public int getBoundBoxCenterX() {
     // used by axes renderer
-    return dimScreen.width / 2;
+    return screenWidth / 2;
   }
 
   public int getBoundBoxCenterY() {
-    return dimScreen.height / 2;
+    return screenHeight / 2;
   }
 
   @Override
@@ -3448,15 +3452,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
       case REFRESH_SYNC:
       case REFRESH_SEND_WEBGL_NEW_ORIENTATION:
         tm.finalizeTransformParameters();
-
-        /**
-         * @j2sNative
-         * 
-         *            if (!this.html5Applet) return;
-         *            this.html5Applet._refresh();
-         */
-        {
-        }
+        if (html5Applet == null)
+          return;
+        html5Applet._refresh();
         if (mode == REFRESH_SEND_WEBGL_NEW_ORIENTATION)
           return;
         break;
@@ -3528,7 +3526,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     width = Math.min(width, maximumSize);
     if (tm.stereoDoubleFull)
       width = (width + 1) / 2;
-    if (dimScreen.width == width && dimScreen.height == height)
+    if (screenWidth == width && screenHeight == height)
       return;
     resizeImage(width, height, false, false, true);
   }
@@ -3567,17 +3565,17 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     imageFontScaling = (antialiased ? 2f : 1f) * (isReset || tm.scale3D || width <= 0 ? 1
         : (g.zoomLarge == (height > width) ? height : width) * 1f / getScreenDim());
     if (width > 0) {
-      dimScreen.width = width;
-      dimScreen.height = height;
+      screenWidth = width;
+      screenHeight = height;
       if (!isImageWrite) {
         g.setI("_width", width);
         g.setI("_height", height);
         //        setStatusResized(width, height);
       }
     } else {
-      width = (dimScreen.width == 0 ? dimScreen.width = 500 : dimScreen.width);
-      height = (dimScreen.height == 0 ? dimScreen.height = 500
-          : dimScreen.height);
+      width = (screenWidth == 0 ? screenWidth = 500 : screenWidth);
+      height = (screenHeight == 0 ? screenHeight = 500
+          : screenHeight);
     }
     tm.setScreenParameters(width, height, isImageWrite || isReset ? g.zoomLarge
         : false, antialiased, false, false);
@@ -3588,17 +3586,17 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   @Override
   public int getScreenWidth() {
-    return dimScreen.width;
+    return screenWidth;
   }
 
   @Override
   public int getScreenHeight() {
-    return dimScreen.height;
+    return screenHeight;
   }
 
   public int getScreenDim() {
-    return (g.zoomLarge == (dimScreen.height > dimScreen.width) ? dimScreen.height
-        : dimScreen.width);
+    return (g.zoomLarge == (screenHeight > screenWidth) ? screenHeight
+        : screenWidth);
   }
 
   @Override
@@ -3685,17 +3683,20 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    * 
    */
   private void updateJSView(int imodel, int iatom) {
-    @SuppressWarnings("unused")
-    Object applet = this.html5Applet;
+    if (html5Applet == null)
+      return;
+    JSmolAppletObject applet = this.html5Applet;
+    boolean doViewPick = true;  
     /**
      * @j2sNative
      * 
-     *            applet && applet._viewSet != null &&
-     *            applet._atomPickedCallback(imodel, iatom);
+     *            doViewPick = (applet._viewSet != null);
      * 
      */
     {
-    }
+    }    
+    if (doViewPick)
+      html5Applet._atomPickedCallback(imodel, iatom);
   }
 
   private boolean updateWindow(int width, int height) {
@@ -3783,8 +3784,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
    */
   private void drawImage(Object graphic, Object img, int x, int y, boolean isDTI) {
     if (graphic != null && img != null) {
-      apiPlatform.drawImage(graphic, img, x, y, dimScreen.width,
-          dimScreen.height, isDTI);
+      apiPlatform.drawImage(graphic, img, x, y, screenWidth,
+          screenHeight, isDTI);
     }
     gdata.releaseScreenImage();
   }
@@ -3816,18 +3817,18 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     Object imageBuffer2 = null;
     if (mergeImages) {
       imageBuffer2 = apiPlatform.newBufferedImage(imageBuffer,
-          (tm.stereoDoubleDTI ? dimScreen.width : dimScreen.width << 1), dimScreen.height);
+          (tm.stereoDoubleDTI ? screenWidth : screenWidth << 1), screenHeight);
       graphic = apiPlatform.getGraphics(imageBuffer2);
     }
     if (graphic != null) {
       if (isDouble) {
         if (tm.stereoMode == STER.DTI) {
-          drawImage(graphic, imageBuffer, dimScreen.width >> 1, 0, true);
+          drawImage(graphic, imageBuffer, screenWidth >> 1, 0, true);
           imageBuffer = getImage(false, false);
           drawImage(graphic, imageBuffer, 0, 0, true);        
           graphic = null;
         } else {
-        drawImage(graphic, imageBuffer, dimScreen.width, 0, false);
+        drawImage(graphic, imageBuffer, screenWidth, 0, false);
         imageBuffer = getImage(false, false);
         }
       }
@@ -4507,7 +4508,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
   public String getMenu(String type) {
     getPopupMenu();
     if (type.equals("\0")) {
-      popupMenu(dimScreen.width - 120, 0, 'j');
+      popupMenu(screenWidth - 120, 0, 'j');
       return "OK";
     }
     return (jmolpopup == null ? ""
@@ -7446,11 +7447,11 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     int modifiers = Binding.getButtonMods(action);
     int clickCount = Binding.getClickCount(action);
     g.setI("_mouseX", x);
-    g.setI("_mouseY", dimScreen.height - y);
+    g.setI("_mouseY", screenHeight - y);
     g.setI("_mouseAction", action);
     g.setI("_mouseModifiers", modifiers);
     g.setI("_clickCount", clickCount);
-    return sm.setStatusClicked(x, dimScreen.height - y, action, clickCount,
+    return sm.setStatusClicked(x, screenHeight - y, action, clickCount,
         mode);
   }
 
@@ -9243,7 +9244,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (!autoExit && haveDisplay)
       return sm.resizeInnerPanel(width, height);
     setScreenDimension(width, height);
-    return new int[] { dimScreen.width, dimScreen.height };
+    return new int[] { screenWidth, screenHeight };
   }
 
   public String getDefaultPropertyParam(int propertyID) {

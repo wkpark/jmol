@@ -49,7 +49,7 @@ public class AjaxURLConnection extends URLConnection {
      */
     {
     }
-    return jmol._doAjax(url, postOut, bytesOut);
+    return jmol.doAjax(url, postOut, bytesOut, false);
   }
 
   @Override

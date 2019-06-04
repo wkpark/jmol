@@ -26,6 +26,7 @@ package jspecview.common;
 
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javajs.util.AU;
 import javajs.util.DF;
@@ -196,5 +197,11 @@ public class MeasurementData extends Lst<Measurement> implements
 		if (units != null)
 			info.put("units", units);
 	}
+
+
+  @Override
+  public boolean isDialog() {
+    return false;
+  }
 
 }

@@ -1,6 +1,5 @@
 package jspecview.common;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -29,6 +28,7 @@ import jspecview.api.JSVTreeNode;
 import jspecview.api.ScriptInterface;
 import jspecview.api.VisibleInterface;
 import jspecview.api.js.JSVAppletObject;
+import jspecview.api.js.JSVToJSmolInterface;
 import jspecview.common.Annotation.AType;
 import jspecview.common.PanelData.LinkMode;
 import jspecview.common.Spectrum.IRMode;
@@ -97,14 +97,14 @@ public class JSViewer implements PlatformViewer, BytePoster {
   public boolean autoIntegrate;
   public boolean autoShowLegend;
   public Boolean obscureTitleFromUser;
-//  public boolean allowCompoundMenu = true;
+  //  public boolean allowCompoundMenu = true;
   public boolean allowMenu = true;
   public int initialStartIndex = -1;
   public int initialEndIndex = -1;
 
   public boolean isSingleThreaded;
   public boolean isApplet;
-  public boolean isJS;
+  public static boolean isJS, isSwingJS = false;
   public boolean isSigned;
 
   private String recentScript = "";
@@ -117,7 +117,7 @@ public class JSViewer implements PlatformViewer, BytePoster {
   public Object display;
 
   private int maximumSize = Integer.MAX_VALUE;
-  private final Dimension dimScreen = new Dimension(0, 0);
+  private int screenHeight, screenWidth;
   private int fileCount;
   private int nViews;
   private int scriptLevelCount;
@@ -125,6 +125,8 @@ public class JSViewer implements PlatformViewer, BytePoster {
   private String integrationRatios;
 
   public GenericPlatform apiPlatform;
+
+  public static JSVToJSmolInterface jmolObject;
 
   public void setProperty(String key, String value) {
     if (properties != null)
@@ -141,12 +143,24 @@ public class JSViewer implements PlatformViewer, BytePoster {
   /**
    * @param si
    * @param isApplet
-   * @param isJS
+   * @param isJSApplet
    */
-  public JSViewer(ScriptInterface si, boolean isApplet, boolean isJS) {
+  public JSViewer(ScriptInterface si, boolean isApplet, boolean isJSApplet) {
     this.si = si;
     this.isApplet = isApplet;
-    this.isJS = isApplet && isJS;
+    isJS = isApplet && isJSApplet;
+    JSVToJSmolInterface jmol = null;
+    
+    /**
+     * @j2sNative
+     * 
+     * self.Jmol && (jmol = Jmol);
+     * 
+     */
+    {
+      
+    }
+    jmolObject = jmol;
     this.isSigned = si.isSigned();
     apiPlatform = (GenericPlatform) getPlatformInterface("Platform");
     apiPlatform.setViewer(this, this.display);
@@ -1378,18 +1392,22 @@ public class JSViewer implements PlatformViewer, BytePoster {
   }
 
   public void execLoad(String value, String script) {
-    @SuppressWarnings("unused")
-    Object applet = html5Applet;
+    JSVAppletObject applet = html5Applet;
+    boolean isID = false;
     /**
      * When part of a view set, route all internal database requests through
      * this.html5Applet._search.
      * 
      * @j2sNative
      * 
-     *            if (applet._viewSet != null && !value.startsWith("ID")) return
-     *            applet._search(value);
+     *            isID = (applet._viewSet != null && !value.startsWith("ID"));
      * 
      */
+    if (isID) {
+      // note that this was not functional, as it was missing {}
+      applet._search(value);
+      return;
+    }
     // load   (alone) just runs defaultLoadScript
     // load ID "xx"...
     Lst<String> tokens = ScriptToken.getTokens(value);
@@ -1694,7 +1712,7 @@ public class JSViewer implements PlatformViewer, BytePoster {
     // so don't try dim1.equals(dim2)
     height = Math.min(height, maximumSize);
     width = Math.min(width, maximumSize);
-    if (dimScreen.width == width && dimScreen.height == height)
+    if (screenWidth == width && screenHeight == height)
       return;
     // System.out.println("HMM " + width + " " + height + " " + maximumSize);
     resizeImage(width, height);
@@ -1702,12 +1720,11 @@ public class JSViewer implements PlatformViewer, BytePoster {
 
   void resizeImage(int width, int height) {
     if (width > 0) {
-      dimScreen.width = width;
-      dimScreen.height = height;
+      screenWidth = width;
+      screenHeight = height;
     } else {
-      width = (dimScreen.width == 0 ? dimScreen.width = 500 : dimScreen.width);
-      height = (dimScreen.height == 0 ? dimScreen.height = 500
-          : dimScreen.height);
+      width = (screenWidth == 0 ? screenWidth = 500 : screenWidth);
+      height = (screenHeight == 0 ? screenHeight = 500 : screenHeight);
     }
     g2d.setWindowParameters(width, height);
   }
@@ -1742,10 +1759,14 @@ public class JSViewer implements PlatformViewer, BytePoster {
       selectedPanel.processTwoPointGesture(touches);
   }
 
-  public Object getApplet() {
+  public JSVAppletObject getApplet() {
     return html5Applet;
   }
 
+  /**
+   * @param fileName
+   * @param flags
+   */
   public void openFileAsyncSpecial(String fileName, int flags) {
     String ans = (currentSource == null ? "NO" : getDialogManager()
         .getDialogInput(this,
@@ -1760,11 +1781,11 @@ public class JSViewer implements PlatformViewer, BytePoster {
   }
 
   public int getHeight() {
-    return dimScreen.height;
+    return screenHeight;
   }
 
   public int getWidth() {
-    return dimScreen.width;
+    return screenWidth;
   }
 
   public Object getPlatformInterface(String type) {
@@ -2057,8 +2078,7 @@ public class JSViewer implements PlatformViewer, BytePoster {
           /**
            * @j2sNative
            * 
-           *            if(typeof Jmol != "undefined") applet =
-           *            Jmol._applets[value];
+           *            self.Jmol && (applet = Jmol._applets[value]);
            * 
            * 
            */
@@ -2070,7 +2090,7 @@ public class JSViewer implements PlatformViewer, BytePoster {
           autoIntegrate = Parameters.isTrue(value);
           break;
         case COMPOUNDMENUON:
-// not implemented          allowCompoundMenu = Boolean.parseBoolean(value);
+          // not implemented          allowCompoundMenu = Boolean.parseBoolean(value);
           break;
         case APPLETREADYCALLBACKFUNCTIONNAME:
         case COORDCALLBACKFUNCTIONNAME:

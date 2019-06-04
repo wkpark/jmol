@@ -297,30 +297,37 @@ public class JsPanel implements JSVPanel {
 	public String saveImage(String type, GenericFileInterface file, OC out) {
 	
 			String fname = file.getName();
-			boolean isPNG = type.equals(ExportType.PNG);				
-			String s = (isPNG ? "png" : "jpeg");
-			//pd.graphToMain(); TODO
-			/**
-			 * this will probably be png even if jpeg is requested
-			 * 
-			 * @j2sNative
-			 * 
-			 *            s = viewer.display.toDataURL(s);
-			 *	if (!isPNG && s.contains("/png"))
-			 *		fname = fname.split('.jp')[0] + ".png";
-			 * 
-			 */
-			{
-			}
-			try {
-				out = vwr.getOutputChannel(fname, true);
-				byte[] data = Base64.decodeBase64(s);
-				out.write(data, 0, data.length);
-				out.closeChannel();
-				return "OK " + out.getByteCount() + " bytes";
-			} catch (Exception e) {
-				return e.toString();
-			}
+			// only PNG, not JPEG, supported
+			if (out != null)
+			  out.cancel();
+			JSViewer.jmolObject.saveImage(this.vwr.html5Applet, "png", fname); 
+			return "OK";
+//			
+//			
+//			boolean isPNG = type.equals(ExportType.PNG);				
+//			String s = (isPNG ? "png" : "jpeg");
+//			//pd.graphToMain(); TODO
+//			/**
+//			 * this will probably be png even if jpeg is requested
+//			 * 
+//			 * @j2sNative
+//			 * 
+//			 *            s = viewer.display.toDataURL(s);
+//			 *	if (!isPNG && s.contains("/png"))
+//			 *		fname = fname.split('.jp')[0] + ".png";
+//			 * 
+//			 */
+//			{
+//			}
+//			try {
+//				out = vwr.getOutputChannel(fname, true);
+//				byte[] data = Base64.decodeBase64(s);
+//				out.write(data, 0, data.length);
+//				out.closeChannel();
+//				return "OK " + out.getByteCount() + " bytes";
+//			} catch (Exception e) {
+//				return e.toString();
+//			}
 	}
 
 	@Override

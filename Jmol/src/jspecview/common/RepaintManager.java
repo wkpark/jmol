@@ -1,36 +1,33 @@
 package jspecview.common;
 
+import org.jmol.viewer.Viewer;
+
+import jspecview.api.js.JSVAppletObject;
+import jspecview.api.js.JSVToJSmolInterface;
+
 public class RepaintManager {
 
-	public RepaintManager(JSViewer viewer) {
-		this.vwr = viewer;
-	}
+  public RepaintManager(JSViewer viewer) {
+    this.vwr = viewer;
+  }
   /////////// thread management ///////////
   
   boolean repaintPending;
-	private JSViewer vwr;
+  private JSViewer vwr;
 
-//  private int n;
   public boolean refresh() {
-  	//n++;
+    //n++;
     if (repaintPending) {
-    	//System.out.println("Repaint " + n + " skipped");
       return false;
     }
     repaintPending = true;
-    //if (vwr.pd() != null) // all closed
-    	//vwr.pd().setTaintedAll();
-    @SuppressWarnings("unused")
-		Object applet = vwr.html5Applet;
-    /**
-     * @j2sNative
-     * 
-     *  if (typeof Jmol != "undefined" && Jmol._repaint && applet) 
-     *    Jmol._repaint(applet, false);
-     *  this.repaintDone();
-     */
-    {
-    	vwr.selectedPanel.repaint();
+    JSVAppletObject applet = vwr.html5Applet;
+    JSVToJSmolInterface jmol = (JSViewer.isJS && !JSViewer.isSwingJS ? JSViewer.jmolObject : null);
+    if (jmol == null) {
+      vwr.selectedPanel.repaint();
+    } else {
+      jmol.repaint(applet, false);
+      repaintDone();
     }
     return true;
   }

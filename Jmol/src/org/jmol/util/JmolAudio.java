@@ -29,6 +29,8 @@ import javajs.J2SIgnoreImport;
 import javajs.util.AU;
 
 import org.jmol.api.JmolAudioPlayer;
+import org.jmol.api.js.JSmolAppletObject;
+import org.jmol.api.js.JmolToJSmolInterface;
 import org.jmol.viewer.Viewer;
 
 import javax.sound.sampled.AudioInputStream;
@@ -77,15 +79,12 @@ public class JmolAudio implements javax.sound.sampled.LineListener, JmolAudioPla
       params.put("audioPlayer", this);
       fileName = (String) htParams.get("audioFile");
       vwr.sm.registerAudio(id, htParams);
-      /**
-       * @j2sNative
-       * 
-       * 
-       *            Jmol._playAudio(vwr.html5Applet, htParams);
-       */
-      {
+      JSmolAppletObject applet = vwr.html5Applet;
+      JmolToJSmolInterface jmol = Viewer.jmolObject;
+      if (jmol == null)
         getClip();
-      }
+      else
+         jmol.playAudio(applet, htParams);
       if (myClip == null)
         return;
       if (htParams.containsKey("action"))

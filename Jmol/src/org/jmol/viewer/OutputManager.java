@@ -30,17 +30,16 @@ abstract class OutputManager {
 
   abstract String getClipboardText();
 
-  abstract OC openOutputChannel(double privateKey,
-                                               String fileName,
-                                               boolean asWriter,
-                                               boolean asAppend)
+  abstract OC openOutputChannel(double privateKey, String fileName,
+                                boolean asWriter, boolean asAppend)
       throws IOException;
 
-  abstract protected String createSceneSet(String sceneFile, String type, int width,
-                                           int height);
-           
+  abstract protected String createSceneSet(String sceneFile, String type,
+                                           int width, int height);
+
   protected Viewer vwr;
   protected double privateKey;
+
   OutputManager setViewer(Viewer vwr, double privateKey) {
     this.vwr = vwr;
     this.privateKey = privateKey;
@@ -48,12 +47,12 @@ abstract class OutputManager {
   }
 
   /**
-   * From handleOutputToFile, write text, byte[], or image data to a 
-   * file; 
+   * From handleOutputToFile, write text, byte[], or image data to a file;
    * 
    * @param params
-   * @return null (canceled) or byte[] or String message starting with OK or an error
-   *         message; in the case of params.image != null, return the fileName
+   * @return null (canceled) or byte[] or String message starting with OK or an
+   *         error message; in the case of params.image != null, return the
+   *         fileName
    */
 
   private String writeToOutputChannel(Map<String, Object> params) {
@@ -73,7 +72,8 @@ abstract class OutputManager {
         if (out == null)
           out = openOutputChannel(privateKey, fileName, false, false);
         out.write(bytes, 0, bytes.length);
-      } else if (text != null && !type.equals("ZIPDATA") && !type.equals("BINARY")) {
+      } else if (text != null && !type.equals("ZIPDATA")
+          && !type.equals("BINARY")) {
         if (out == null)
           out = openOutputChannel(privateKey, fileName, true, false);
         out.append(text);
@@ -95,7 +95,7 @@ abstract class OutputManager {
     }
     int pt = fileName.indexOf("?POST?");
     if (pt >= 0)
-    	fileName = fileName.substring(0,  pt);
+      fileName = fileName.substring(0, pt);
     return (len < 0 ? "Creation of " + fileName + " failed: "
         + (ret == null ? vwr.getErrorMessageUn() : ret) : "OK " + type + " "
         + (len > 0 ? len + " " : "") + fileName
@@ -279,7 +279,7 @@ abstract class OutputManager {
       if (v.size() >= 2 && v.get(0).equals("_IMAGE_")) {
         if (isZipData) {
           errRet[0] = writeZipFile(out, v, "OK JMOL", null);
-          return true;          
+          return true;
         }
         objImage = null;
         v.removeItemAt(0);
@@ -300,8 +300,8 @@ abstract class OutputManager {
         return true;
       }
     }
-    GenericImageEncoder ie = (GenericImageEncoder) Interface
-        .getInterface("javajs.img." + type + "Encoder", vwr, "file");
+    GenericImageEncoder ie = (GenericImageEncoder) Interface.getInterface(
+        "javajs.img." + type + "Encoder", vwr, "file");
     if (ie == null) {
       errRet[0] = "Image encoder type " + type + " not available";
       return false;
@@ -311,11 +311,9 @@ abstract class OutputManager {
       if (type.equals("Gif") && vwr.getBoolean(T.testflag2))
         params.put("reducedColors", Boolean.TRUE);
       int w = objImage == null ? -1 : AU.isAI(objImage) ? ((Integer) params
-          .get("width")).intValue() : vwr.apiPlatform
-          .getImageWidth(objImage);
+          .get("width")).intValue() : vwr.apiPlatform.getImageWidth(objImage);
       int h = objImage == null ? -1 : AU.isAI(objImage) ? ((Integer) params
-          .get("height")).intValue() : vwr.apiPlatform
-          .getImageHeight(objImage);
+          .get("height")).intValue() : vwr.apiPlatform.getImageHeight(objImage);
       params.put("imageWidth", Integer.valueOf(w));
       params.put("imageHeight", Integer.valueOf(h));
       int[] pixels = encodeImage(w, h, objImage);
@@ -334,12 +332,12 @@ abstract class OutputManager {
     }
     return (errRet[0] == null);
   }
-  
+
   /**
    * general image encoder, allows for BufferedImage, int[], or HTML5 2D canvas
    * 
-   * @param width 
-   * @param height 
+   * @param width
+   * @param height
    * @param objImage
    * @return linear int[] array of ARGB values
    * @throws Exception
@@ -367,7 +365,6 @@ abstract class OutputManager {
     return pixels;
   }
 
-
   /////////////////////// general output including logging //////////////////////
 
   String outputToFile(Map<String, Object> params) {
@@ -378,8 +375,8 @@ abstract class OutputManager {
     if (!vwr.haveAccess(ACCESS.ALL))
       return null;
     boolean isCache = (fileName != null && fileName.startsWith("cache://"));
-    boolean isRemote = (fileName != null 
-        && (fileName.startsWith("http://") || fileName.startsWith("https://")));
+    boolean isRemote = (fileName != null && (fileName.startsWith("http://") || fileName
+        .startsWith("https://")));
     if (fileName != null && !isCache && !isRemote) {
       fileName = getOutputFileNameFromDialog(fileName, Integer.MIN_VALUE, null);
       if (fileName == null)
@@ -387,7 +384,8 @@ abstract class OutputManager {
     }
     if (fullPath != null)
       fullPath[0] = fileName;
-    String localName = (isRemote || isCache || OC.isLocal(fileName) ? fileName : null);
+    String localName = (isRemote || isCache || OC.isLocal(fileName) ? fileName
+        : null);
     try {
       return openOutputChannel(privateKey, localName, false, false);
     } catch (IOException e) {
@@ -426,8 +424,8 @@ abstract class OutputManager {
     String info = "";
     int n = 0;
     int quality = getInt(params, "quality", -1);
-    fileName = setFullPath(params, getOutputFileNameFromDialog(fileName,
-        quality, null));
+    fileName = setFullPath(params,
+        getOutputFileNameFromDialog(fileName, quality, null));
     if (fileName == null)
       return null;
     String[] rootExt = new String[2];
@@ -489,18 +487,17 @@ abstract class OutputManager {
     int height = getInt(params, "height", 0);
     String fileName = (String) params.get("fileName");
     if (fileName != null) {
-      fileName = setFullPath(params, getOutputFileNameFromDialog(fileName,
-          Integer.MIN_VALUE, null));
+      fileName = setFullPath(params,
+          getOutputFileNameFromDialog(fileName, Integer.MIN_VALUE, null));
       if (fileName == null)
         return null;
     }
     vwr.mustRender = true;
-    int saveWidth = vwr.dimScreen.width;
-    int saveHeight = vwr.dimScreen.height;
+    int saveWidth = vwr.screenWidth;
+    int saveHeight = vwr.screenHeight;
     vwr.resizeImage(width, height, true, true, false);
     vwr.setModelVisibility();
-    String data = vwr.rm.renderExport(vwr.gdata,
-        vwr.ms, params);
+    String data = vwr.rm.renderExport(vwr.gdata, vwr.ms, params);
     vwr.resizeImage(saveWidth, saveHeight, true, true, true);
     return data;
   }
@@ -522,8 +519,8 @@ abstract class OutputManager {
 
   byte[] getImageAsBytes(String type, int width, int height, int quality,
                          String[] errMsg) {
-    int saveWidth = vwr.dimScreen.width;
-    int saveHeight = vwr.dimScreen.height;
+    int saveWidth = vwr.screenWidth;
+    int saveHeight = vwr.screenHeight;
     vwr.mustRender = true;
     vwr.resizeImage(width, height, true, false, false);
     vwr.setModelVisibility();
@@ -572,7 +569,8 @@ abstract class OutputManager {
     if (out == null)
       return "";
     fileName = fullPath[0];
-    String pathName = (type.equals("FILE") ? vwr.fm.getFullPathName(false) : null);
+    String pathName = (type.equals("FILE") ? vwr.fm.getFullPathName(false)
+        : null);
     boolean getCurrentFile = (pathName != null && (pathName.equals("string")
         || pathName.equals("String[]") || pathName.equals("JSNode")));
     boolean asBytes = (pathName != null && !getCurrentFile);
@@ -586,14 +584,11 @@ abstract class OutputManager {
     // output stream all along. For JavaScript, this will be a ByteArrayOutputStream
     // which will then be posted to a server for a return that allows saving.
     out.setType(type);
-    String msg = (
-        type.startsWith("PDB") ?  
-            vwr.getPdbAtomData(null, out, false, false) 
-        : type.startsWith("PLOT") ? 
-            vwr.getPdbData(modelIndex, type.substring(5), null, plotParameters, out, true) 
-        : getCurrentFile ? 
-            out.append(vwr.getCurrentFileAsString("write")).toString() 
-        : (String) vwr.fm.getFileAsBytes(pathName, out));
+    String msg = (type.startsWith("PDB") ? vwr.getPdbAtomData(null, out, false,
+        false) : type.startsWith("PLOT") ? vwr.getPdbData(modelIndex,
+        type.substring(5), null, plotParameters, out, true)
+        : getCurrentFile ? out.append(vwr.getCurrentFileAsString("write"))
+            .toString() : (String) vwr.fm.getFileAsBytes(pathName, out));
     out.closeChannel();
     if (msg != null)
       msg = "OK " + msg + " " + fileName;
@@ -612,13 +607,15 @@ abstract class OutputManager {
     return msg.startsWith("OK");
   }
 
-  private String getOutputFileNameFromDialog(String fileName, int quality, Map<String, Object> params) {
+  private String getOutputFileNameFromDialog(String fileName, int quality,
+                                             Map<String, Object> params) {
     if (fileName == null || vwr.isKiosk)
       return null;
     boolean useDialog = fileName.startsWith("?");
     if (useDialog)
-    	fileName = fileName.substring(1);
-    useDialog |= (vwr.isApplet && fileName.indexOf("http://") != 0 && fileName.indexOf("https://") != 0);
+      fileName = fileName.substring(1);
+    useDialog |= (vwr.isApplet && fileName.indexOf("http://") != 0 && fileName
+        .indexOf("https://") != 0);
     fileName = FileManager.getLocalPathForWritingFile(vwr, fileName);
     if (useDialog)
       fileName = vwr.dialogAsk(quality == Integer.MIN_VALUE ? "Save"
@@ -681,8 +678,8 @@ abstract class OutputManager {
       // JSmol/HTML5 WILL produce a localName now
       if (OC.isLocal(fileName))
         localName = fileName;
-      saveWidth = vwr.dimScreen.width;
-      saveHeight = vwr.dimScreen.height;
+      saveWidth = vwr.screenWidth;
+      saveHeight = vwr.screenHeight;
       vwr.creatingImage = true;
       if (mustRender) {
         vwr.mustRender = true;
@@ -886,8 +883,7 @@ abstract class OutputManager {
     try {
       boolean doClear = (data.equals("$CLEAR$"));
       if (data.indexOf("$NOW$") >= 0)
-        data = PT.rep(data, "$NOW$", vwr.apiPlatform
-            .getDateFormat(null));
+        data = PT.rep(data, "$NOW$", vwr.apiPlatform.getDateFormat(null));
       if (vwr.logFileName == null) {
         Logger.info(data);
         return;
@@ -914,7 +910,8 @@ abstract class OutputManager {
   protected final static String SCENE_TAG = "###scene.spt###";
 
   private String createZipSet(String script, String[] scripts,
-                              boolean includeRemoteFiles, OC out, String pngjName) {
+                              boolean includeRemoteFiles, OC out,
+                              String pngjName) {
     Lst<Object> v = new Lst<Object>();
     FileManager fm = vwr.fm;
     Lst<String> fileNames = new Lst<String>();
@@ -956,8 +953,8 @@ abstract class OutputManager {
           v.addLast(null); // data will be gotten from disk
         } else {
           // all remote files, and any file that was opened from a ZIP collection
-          Object ret = (isSparDir ? fm.spardirCache.get(name) : fm.getFileAsBytes(
-              name, null));
+          Object ret = (isSparDir ? fm.spardirCache.get(name) : fm
+              .getFileAsBytes(name, null));
           if (!AU.isAB(ret))
             return "ERROR: " + (String) ret;
           newName = addPngFileBytes(name, (byte[]) ret, iFile, crcMap,
@@ -1009,33 +1006,33 @@ abstract class OutputManager {
 
   private String addPngFileBytes(String name, byte[] ret, int iFile,
                                  Hashtable<Object, String> crcMap,
-                                 boolean isSparDir, String newName, int ptSlash,
-                                 Lst<Object> v) {
-     Integer crcValue = Integer.valueOf(vwr.getJzt().getCrcValue(ret));
-     // only add to the data list v when the data in the file is new
-     if (crcMap.containsKey(crcValue)) {
-       // let newName point to the already added data
-       newName = crcMap.get(crcValue);
-     } else {
-       if (isSparDir)
-         newName = newName.replace('.', '_');
-       if (crcMap.containsKey(newName)) {
-         // now we have a conflict. Two different files with the same name
-         // append "[iFile]" to the new file name to ensure it's unique
-         int pt = newName.lastIndexOf(".");
-         if (pt > ptSlash) // is a file extension, probably
-           newName = newName.substring(0, pt) + "[" + iFile + "]"
-               + newName.substring(pt);
-         else
-           newName = newName + "[" + iFile + "]";
-       }
-       v.addLast(name);
-       v.addLast(newName);
-       v.addLast(ret);
-       crcMap.put(crcValue, newName);
-     }
-     return newName;
-   }
+                                 boolean isSparDir, String newName,
+                                 int ptSlash, Lst<Object> v) {
+    Integer crcValue = Integer.valueOf(vwr.getJzt().getCrcValue(ret));
+    // only add to the data list v when the data in the file is new
+    if (crcMap.containsKey(crcValue)) {
+      // let newName point to the already added data
+      newName = crcMap.get(crcValue);
+    } else {
+      if (isSparDir)
+        newName = newName.replace('.', '_');
+      if (crcMap.containsKey(newName)) {
+        // now we have a conflict. Two different files with the same name
+        // append "[iFile]" to the new file name to ensure it's unique
+        int pt = newName.lastIndexOf(".");
+        if (pt > ptSlash) // is a file extension, probably
+          newName = newName.substring(0, pt) + "[" + iFile + "]"
+              + newName.substring(pt);
+        else
+          newName = newName + "[" + iFile + "]";
+      }
+      v.addLast(name);
+      v.addLast(newName);
+      v.addLast(ret);
+      crcMap.put(crcValue, newName);
+    }
+    return newName;
+  }
 
   /**
    * generic method to create a zip file based on
@@ -1045,7 +1042,8 @@ abstract class OutputManager {
    * @param fileNamesAndByteArrays
    *        Vector of [filename1, bytes|null, filename2, bytes|null, ...]
    * @param msg
-   * @param pngjName TODO
+   * @param pngjName
+   *        TODO
    * @return msg bytes filename or errorMessage or byte[]
    */
 
@@ -1117,7 +1115,7 @@ abstract class OutputManager {
         } else {
           // data are already in byte form
           zos.write(bytes, 0, bytes.length);
-          if (pngjName != null) 
+          if (pngjName != null)
             vwr.fm.recachePngjBytes(pngjName + "|" + fnameShort, bytes);
           nOut += bytes.length;
         }

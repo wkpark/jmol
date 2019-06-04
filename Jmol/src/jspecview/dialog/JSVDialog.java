@@ -23,6 +23,11 @@ abstract public class JSVDialog extends Annotation implements AnnotationData {
 
 	abstract public int[] getPosXY();
 
+	@Override
+	public boolean isDialog() {
+	  return true;
+	}
+	
 	public String optionKey;
 	public Map<String, Object> options;
 	

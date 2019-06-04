@@ -70,22 +70,14 @@ class FileLoadThread extends JmolThread {
           mode = FINISH;
           break;
         }
-        JmolToJSmolInterface jmol = null;
-        /**
-         * @j2sNative
-         * 
-         * jmol = Jmol;
-         * 
-         */
-        {}
-        if (jmol != null)
-           jmol.loadFileAsynchronously(this, vwr.html5Applet, fileName, null);
-
+        if (Viewer.jmolObject != null)
+          Viewer.jmolObject.loadFileAsynchronously(this, vwr.html5Applet, fileName, null);
         /**
          * @j2sNative
          * 
          */        
         {
+          // Java only
           if (vwr.testAsync) {
             if (!runSleep(sleepTime, CHECK1))
               return;

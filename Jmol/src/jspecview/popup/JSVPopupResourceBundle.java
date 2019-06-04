@@ -65,7 +65,7 @@ public class JSVPopupResourceBundle extends PopupResource {
       {   "ShowMenu", "Show_Header Show_Source Show_Overlay_Key" }, //Window?
 
       {   "OptionsMenu",
-          "Toggle_Grid Toggle_X_Axis Toggle_Y_Axis Toggle_Coordinates Toggle_Trans/Abs Reverse_Plot - Predicted_Solution_Colour Fill_Solution_Colour_(all)  Fill_Solution_Colour_(none)" }, //Window?
+          "Toggle_Grid Toggle_X_Axis Toggle_Y_Axis Toggle_Coordinates Toggle_Trans/Abs Reverse_Plot Points_Only - Predicted_Solution_Colour Fill_Solution_Colour_(all)  Fill_Solution_Colour_(none)" }, //Window?
 
       {   "ZoomMenu", "Next_Zoom Previous_Zoom Reset_Zoom - Set_X_Scale... Reset_X_Scale" },
 
@@ -100,6 +100,7 @@ public class JSVPopupResourceBundle extends PopupResource {
   	{"Toggle_Grid","GRIDON toggle;showMenu"},
   	{"Toggle_Coordinates","COORDINATESON toggle;showMenu"},
   	{"Reverse_Plot","REVERSEPLOT toggle;showMenu"},
+    {"Points_Only","POINTSONLY toggle;showMenu"},
   	{"Measurements","SHOWMEASUREMENTS"},
   	{"Peaks","SHOWPEAKLIST"},
   	{"Integration","SHOWINTEGRATION"},

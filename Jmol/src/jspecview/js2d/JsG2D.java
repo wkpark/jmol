@@ -38,17 +38,19 @@
 package jspecview.js2d;
 
 import org.jmol.api.GenericGraphics;
+import org.jmol.api.js.JmolToJSmolInterface;
 
 import javajs.api.GenericColor;
 import org.jmol.awtjs.swing.Color;
 import org.jmol.util.Font;
 
 import javajs.util.CU;
+import jspecview.common.JSViewer;
 
 
 
 /**
- * generic 2D drawing methods -- JavaScript version
+ * generic 2D drawing methods for JSpecView -- JavaScript version
  * 
  * @author Bob Hanson hansonr@stolaf.edu
  */
@@ -76,17 +78,9 @@ public class JsG2D implements GenericGraphics {
     return Color.get1(rgb);
   }
 
-	@Override
+  @Override
 	public Object newGrayScaleImage(Object context, Object image, int width, int height, int[] grayBuffer) {
-		
-		/**
-		 * @j2sNative
-		 * 
-		 * image = Jmol._newGrayScaleImage(context, image, width, height, grayBuffer);
-		 */
-		{
-		}
-		return image;
+    return JSViewer.jmolObject.newGrayScaleImage(context, image, width, height, grayBuffer);
 	}
 
 	@Override

@@ -888,27 +888,30 @@ class GraphSet implements XYScaleConverter {
 		updateDialogs();
 	}
 
-	private boolean checkArrowLeftRightClick(int xPixel, int yPixel) {
-		if (haveLeftRightArrows) {
-			int dx = (isArrowClick(xPixel, yPixel, ARROW_LEFT) ? -1
-					: isArrowClick(xPixel, yPixel, ARROW_RIGHT) ? 1 : 0);
-			if (dx != 0) {
-				setSpectrumClicked((iSpectrumSelected + dx) % nSpectra);
-				return true;
-			}
-			if (isArrowClick(xPixel, yPixel, ARROW_HOME)) {
-				if (showAllStacked) {
-					showAllStacked = false;
-					setSpectrumClicked(getFixedSelectedSpectrumIndex());
-					return true;
-				}
-				showAllStacked = allowStacking;
-				setSpectrumSelected(-1);
-				stackSelected = false;
-			}
-		}
-		return false;
-	}
+  private boolean checkArrowLeftRightClick(int xPixel, int yPixel) {
+    if (haveLeftRightArrows) {
+      int dx = (isArrowClick(xPixel, yPixel, ARROW_LEFT) ? -1 : isArrowClick(
+          xPixel, yPixel, ARROW_RIGHT) ? 1 : 0);
+      if (dx != 0) {
+        int i = iSpectrumSelected + dx;
+        if (i < 0)
+          i = nSpectra - 1;
+        setSpectrumClicked(i % nSpectra);
+        return true;
+      }
+      if (isArrowClick(xPixel, yPixel, ARROW_HOME)) {
+        if (showAllStacked) {
+          showAllStacked = false;
+          setSpectrumClicked(getFixedSelectedSpectrumIndex());
+          return true;
+        }
+        showAllStacked = allowStacking;
+        setSpectrumSelected(-1); // better to stay with the one we have, not reset.
+        stackSelected = false;
+      }
+    }
+    return false;
+  }
 
 	private boolean isArrowClick(int xPixel, int yPixel, int type) {
 		int pt;

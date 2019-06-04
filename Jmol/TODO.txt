@@ -34,6 +34,9 @@ todo:
 
 add JSME to St. Olaf 24/7 OleNMR system portal for comparisons.
 
+BH 06/04/2019
+  - fixes to XYPoints routine and scaling, add Points only to Display option
+   
 RL 04/25/2019
   - update to About dialog box
 

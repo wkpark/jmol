@@ -1195,6 +1195,7 @@ class GraphSet implements XYScaleConverter {
 	 * @param subIndex
 	 */
 	private void setDerivedPins(int subIndex) {
+    widgetsAreSet = true;
 		if (gs2dLinkedX != null)
 			cur1D2x1.setX(cur1D2x1.getXVal(), toPixelX(cur1D2x1.getXVal()));
 		if (gs2dLinkedY != null)
@@ -1490,7 +1491,6 @@ class GraphSet implements XYScaleConverter {
 						&& (nSplit == 1 || showAllStacked || iSpectrumSelected == iSplit);
 				boolean doDraw1DY = (doDrawWidgets && haveSelectedSpectrum && i == iSpectrumForScale);
 				if (doDrawWidgets) {
-			    widgetsAreSet = true;
 					resetPinsFromView();
 					drawWidgets(gFront, g2, subIndex, needNewPins, doDraw1DObjects,
 							doDraw1DY, false);

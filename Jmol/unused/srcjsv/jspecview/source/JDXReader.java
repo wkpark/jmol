@@ -418,7 +418,7 @@ public class JDXReader implements JmolJDXMOLReader {
 		addErrorLogSeparator();
 		source.setErrorLog(errorLog.toString());
 		Logger.debug("--JDX block end--");
-		return source;
+	   	return source;
 	}
 
 //	/**
@@ -431,7 +431,6 @@ public class JDXReader implements JmolJDXMOLReader {
 //			t.getValue();
 //		return label;
 //	}
-
 
 	private void addErrorLogSeparator() {
     if (errorLog.length() > 0

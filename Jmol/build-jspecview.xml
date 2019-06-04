@@ -53,6 +53,7 @@
 		<include name="org/jmol/awt/AwtPopup*.class"/>
 		<include name="org/jmol/awt/AwtPopupHelper*.class"/>
 		<include name="org/jmol/awt/AwtSwingComponent*.class"/>
+		<include name="org/jmol/jsv/JDXMOLParser.class"/>
 		<include name="org/jmol/popup/GenericPopup*.class"/>
 		<include name="org/jmol/popup/PopupHelper*.class"/>
 		<include name="org/jmol/popup/PopupResource*.class"/>

@@ -210,6 +210,7 @@ public class JDXReader implements JmolJDXMOLReader {
 			 * 
 			 */
 			{}
+			e.printStackTrace();
 			throw new JSVException("Error reading data: " + s);
 		}
 	}

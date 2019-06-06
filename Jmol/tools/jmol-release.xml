@@ -1,6 +1,11 @@
 <project name="Jmol releases" default="deploy" basedir="..">
 
   <!--
+  
+  6/2019 I can no longer get this script to run. It hangs on input, and I have tried
+         everything I can think of. build.xml does accept input, so I have moved all this
+         code to it.  BH
+  
     To use this script, the scp task must be available.
     The scp task requires the jsch jar in the class path.
   -->

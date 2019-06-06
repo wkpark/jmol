@@ -1922,5 +1922,94 @@ all support for previous versions removed
     </exec>
   </target>
 	
-  	
+
+	
+	
+	
+	  <!--
+	    To use this script, the scp task must be available.
+	    The scp task requires the jsch jar in the class path.
+	  -->
+
+	  <!-- Contributions -->
+	  <taskdef resource="net/sf/antcontrib/antlib.xml">
+	    <classpath>
+	      <pathelement location="tools/ant-contrib.jar" />
+	    </classpath>
+	  </taskdef>
+
+		
+	  <property name="sendZip"         value="true" />
+	  <property name="dist.dir"        value="build/dist" />
+	  <property name="src.dir"         value="src" />
+	  <property name="temp.dir"        value="build/release" />
+	  <property name="web.dir"         value="/home/frs/project/j/jm/jmol" />
+	  <property name="web.host"        value="frs.sourceforge.net" /> 
+	  <property name="prefix.release"  value="Jmol " />
+
+	  <echo message="${dist.dir}" />
+		
+	<!--
+
+	12/17/2016	
+	Release Note: switching to semantic versioning (http://semver.org/)
+	Release Note: When releasing stable version, remove "-beta"
+		
+	-->
+		
+		
+	  <property file="${dist.dir}/Jmol.properties" prefix="Jmol.properties" />
+	  <property name="version" value="${Jmol.properties.Jmol.___JmolVersion}" />
+	  <propertyregex property="version"
+		  override = "true"
+		  input="${version}"
+		  regexp='(")([^"]+)(")'
+	  	  select="\2"
+	      global="true"
+	  />
+	  <echo message="version=${version}" />
+
+		<loadresource property="versionMajorMinor">
+		  <string value="${version}"/>
+		  <filterchain>
+		    <tokenfilter>
+			      <replaceregex pattern="([0-9]+[.][0-9]+)(.*)" replace="\1"/>
+		    </tokenfilter>
+		  </filterchain>
+		</loadresource>
+		<echo message="versionMajorMinor: ${versionMajorMinor}"/>
+		
+		<loadresource property="versionMajorMinorPatch">
+		  <string value="${version}"/>
+		  <filterchain>
+		    <tokenfilter>
+			      <replaceregex pattern="([^-]*)(-beta)(.*)" replace="\1"/>
+		    </tokenfilter>
+		  </filterchain>
+		</loadresource>
+		<echo message="versionMajorMinorPatch: ${versionMajorMinorPatch}"/>
+
+			<loadresource property="betaFlag">
+		  <string value="${version}"/>
+		  <filterchain>
+		    <tokenfilter>
+		      <replaceregex pattern="([^-]*)(-beta)(.*)" replace="\2"/>
+		    </tokenfilter>
+		  </filterchain>
+		</loadresource>
+		<property name="pathdir-full" value="Jmol/Version" />
+	  	<if>
+	     <equals arg1="${betaFlag}" arg2="${version}" />
+	  	 <then>
+	  		<property name="pathdir"    value="${pathdir-full}" />
+	    </then>
+	  	<else>
+	  		<property name="pathdir"    value="Jmol-beta/Jmol" />
+	  	</else>
+	  	</if>
+		<echo message="betaFlag: ${betaFlag}"/>
+
+		<property name="path.release"    value="${pathdir} ${versionMajorMinor}" />
+		<echo message="path.release: ${path.release}"/>
+
 </project>

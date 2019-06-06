@@ -262,7 +262,7 @@ abstract public class ModelKitPopup extends JmolGenericPopup {
         : centerAtomIndex >= 0 ? vwr.getAtomInfo(centerAtomIndex) : centerPoint.toString());
     setLabel("xtalSelPersistMenu", "Center: " + text);
     // operator
-    text = (symop == null ? "(no operator selected)" : symop instanceof Integer ? allOperators[((Integer) symop).intValue() - 1] : symop.toString());
+    text = (symop == null || allOperators == null ? "(no operator selected)" : symop instanceof Integer ? allOperators[((Integer) symop).intValue() - 1] : symop.toString());
     setLabel("operator", text);
 
     // editing option
@@ -280,7 +280,7 @@ abstract public class ModelKitPopup extends JmolGenericPopup {
       text = "apply full symmetry";
       break;
     }
-    setLabel("xtalSymmetryPersistMenu", "Edit option: " + text);
+    setLabel("xtalEditOptPersistMenu", "Edit option: " + text);
 
     // packing
     switch (getUnitCellState()) {

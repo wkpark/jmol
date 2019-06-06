@@ -456,7 +456,7 @@ abstract public class ScriptParam extends ScriptError {
         return null;
       }
       int multiplier = 1;
-      out: for (int i = index; i < st.length; i++) {
+      out: for (int i = index; i < slen; i++) {
         switch (getToken(i).tok) {
         case T.leftbrace:
         case T.comma:

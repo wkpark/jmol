@@ -4588,7 +4588,13 @@ public class ScriptEval extends ScriptExpr {
             .append(PT.esc((String) o)).append(";\n    ").appendSB(loadScript);
         htParams.put("fileData", o);
       } else if (!isData) {
-        filename = checkFileExists("LOAD" + (isAppend ? "_APPEND_" : "_"), 
+        String type = "";
+        int pt = filename.indexOf("::");
+        if (pt > 0 && pt < 20) { // trying to avoid conflict with some sort of URL that has "::" in it.
+          type = filename.substring(0, pt + 2);
+          filename = filename.substring(pt + 2);
+        }
+        filename = type + checkFileExists("LOAD" + (isAppend ? "_APPEND_" : "_"), 
             isAsync, filename, filePt, !isAppend && pc != pcResume);
         if (filename.startsWith("cache://")) 
           localName = null;

@@ -418,6 +418,7 @@ public class CrystalReader extends AtomSetCollectionReader {
     }
     discardLinesUntilContains("X(");
     float f = (line.indexOf("AU") >= 0 ? ANGSTROMS_PER_BOHR : 1);
+    int offset = (line.indexOf("CP N.") >= 0 ? 6 : 0);
     discardLinesUntilContains("**");
     for (int i = 1; i <= n; i++) {
       if (isTLAP) {
@@ -436,11 +437,12 @@ public class CrystalReader extends AtomSetCollectionReader {
       // 01234567890123456789012345678901234567890123456789012345678901234567890123456789
       //     1) -0.000  -2.783   1.527  (3,-3)  117.954-999.999-999.999-999.999-999.999
       // tokens    0        1      2      3        4      5         6       7      8
-      String[] tokens = PT.getTokens(PT.rep(isTLAP ? line : line.substring(line.indexOf(")") + 1),  "-999.999", " -999.999"));
+      String[] tokens = PT.getTokens(PT.rep(PT.rep(line.substring(offset) , "-", " -"), ", -",",-"));
       P3 pt = P3.new3(f * parseFloatStr(tokens[0]), 
           f * parseFloatStr(tokens[1]), 
           f * parseFloatStr(tokens[2]));
       String type = null;
+      System.out.println(tokens[3] + " " + pt + " " + line);
       switch ("-3,-1,+1,+3".indexOf(tokens[3].substring(3,5))) {
       /////////0..3..6..9
       case 0:

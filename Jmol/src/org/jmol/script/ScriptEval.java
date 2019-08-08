@@ -4587,7 +4587,8 @@ public class ScriptEval extends ScriptExpr {
             .append(filename.substring(1)).append(" = ")
             .append(PT.esc((String) o)).append(";\n    ").appendSB(loadScript);
         htParams.put("fileData", o);
-      } else if (!isData) {
+      } else if (!isData && !((filename.startsWith("=") || filename.startsWith("*")) && filename.indexOf("/") > 0)) {
+        // only for cases that can get filename changed to actual reference
         String type = "";
         int pt = filename.indexOf("::");
         if (pt > 0 && pt < 20) { // trying to avoid conflict with some sort of URL that has "::" in it.

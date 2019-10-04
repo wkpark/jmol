@@ -353,12 +353,18 @@ public class MoldenReader extends MopacSlaterReader {
         tokens = getMoTokens(null);
       }
       int pt = 0;
+      int offset = 0;
       while (tokens != null && tokens.length > 0
           && parseIntStr(tokens[0]) != Integer.MIN_VALUE) {
         if (tokens.length != 2)
           throw new Exception("invalid MO coefficient specification");
         // tokens[0] is the function number, and tokens[1] is the coefficient
         int i = parseIntStr(tokens[0]);
+        if (pt == 0 && i == nCoef + 1 && alphaBeta.equals("beta")) {
+          // in case beta starts with ncoef + 1 (CRYSTAL output)
+          offset = -nCoef;
+        }
+        i += offset;
         while (i > ++pt)
           data.addLast("0");
         data.addLast(tokens[1]);

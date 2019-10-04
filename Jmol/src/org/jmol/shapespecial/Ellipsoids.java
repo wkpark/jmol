@@ -327,7 +327,9 @@ public class Ellipsoids extends AtomShape {
           .setFromThermalEquation((double[]) value, null));
       return;
     case 5: // modelindex
-      e.tensor.modelIndex = ((Integer) value).intValue();
+      e.modelIndex = ((Integer) value).intValue();
+      if (e.tensor != null)
+        e.tensor.modelIndex = e.modelIndex;
       return;
     case 6: // on
       e.isOn = ((Boolean) value).booleanValue();

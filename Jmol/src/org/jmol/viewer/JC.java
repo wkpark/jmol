@@ -174,6 +174,8 @@ public final class JC {
 
   // note list of RCSB access points: http://www.rcsb.org/pdb/static.do?p=download/http/index.html
   
+  public static final String defaultMacroDirectory = "https://chemapps.stolaf.edu/jmol/macros";
+
   public static String[] databaseArray = { 
     // still http:
     "aflowbin", "http://aflowlib.mems.duke.edu/users/jmolers/binary_new/%FILE.aflow_binary",

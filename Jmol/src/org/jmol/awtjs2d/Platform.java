@@ -366,7 +366,7 @@ public class Platform implements GenericPlatform {
 	   * 
 	   * @j2sNative
 	   * 
-	   * f = function(canvas, pathOrError) { vwr.loadImageData$O$S$S$O(canvas, pathOrError, echoName, sc) };
+	   * f = function(canvas, pathOrError) { vwr.loadImageData(canvas, pathOrError, echoName, sc) };
 	   * 
 	   * 
 	   */	  

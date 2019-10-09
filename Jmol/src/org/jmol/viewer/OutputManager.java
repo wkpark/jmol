@@ -656,10 +656,11 @@ abstract class OutputManager {
     int saveWidth = 0, saveHeight = 0;
     int quality = getInt(params, "quality", Integer.MIN_VALUE);
     String captureMode = (String) params.get("captureMode");
+    boolean is2D = params.get("is2D") == Boolean.TRUE;
     String localName = null;
     if (captureMode != null && !vwr.allowCapture())
       return "ERROR: Cannot capture on this platform.";
-    boolean mustRender = (quality != Integer.MIN_VALUE);
+    boolean mustRender = (!is2D && quality != Integer.MIN_VALUE);
     // localName will be fileName only if we are able to write to disk.
     if (captureMode != null) {
       doCheck = false; // will be checked later
@@ -817,15 +818,17 @@ abstract class OutputManager {
               params.put("fileName", localName);
             if (sret == null)
               sret = writeToOutputChannel(params);
-            vwr.sm.createImage(sret, type, null, null, quality);
-            if (captureMode != null) {
-              if (captureMsg == null)
-                captureMsg = sret;
-              else
-                captureMsg += " ("
-                    + params
-                        .get(params.containsKey("captureByteCount") ? "captureByteCount"
-                            : "byteCount") + " bytes)";
+            if (!is2D) {
+              vwr.sm.createImage(sret, type, null, null, quality);
+              if (captureMode != null) {
+                if (captureMsg == null)
+                  captureMsg = sret;
+                else
+                  captureMsg += " ("
+                      + params
+                          .get(params.containsKey("captureByteCount") ? "captureByteCount"
+                              : "byteCount") + " bytes)";
+              }
             }
           }
           if (captureMsg != null) {

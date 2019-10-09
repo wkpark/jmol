@@ -237,10 +237,12 @@ public class SymmetryDesc {
       if (haveName && !haveRawName)
         sym.setSpaceGroupName(sgName);
       data = sym.getSpaceGroupInfoObj(sgName, cellInfo, isFull);
-      if (data == null || data.equals("?"))
-        data = "could not identify space group from name: " + sgName
+      if (data == null || data.equals("?")) {
+        data = "?";
+        info.put("spaceGroupNote", "could not identify space group from name: " + sgName
             + "\nformat: show spacegroup \"2\" or \"P 2c\" "
-            + "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"";
+            + "or \"C m m m\" or \"x, y, z;-x ,-y, -z\"");
+      }
     }
     info.put("spaceGroupInfo", data);
     return info;
@@ -1299,12 +1301,6 @@ public class SymmetryDesc {
     }
     if (info == null)
       return nullRet;
-    if (type == T.array && nth < 0 && op <= 0) {
-      Lst<Object> lst = new Lst<Object>();
-      for (int i = 0; i < info.length; i++)
-        lst.addLast(getInfo((Object[])info[i], T.array));
-      return lst;
-    }
     if (nth < 0 && op <= 0 && (type == T.array || info.length > 0 && info[0] instanceof Object[])) {
       Lst<Object> lst = new Lst<Object>();
       for (int i = 0; i < info.length; i++)

@@ -211,6 +211,8 @@ public class MathExt {
     case T.sort:
     case T.count:
       return evaluateSort(mp, args, tok);
+    case T.spacegroup:
+      return evaluateSpacegroup(mp, args);
     case T.symop:
       return evaluateSymop(mp, args, op.tok == T.propselector);
       //    case Token.volume:
@@ -223,6 +225,22 @@ public class MathExt {
       return evaluateWrite(mp, args);
     }
     return false;
+  }
+
+  private boolean evaluateSpacegroup(ScriptMathProcessor mp, SV[] args) {
+    // spacegroup();
+    // spacegroup(3);
+    // spacegroup("x,y,z,-x,-y,-z");
+    switch (args.length) {
+    case 0:
+      return mp.addXObj(
+          vwr.getSymTemp().getSpaceGroupInfo(vwr.ms, null, vwr.am.cmi, true));
+    case 1:
+      return mp.addXObj(vwr.getSymTemp().getSpaceGroupInfo(vwr.ms,
+          "" + args[0].asString(), Integer.MIN_VALUE, true));
+    default:
+      return false;
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -2512,7 +2530,7 @@ public class MathExt {
         return mp.addXPt(pt3);
       }
         // intersection(ptLine, vLine, ptCenter, radius)
-        // IE intersection of a pine with a sphere -- return list of 0, 1, or 2 points
+        // IE intersection of a line with a sphere -- return list of 0, 1, or 2 points
         float r = SV.fValue(args[3]);
         P3 ptCenter = P3.newP(pt3);
         Measure.projectOntoAxis(pt3, pt1, vLine, v);

@@ -2958,7 +2958,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     BufferedReader rdr = (rdrOrStringData instanceof BufferedReader ? (BufferedReader) rdrOrStringData : Rdr.getBR((String) rdrOrStringData));
     return Rdr.readCifData(
         (GenericCifDataParser) Interface.getInterface(
-            ("CIF2".equals(type) ? "org.jmol.adapter.readers.cif.Cif2DataParser" : "javajs.util.CifDataParser"), this, "script"), rdr);
+            ("Cif2".equals(type) ? "org.jmol.adapter.readers.cif.Cif2DataParser" : "javajs.util.CifDataParser"), this, "script"), rdr);
   }
 
   JmolStateCreator jsc;

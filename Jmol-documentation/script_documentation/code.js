@@ -1,4 +1,7 @@
 //Jmol Documentation JavaScript
+// BH 2019.03.28 adds link to tutorial wiki
+//BH 10/19/2017 6:43:02 AM added jmolVesions
+//BH 8/22/2017 1:50:34 AM fix search tag
 //BH 8:26 PM 9/28/2005 HTML 4.0 STRICT compatibility; fix for popup under Opera--NO! Breaks Mac!
 //BH 2:45 PM 12/2/2005 added ?docbook 3:19 PM 12/09/2005
 //BH 8:14 AM 1/30/2006 minor improvements
@@ -11,6 +14,9 @@
 
 
 docsearch=unescape(document.location.search)
+ if (docsearch.indexOf("<") >= 0)
+   docsearch = docsearch.substring(0, docsearch.indexOf("<"));
+
 isxhtmltest=(docsearch.indexOf("html")>=0)
 dowritexml=(docsearch.indexOf("xml")>=0)
 dowritedocbook=(docsearch.indexOf("docbook")>=0)
@@ -18,10 +24,10 @@ dowritedocbook=(docsearch.indexOf("docbook")>=0)
 showrecent = !dowritexml && !dowritedocbook
 
 lastupdate = ""
-startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=examples-12/new.htm>new.htm</a> and <a href=../jsmol/jsmol.htm>jsmol.htm</a>."
-defaultversion = "14.2"
-removelist = ";14.4;14.2;14.0;13.4;13.2;13.0;12.4;12.2;12.0;11.8;11.6;11.4;11.2;11.0;10.2" //semis on LEFT ONLY
-versionlist = ";14.4;14.2;14.0;13.4;13.2;13.0;12.4;12.2;12.0;" //semis on BOTH SIDES
+startmessage ="See an error? Something missing? Please <a href=\"mailto:hansonr@stolaf.edu?subject=Jmol applet documentation\">let us know</a>. For a wide variety of interactive examples, see <a href=../jsmol/>the directory you get with the distribution</a> at <a href=https://sourceforge.net/projects/jmol/files/Jmol/>SourceForge</a>, particularly <a href=../jsmol/jsmol.htm>jsmol.htm</a>. For more accessible information, visit the <a href=http://wiki.jmol.org/index.php/Jmol_Tutorials>tutorials</a> at the <a href=http://wiki.jmol.org>Jmol wiki</a>."
+defaultversion = "14.6"
+removelist = ""
+versionlist = ""
 exampledir = "examples/" //will be ignored if the example has a / in the name
 datadir = "examples/"
 jmoljs = "Jmol.js"
@@ -53,6 +59,7 @@ example, with added commands and different model
  ?example=.slab~stereo redcyan&model=1blu.pdb
 
 just a model
+
 
  ?model=1blu.pdb
 
@@ -122,10 +129,10 @@ function displayCommand(C, how) {
 function displayOneCommand(iCmd) {
   var name = Cmds[Cmdslist[iCmd]].name
   for (var i in Cmds) {
-	var how = (Cmds[i].name == name ? "" : "none");
-	var S = document.getElementsByName("tr_" + Cmds[i].idof)
-	for (var i = S.length; --i >= 0;)
-		S[i].style.display = how
+  	var how = (Cmds[i].name == name ? "" : "none");
+  	var S = document.getElementsByName("tr_" + Cmds[i].idof)
+  	for (var i = S.length; --i >= 0;)
+  		S[i].style.display = how
   }
 }
 
@@ -152,6 +159,33 @@ theexample=(docsearch+"example=").split("example=")[1].split("&")[0]
 themodel=(docsearch+"model=").split("model=")[1].split("&")[0]
 
 function setVersion(ver) {
+  // jmolVersions = '14.20;14.19-12'
+  var s = jmolVersions.split(";");
+  for (var i = 0; i < s.length; i++) {
+    var v = s[i];
+    var vMajor = v.split(".")[0];
+    var vMinor1 = parseInt(v.split(".")[1]);
+    if (v.indexOf("-") > 0) {
+      var ss = v.split("-");
+      s[i] = ss[0]; 
+      vMajor = s[i].split(".")[0];
+      vMinor1 = parseInt(s[i].split(".")[1])
+      var vMinor0 = parseInt(ss[1]);
+      if (vMinor0 < vMinor1) {
+        for (var vi = vMinor1; --vi >= vMinor0;) 
+          s[i] += ";" + vMajor + "." + (vi < 10 ? "0" : "") + vi; 
+      }
+    } else if (vMinor1.length == 1) {
+      s[i] = vMajor + ".0" + vMinor1;
+    }
+    s = s.join(";").split(";");
+  }
+  jmolVersions = s.join(";");
+  defaultversion = s[0];
+  jmolversion='Jmol Version ' + defaultversion;
+
+  removelist = ";" + jmolVersions + ";14.11;14.10;14.08;14.06;14.05;14.04;14.02;14.00;13.04;13.02;13.00;12.04;12.02;12.00;11.08;11.06;11.04;11.02;11.00;10.02" //semis on LEFT ONLY
+  versionlist = ";" + jmolVersions + ";14.11;14.10;14.08;14.06;14.05;14.04;14.02;14.00;13.04;13.02;13.00;12.04;12.02;12.00;" //semis on BOTH SIDES
  thisSubversion=(docsearch+"ver="+(ver ? ver : defaultversion)).split("ver=")[1].split("&")[0]
  if (thisSubversion.indexOf(".") != thisSubversion.lastIndexOf(".")) {
    // 12.
@@ -160,8 +194,8 @@ function setVersion(ver) {
    var newV = V[1]
    for (var i = V.length - 1; --i >= 1;) {
      if (parseFloat(thisSubversion) <= parseFloat(V[i])) {
-	newV = V[i]
-	break
+    	newV = V[i]
+    	break
      }
    } 
    thisSubversion = newV 
@@ -186,7 +220,7 @@ function setVersion(ver) {
 	docbase = docbase.split("?")[0] + "?" + (asdivs ? "" : "&fullmanual=1") + "&ver="+thisSubversion+"&"
  }
 
-}setVersion();
+}
 
 function showVersion(v){
  document.location.href=(docbase.split("ver=")[0] + "&ver="+v).replace(/\&\&/g,"&")
@@ -277,7 +311,7 @@ function fixlinks(){
  }
 }
 
-function doinit(){
+function doinit(){ 
  fixlinks()
  if(asdivs && HeadList.length > 0)gotoCmd(idof(firstcmd? firstcmd : HeadList[0]))
  if(theexample||themodel)showModel(theexample,themodel)
@@ -330,6 +364,11 @@ function newToken(text,preferred){
  Toks[thistoken].Namelist.push(text)
 }
 
+function fixxref(ref){
+  if (ref.indexOf(".") == ref.length - 2)
+    ref = ref.substring(0, ref.length - 1) +  "0" + ref.substring(ref.length - 1);
+  return ref;
+}
 
 function newCmd(command,version0,examples,xref,description,nparams,param1,param2,param3,param4){
  var c0 = command
@@ -364,7 +403,7 @@ function newCmd(command,version0,examples,xref,description,nparams,param1,param2
 	xref += ref
  }
  if (xref.substring(0,3)=="*v+") {
-	var ref = (xref.substring(0, 10) + " ").split(" ")[0].split(";")[0].replace(/\+/,"-")
+	var ref = fixxref((xref.substring(0, 10) + " ").split(" ")[0].split(";")[0].replace(/\+/,"-"))
 	var pt = removelist.indexOf(ref)
 	if(pt < 0) {
     isnewer = true;
@@ -428,7 +467,7 @@ function newCmd(command,version0,examples,xref,description,nparams,param1,param2
  var isnewer = false;
  var xrefnew = "";
  for (var i=0;i<S.length;i++){
-	xref=S[i]
+	xref=fixxref(S[i])
 	if(xref.indexOf("*v+")==0){
     isnew = (xref.indexOf(thisVrefNew)==0)
 		Cmd.isnew|=isnew
@@ -747,7 +786,7 @@ function writecmds(){
 }
 
 function wrapNew(d, text, isHeader) {
-  if (!d.isnew && !d.isnewer)return text
+  if (!d.isnew && !d.isnewer)return text  
   return "<span class=" + (d.isnewer ? "newer" : "new")+">" + text + (!isHeader ? "" : d.isnewer ? "&nbsp;**" : "&nbsp;*") + "</span>"
 }
 
@@ -812,9 +851,9 @@ function doreplacements(s) {
 //	.replace(/\&lt\;/g,"<br    />&lt;")
 
  }else{
-	s=s.replace(/xml\=\S*?\=xml/g,"")
-        s=s.replace(rthisversion,spanversion)
-        s=s.replace(rthisversion1,spanversion1)
+  s=s.replace(/xml\=\S*?\=xml/g,"")
+  s=s.replace(rthisversion,spanversion)
+  s=s.replace(rthisversion1,spanversion1)
  }
 
  if (s.indexOf("TABLE1") >= 0)

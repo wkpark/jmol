@@ -23,7 +23,6 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
-
 import javax.swing.JFrame;
 
 import org.jmol.i18n.GT;

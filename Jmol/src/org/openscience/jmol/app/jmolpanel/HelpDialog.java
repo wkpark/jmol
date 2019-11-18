@@ -23,7 +23,6 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
-
 import java.net.URL;
 import java.net.MalformedURLException;
 import javax.swing.JDialog;
@@ -52,15 +51,16 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
   JEditorPane html;
 
   public HelpDialog(JFrame fr) {
-      this(fr, null);
+    this(fr, null);
   }
-  
+
   public HelpDialog(JFrame fr, String title, boolean modal) {
     super(fr, title, modal);
   }
-  
+
   /**
    * If url is null, then the default help url is taken.
+   * 
    * @param fr
    * @param url
    */
@@ -128,16 +128,14 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
   }
 
   /**
-   * Follows the reference in an
-   * link.  The given url is the requested reference.
-   * By default this calls <a href="#setPage">setPage</a>,
-   * and if an exception is thrown the original previous
-   * document is restored and a beep sounded.  If an
-   * attempt was made to follow a link, but it represented
-   * a malformed url, this method will be called with a
-   * null argument.
-   *
-   * @param u the URL to follow
+   * Follows the reference in an link. The given url is the requested reference.
+   * By default this calls <a href="#setPage">setPage</a>, and if an exception
+   * is thrown the original previous document is restored and a beep sounded. If
+   * an attempt was made to follow a link, but it represented a malformed url,
+   * this method will be called with a null argument.
+   * 
+   * @param u
+   *        the URL to follow
    */
   protected void linkActivated(URL u) {
     Cursor c = html.getCursor();
@@ -147,8 +145,8 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
   }
 
   /**
-   * temporary class that loads synchronously (although later than
-   * the request so that a cursor change can be done).
+   * temporary class that loads synchronously (although later than the request
+   * so that a cursor change can be done).
    */
   class PageLoader implements Runnable {
 
@@ -189,7 +187,6 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
     URL url;
     Cursor cursor;
   }
-
 
   protected void centerDialog() {
 

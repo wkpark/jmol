@@ -30,34 +30,41 @@ import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-class StatusBar extends JPanel {
+public class StatusBar extends JPanel {
 
-  JLabel[] status;
+  protected JLabel[] status;
 
-  public StatusBar() {
+  public static final int STATUS_COORD = 1;
+  public static final int STATUS_TEXT = 2;
+  public static final int STATUS_TIME = 3;
+
+  public StatusBar(int startupWidth) {
+    setPreferredSize(new Dimension(startupWidth, 30));
 
     status = new JLabel[3];
     setLayout(new GridLayout(1, 3));
-    setPreferredSize(new Dimension(640, 30));
     status[0] = new JLabel();
     status[0].setPreferredSize(new Dimension(100, 100));
     status[0].setBorder(BorderFactory.createBevelBorder(1));
     status[0].setHorizontalAlignment(0);
+    status[0].setOpaque(true);
     status[1] = new JLabel();
     status[1].setPreferredSize(new Dimension(100, 100));
     status[1].setBorder(BorderFactory.createBevelBorder(1));
     status[1].setHorizontalAlignment(0);
+    status[1].setOpaque(true);
     status[2] = new JLabel();
     status[2].setPreferredSize(new Dimension(100, 100));
     status[2].setBorder(BorderFactory.createBevelBorder(1));
     status[2].setFont(new Font("Monospaced", Font.PLAIN, 12));
     status[2].setHorizontalAlignment(0);
+    status[2].setOpaque(true);
     add(status[0]);
     add(status[1]);
     add(status[2]);
   }
 
-  public void setStatus(int label, String text) {
-    status[label - 1].setText(text);
+  public void setStatus(int pos, String text) {
+    status[pos - 1].setText(text);
   }
 }

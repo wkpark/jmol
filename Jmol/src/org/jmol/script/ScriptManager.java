@@ -163,12 +163,14 @@ public class ScriptManager implements JmolScriptManager {
     while (isQueueProcessing()) {
       try {
         Thread.sleep(100);
-        if (((n++) % 10) == 0)
+        if (((n++) % 10) == 0) {
+          //System.out.println("..." + n);
           if (Logger.debugging) {
             Logger.debug("...scriptManager waiting for queue: "
                 + scriptQueue.size() + " thread="
                 + Thread.currentThread().getName());
           }
+        }
       } catch (InterruptedException e) {
       }
     }
@@ -291,7 +293,7 @@ public class ScriptManager implements JmolScriptManager {
     queueThreads[pt] = null;
     vwr.setSyncDriver(StatusManager.SYNC_ENABLE);
     vwr.queueOnHold = false;
-    //System.out.println("queuethread " + pt + " done");
+    //System.out.println("queuethread " + pt + " cleared");
   }
 
   public void runScriptNow() {

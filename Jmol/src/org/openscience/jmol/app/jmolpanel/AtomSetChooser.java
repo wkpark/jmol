@@ -72,18 +72,16 @@ import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
-
 /**
  * A JFrame that allows for choosing an Atomset to view.
  * 
  * @author Ren&eacute; Kanters, University of Richmond
  */
-public class AtomSetChooser extends JFrame
-implements TreeSelectionListener, PropertyChangeListener,
-ActionListener, ChangeListener, Runnable {
-  
+public class AtomSetChooser extends JFrame implements TreeSelectionListener,
+    PropertyChangeListener, ActionListener, ChangeListener, Runnable {
+
   private Thread animThread = null;
-  
+
   private JTextArea propertiesTextArea;
   private JTree tree;
   private DefaultTreeModel treeModel;
@@ -96,39 +94,37 @@ ActionListener, ChangeListener, Runnable {
   private JSlider periodSlider;
   private JSlider scaleSlider;
   private JSlider radiusSlider;
-  
+
   private JFileChooser saveChooser;
 
-  
   // Strings for the commands of the buttons and the determination
   // of the tooltips and images associated with them
-  static final String REWIND="rewind";
-  static final String PREVIOUS="prev";
-  static final String PLAY="play";
-  static final String PAUSE="pause";
-  static final String NEXT="next";
-  static final String FF="ff";
-  static final String SAVE="save";
-  
+  static final String REWIND = "rewind";
+  static final String PREVIOUS = "prev";
+  static final String PLAY = "play";
+  static final String PAUSE = "pause";
+  static final String NEXT = "next";
+  static final String FF = "ff";
+  static final String SAVE = "save";
+
   /**
-   * String for prefix/resource identifier for the collection area.
-   * This value is used in the Jmol properties files.
+   * String for prefix/resource identifier for the collection area. This value
+   * is used in the Jmol properties files.
    */
   static final String COLLECTION = "collection";
   /**
-   * String for prefix/resource identifier for the vector area.
-   * This value is used in the Jmol properties files.
+   * String for prefix/resource identifier for the vector area. This value is
+   * used in the Jmol properties files.
    */
   static final String VECTOR = "vector";
-  
 
   /**
-   * Sequence of atom set indexes in current tree selection for a branch,
-   * or siblings for a leaf.
+   * Sequence of atom set indexes in current tree selection for a branch, or
+   * siblings for a leaf.
    */
   private int indexes[];
-  private int currentIndex=-1;
-  
+  private int currentIndex = -1;
+
   /**
    * Maximum value for the fps slider.
    */
@@ -151,11 +147,13 @@ ActionListener, ChangeListener, Runnable {
    */
   private static final float PERIOD_PRECISION = 0.001f;
   /**
-   * Maximum value for the vibration period in seconds. Should be in preferences?
+   * Maximum value for the vibration period in seconds. Should be in
+   * preferences?
    */
   private static final float PERIOD_MAX = 1; // in seconds
   /**
-   * Initial value for the vibration period in seconds. Should be in preferences?
+   * Initial value for the vibration period in seconds. Should be in
+   * preferences?
    */
   private static final float PERIOD_VALUE = 0.5f;
 
@@ -181,26 +179,25 @@ ActionListener, ChangeListener, Runnable {
    */
   private static final float SCALE_VALUE = 1.0f;
 
- 
-  
   public AtomSetChooser(Viewer vwr, JFrame frame) {
- //   super(frame,"AtomSetChooser", false);
+    //   super(frame,"AtomSetChooser", false);
     super(GT.$("AtomSetChooser"));
     this.vwr = vwr;
-    
+
     // initialize the treeModel
-    treeModel = new DefaultTreeModel(new DefaultMutableTreeNode(GT.$("No AtomSets")));
-    
+    treeModel = new DefaultTreeModel(new DefaultMutableTreeNode(
+        GT.$("No AtomSets")));
+
     layoutWindow(getContentPane());
     pack();
     setLocationRelativeTo(frame);
-    
+
   }
-  
+
   private void layoutWindow(Container container) {
-    
+
     container.setLayout(new BorderLayout());
-    
+
     //////////////////////////////////////////////////////////
     // The tree and properties panel
     // as a split pane in the center of the container
@@ -221,27 +218,28 @@ ActionListener, ChangeListener, Runnable {
     propertiesPanel.setBorder(new TitledBorder(GT.$("Properties")));
     propertiesTextArea = new JTextArea();
     propertiesTextArea.setEditable(false);
-    propertiesPanel.add(new JScrollPane(propertiesTextArea), BorderLayout.CENTER);
-    
+    propertiesPanel.add(new JScrollPane(propertiesTextArea),
+        BorderLayout.CENTER);
+
     // create the split pane with the treePanel and propertiesPanel
     JPanel astPanel = new JPanel();
     astPanel.setLayout(new BorderLayout());
     astPanel.setBorder(new TitledBorder(GT.$("Atom Set Collection")));
-    
-    JSplitPane splitPane = new JSplitPane(
-        JSplitPane.VERTICAL_SPLIT, treePanel, propertiesPanel); 
+
+    JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, treePanel,
+        propertiesPanel);
     astPanel.add(splitPane, BorderLayout.CENTER);
     splitPane.setResizeWeight(0.5);
 
     container.add(astPanel, BorderLayout.CENTER);
-    
+
     //////////////////////////////////////////////////////////
     // The Controller area is south of the container
     //////////////////////////////////////////////////////////
     JPanel controllerPanel = new JPanel();
     controllerPanel.setLayout(new BoxLayout(controllerPanel, BoxLayout.Y_AXIS));
     container.add(controllerPanel, BorderLayout.SOUTH);
-    
+
     //////////////////////////////////////////////////////////
     // The collection chooser/controller/feedback area
     //////////////////////////////////////////////////////////
@@ -305,7 +303,7 @@ ActionListener, ChangeListener, Runnable {
     vectorPanel.setBorder(new TitledBorder(GT.$("Vector")));
     // the first row in the vectoPanel: radius and scale of the vector
     JPanel row1 = new JPanel();
-    row1.setLayout(new BoxLayout(row1,BoxLayout.X_AXIS));
+    row1.setLayout(new BoxLayout(row1, BoxLayout.X_AXIS));
     // controller for the vector representation
     JPanel radiusPanel = new JPanel();
     radiusPanel.setLayout(new BorderLayout());
@@ -316,15 +314,15 @@ ActionListener, ChangeListener, Runnable {
     radiusSlider.setPaintTicks(true);
     radiusSlider.setSnapToTicks(true);
     radiusSlider.addChangeListener(this);
-    script("vector "+ RADIUS_VALUE);
+    script("vector " + RADIUS_VALUE);
     radiusPanel.add(radiusSlider);
     row1.add(radiusPanel);
     // controller for the vector scale
     JPanel scalePanel = new JPanel();
     scalePanel.setLayout(new BorderLayout());
     scalePanel.setBorder(new TitledBorder(GT.$("Scale")));
-    scaleSlider = new JSlider(0, (int)(SCALE_MAX/SCALE_PRECISION),
-        (int) (SCALE_VALUE/SCALE_PRECISION));
+    scaleSlider = new JSlider(0, (int) (SCALE_MAX / SCALE_PRECISION),
+        (int) (SCALE_VALUE / SCALE_PRECISION));
     scaleSlider.addChangeListener(this);
     script("vector scale " + SCALE_VALUE);
     scalePanel.add(scaleSlider);
@@ -332,13 +330,14 @@ ActionListener, ChangeListener, Runnable {
     vectorPanel.add(row1);
     // the second row: amplitude and period of the vibration animation
     JPanel row2 = new JPanel();
-    row2.setLayout(new BoxLayout(row2,BoxLayout.X_AXIS));
+    row2.setLayout(new BoxLayout(row2, BoxLayout.X_AXIS));
     // controller for vibrationScale = amplitude
     JPanel amplitudePanel = new JPanel();
     amplitudePanel.setLayout(new BorderLayout());
     amplitudePanel.setBorder(new TitledBorder(GT.$("Amplitude")));
-    amplitudeSlider = new JSlider(0, (int) (AMPLITUDE_MAX/AMPLITUDE_PRECISION),
-        (int)(AMPLITUDE_VALUE/AMPLITUDE_PRECISION));
+    amplitudeSlider = new JSlider(0,
+        (int) (AMPLITUDE_MAX / AMPLITUDE_PRECISION),
+        (int) (AMPLITUDE_VALUE / AMPLITUDE_PRECISION));
     script("vibration scale " + AMPLITUDE_VALUE);
     amplitudeSlider.addChangeListener(this);
     amplitudePanel.add(amplitudeSlider);
@@ -347,9 +346,8 @@ ActionListener, ChangeListener, Runnable {
     JPanel periodPanel = new JPanel();
     periodPanel.setLayout(new BorderLayout());
     periodPanel.setBorder(new TitledBorder(GT.$("Period")));
-    periodSlider = new JSlider(0,
-        (int)(PERIOD_MAX/PERIOD_PRECISION),
-        (int)(PERIOD_VALUE/PERIOD_PRECISION));
+    periodSlider = new JSlider(0, (int) (PERIOD_MAX / PERIOD_PRECISION),
+        (int) (PERIOD_VALUE / PERIOD_PRECISION));
     script("vibration " + PERIOD_VALUE + ";vibration off;");
     periodSlider.addChangeListener(this);
     periodPanel.add(periodSlider);
@@ -358,92 +356,94 @@ ActionListener, ChangeListener, Runnable {
     // finally the controller at the bottom
     vectorPanel.add(createVCRController(VECTOR));
   }
-  
+
   /**
    * Creates a VCR type set of controller inside a JPanel.
    * 
-   * <p>Uses the JmolResourceHandler to get the label for the panel,
-   * the images for the buttons, and the tooltips. The button names are 
-   * <code>rewind</code>, <code>prev</code>, <code>play</code>, <code>pause</code>,
-   * <code>next</code>, and <code>ff</code>.
-   * <p>The handler for the buttons should determine from the getActionCommand
-   * which button in which section triggered the actionEvent, which is identified
-   * by <code>{section}.{name}</code>.
-   * @param section String of the section that the controller belongs to.
+   * <p>
+   * Uses the JmolResourceHandler to get the label for the panel, the images for
+   * the buttons, and the tooltips. The button names are <code>rewind</code>,
+   * <code>prev</code>, <code>play</code>, <code>pause</code>, <code>next</code>
+   * , and <code>ff</code>.
+   * <p>
+   * The handler for the buttons should determine from the getActionCommand
+   * which button in which section triggered the actionEvent, which is
+   * identified by <code>{section}.{name}</code>.
+   * 
+   * @param section
+   *        String of the section that the controller belongs to.
    * @return The JPanel
    */
   private JPanel createVCRController(String section) {
     JPanel controlPanel = new JPanel();
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
-    controlPanel.setBorder(new TitledBorder((section.equals(COLLECTION) ? GT.$("Frame") : GT.$("Vibration"))));
-    Insets inset = new Insets(1,1,1,1);
-// take out the save functionality until the XYZ file can properly be created
-//    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
-    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF};
+    controlPanel.setBorder(new TitledBorder((section.equals(COLLECTION) ? GT
+        .$("Frame") : GT.$("Vibration"))));
+    Insets inset = new Insets(1, 1, 1, 1);
+    // take out the save functionality until the XYZ file can properly be created
+    //    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
+    String buttons[] = { REWIND, PREVIOUS, PLAY, PAUSE, NEXT, FF };
     String tooltips[] = null;
     if (section.equals(COLLECTION)) {
-      tooltips = new String[] {
-          GT.$("Go to first atom set in the collection"),
+      tooltips = new String[] { GT.$("Go to first atom set in the collection"),
           GT.$("Go to previous atom set in the collection"),
           GT.$("Play the whole collection of atom sets"),
-          GT.$("Pause playing"),
-          GT.$("Go to next atom set in the collection"),
-          GT.$("Jump to last atom set in the collection")
-      };
+          GT.$("Pause playing"), GT.$("Go to next atom set in the collection"),
+          GT.$("Jump to last atom set in the collection") };
     } else if (section.equals(VECTOR)) {
-      tooltips = new String[] {
-          GT.$("Go to first atom set in the collection"),
+      tooltips = new String[] { GT.$("Go to first atom set in the collection"),
           GT.$("Go to previous atom set in the collection"),
-          GT.$("Vibration ON"),
-          GT.$("Vibration OFF"),
+          GT.$("Vibration ON"), GT.$("Vibration OFF"),
           GT.$("Go to next atom set in the collection"),
-          GT.$("Jump to last atom set in the collection")
-      };
+          GT.$("Jump to last atom set in the collection") };
     }
-    for (int i=buttons.length, idx=0; --i>=0; idx++) {
+    for (int i = buttons.length, idx = 0; --i >= 0; idx++) {
       String action = buttons[idx];
       // the icon and tool tip come from 
-      JButton btn = new JButton(
-          JmolResourceHandler.getIconX("AtomSetChooser."+action+"Image"));
+      JButton btn = new JButton(JmolResourceHandler.getIconX("AtomSetChooser."
+          + action + "Image"));
       if ((tooltips != null) && (tooltips.length > idx)) {
         btn.setToolTipText(tooltips[idx]);
       }
       btn.setMargin(inset);
-      btn.setActionCommand(section+"."+action);
+      btn.setActionCommand(section + "." + action);
       btn.addActionListener(this);
       controlPanel.add(btn);
     }
     controlPanel.add(Box.createHorizontalGlue());
     return controlPanel;
   }
-  
+
   @Override
   public void valueChanged(TreeSelectionEvent e) {
-    DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-    tree.getLastSelectedPathComponent();
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+        .getLastSelectedPathComponent();
     if (node == null) {
       return;
     }
     try {
       int index = 0; // default for branch selection
       if (node.isLeaf()) {
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node
+            .getParent();
         setIndexes(parent); // the indexes are based what is in the parent
         index = parent.getIndex(node); // find out which index I had there
       } else { // selected branch
         setIndexes(node);
       }
       showAtomSetIndex(index, true);
-    }
-    catch (Exception exception) {
- //     exception.printStackTrace();
+    } catch (Exception exception) {
+      //     exception.printStackTrace();
     }
   }
-  
+
   /**
    * Show an atom set from the indexes array
-   * @param index The index in the index array
-   * @param bSetSelectSlider If true, updates the selectSlider
+   * 
+   * @param index
+   *        The index in the index array
+   * @param bSetSelectSlider
+   *        If true, updates the selectSlider
    */
   protected void showAtomSetIndex(int index, boolean bSetSelectSlider) {
     if (bSetSelectSlider) {
@@ -461,68 +461,70 @@ ActionListener, ChangeListener, Runnable {
       // if this fails, ignore it.
     }
   }
-  
+
   /**
    * Sets the indexes to the atomSetIndex values of each leaf of the node.
-   * @param node The node whose leaf's atomSetIndex values should be used
+   * 
+   * @param node
+   *        The node whose leaf's atomSetIndex values should be used
    */
   protected void setIndexes(DefaultMutableTreeNode node) {
     int atomSetCount = node.getLeafCount();
     indexes = new int[atomSetCount];
     Enumeration<?> e = node.depthFirstEnumeration();
-    int idx=0;
+    int idx = 0;
     while (e.hasMoreElements()) {
       node = (DefaultMutableTreeNode) e.nextElement();
       if (node.isLeaf())
-        indexes[idx++]= ((AtomSet) node).getAtomSetIndex();
+        indexes[idx++] = ((AtomSet) node).getAtomSetIndex();
     }
     // now update the selectSlider (may trigger a valueChanged event...)
-    selectSlider.setEnabled(atomSetCount>0);
-    selectSlider.setMaximum(atomSetCount-1);
+    selectSlider.setEnabled(atomSetCount > 0);
+    selectSlider.setMaximum(atomSetCount - 1);
   }
-  
+
   @Override
-  public void actionPerformed (ActionEvent e) {
+  public void actionPerformed(ActionEvent e) {
     String cmd = e.getActionCommand();
-    String parts[]=cmd.split("\\.");
+    String parts[] = cmd.split("\\.");
     try {
-      if (parts.length==2) {
+      if (parts.length == 2) {
         String section = parts[0];
         cmd = parts[1];
         if (COLLECTION.equals(section)) {
-         if (REWIND.equals(cmd)) {
+          if (REWIND.equals(cmd)) {
             animThread = null;
             showAtomSetIndex(0, true);
           } else if (PREVIOUS.equals(cmd)) {
-            showAtomSetIndex(currentIndex-1, true);
+            showAtomSetIndex(currentIndex - 1, true);
           } else if (PLAY.equals(cmd)) {
             if (animThread == null) {
-              animThread = new Thread(this,"AtomSetChooserAnimationThread");
+              animThread = new Thread(this, "AtomSetChooserAnimationThread");
               animThread.start();
             }
           } else if (PAUSE.equals(cmd)) {
-             animThread = null;
+            animThread = null;
           } else if (NEXT.equals(cmd)) {
-            showAtomSetIndex(currentIndex+1, true);
+            showAtomSetIndex(currentIndex + 1, true);
           } else if (FF.equals(cmd)) {
             animThread = null;
-            showAtomSetIndex(indexes.length-1, true);
+            showAtomSetIndex(indexes.length - 1, true);
           } else if (SAVE.equals(cmd)) {
             saveXYZCollection();
           }
         } else if (VECTOR.equals(section)) {
           if (REWIND.equals(cmd)) {
-            findFrequency(0,1);
+            findFrequency(0, 1);
           } else if (PREVIOUS.equals(cmd)) {
-            findFrequency(currentIndex-1,-1);
+            findFrequency(currentIndex - 1, -1);
           } else if (PLAY.equals(cmd)) {
             script("vibration on; vectors " + radiusValue);
           } else if (PAUSE.equals(cmd)) {
             script("vibration off; vectors off");
           } else if (NEXT.equals(cmd)) {
-            findFrequency(currentIndex+1,1);
+            findFrequency(currentIndex + 1, 1);
           } else if (FF.equals(cmd)) {
-            findFrequency(indexes.length-1,-1);
+            findFrequency(indexes.length - 1, -1);
           } else if (SAVE.equals(cmd)) {
             Logger.warn("Not implemented");
             // since I can not get to the vectors, I can't output this one (yet)
@@ -534,13 +536,13 @@ ActionListener, ChangeListener, Runnable {
       // exceptions during indexes array access: ignore it
     }
   }
-  
+
   /**
-   * Saves the currently active collection as a multistep XYZ file. 
+   * Saves the currently active collection as a multistep XYZ file.
    */
   public void saveXYZCollection() {
     int nidx = indexes.length;
-    if (nidx==0) {
+    if (nidx == 0) {
       Logger.warn("No collection selected.");
       return;
     }
@@ -553,18 +555,19 @@ ActionListener, ChangeListener, Runnable {
       String fname = file.getAbsolutePath();
       try {
         PrintWriter f = new PrintWriter(new FileOutputStream(fname));
-        for (int idx = 0; idx < nidx; idx++ ) {
+        for (int idx = 0; idx < nidx; idx++) {
           int modelIndex = indexes[idx];
           SB str = new SB();
           str.append(vwr.getModelName(modelIndex)).append("\n");
-          int natoms=0;
-          for (int i = 0, n = vwr.ms.ac; i < n;  i++) {
+          int natoms = 0;
+          for (int i = 0, n = vwr.ms.ac; i < n; i++) {
             if (vwr.ms.at[i].mi == modelIndex) {
               natoms++;
               P3 p = vwr.ms.at[i];
               // should really be getElementSymbol(i) in stead
               str.append(vwr.ms.at[i].getAtomName()).append("\t");
-              str.appendF(p.x).append("\t").appendF(p.y).append("\t").appendF(p.z).append("\n");
+              str.appendF(p.x).append("\t").appendF(p.y).append("\t")
+                  .appendF(p.z).append("\n");
               // not sure how to get the vibration vector and charge here...
             }
           }
@@ -577,30 +580,32 @@ ActionListener, ChangeListener, Runnable {
       }
     }
   }
-  
+
   /**
-   * Have the vwr show a particular frame with frequencies
-   * if it can be found.
-   * @param index Starting index where to start looking for frequencies
-   * @param increment Increment value for how to go through the list
+   * Have the vwr show a particular frame with frequencies if it can be found.
+   * 
+   * @param index
+   *        Starting index where to start looking for frequencies
+   * @param increment
+   *        Increment value for how to go through the list
    */
   public void findFrequency(int index, int increment) {
     int maxIndex = indexes.length;
     boolean foundFrequency = false;
-    
+
     // search till get to either end of found a frequency
-    while (index >= 0 && index < maxIndex 
-        && !(foundFrequency=(vwr.modelHasVibrationVectors(indexes[index])))) {
-      index+=increment;
+    while (index >= 0 && index < maxIndex
+        && !(foundFrequency = (vwr.modelHasVibrationVectors(indexes[index])))) {
+      index += increment;
     }
-    
+
     if (foundFrequency) {
-      showAtomSetIndex(index, true);      
+      showAtomSetIndex(index, true);
     }
   }
 
   private int radiusValue = 1;
-  
+
   @Override
   public void stateChanged(ChangeEvent e) {
     Object src = e.getSource();
@@ -629,15 +634,16 @@ ActionListener, ChangeListener, Runnable {
     if (cmd != null)
       script(cmd);
   }
-  
+
   private void script(String cmd) {
-    vwr.evalStringQuiet(cmd + JC.REPAINT_IGNORE);    
+    vwr.evalStringQuiet(cmd + JC.REPAINT_IGNORE);
   }
 
   /**
-   * Shows the properties in the propertiesPane of the
-   * AtomSetChooser window
-   * @param properties Properties to be shown.
+   * Shows the properties in the propertiesPane of the AtomSetChooser window
+   * 
+   * @param properties
+   *        Properties to be shown.
    */
   protected void showProperties(Properties properties) {
     boolean needLF = false;
@@ -645,26 +651,28 @@ ActionListener, ChangeListener, Runnable {
     if (properties != null) {
       Enumeration<?> e = properties.propertyNames();
       while (e.hasMoreElements()) {
-        String propertyName = (String)e.nextElement();
+        String propertyName = (String) e.nextElement();
         if (propertyName.startsWith("."))
           continue; // skip the 'hidden' ones
-        propertiesTextArea.append((needLF?"\n ":" ") 
-            + propertyName + "=" + properties.getProperty(propertyName));
+        propertiesTextArea.append((needLF ? "\n " : " ") + propertyName + "="
+            + properties.getProperty(propertyName));
         needLF = true;
       }
     }
   }
-  
+
   /**
-   * Shows the auxiliary information in the propertiesPane of the
-   * AtomSetChooser window
-   * @param auxiliaryInfo Hashtable to be shown.
+   * Shows the auxiliary information in the propertiesPane of the AtomSetChooser
+   * window
+   * 
+   * @param auxiliaryInfo
+   *        Hashtable to be shown.
    */
   protected void showAuxiliaryInfo(Map<String, Object> auxiliaryInfo) {
     String separator = " ";
     //propertiesTextArea.setText(""); AFTER properties
     if (auxiliaryInfo != null) {
-      for (String keyName: auxiliaryInfo.keySet()) {
+      for (String keyName : auxiliaryInfo.keySet()) {
         if (keyName.startsWith("."))
           continue; // skip the 'hidden' ones
         //won't show objects properly, of course
@@ -675,7 +683,7 @@ ActionListener, ChangeListener, Runnable {
       }
     }
   }
-  
+
   /**
    * Creates the treeModel of the AtomSets available in the JmolViewer
    */
@@ -741,7 +749,7 @@ ActionListener, ChangeListener, Runnable {
     currentIndex = -1;
     selectSlider.setEnabled(false);
   }
-  
+
   /**
    * Objects in the AtomSetChooser tree
    */
@@ -754,28 +762,28 @@ ActionListener, ChangeListener, Runnable {
      * The name of the AtomSet
      */
     private String atomSetName;
-    
+
     public AtomSet(int atomSetIndex, String atomSetName) {
       this.atomSetIndex = atomSetIndex;
       this.atomSetName = atomSetName;
     }
-    
+
     public int getAtomSetIndex() {
       return atomSetIndex;
     }
-    
+
     @Override
     public String toString() {
       return atomSetName;
     }
-    
+
   }
-  
+
   ////////////////////////////////////////////////////////////////
   // PropertyChangeListener to receive notification that
   // the underlying AtomSetCollection has changed
   ////////////////////////////////////////////////////////////////
-  
+
   @Override
   public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
     String eventName = propertyChangeEvent.getPropertyName();
@@ -800,9 +808,9 @@ ActionListener, ChangeListener, Runnable {
         ++currentIndex;
         if (currentIndex == indexes.length) {
           if (repeatCheckBox.isSelected())
-            currentIndex = 0;  // repeat at 0
+            currentIndex = 0; // repeat at 0
           else {
-            currentIndex--;    // went 1 too far, step back
+            currentIndex--; // went 1 too far, step back
             animThread = null; // stop the animation thread
           }
         }
@@ -812,12 +820,12 @@ ActionListener, ChangeListener, Runnable {
           // NB the vwr's fps setting is never 0, so I could
           // set it directly, but just in case this behavior changes later...
           int fps = vwr.getInt(T.animationfps);
-          Thread.sleep((int) (1000.0/(fps==0?1:fps)));
+          Thread.sleep((int) (1000.0 / (fps == 0 ? 1 : fps)));
         } catch (InterruptedException e) {
           Logger.errorEx(null, e);
         }
       }
     }
   }
-  
+
 }

@@ -33,7 +33,8 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 /**
- * A simple class that throws up a white rectangle that has a single centered label.
+ * A simple class that throws up a white rectangle that has a single centered
+ * label.
  * 
  */
 public class BannerFrame extends JFrame {
@@ -44,7 +45,8 @@ public class BannerFrame extends JFrame {
     setBackground(Color.WHITE);
     setSize(width, height);
     setBounds(0, 0, width, height);
-    bannerLabel = new JLabel("<html>type exitJmol[enter] to quit</html>", SwingConstants.CENTER);
+    bannerLabel = new JLabel("<html>type exitJmol[enter] to quit</html>",
+        SwingConstants.CENTER);
     bannerLabel.setPreferredSize(getSize());
     bannerLabel.setFont(new Font("Helvetica", Font.BOLD, 30));
     getContentPane().add(bannerLabel, BorderLayout.CENTER);
@@ -53,7 +55,7 @@ public class BannerFrame extends JFrame {
   }
 
   private JLabel bannerLabel;
-  
+
   public void setLabel(String label) {
     if (label != null)
       bannerLabel.setText(label);

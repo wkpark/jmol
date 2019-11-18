@@ -26,7 +26,6 @@
  */
 package org.openscience.jmol.app.webexport;
 
-
 import javajs.util.PT;
 
 import javax.swing.JFileChooser;
@@ -50,7 +49,8 @@ class ScriptButtons extends WebPanel {
 
   @Override
   JPanel appletParamPanel() {
-    SpinnerNumberModel appletSizeModel = new SpinnerNumberModel(WebExport.getScriptButtonPercent(), //initial value
+    SpinnerNumberModel appletSizeModel = new SpinnerNumberModel(
+        WebExport.getScriptButtonPercent(), //initial value
         20, //min
         100, //max
         5); //step size
@@ -95,12 +95,13 @@ class ScriptButtons extends WebPanel {
       if (instance.whichWidgets.get(3)) {
         //special:  widgetList[3] is AnimationWidget, taller than the others, put it to the right
         widgetDefs += "<div class=\"widgetItemAnim\"> "
-        + theWidgets.widgetList[3].getJavaScript(0, instance)
-        + "</div>";
+            + theWidgets.widgetList[3].getJavaScript(0, instance) + "</div>";
       }
       widgetDefs += "<table><tbody><tr>";
       for (int j = 0; j < nWidgets; j++) {
-        if (j==3) { continue; }
+        if (j == 3) {
+          continue;
+        }
         if (instance.whichWidgets.get(j)) {
           if (row == 3) {
             widgetDefs += "</tr><tr>";
@@ -108,8 +109,8 @@ class ScriptButtons extends WebPanel {
           }
           widgetDefs += "<td class=\"widgetItemScBtn\">"
               + theWidgets.widgetList[j].getJavaScript(0, instance)
-                  //does nothing? .replace("'", "\'")
-                  + "</td>";
+              //does nothing? .replace("'", "\'")
+              + "</td>";
           row = row + 1;
         }
       }
@@ -122,7 +123,7 @@ class ScriptButtons extends WebPanel {
     s = PT.rep(s, "@APPLETNAME0@", GT.escapeHTML(buttonname));
     s = PT.rep(s, "@NAME@", "&#x201C;" + GT.escapeHTML(name) + "&#x201D;");
     s = PT.rep(s, "@LABEL@", GT.escapeHTML(name));
-    s = PT.rep(s, "@I@", ""+i);
+    s = PT.rep(s, "@I@", "" + i);
     s = PT.rep(s, "@WIDGETSTR@", widgetDefs);
     appletDefs.append(s);
     return html;

@@ -26,7 +26,6 @@
  */
 package org.openscience.jmol.app.webexport;
 
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -188,17 +187,17 @@ abstract class WebPanel extends JPanel implements ActionListener,
         BorderLayout.SOUTH);
 
     // Create the Instance add button.
-    addInstanceButton = new JButton(GT
-        .$("Add present Jmol state as instance..."));
+    addInstanceButton = new JButton(
+        GT.$("Add present Jmol state as instance..."));
     addInstanceButton.addActionListener(this);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setMaximumSize(new Dimension(350, 50));
-//    showInstanceButton = new JButton(GT._("Show selected"));
-//    showInstanceButton.addActionListener(this);
+    //    showInstanceButton = new JButton(GT._("Show selected"));
+    //    showInstanceButton.addActionListener(this);
     deleteInstanceButton = new JButton(GT.$("Delete selected"));
     deleteInstanceButton.addActionListener(this);
-//    buttonPanel.add(showInstanceButton);
+    //    buttonPanel.add(showInstanceButton);
     buttonPanel.add(deleteInstanceButton);
 
     // width height or %width
@@ -231,11 +230,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
         .$("JSmol Instances:")));
 
     JPanel widgetPanel = new JPanel();
-    widgetPanel.setMinimumSize(new Dimension(150,150));
-    widgetPanel.setLayout(new BoxLayout(widgetPanel,BoxLayout.Y_AXIS));
-    widgetPanel.setBorder(BorderFactory.createTitledBorder(GT.$("Select widgets:")));
-    for (int i = 0; i<nWidgets;i++){
-      widgetCheckboxes[i]=new Checkbox(theWidgets.widgetList[i].name);
+    widgetPanel.setMinimumSize(new Dimension(150, 150));
+    widgetPanel.setLayout(new BoxLayout(widgetPanel, BoxLayout.Y_AXIS));
+    widgetPanel.setBorder(BorderFactory.createTitledBorder(GT
+        .$("Select widgets:")));
+    for (int i = 0; i < nWidgets; i++) {
+      widgetCheckboxes[i] = new Checkbox(theWidgets.widgetList[i].name);
       widgetCheckboxes[i].addItemListener(this);
       widgetPanel.add(widgetCheckboxes[i]);
     }
@@ -259,11 +259,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
     return instanceList;
   }
 
-  
   /**
-   * @param w UNUSED
-   * @param h UNUSED 
-   * @return   left panel
+   * @param w
+   *        UNUSED
+   * @param h
+   *        UNUSED
+   * @return left panel
    * 
    */
   private JPanel getLeftPanel(int w, int h) {
@@ -283,8 +284,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     JPanel pageCartoonPanel = new JPanel();
     pageCartoonPanel.setLayout(new BorderLayout());
     pageCartoonPanel.setBorder(BorderFactory.createTitledBorder(GT
-        .$("Cartoon of Page")
-        + ":"));
+        .$("Cartoon of Page") + ":"));
     pageCartoonPanel.add(pageCartoonLabel);
     // editorScrollPane = getInstructionPane(w, h);
 
@@ -355,7 +355,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
 
   @Override
   public void itemStateChanged(ItemEvent e) {
-    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
+    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList
+        .getModel();
     int[] list = instanceList.getSelectedIndices();
     if (list.length == 0)
       return; // don't try to update things if there is nothing in the list...
@@ -373,13 +374,13 @@ abstract class WebPanel extends JPanel implements ActionListener,
       }
     }
   }
-  
+
   @Override
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == helpButton) {
-      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(), GuiMap
-          .getHtmlResource(this, panelName + "_instructions"));
+      HelpDialog webExportHelp = new HelpDialog(WebExport.getFrame(),
+          GuiMap.getHtmlResource(this, panelName + "_instructions"));
       webExportHelp.setVisible(true);
       webExportHelp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       return;
@@ -393,7 +394,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
 
     if (e.getSource() == localAppletPath) {// apparently no events are fired to
-                                            // reach this, maybe "enter" does it
+                                           // reach this, maybe "enter" does it
       String path = localAppletPath.getText();
       WebExport.setAppletPath(path, false);
       return;
@@ -408,11 +409,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
       // manipulations done.
       String label = (instanceList.getSelectedIndices().length != 1 ? ""
           : getInstanceName(-1));
-      String name = JOptionPane.showInputDialog(GT
-          .$("Give the occurrence of JSmol a name:"), label);
+      String name = JOptionPane.showInputDialog(
+          GT.$("Give the occurrence of JSmol a name:"), label);
       if (name == null || name.length() == 0)
         return;
-      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
+      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList
+          .getModel();
       int width = 300;
       int height = 300;
       if (appletSizeSpinnerH != null) {
@@ -448,7 +450,8 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
 
     if (e.getSource() == deleteInstanceButton) {
-      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
+      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList
+          .getModel();
       // find out which are selected and remove them.
       int[] todelete = instanceList.getSelectedIndices();
       for (int i = 0; i < todelete.length; i++) {
@@ -465,13 +468,14 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
 
     if (e.getSource() == showInstanceButton) {
-      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
+      DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList
+          .getModel();
       int[] list = instanceList.getSelectedIndices();
       if (list.length != 1)
         return;
       JmolInstance instance = listModel.get(list[0]);
       vwr.evalStringQuiet(")" + instance.script); // leading paren disabled
-                                                      // history
+                                                  // history
       return;
     }
 
@@ -498,20 +502,21 @@ abstract class WebPanel extends JPanel implements ActionListener,
         viewButton.setEnabled(true);
       } catch (IOException IOe) {
         LogPanel.log(IOe.getMessage());
-        errCount+=1;
+        errCount += 1;
       }
       if (retVal != null) {
         LogPanel.log(GT.o(GT.$("file {0} created"), retVal));
       } else {
         LogPanel.log(GT.$("Call to FileWriter unsuccessful."));
-        errCount+=1;
+        errCount += 1;
       }
-      if (errCount > 0){
-        LogPanel.log(GT.$("Errors occurred during web page creation.  See Log Tab!"));
+      if (errCount > 0) {
+        LogPanel.log(GT
+            .$("Errors occurred during web page creation.  See Log Tab!"));
       }
       return;
-    } 
-    
+    }
+
   }
 
   @Override
@@ -545,21 +550,21 @@ abstract class WebPanel extends JPanel implements ActionListener,
   String getInstanceName(int i) {
     if (i < 0)
       i = instanceList.getSelectedIndex();
-    JmolInstance instance = instanceList.getModel()
-        .getElementAt(i);
+    JmolInstance instance = instanceList.getModel().getElementAt(i);
     return (instance == null ? "" : instance.name);
   }
 
-  String fileWriter(File file, JList<JmolInstance> InstanceList) throws IOException { // returns
-                                                                          // true
-                                                                          // if
-                                                                          // successful.
+  String fileWriter(File file, JList<JmolInstance> InstanceList)
+      throws IOException { // returns
+    // true
+    // if
+    // successful.
     // JOptionPane.showMessageDialog(null, "Creating directory for data...");
-    String datadirPath = file.getPath().replace('\\','/');
+    String datadirPath = file.getPath().replace('\\', '/');
     String datadirName = file.getName();
     String fileName;
     if (datadirName.indexOf(".htm") < 0) {
-      File f = new File(datadirPath + ".html"); 
+      File f = new File(datadirPath + ".html");
       if (f.exists()) {
         datadirName += ".html";
         file = f;
@@ -579,15 +584,16 @@ abstract class WebPanel extends JPanel implements ActionListener,
     datadirPath = datadirPath.replace('\\', '/');
     fileName = datadirPath + "/" + fileName;
     boolean made_datadir = (file.exists() && file.isDirectory() || file.mkdir());
-    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) InstanceList.getModel();
+    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) InstanceList
+        .getModel();
     LogPanel.log("");
     if (made_datadir) {
       LogPanel.log(GT.o(GT.$("Using directory {0}"), datadirPath));
       LogPanel.log("  " + GT.o(GT.$("adding {0}"), "support.js"));
-      try{
-      vwr.writeTextFile(datadirPath + "/support.js", 
-          GuiMap.getResourceString(this, "support.js"));
-      }catch (IOException IOe){
+      try {
+        vwr.writeTextFile(datadirPath + "/support.js",
+            GuiMap.getResourceString(this, "support.js"));
+      } catch (IOException IOe) {
         throw IOe;
       }
       for (int i = 0; i < listModel.getSize(); i++) {
@@ -604,15 +610,18 @@ abstract class WebPanel extends JPanel implements ActionListener,
         Lst<String> filesToCopy = new Lst<String>();
         String localPath = localAppletPath.getText();
         if (localPath.equals(".") || remoteAppletPath.getText().equals(".")) {
-          try{
-            String jmolJarDirPath=jmolJarPath().substring(0, jmolJarPath().lastIndexOf("/"));
-            filesToCopy.addLast(jmolJarDirPath+"/jsmol.zip");
-          }catch (java.io.UnsupportedEncodingException e){
-            LogPanel.log(GT.$("There was an error in the text encoding so the path to jsmol.zip is unknown."));
+          try {
+            String jmolJarDirPath = jmolJarPath().substring(0,
+                jmolJarPath().lastIndexOf("/"));
+            filesToCopy.addLast(jmolJarDirPath + "/jsmol.zip");
+          } catch (java.io.UnsupportedEncodingException e) {
+            LogPanel
+                .log(GT
+                    .$("There was an error in the text encoding so the path to jsmol.zip is unknown."));
           }
         }
         FileManager.getFileReferences(script, filesToCopy);
-        ArrayList<String> copiedFileNames = new  ArrayList<String>();
+        ArrayList<String> copiedFileNames = new ArrayList<String>();
         int nFiles = filesToCopy.size();
         for (int iFile = 0; iFile < nFiles; iFile++) {
           String newName = copyBinaryFile(filesToCopy.get(iFile), datadirPath);
@@ -637,20 +646,22 @@ abstract class WebPanel extends JPanel implements ActionListener,
             vwr.writeTextFile(datadirPath + "/" + scriptFileName + "",
                 GuiMap.getResourceString(this, scriptFileName));
           }
-          String [] supportFileNames=theWidgets.widgetList[i].getSupportFileNames();
+          String[] supportFileNames = theWidgets.widgetList[i]
+              .getSupportFileNames();
           int nFiles = supportFileNames.length;
-          if (nFiles!=0){
-            for(int fileN=0;fileN<nFiles;fileN++){
+          if (nFiles != 0) {
+            for (int fileN = 0; fileN < nFiles; fileN++) {
               String inFile = supportFileNames[fileN];
               String outFile = inFile;
-              if((inFile.lastIndexOf("/"))!=-1) {
-                 outFile = inFile.substring((inFile.lastIndexOf("/")+1));
+              if ((inFile.lastIndexOf("/")) != -1) {
+                outFile = inFile.substring((inFile.lastIndexOf("/") + 1));
               }
               URL fileURL = GuiMap.getResource(this, inFile);
-              if (fileURL==null){
-                LogPanel.log("    "+GT.o(GT.$("Unable to load resource {0}"), inFile));
-                errCount+=1;
-              }else{
+              if (fileURL == null) {
+                LogPanel.log("    "
+                    + GT.o(GT.$("Unable to load resource {0}"), inFile));
+                errCount += 1;
+              } else {
                 InputStream is = fileURL.openConnection().getInputStream();
                 FileOutputStream os = new FileOutputStream(datadirPath + "/"
                     + outFile);
@@ -663,30 +674,25 @@ abstract class WebPanel extends JPanel implements ActionListener,
                 os.close();
                 LogPanel.log("  " + GT.o(GT.$("adding {0}"), outFile));
               }
-            }         
+            }
           }
         }
       }
-      html=PT.rep(html,"@WIDGETJSFILES@",jsStr);
+      html = PT.rep(html, "@WIDGETJSFILES@", jsStr);
       appletInfoDivs = "";
       StringBuilder appletDefs = new StringBuilder();
       htmlAppletTemplate = GuiMap.getResourceString(this, panelName
           + "_template2");
       for (int i = 0; i < listModel.getSize(); i++)
-        html = getAppletDefs(i, html, appletDefs, listModel
-            .getElementAt(i));
-      html = PT.rep(html, "@AUTHOR@", GT
-          .escapeHTML(pageAuthorName.getText()));
-      html = PT.rep(html, "@TITLE@", GT
-          .escapeHTML(webPageTitle.getText()));
-      html = PT.rep(html, "@REMOTEAPPLETPATH@",
-          remoteAppletPath.getText());
-      String localPath=localAppletPath.getText();
-      if (localPath.contentEquals(".")){
-        localPath= "jsmol";
+        html = getAppletDefs(i, html, appletDefs, listModel.getElementAt(i));
+      html = PT.rep(html, "@AUTHOR@", GT.escapeHTML(pageAuthorName.getText()));
+      html = PT.rep(html, "@TITLE@", GT.escapeHTML(webPageTitle.getText()));
+      html = PT.rep(html, "@REMOTEAPPLETPATH@", remoteAppletPath.getText());
+      String localPath = localAppletPath.getText();
+      if (localPath.contentEquals(".")) {
+        localPath = "jsmol";
       }
-      html = PT.rep(html, "@LOCALAPPLETPATH@",
-          localPath);
+      html = PT.rep(html, "@LOCALAPPLETPATH@", localPath);
       html = PT.rep(html, "@DATADIRNAME@", datadirName);
       if (appletInfoDivs.length() > 0)
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs
@@ -694,17 +700,12 @@ abstract class WebPanel extends JPanel implements ActionListener,
       String str = appletDefs.toString();
       html = PT.rep(html, "@APPLETINFO@", appletInfoDivs);
       html = PT.rep(html, "@APPLETDEFS@", str);
-      html = PT.rep(html, "@CREATIONDATA@", GT
-          .escapeHTML(WebExport.TimeStamp_WebLink()));
-      html = javajs.util.PT
-          .rep(
-              html,
-              "@AUTHORDATA@",
-              GT
-                  .escapeHTML(GT
-                      .$("Based on a template by A. Herr&#x00E1;ez and J. Gutow")));
-      html = PT.rep(html, "@LOGDATA@", "<pre>\n"
-          + LogPanel.getText() + "\n</pre>\n");
+      html = PT.rep(html, "@CREATIONDATA@",
+          GT.escapeHTML(WebExport.TimeStamp_WebLink()));
+      html = javajs.util.PT.rep(html, "@AUTHORDATA@", GT.escapeHTML(GT
+          .$("Based on a template by A. Herr&#x00E1;ez and J. Gutow")));
+      html = PT.rep(html, "@LOGDATA@", "<pre>\n" + LogPanel.getText()
+          + "\n</pre>\n");
       LogPanel.log("      ..." + GT.o(GT.$("creating {0}"), fileName));
       vwr.writeTextFile(fileName, html);
     } else {
@@ -722,15 +723,15 @@ abstract class WebPanel extends JPanel implements ActionListener,
       String name = list.get(i);
       String newName = newList.get(i);
       if (!newName.equals(name))
-        s = PT.rep(s, "\"" + name + "\"", "\"" + newName
-            + "\"");
+        s = PT.rep(s, "\"" + name + "\"", "\"" + newName + "\"");
     }
     return s;
   }
 
   public BS allSelectedWidgets() {
     BS selectedWidgets = BS.newN(nWidgets);
-    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList.getModel();
+    DefaultListModel<JmolInstance> listModel = (DefaultListModel<JmolInstance>) instanceList
+        .getModel();
     for (int i = 0; i < listModel.getSize(); i++) {
       JmolInstance thisInstance = listModel.getElementAt(i);
       selectedWidgets.or(thisInstance.whichWidgets);
@@ -741,9 +742,11 @@ abstract class WebPanel extends JPanel implements ActionListener,
   private String copyBinaryFile(String fullPathName, String dataPath) {
     String name = fullPathName.substring(fullPathName.lastIndexOf('/') + 1)
         .replace('|', '_'); // xxx.zip|filename
-    if (name.contentEquals("jsmol.zip")){
-      LogPanel.log(GT.o(GT.$("copying and unzipping jsmol.zip directory into {0}"),dataPath));
-      String tempDP = copyandUnzip(fullPathName,dataPath, name);
+    if (name.contentEquals("jsmol.zip")) {
+      LogPanel
+          .log(GT.o(GT.$("copying and unzipping jsmol.zip directory into {0}"),
+              dataPath));
+      String tempDP = copyandUnzip(fullPathName, dataPath, name);
       return (tempDP);
     }
     name = dataPath + "/" + name;
@@ -756,13 +759,13 @@ abstract class WebPanel extends JPanel implements ActionListener,
       return gzname;
     try {
       Object ret = vwr.fm.getFileAsBytes(fullPathName, null);
-      if (ret instanceof String){
+      if (ret instanceof String) {
         LogPanel
-            .log(GT.o(GT
-                .$("Could not find or open:\n{0}\nPlease check that you are using a Jmol.jar that is part of a full Jmol distribution."),
-                    fullPathName));
-        errCount+=1;
-      }else {
+            .log(GT.o(
+                GT.$("Could not find or open:\n{0}\nPlease check that you are using a Jmol.jar that is part of a full Jmol distribution."),
+                fullPathName));
+        errCount += 1;
+      } else {
         LogPanel.log("      ..."
             + GT.o(GT.$("copying\n{0}\n         to"), fullPathName));
         byte[] data = (byte[]) ret;
@@ -774,14 +777,14 @@ abstract class WebPanel extends JPanel implements ActionListener,
           LogPanel.log("      ..." + GT.$("compressing large data file to")
               + "\n" + (name = retName[0]));
         LogPanel.log(name);
-        if (err != null){
+        if (err != null) {
           LogPanel.log(err);
-          errCount+=1;
+          errCount += 1;
         }
       }
     } catch (Exception e) {
       LogPanel.log(e.getMessage());
-      errCount+=1;
+      errCount += 1;
     }
     return name;
   }
@@ -889,36 +892,42 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
     return (dataPath);
   }
-  
+
   /*****
    * @return the URL pointing to the Jmol.jar that is running
    */
-  private URL jmolJarURL(){
-    return(this.getClass().getProtectionDomain().getCodeSource().
-        getLocation());
+  private URL jmolJarURL() {
+    return (this.getClass().getProtectionDomain().getCodeSource().getLocation());
   }
-/******
-* Returns a string version of the path to Jmol.jar (including the trailing Jmol.jar)
-* decoded using the system default text encoding (usually UTF-8).
-* @return system text encoding translated string version of the path to Jmol.jar
-* @throws java.io.UnsupportedEncodingException if the encoding can't be used to
-* decode the URL or the encoding is bad.
-*/
-  private String jmolJarPath() throws java.io.UnsupportedEncodingException{
+
+  /******
+   * Returns a string version of the path to Jmol.jar (including the trailing
+   * Jmol.jar) decoded using the system default text encoding (usually UTF-8).
+   * 
+   * @return system text encoding translated string version of the path to
+   *         Jmol.jar
+   * @throws java.io.UnsupportedEncodingException
+   *         if the encoding can't be used to decode the URL or the encoding is
+   *         bad.
+   */
+  private String jmolJarPath() throws java.io.UnsupportedEncodingException {
     String pathStr;
-    pathStr=null;
+    pathStr = null;
     URL jarURL = jmolJarURL();
-    pathStr=URLDecoder.decode(jarURL.toString(), System.getProperty("file.encoding"));
-    pathStr = pathStr.substring(pathStr.indexOf(":")+1, pathStr.length());
-    return(pathStr);
+    pathStr = URLDecoder.decode(jarURL.toString(),
+        System.getProperty("file.encoding"));
+    pathStr = pathStr.substring(pathStr.indexOf(":") + 1, pathStr.length());
+    return (pathStr);
   }
-  
+
   void syncLists() {
-    DefaultListModel<JmolInstance> model1 = (DefaultListModel<JmolInstance>) instanceList.getModel();
+    DefaultListModel<JmolInstance> model1 = (DefaultListModel<JmolInstance>) instanceList
+        .getModel();
     for (int j = 0; j < webPanels.length; j++) {
       if (j != panelIndex) {
         JList<JmolInstance> list = webPanels[j].instanceList;
-        DefaultListModel<JmolInstance> model2 = (DefaultListModel<JmolInstance>) list.getModel();
+        DefaultListModel<JmolInstance> model2 = (DefaultListModel<JmolInstance>) list
+            .getModel();
         model2.clear();
         int n = model1.getSize();
         for (int i = 0; i < n; i++)
@@ -936,7 +945,7 @@ abstract class WebPanel extends JPanel implements ActionListener,
     saveButton.setEnabled(nListed > 0);
     viewButton.setEnabled(false);
     deleteInstanceButton.setEnabled(nSelected > 0);
-//    showInstanceButton.setEnabled(nSelected == 1);
+    //    showInstanceButton.setEnabled(nSelected == 1);
   }
 
   class InstanceCellRenderer extends JLabel implements ListCellRenderer<Object> {
@@ -961,11 +970,10 @@ abstract class WebPanel extends JPanel implements ActionListener,
     }
   }
 
-  public static boolean checkOption( Object o) {
-    return (o instanceof Boolean && ((Boolean) o).booleanValue()
-        || o instanceof Integer && ((Integer) o).intValue() != 0);
+  public static boolean checkOption(Object o) {
+    return (o instanceof Boolean && ((Boolean) o).booleanValue() || o instanceof Integer
+        && ((Integer) o).intValue() != 0);
   }
-
 
 }
 
@@ -1062,7 +1070,8 @@ class ArrayListTransferHandler extends TransferHandler {
     return true;
   }
 
-  private static Object objectOf(DefaultListModel<?> listModel, Object objectName) {
+  private static Object objectOf(DefaultListModel<?> listModel,
+                                 Object objectName) {
     if (objectName instanceof String) {
       String name = (String) objectName;
       Object o;

@@ -30,6 +30,8 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.ResourceBundle.Control;
+
 import javax.swing.ImageIcon;
 
 import org.jmol.i18n.GT;
@@ -37,22 +39,22 @@ import org.jmol.i18n.GT;
 /**
  * Provides access to resources (for example, strings and images). This class is
  * a singleton which is retrieved by the getInstance method.
- *
+ * 
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-class JmolResourceHandler {
+public class JmolResourceHandler {
 
   private static JmolResourceHandler instance;
   private ResourceBundle stringsResourceBundle;
   private ResourceBundle generalResourceBundle;
-  
+
   public static Object codePath;
 
   private JmolResourceHandler() {
     String language = "en";
     String country = "";
     String localeString = GT.getLanguage();
-//    String localeString = System.getProperty("user.language");
+    //    String localeString = System.getProperty("user.language");
     if (localeString != null) {
       StringTokenizer st = new StringTokenizer(localeString, "_");
       if (st.hasMoreTokens()) {
@@ -63,22 +65,24 @@ class JmolResourceHandler {
       }
     }
     Locale locale = new Locale(language, country);
-    stringsResourceBundle =
-      ResourceBundle.getBundle("org.openscience.jmol.app.jmolpanel.Properties.Jmol", locale);
+    Control control = Control.getControl(Control.FORMAT_PROPERTIES);
+
+    stringsResourceBundle = ResourceBundle.getBundle(
+        "org.openscience.jmol.app.jmolpanel.Properties.Jmol", locale, control);
 
     try {
       String t = "/org/openscience/jmol/app/jmolpanel/Properties/Jmol-resources.properties";
-      generalResourceBundle =
-        new PropertyResourceBundle(getClass().getResourceAsStream(t));
+      generalResourceBundle = new PropertyResourceBundle(getClass()
+          .getResourceAsStream(t));
     } catch (IOException ex) {
       throw new RuntimeException(ex.toString());
     }
   }
 
   static void clear() {
-    instance = null;  
+    instance = null;
   }
-  
+
   static JmolResourceHandler getInstance() {
     if (instance == null) {
       instance = new JmolResourceHandler();
@@ -86,11 +90,11 @@ class JmolResourceHandler {
     return instance;
   }
 
-  static String getStringX(String key) {
+  public static String getStringX(String key) {
     return getInstance().getString(key);
   }
 
-  static ImageIcon getIconX(String key){ 
+  public static ImageIcon getIconX(String key) {
     return getInstance().getIcon(key);
   }
 
@@ -121,24 +125,29 @@ class JmolResourceHandler {
 
   private synchronized String getString(String key) {
 
+    // BH 2019.07.10 avoid all trapped Exceptions
     String result = null;
-    try {
-      result = stringsResourceBundle.getString(key);
-    } catch (MissingResourceException e) {
-    }
-    if (result == null) {
+    if (stringsResourceBundle != null && stringsResourceBundle.containsKey(key))
       try {
-        result = generalResourceBundle.getString(key);
+        result = stringsResourceBundle.getString(key);
       } catch (MissingResourceException e) {
       }
+    if (result == null) {
+      if (generalResourceBundle.containsKey(key))
+        try {
+          result = generalResourceBundle.getString(key);
+        } catch (MissingResourceException e) {
+        }
     }
     return result != null ? result : key;
   }
 
   /**
-   * A wrapper for easy detection which strings in the
-   * source code are localized.
-   * @param text Text to translate
+   * A wrapper for easy detection which strings in the source code are
+   * localized.
+   * 
+   * @param text
+   *        Text to translate
    * @return Translated text
    */
   /*private synchronized String translate(String text) {
@@ -155,4 +164,3 @@ class JmolResourceHandler {
   }*/
 
 }
-

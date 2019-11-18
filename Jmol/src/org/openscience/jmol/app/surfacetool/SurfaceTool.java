@@ -28,7 +28,6 @@ package org.openscience.jmol.app.surfacetool;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import javax.swing.JOptionPane;
 
 import org.jmol.api.JmolViewer;
@@ -60,7 +59,7 @@ public class SurfaceTool {
   private final P3 center = new P3();
   private final V3 boxVec = new V3();
   //surface specific parameters
-  private final List<SurfaceStatus> surfaces = new  ArrayList<SurfaceStatus>();
+  private final List<SurfaceStatus> surfaces = new ArrayList<SurfaceStatus>();
 
   final static int DEGREES = 0;
   final static int RADIANS = 1;

@@ -39,7 +39,7 @@ import org.openscience.jmol.app.jmolpanel.JmolPanel;
 
 /**
  * Manages a list of recently opened files.
- *
+ * 
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
 class RecentFilesDialog extends JDialog implements ActionListener,
@@ -54,8 +54,10 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   JList<String> fileList;
   java.util.Properties props;
 
-  /** Creates a hidden recent files dialog
-   * @param boss 
+  /**
+   * Creates a hidden recent files dialog
+   * 
+   * @param boss
    */
   public RecentFilesDialog(java.awt.Frame boss) {
 
@@ -64,7 +66,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     getFiles();
     getContentPane().setLayout(new java.awt.BorderLayout());
     JPanel buttonPanel = new JPanel();
-    
+
     okButton = addButton(buttonPanel, GT.$("Open"));
     cancelButton = addButton(buttonPanel, GT.$("Cancel"));
     clearButton = addButton(buttonPanel, GT.$("Clear"));
@@ -76,19 +78,18 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
     MouseListener dblClickListener = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-          if (e.getClickCount() == 2) {
-            int dblClickIndex = fileList.locationToIndex(e.getPoint());
-            if (dblClickIndex >= 0 &&
-                dblClickIndex < files.length &&
-                files[dblClickIndex] != null) {
-              selectedFileName = files[dblClickIndex];
-              close();
-            }
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+          int dblClickIndex = fileList.locationToIndex(e.getPoint());
+          if (dblClickIndex >= 0 && dblClickIndex < files.length
+              && files[dblClickIndex] != null) {
+            selectedFileName = files[dblClickIndex];
+            close();
           }
         }
-      };
+      }
+    };
     fileList.addMouseListener(dblClickListener);
 
     getContentPane().add("Center", fileList);
@@ -113,9 +114,11 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   }
 
   /**
-   * Adds this file to the history. If already present,
-   * this file is premoted to the top position.
-   * @param name Name of the file
+   * Adds this file to the history. If already present, this file is premoted to
+   * the top position.
+   * 
+   * @param name
+   *        Name of the file
    */
   public void addFile(String name) {
 
@@ -152,7 +155,10 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     saveList();
   }
 
-  /** Saves the list to the history file. Called automatically when files are added **/
+  /**
+   * Saves the list to the history file. Called automatically when files are
+   * added
+   **/
   public void saveList() {
     for (int i = 0; i < MAX_FILES; i++)
       if (files[i] != null)
@@ -161,8 +167,9 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   }
 
   /**
-   *   @return String The name of the file picked or null if the action was aborted.
-  **/
+   * @return String The name of the file picked or null if the action was
+   *         aborted.
+   **/
   public String getFile() {
     return selectedFileName;
   }
@@ -180,13 +187,13 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   void clear() {
     files = new String[MAX_FILES];
     fileList.setListData(files);
-       for (int i = 0; i < MAX_FILES; i++) {
-        props.setProperty("recentFilesFile" + i, "");
+    for (int i = 0; i < MAX_FILES; i++) {
+      props.setProperty("recentFilesFile" + i, "");
     }
     JmolPanel.historyFile.addProperties(props);
     cancel();
   }
-  
+
   void close() {
     setVisible(false);
   }
@@ -235,7 +242,8 @@ class RecentFilesDialog extends JDialog implements ActionListener,
 
   /**
    * 
-   * " (*)" appended to a file name indicates that this file was loaded asynchronously
+   * " (*)" appended to a file name indicates that this file was loaded
+   * asynchronously
    * 
    * @param fullPathName
    */

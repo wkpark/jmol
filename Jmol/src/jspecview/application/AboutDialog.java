@@ -87,7 +87,7 @@ public class AboutDialog extends JDialog {
    * no title and modality to true
    * @param frame parent container for the About dialog
    */
-  AboutDialog(Frame frame) {
+  public AboutDialog(Frame frame) {
     this(frame, "", true);
   }
 

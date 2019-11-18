@@ -24,16 +24,17 @@
 
 package org.openscience.jmol.app.jsonkiosk;
 
-
 /**
- * a client of a JsonNioService -- just needs notices of the service shutting down 
- * or indicating that a banner needs to be changed.
+ * a client of a JsonNioService -- just needs notices of the service shutting
+ * down or indicating that a banner needs to be changed.
  * 
  */
 public interface JsonNioClient {
 
   void nioRunContent(JsonNioServer jsonNioService);
+
   void setBannerLabel(String label);
+
   void nioClosed(JsonNioServer jsonNioService);
- 
+
 }

@@ -45,7 +45,7 @@ class LogPanel {
 
     //Create the log first, because the action listeners
     //need to refer to it.
-    logArea = new JTextArea(30,20);
+    logArea = new JTextArea(30, 20);
     logArea.setMargin(new Insets(5, 5, 5, 5));
     logArea.setEditable(false);
     JScrollPane logScrollPane = new JScrollPane(logArea);
@@ -53,7 +53,8 @@ class LogPanel {
     //Create a panel of the log and its label
     JPanel logPanel = new JPanel();
     logPanel.setLayout(new BorderLayout());
-    logPanel.setBorder(BorderFactory.createTitledBorder(GT.$("Log and Error Messages:")));
+    logPanel.setBorder(BorderFactory.createTitledBorder(GT
+        .$("Log and Error Messages:")));
     logPanel.add(logScrollPane);
     return logPanel;
   }
@@ -61,8 +62,9 @@ class LogPanel {
   static JPanel getMiniPanel() {
     JPanel miniPanel = new JPanel();
     miniPanel.setLayout(new BorderLayout());
-    miniPanel.setBorder(BorderFactory.createTitledBorder(GT.$("Messages (see Log tab for full history):")));
-    miniLogArea = new JTextArea(2,20);
+    miniPanel.setBorder(BorderFactory.createTitledBorder(GT
+        .$("Messages (see Log tab for full history):")));
+    miniLogArea = new JTextArea(2, 20);
     miniLogArea.setEditable(false);
     JScrollPane miniScrollPane = new JScrollPane(miniLogArea);
     miniPanel.add(miniScrollPane);
@@ -70,7 +72,7 @@ class LogPanel {
   }
 
   static void log(String message) {
-    if (resetFlag){
+    if (resetFlag) {
       logArea.setText("");
       miniLogArea.setText("");
     }
@@ -83,5 +85,5 @@ class LogPanel {
 
   static String getText() {
     return logArea.getText();
-  }  
+  }
 }

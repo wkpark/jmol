@@ -23,7 +23,6 @@
  */
 package org.openscience.jmol.app.jmolpanel;
 
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.IOException;
@@ -42,11 +41,11 @@ import javax.swing.event.HyperlinkListener;
 import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 
-class AboutDialog extends JDialog implements HyperlinkListener {
+public class AboutDialog extends JDialog implements HyperlinkListener {
 
   private JmolViewer vwr;
-    
-  AboutDialog(JFrame fr, JmolViewer vwr) throws IOException {
+
+  public AboutDialog(JFrame fr, JmolViewer vwr) throws IOException {
     super(fr, GT.$("About Jmol"), true);
     this.vwr = vwr;
     JScrollPane scroller = new JScrollPane() {
@@ -62,9 +61,12 @@ class AboutDialog extends JDialog implements HyperlinkListener {
     };
     JEditorPane html = new JEditorPane();
     html.setContentType("text/html");
-    html.setText(PT.rep(GuiMap.getResourceString(this, getClass().getClassLoader()
-        .getResource(JmolResourceHandler.getStringX("About.aboutURL")).getPath()),
-        "SPLASH", "" + getClass().getResource("about.jpg")));
+    html.setText(PT.rep(
+        GuiMap.getResourceString(
+            this,
+            getClass().getClassLoader()
+                .getResource(JmolResourceHandler.getStringX("About.aboutURL"))
+                .getPath()), "SPLASH", "" + getClass().getResource("about.jpg")));
     html.setEditable(false);
     html.addHyperlinkListener(this);
     scroller.getViewport().add(html);

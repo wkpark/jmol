@@ -285,8 +285,10 @@ public abstract class GenericConsole implements JmolAppConsoleInterface, JmolCal
     char mnemonic = getMnemonic(label);
     if (mnemonic != ' ')
       ((JmolAbstractButton) button).setMnemonic(mnemonic);
-    if (menuMap != null)
+    if (menuMap != null) {
+      if (key.indexOf("NMR.")>=0)System.out.println("genericconsole mapping " + key + " to " + label);
       menuMap.put(key, button);
+    }
   }
 
   ///////////// JmolCallbackListener interface

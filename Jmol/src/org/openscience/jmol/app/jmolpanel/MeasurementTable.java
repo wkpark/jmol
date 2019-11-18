@@ -57,9 +57,11 @@ public class MeasurementTable extends JDialog {
 
   /**
    * Constructor
-   *
-   * @param parentFrame the parent frame
-   * @param vwr the JmolViewer in which the animation will take place (?)
+   * 
+   * @param parentFrame
+   *        the parent frame
+   * @param vwr
+   *        the JmolViewer in which the animation will take place (?)
    */
   public MeasurementTable(Viewer vwr, JFrame parentFrame) {
 
@@ -69,7 +71,7 @@ public class MeasurementTable extends JDialog {
     JPanel container = new JPanel();
     container.setLayout(new BorderLayout());
 
-    container.add(constructMeasurementTable(),BorderLayout.CENTER);
+    container.add(constructMeasurementTable(), BorderLayout.CENTER);
 
     JPanel foo = new JPanel();
     foo.setLayout(new BorderLayout());
@@ -77,7 +79,7 @@ public class MeasurementTable extends JDialog {
     foo.add(constructDismissButtonPanel(), BorderLayout.EAST);
 
     container.add(foo, BorderLayout.SOUTH);
-    
+
     addWindowListener(new MeasurementListWindowListener());
 
     getContentPane().add(container);
@@ -90,30 +92,32 @@ public class MeasurementTable extends JDialog {
     measurementTable = new JTable(measurementTableModel);
 
     measurementTable
-      .setPreferredScrollableViewportSize(new Dimension(300, 100));
+        .setPreferredScrollableViewportSize(new Dimension(300, 100));
 
     measurementTable.getColumnModel().getColumn(0).setPreferredWidth(50);
-    for (int i = 5; --i > 0; )
+    for (int i = 5; --i > 0;)
       measurementTable.getColumnModel().getColumn(i).setPreferredWidth(15);
 
     measurementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     measurementTable.setRowSelectionAllowed(true);
     measurementTable.setColumnSelectionAllowed(false);
-    ListSelectionModel measurementSelection = measurementTable.getSelectionModel();
+    ListSelectionModel measurementSelection = measurementTable
+        .getSelectionModel();
     measurementSelection.addListSelectionListener(new ListSelectionListener() {
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-          if (e.getValueIsAdjusting()) return;
-          ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-          if (lsm.isSelectionEmpty()) {
-            selectedMeasurementRow = -1;
-            deleteButton.setEnabled(false);
-          } else {
-            selectedMeasurementRow = lsm.getMinSelectionIndex();
-            deleteButton.setEnabled(true);
-          }
+      @Override
+      public void valueChanged(ListSelectionEvent e) {
+        if (e.getValueIsAdjusting())
+          return;
+        ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+        if (lsm.isSelectionEmpty()) {
+          selectedMeasurementRow = -1;
+          deleteButton.setEnabled(false);
+        } else {
+          selectedMeasurementRow = lsm.getMinSelectionIndex();
+          deleteButton.setEnabled(true);
         }
-      });
+      }
+    });
 
     return new JScrollPane(measurementTable);
   }
@@ -124,22 +128,23 @@ public class MeasurementTable extends JDialog {
 
     deleteButton = new JButton(GT.$("Delete"));
     deleteButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          vwr.script("measures delete " + (selectedMeasurementRow + 1) + JC.SCRIPT_EDITOR_IGNORE);
-          updateMeasurementTableData();
-        }
-      });
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        vwr.script("measures delete " + (selectedMeasurementRow + 1)
+            + JC.SCRIPT_EDITOR_IGNORE);
+        updateMeasurementTableData();
+      }
+    });
     deleteButton.setEnabled(false);
-    
+
     deleteAllButton = new JButton(GT.$("DeleteAll"));
     deleteAllButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          vwr.script("measures delete" + JC.SCRIPT_EDITOR_IGNORE);
-          updateMeasurementTableData();
-        }
-      });
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        vwr.script("measures delete" + JC.SCRIPT_EDITOR_IGNORE);
+        updateMeasurementTableData();
+      }
+    });
     deleteAllButton.setEnabled(false);
 
     measurementButtonPanel.add(deleteAllButton);
@@ -153,11 +158,11 @@ public class MeasurementTable extends JDialog {
 
     JButton dismissButton = new JButton(GT.$("Dismiss"));
     dismissButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          close();
-        }
-      });
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        close();
+      }
+    });
     dismissButtonPanel.add(dismissButton);
     getRootPane().setDefaultButton(dismissButton);
     return dismissButtonPanel;
@@ -202,23 +207,28 @@ public class MeasurementTable extends JDialog {
 
   class MeasurementTableModel extends AbstractTableModel {
 
-    final String[] measurementHeaders = {
-      GT.$("Value"),
-      "a", "b", "c", "d", };
+    final String[] measurementHeaders = { GT.$("Value"), "a", "b", "c", "d", };
 
     @Override
-    public String getColumnName(int col) { 
+    public String getColumnName(int col) {
       return measurementHeaders[col];
-    } 
+    }
+
     @Override
-    public int getRowCount() { return vwr.getMeasurementCount(); }
+    public int getRowCount() {
+      return vwr.getMeasurementCount();
+    }
+
     @Override
-    public int getColumnCount() { return 5; }
+    public int getColumnCount() {
+      return 5;
+    }
 
     @Override
     public Class<? extends String> getColumnClass(int col) {
       return stringClass;
     }
+
     @Override
     public Object getValueAt(int row, int col) {
       //System.out.println("meata " + row + " " + col);
@@ -234,7 +244,9 @@ public class MeasurementTable extends JDialog {
     }
 
     @Override
-    public boolean isCellEditable(int row, int col) { return false; }
+    public boolean isCellEditable(int row, int col) {
+      return false;
+    }
   }
 
   public void updateTables() {

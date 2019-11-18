@@ -72,15 +72,15 @@ public class LoopedStreams {
   public LoopedStreams() throws IOException {
     pipedOS.connect(pipedIS);
     startByteArrayReaderThread();
-  }    // LoopedStreams()
+  } // LoopedStreams()
 
   public InputStream getInputStream() {
     return pipedIS;
-  }    // getInputStream()
+  } // getInputStream()
 
   public OutputStream getOutputStream() {
     return byteArrayOS;
-  }    // getOutputStream()
+  } // getOutputStream()
 
   private void startByteArrayReaderThread() {
 
@@ -96,7 +96,7 @@ public class LoopedStreams {
             byte[] buffer = null;
             synchronized (byteArrayOS) {
               buffer = byteArrayOS.toByteArray();
-              byteArrayOS.reset();    // Clear the buffer.
+              byteArrayOS.reset(); // Clear the buffer.
             }
             try {
 
@@ -109,7 +109,7 @@ public class LoopedStreams {
               // invoke a Runnable. For now we simply exit.
               System.exit(1);
             }
-          } else {                    // No data available, go to sleep.
+          } else { // No data available, go to sleep.
             try {
 
               // Check the ByteArrayOutputStream every
@@ -121,9 +121,6 @@ public class LoopedStreams {
         }
       }
     }).start();
-  }    // startByteArrayReaderThread()
-}      // LoopedStreams
-
-
-
+  } // startByteArrayReaderThread()
+} // LoopedStreams
 

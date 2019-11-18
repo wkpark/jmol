@@ -1,12 +1,17 @@
 package org.openscience.jmol.app;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Scanner;
+
+import javax.swing.Timer;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.script.ScriptContext;
+import org.jmol.viewer.Viewer;
 
 public class InputScannerThread extends Thread {
- 
+
   private JmolViewer vwr;
   private Scanner scanner;
   private boolean isSilent;
@@ -18,6 +23,7 @@ public class InputScannerThread extends Thread {
   }
 
   private StringBuilder buffer = new StringBuilder();
+
   @Override
   public synchronized void start() {
     scanner = new Scanner(System.in);
@@ -31,27 +37,57 @@ public class InputScannerThread extends Thread {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       say(null);
       while (true) {
-        Thread.sleep(100);
-        while (scanner.hasNext()) {
-          String s = scanner.next();
-          s = s.substring(0, s.length() - 1);
-          if (s.toLowerCase().equals("exitjmol"))
-            System.exit(0);
-          if (vwr.checkHalt(s, false)) {
-            buffer = new StringBuilder();
-            s = "";
-          }
-          buffer.append(s).append('\n');
-          if (!checkCommand() && buffer.length() == 1) {
-            say(null);
-          }
-        }
+        if (!mainLoop())
+          break;
       }
     } catch (InterruptedException e) {
       System.exit(1);
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
+    }
+  }
+
+  private Timer t;
+
+  boolean mainLoop() throws InterruptedException {
+
+    if (Viewer.isSwingJS) {
+      if (t == null) {
+        t = new Timer(100, new ActionListener() {
+
+          @Override
+          public void actionPerformed(ActionEvent e) {
+            scan();
+          }
+
+        });
+        t.setRepeats(false);
+        t.start();
+      } else {
+        t.restart();
+      }
+      return false;
+    }
+    Thread.sleep(100);
+    scan();
+    return true;
+  }
+
+  void scan() {
+    while (scanner.hasNext()) {
+      String s = scanner.next();
+      s = s.substring(0, s.length() - 1);
+      if (s.toLowerCase().equals("exitjmol"))
+        System.exit(0);
+      if (vwr.checkHalt(s, false)) {
+        buffer = new StringBuilder();
+        s = "";
+      }
+      buffer.append(s).append('\n');
+      if (!checkCommand() && buffer.length() == 1) {
+        say(null);
+      }
     }
   }
 

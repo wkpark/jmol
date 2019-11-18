@@ -80,8 +80,7 @@ public class Splash extends Window implements SplashInterface {
   @Override
   public void paint(Graphics g) {
 
-    g.drawImage(splashImage, BORDERSIZE, BORDERSIZE, imgWidth, imgHeight,
-        this);
+    g.drawImage(splashImage, BORDERSIZE, BORDERSIZE, imgWidth, imgHeight, this);
     g.setColor(BORDERCOLOR);
     g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
     g.setColor(TEXTCOLOR);

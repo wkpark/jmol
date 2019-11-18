@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
-
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
@@ -57,8 +56,8 @@ class JmolInstance {
     return (ji.script == null ? null : ji);
   }
 
-  private JmolInstance(JmolViewer vwr, String name,
-      int width, int height, int nWidgets) {
+  private JmolInstance(JmolViewer vwr, String name, int width, int height,
+      int nWidgets) {
     this.vwr = vwr;
     this.name = name;
     this.width = width;
@@ -71,7 +70,7 @@ class JmolInstance {
     }
     bgColor = vwr.getBackgroundArgb();
     javaname = name.replaceAll("[^a-zA-Z_0-9-]", "_"); //escape filename characters
-    whichWidgets=BS.newN(nWidgets);
+    whichWidgets = BS.newN(nWidgets);
     FileSystemView Directories = FileSystemView.getFileSystemView();
     File homedir = Directories.getHomeDirectory();
     String homedirpath = homedir.getPath();
@@ -119,31 +118,32 @@ class JmolInstance {
     } catch (IOException exc) {
       throw exc;
     }
-/* 
- * But if the file is deleted, then the next time this is
- * called, we could end up with a 0-length file.
- * Particularly when we save to a second directory with
- * a different name
- *  
- *     
-    if (this.pictIsScratchFile) { //only delete the file if not using file already saved for user.
-      File scratchtoerase = new File(scratchname);
-      boolean deleteOK = scratchtoerase.delete();
-      if (!(deleteOK)) {
-        IOException IOe = (new IOException("Failed to delete scratch file "
-            + scratchname + "."));
-        throw IOe;
-      }
-    }
-    this.pictFile = imagename;
-    this.pictIsScratchFile = false;
-*/
+    /* 
+     * But if the file is deleted, then the next time this is
+     * called, we could end up with a 0-length file.
+     * Particularly when we save to a second directory with
+     * a different name
+     *  
+     *     
+        if (this.pictIsScratchFile) { //only delete the file if not using file already saved for user.
+          File scratchtoerase = new File(scratchname);
+          boolean deleteOK = scratchtoerase.delete();
+          if (!(deleteOK)) {
+            IOException IOe = (new IOException("Failed to delete scratch file "
+                + scratchname + "."));
+            throw IOe;
+          }
+        }
+        this.pictFile = imagename;
+        this.pictIsScratchFile = false;
+    */
     return true;
   }
+
   boolean delete() throws IOException {
     File scratchToErase = new File(pictFile);
     if (scratchToErase.exists() && !scratchToErase.delete())
-        throw new IOException("Failed to delete scratch file " + pictFile + ".");
+      throw new IOException("Failed to delete scratch file " + pictFile + ".");
     //delete any other scratch files we create with an instance.
     return true;
   }

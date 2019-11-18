@@ -47,7 +47,7 @@ public class Test extends JPanel implements ActionListener {
   /*
    * old code -- not implemented in Jmol 11.3
    */
-  
+
   private static final long serialVersionUID = 1L;
   // The constants used to generate panels, etc.
   JButton StateButton, FileButton, PathButton, movetoTime,
@@ -156,8 +156,7 @@ public class Test extends JPanel implements ActionListener {
       // animated moveto...
       statestr = PT.rep(statestr, "set refreshing false;",
           "set refreshing true;");
-      statestr = PT.rep(statestr,
-          "moveto /* time, axisAngle */ 0.0",
+      statestr = PT.rep(statestr, "moveto /* time, axisAngle */ 0.0",
           "moveto /* time, axisAngle */ 5.0");
       LogPanel.log("The state below should have a 5 second moveto time...");
       LogPanel.log(statestr);

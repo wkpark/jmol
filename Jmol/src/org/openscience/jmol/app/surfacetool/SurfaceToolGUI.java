@@ -39,7 +39,6 @@ import java.awt.event.WindowListener;
 import java.net.URL;
 import java.util.Hashtable;
 
-
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -261,7 +260,8 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
       objectsPanel = new JPanel();
       objectsPanel.setBorder(BorderFactory.createTitledBorder(GT
           .$("Select Surface(s)")));
-      surfaceList = new JList<SurfaceStatus>(new DefaultListModel<SurfaceStatus>());
+      surfaceList = new JList<SurfaceStatus>(
+          new DefaultListModel<SurfaceStatus>());
       surfaceList.setCellRenderer(new SurfaceListCellRenderer());
       surfaceList.addListSelectionListener(this);
       updateSurfaceList();
@@ -503,7 +503,8 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
     //this just check that the list is complete and other things will be updated
     //as they change?  For starters, we'll just reset it and make it match the
     //contents of the slicer.surfaces list.  May only need ID and color...
-    DefaultListModel<SurfaceStatus> listModel = (DefaultListModel<SurfaceStatus>) surfaceList.getModel();
+    DefaultListModel<SurfaceStatus> listModel = (DefaultListModel<SurfaceStatus>) surfaceList
+        .getModel();
     listModel.removeAllElements();
     int size = slicer.getSurfaces().size();
     for (int i = 0; i < size; i++) {
@@ -662,7 +663,8 @@ class SurfaceToolGUI extends JPanel implements WindowConstants, WindowListener,
 
   }
 
-  class SurfaceListCellRenderer extends JLabel implements ListCellRenderer<Object> {
+  class SurfaceListCellRenderer extends JLabel implements
+      ListCellRenderer<Object> {
 
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value,

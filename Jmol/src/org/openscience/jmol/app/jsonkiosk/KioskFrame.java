@@ -30,9 +30,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
- * A borderless rectangle, like the applet, that contains the application
- * for use in kiosk-style displays, as for example projected on the wall
- * as in http://molecularPlayground.org
+ * A borderless rectangle, like the applet, that contains the application for
+ * use in kiosk-style displays, as for example projected on the wall as in
+ * http://molecularPlayground.org
  * 
  */
 public class KioskFrame extends JFrame {
@@ -52,5 +52,5 @@ public class KioskFrame extends JFrame {
       return;
     getContentPane().add(kioskPanel);
   }
-  
+
 }

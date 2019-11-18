@@ -170,7 +170,6 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   private String terminatorMessage = "NEXT_SCRIPT";
   private String resetMessage = "RESET_SCRIPT";
 
-
   /*
    * When Jmol gets the terminator message, we tell the Hub that we're done
    * with the script and need the name of the next one to load.
@@ -206,7 +205,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   public int getPort() {
     return port;
   }
-  
+
   /* (non-Javadoc)
    * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#send(int, java.lang.String)
    */
@@ -227,23 +226,21 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       }
       msg = msg.trim();
       if (msg.startsWith("Mouse:"))
-        msg = "{\"type\":\"sync\", \"sync\":\""
-            + msg.substring(6) + "\"}";
-        sendMessage(null, msg, null);
+        msg = "{\"type\":\"sync\", \"sync\":\"" + msg.substring(6) + "\"}";
+      sendMessage(null, msg, null);
     } catch (IOException e) {
       // ignore
     }
   }
 
   protected int version = 1;
-  
+
   /* (non-Javadoc)
    * @see org.openscience.jmol.app.jsonkiosk.JsonNioServer#startService(int, org.openscience.jmol.app.jsonkiosk.JsonNioClient, org.jmol.api.JmolViewer, java.lang.String)
    */
   @Override
-  public void startService(int port, JsonNioClient client,
-                           Viewer jmolViewer, String name, int version)
-      throws IOException {
+  public void startService(int port, JsonNioClient client, Viewer jmolViewer,
+                           String name, int version) throws IOException {
     this.version = version;
     this.port = Math.abs(port);
     this.client = client;
@@ -265,7 +262,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       s = getJmolValueAsString(jmolViewer, "NIOresetMessage");
       if (s != "")
         resetMessage = s;
-      
+
       setEnabled();
       Logger.info("NIOcontentPath=" + contentPath);
       Logger.info("NIOterminatorMessage=" + terminatorMessage);
@@ -304,7 +301,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         @Override
         public void packetSent(NIOSocket arg0, Object arg1) {
           // TODO
-          
+
         }
       });
 
@@ -339,7 +336,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
           @Override
           public void packetSent(NIOSocket arg0, Object arg1) {
             // TODO
-            
+
           }
         });
       }
@@ -356,9 +353,11 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   private void setEnabled() {
     System.out.println("OK -- JSONNIOSERVICE");
     contentDisabled = false;//(getJmolValueAsString(vwr, "NIOcontentDisabled").equals("true"));
-    motionDisabled = (getJmolValueAsString(vwr, "NIOmotionDisabled").equals("true"));
-    System.out.println("JsonNIOService setEnabled contentdisabled=" + contentDisabled + " motionDisabled=" + motionDisabled);
-  } 
+    motionDisabled = (getJmolValueAsString(vwr, "NIOmotionDisabled")
+        .equals("true"));
+    System.out.println("JsonNIOService setEnabled contentdisabled="
+        + contentDisabled + " motionDisabled=" + motionDisabled);
+  }
 
   public static String getJmolValueAsString(Viewer vwr, String var) {
     return (vwr == null ? "" : "" + vwr.getP(var));
@@ -368,7 +367,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
     @Override
     public void run() {
-      Logger.info(Thread.currentThread().getName() + " JsonNioSocket on " + port);
+      Logger.info(Thread.currentThread().getName() + " JsonNioSocket on "
+          + port);
       try {
         while (!halt) {
           selectNonBlocking();
@@ -454,7 +454,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
             @Override
             public void connectionBroken(NIOSocket socket, Exception arg1) {
-              Logger.info("JsonNioService" + myName + " server connection broken");
+              Logger.info("JsonNioService" + myName
+                  + " server connection broken");
               if (socket == outSocket)
                 outSocket = null;
             }
@@ -485,7 +486,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
   protected class JsonNioServerThread implements Runnable {
     @Override
     public void run() {
-      Logger.info(Thread.currentThread().getName() + " JsonNioServerSocket on " + port);
+      Logger.info(Thread.currentThread().getName() + " JsonNioServerSocket on "
+          + port);
       try {
         while (!halt)
           selectBlocking();
@@ -516,10 +518,10 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       JSONObject json = new JSONObject(msg);
       System.out.println("JsonNioService json=" + json);
       if (version == 1) {
-      if (socket != null && json.has("magic")
-          && json.getString("magic").equals("JmolApp")
-          && json.getString("role").equals("out"))
-        outSocket = socket;
+        if (socket != null && json.has("magic")
+            && json.getString("magic").equals("JmolApp")
+            && json.getString("role").equals("out"))
+          outSocket = socket;
       } else {
         outSocket = inSocket;
       }
@@ -531,11 +533,11 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     }
   }
 
-  private void processJSON(JSONObject json, String msg)
-      throws Exception {
+  private void processJSON(JSONObject json, String msg) throws Exception {
     if (json == null)
       json = new JSONObject(msg);
-    System.out.println("JsonNioService processJSON msg=" + msg + " type=" + json.getString("type"));
+    System.out.println("JsonNioService processJSON msg=" + msg + " type="
+        + json.getString("type"));
     int pt = ("banner...." + "command..." + "content..." + "move......"
         + "quit......" + "sync......" + "touch.....").indexOf(json
         .getString("type"));
@@ -544,14 +546,16 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     case 0: // banner
       if (contentDisabled)
         break;
-      setBanner((json.has("text") ? json.getString("text") : json.getString(
-          "visibility").equalsIgnoreCase("off") ? null : ""), false);
+      setBanner(
+          (json.has("text") ? json.getString("text") : json.getString(
+              "visibility").equalsIgnoreCase("off") ? null : ""), false);
       break;
     case 10: // command
       if (contentDisabled)
         break;
       if (json.containsKey("var") && json.containsKey("data"))
-        vwr.g.setUserVariable(json.get("var").toString(), SV.getVariable(json.get("data")));
+        vwr.g.setUserVariable(json.get("var").toString(),
+            SV.getVariable(json.get("data")));
       sendScript(json.getString("command"));
       break;
     case 20: // content
@@ -560,8 +564,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         break;
       }
       String id = json.getString("id");
-      String path = PT.rep(contentPath, "%ID%", id).replace(
-          '\\', '/');
+      String path = PT.rep(contentPath, "%ID%", id).replace('\\', '/');
       File f = new File(path);
       Logger.info("JsonNiosService Setting path to " + f.getAbsolutePath());
       pt = path.lastIndexOf('/');
@@ -571,7 +574,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         path = ".";
       JSONObject contentJSON = null;
       try {
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), "UTF-8"));
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+            new FileInputStream(f), "UTF-8"));
         SB sb = SB.newN(8192);
         String line;
         while ((line = br.readLine()) != null)
@@ -608,7 +612,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     case 30: // move
       pt = ("rotate...." + "translate." + "zoom......").indexOf(json
           .getString("style"));
-      System.out.println("JsonNioService processJSON move motionDisabled=" + motionDisabled + " paused=" + isPaused);
+      System.out.println("JsonNioService processJSON move motionDisabled="
+          + motionDisabled + " paused=" + isPaused);
       if (motionDisabled)
         break;
       if (pt != 0 && !isPaused)
@@ -621,8 +626,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         System.out.println("JsonNioService rotate xy " + dx + " " + dy);
         float dxdy = dx * dx + dy * dy;
         boolean isFast = (dxdy > swipeCutoff);
-        boolean disallowSpinGesture = vwr
-            .getBooleanProperty("isNavigating")
+        boolean disallowSpinGesture = vwr.getBooleanProperty("isNavigating")
             || !vwr.getBooleanProperty("allowGestures");
         if (disallowSpinGesture || isFast
             || now - swipeStartTime > swipeDelayMs) {
@@ -647,19 +651,18 @@ public class JsonNioService extends NIOService implements JsonNioServer {
           }
           if (msg == null)
             msg = "Mouse: rotateXYBy " + dx + " " + dy;
-          
+
           System.out.println("JsonNioService syncScript " + msg);
           syncScript(msg);
         }
         previousMoveTime = now;
         break;
       case 10: // translate
-        vwr.syncScript("Mouse: translateXYBy " + json.getString("x")
-            + " " + json.getString("y"), "=", 0);
+        vwr.syncScript("Mouse: translateXYBy " + json.getString("x") + " "
+            + json.getString("y"), "=", 0);
         break;
       case 20: // zoom
-        float zoomFactor = (float) (json.getDouble("scale") / (vwr
-            .tm.zmPct / 100.0f));
+        float zoomFactor = (float) (json.getDouble("scale") / (vwr.tm.zmPct / 100.0f));
         syncScript("Mouse: zoomByFactor " + zoomFactor);
         break;
       }
@@ -679,9 +682,9 @@ public class JsonNioService extends NIOService implements JsonNioServer {
         break;
       // raw touch event
       vwr.acm.processMultitouchEvent(0, json.getInt("eventType"), json
-          .getInt("touchID"), json.getInt("iData"), P3.new3((float) json
-          .getDouble("x"), (float) json.getDouble("y"), (float) json
-          .getDouble("z")), json.getLong("time"));
+          .getInt("touchID"), json.getInt("iData"), P3.new3(
+          (float) json.getDouble("x"), (float) json.getDouble("y"),
+          (float) json.getDouble("z")), json.getLong("time"));
       break;
     }
   }
@@ -702,8 +705,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     } else {
       if (andCenter)
         bannerText = "<center>" + bannerText + "</center>";
-      client.setBannerLabel("<html>" + bannerText
-          + "</html>");
+      client.setBannerLabel("<html>" + bannerText + "</html>");
     }
   }
 
@@ -715,7 +717,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       script = "pause; save orientation 'JsonNios-save'; spin off";
       isPaused = true;
     } else {
-      script = "restore orientation 'JsonNios-save' 1; resume; spin " + wasSpinOn;
+      script = "restore orientation 'JsonNios-save' 1; resume; spin "
+          + wasSpinOn;
       wasSpinOn = false;
     }
     isPaused = isPause;
@@ -741,14 +744,15 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       }
       // this is critical:
       msg += "\n";
-      Logger.info(Thread.currentThread().getName() + " sending " + msg + " to " + socket);
+      Logger.info(Thread.currentThread().getName() + " sending " + msg + " to "
+          + socket);
       socket.write(msg.getBytes("UTF-8"));
     } catch (Throwable e) {
       e.printStackTrace();
     }
   }
-  
-  class JSONObject extends Hashtable<String,Object>{
+
+  class JSONObject extends Hashtable<String, Object> {
 
     public JSONObject() {
     }
@@ -756,7 +760,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     @SuppressWarnings("unchecked")
     JSONObject(String msg) throws Exception {
       SV o = vwr.evaluateExpressionAsVariable(msg);
-      if (!(o.value instanceof Map<?,?>)) 
+      if (!(o.value instanceof Map<?, ?>))
         throw new Exception("invalid JSON: " + msg);
       putAll((Map<String, Object>) o.value);
     }
@@ -772,15 +776,15 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     String getString(String key) throws Exception {
       return containsKey(key) ? get(key).toString() : null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public List<JSONObject> getJSONArray(String key) throws Exception {
       if (!has(key))
         throw new Exception("JSON key not found:" + key);
-      List<JSONObject> list = new  ArrayList<JSONObject>();
+      List<JSONObject> list = new ArrayList<JSONObject>();
       List<SV> svlist = ((SV) get(key)).getList();
       for (int i = 0; i < svlist.size(); i++)
-        list.add(new JSONObject((Map<String, Object>)(svlist.get(i).value)));
+        list.add(new JSONObject((Map<String, Object>) (svlist.get(i).value)));
       return list;
     }
 
@@ -788,7 +792,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       Object o = super.get(key);
       return (o instanceof SV ? SV.oValue(o) : o);
     }
-    
+
     public long getLong(String key) throws Exception {
       if (!has(key))
         throw new Exception("JSON key not found:" + key);
@@ -812,12 +816,13 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       SB sb = new SB();
       sb.append("{");
       String sep = "";
-      for (Entry<String, Object>e : entrySet()) {
-        sb.append(sep).append(PT.esc(e.getKey())).append(":").append(Escape.e(e.getValue()));
+      for (Entry<String, Object> e : entrySet()) {
+        sb.append(sep).append(PT.esc(e.getKey())).append(":")
+            .append(Escape.e(e.getValue()));
         sep = ",";
-      }      
-      return sb.append("}").toString(); 
+      }
+      return sb.append("}").toString();
     }
-    
+
   }
 }

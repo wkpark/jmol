@@ -59,12 +59,14 @@ public class ScriptQueueThread extends JmolThread {
 
   @Override
   protected void run1(int mode) throws InterruptedException {
-    while (true)
+    while (true) {
+      //System.out.println("sqt run1 mode=" + mode);
       switch (mode) {
       case INIT:
         mode = MAIN;
         break;
       case MAIN:
+        //System.out.println("sq run1 stopped=" + stopped + " size="+scriptManager.getScriptQueue().size());
         if (stopped || scriptManager.getScriptQueue().size() == 0) {
           mode = FINISH;
           break;
@@ -75,23 +77,29 @@ public class ScriptQueueThread extends JmolThread {
         System.out.println("running: " + scriptQueueRunning[0] + " "  + queueThreads[0]);
         System.out.println("running: " + scriptQueueRunning[1] + " "  + queueThreads[1]);
         */
-        if (!runNextScript() && !runSleep(100, MAIN))
+        if (!runNextScript() && !runSleep(100, MAIN)) {
+          //System.out.println("sq run1 return1");
           return;
+        }
         break;
       case FINISH:
+        //System.out.println("sq run1 finished");
         scriptManager.queueThreadFinished(pt);
         return;
       }
+    }
   }
 
   private boolean runNextScript() {
     Lst<Lst<Object>> queue = scriptManager.getScriptQueue();
-    if (queue.size() == 0)
+    if (queue.size() == 0) {
       return false;
+    }
     //Logger.info("SCRIPT QUEUE BUSY" +  scriptQueue.size());
     Lst<Object> scriptItem = scriptManager.getScriptItem(false, startedByCommandThread);
-    if (scriptItem == null)
+    if (scriptItem == null) {
       return false; 
+    }
     String script = (String) scriptItem.get(0);
     String statusList = (String) scriptItem.get(1);
     String returnType = (String) scriptItem.get(2);
@@ -101,16 +109,14 @@ public class ScriptQueueThread extends JmolThread {
       Logger.debug("Queue[" + pt + "][" + queue.size()
           + "] scripts; running: " + script);
     }
-    //System.out.println("removing: " + scriptItem + " " + script);
     queue.removeItemAt(0);
-    //System.out.println("removed: " + scriptItem);
 //    if (isScriptFile) {
 //      script = "script " + PT.esc(script);
 //      isScriptFile = false;
 //    }
+
     vwr.evalStringWaitStatusQueued(returnType, script, statusList, isQuiet, true);
     if (queue.size() == 0) {// might have been cleared with an exit
-      //Logger.info("SCRIPT QUEUE READY", 0);
       return false;
     }
     return true;

@@ -64,14 +64,13 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 public class GaussianDialog extends JDialog implements ActionListener,
-                                                       ChangeListener,
-                                                       MouseListener {
+    ChangeListener, MouseListener {
 
   /*
    * By Andy Turner, atrog@sourceforge.net
    * modified and integrated into Jmol by Bob Hanson, hansonr@stolaf.edu, 10/12/2008
    */
-  
+
   Viewer vwr;
 
   private JPanel container;
@@ -87,107 +86,31 @@ public class GaussianDialog extends JDialog implements ActionListener,
   protected JScrollPane editPane;
 
   protected int iscroll;
-  
+
   private static final String DEFAULT_METHOD = "HF";
   private static final String DEFAULT_BASIS = "3-21G**";
   private static final String DEFAULT_CHARGE = "0";
   private static final String DEFAULT_MULT = "1";
-  
-  private static final String[] BASIS_LIST = {"Gen",
-	                                            "3-21G",
-	                                            "3-21G*",
-	                                            "3-21G**",
-	                                            "6-21G",
-	                                            "4-31G",
-	                                            "6-31G",
-	                                            "6-311G",
-	                                            "D95V",
-	                                            "D95",
-	                                            "SHC",
-	                                            "CEP-4G",
-	                                            "CEP-31G",
-	                                            "CEP-121G",
-	                                            "LanL2MB",
-	                                            "LanL2DZ",
-	                                            "SDD",
-	                                            "SDDAll",
-	                                            "cc-pVDZ",
-	                                            "cc-pVTZ",
-	                                            "cc-pVQZ",
-	                                            "cc-pV5Z",
-	                                            "cc-pV6Z",
-	                                            "aug-cc-pVDZ",
-	                                            "aug-cc-pVTZ",
-	                                            "aug-cc-pVQZ",
-	                                            "aug-cc-pV5Z",
-	                                            "aug-cc-pV6Z",
-	                                            "SV",
-	                                            "SVP",
-	                                            "TZV",
-	                                            "TZVP",
-	                                            "MidiX",
-	                                            "EPR-II",
-	                                            "EPR-III",
-	                                            "UGBS",
-	                                            "UGBS1P",
-	                                            "UGBS2P",
-	                                            "UGBS3P",
-	                                            "MTSmall",
-	                                            "DGDZVP",
-	                                            "DGDZVP2",
-	                                            "DGTZVP"};
-  private static final String[] METHOD_LIST = {"HF",
-	                                             "MP2",
-	                                             "MP3",
-	                                             "MP4",
-	                                             "CCSD(T)",
-	                                             "CIS",
-	                                             "CISD",
-	                                             "LSDA",
-	                                             "BLYP",
-	                                             "BP86",
-	                                             "BPW91",
-	                                             "OLYP",
-	                                             "OP86",
-	                                             "OPW91",
-	                                             "PBEPBE",
-	                                             "VSXC",
-	                                             "HCTH93",
-	                                             "HCTH147",
-	                                             "HCTH407",
-	                                             "TPSSTPSS",
-	                                             "B3LYP",
-	                                             "B3PW91",
-	                                             "AM1",
-	                                             "PM3",
-	                                             "CNDO",
-	                                             "INDO",
-	                                             "MNDO",
-	                                             "MINDO3",
-	                                             "ZINDO",
-	                                             "UFF",
-	                                             "AMBER",
-	                                             "DREIDING",
-	                                             "Huckel"};
-  private static final String[] DF_LIST = {"None",
-	                                         "Auto",
-	                                         "DGA1",
-	                                         "DGA2"};
-  private static final String[] MEMORY_LIST = {"Default",
-	                                             "100MB",
-	                                             "500MB",
-	                                             "1GB",
-	                                             "2GB",
-	                                             "4GB",
-	                                             "7GB",
-	                                             "15GB"};
-  
-  private static final String NOBASIS_LIST = 
-	  "AM1 PM3 CNDO INDO MNDO MINDO3 ZINDO UFF AMBER DREIDING Huckel";
-  private static final String DFT_LIST = 
-    "LSDA BLYP BP86 BPW91 OLYP OP86 OPW91 PBEPBE VSXC HCTH93 NCTH147 HCTH407 TPSSTPSS B3LYP B3PW91";
 
-  
+  private static final String[] BASIS_LIST = { "Gen", "3-21G", "3-21G*",
+      "3-21G**", "6-21G", "4-31G", "6-31G", "6-311G", "D95V", "D95", "SHC",
+      "CEP-4G", "CEP-31G", "CEP-121G", "LanL2MB", "LanL2DZ", "SDD", "SDDAll",
+      "cc-pVDZ", "cc-pVTZ", "cc-pVQZ", "cc-pV5Z", "cc-pV6Z", "aug-cc-pVDZ",
+      "aug-cc-pVTZ", "aug-cc-pVQZ", "aug-cc-pV5Z", "aug-cc-pV6Z", "SV", "SVP",
+      "TZV", "TZVP", "MidiX", "EPR-II", "EPR-III", "UGBS", "UGBS1P", "UGBS2P",
+      "UGBS3P", "MTSmall", "DGDZVP", "DGDZVP2", "DGTZVP" };
+  private static final String[] METHOD_LIST = { "HF", "MP2", "MP3", "MP4",
+      "CCSD(T)", "CIS", "CISD", "LSDA", "BLYP", "BP86", "BPW91", "OLYP",
+      "OP86", "OPW91", "PBEPBE", "VSXC", "HCTH93", "HCTH147", "HCTH407",
+      "TPSSTPSS", "B3LYP", "B3PW91", "AM1", "PM3", "CNDO", "INDO", "MNDO",
+      "MINDO3", "ZINDO", "UFF", "AMBER", "DREIDING", "Huckel" };
+  private static final String[] DF_LIST = { "None", "Auto", "DGA1", "DGA2" };
+  private static final String[] MEMORY_LIST = { "Default", "100MB", "500MB",
+      "1GB", "2GB", "4GB", "7GB", "15GB" };
+
+  private static final String NOBASIS_LIST = "AM1 PM3 CNDO INDO MNDO MINDO3 ZINDO UFF AMBER DREIDING Huckel";
+  private static final String DFT_LIST = "LSDA BLYP BP86 BPW91 OLYP OP86 OPW91 PBEPBE VSXC HCTH93 NCTH147 HCTH407 TPSSTPSS B3LYP B3PW91";
+
   public GaussianDialog(JFrame f, Viewer vwr) {
 
     super(f, false);
@@ -203,7 +126,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
     //inputTabs.addTab(GT._("Basic"), null, basicPanel);
     JPanel advancedPanel = buildAdvancedPanel();
     //inputTabs.addTab(GT._("Advanced"), null, advancedPanel);
-    
+
     JPanel filePanel = buildFilePanel();
     JPanel buttonPanel = buildButtonPanel();
     JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -221,27 +144,27 @@ public class GaussianDialog extends JDialog implements ActionListener,
   private JPanel buildBasicPanel() {
 
     JPanel showPanel = new JPanel(new BorderLayout());
-    
+
     JPanel linkPanel = new JPanel(new BorderLayout());
     TitledBorder linkTitle = BorderFactory.createTitledBorder("link0 Section");
     linkPanel.setBorder(linkTitle);
-    
-    JPanel linkLabels = new JPanel(new GridLayout(3,1));
-    JPanel linkControls = new JPanel(new GridLayout(3,1));
-    
+
+    JPanel linkLabels = new JPanel(new GridLayout(3, 1));
+    JPanel linkControls = new JPanel(new GridLayout(3, 1));
+
     JLabel checkLabel = new JLabel(GT.$("Checkpoint File: "));
     linkLabels.add(checkLabel);
     checkField = new JTextField(20);
     linkControls.add(checkField);
     checkField.addActionListener(this);
-    
+
     JLabel memLabel = new JLabel(GT.$("Memory:"));
     linkLabels.add(memLabel);
     memBox = new JComboBox<String>(MEMORY_LIST);
     linkControls.add(memBox);
     memBox.setSelectedIndex(0);
     memBox.addActionListener(this);
-    
+
     JLabel procLabel = new JLabel(GT.$("Processors:"));
     linkLabels.add(procLabel);
     SpinnerModel procModel = new SpinnerNumberModel(1, 1, 16, 1);
@@ -249,62 +172,60 @@ public class GaussianDialog extends JDialog implements ActionListener,
     procSpinner.setEditor(new JSpinner.NumberEditor(procSpinner, "#"));
     linkControls.add(procSpinner);
     procSpinner.addChangeListener(this);
-    
+
     linkPanel.add(linkLabels, BorderLayout.LINE_START);
     linkPanel.add(linkControls, BorderLayout.CENTER);
-    
+
     showPanel.add(linkPanel, BorderLayout.NORTH);
-    
+
     JPanel routePanel = new JPanel(new BorderLayout());
     TitledBorder routeTitle = BorderFactory.createTitledBorder(GT.$("Route"));
     routePanel.setBorder(routeTitle);
-    
-    JPanel routeLabels = new JPanel(new GridLayout(4,1));
-    JPanel routeControls = new JPanel(new GridLayout(4,1));
-    
+
+    JPanel routeLabels = new JPanel(new GridLayout(4, 1));
+    JPanel routeControls = new JPanel(new GridLayout(4, 1));
+
     JLabel methLabel = new JLabel(GT.$("Method: "));
     routeLabels.add(methLabel);
     methBox = new JComboBox<String>(METHOD_LIST);
     routeControls.add(methBox);
     methBox.setSelectedIndex(0);
     methBox.addActionListener(this);
-    
+
     JLabel basisLabel = new JLabel(GT.$("Basis Set: "));
     routeLabels.add(basisLabel);
     basisBox = new JComboBox<String>(BASIS_LIST);
     routeControls.add(basisBox);
     basisBox.setSelectedIndex(3);
     basisBox.addActionListener(this);
-   
-    
-    JLabel dfLabel = 
-      new JLabel(GT.$("DFT Density Fit: "));
+
+    JLabel dfLabel = new JLabel(GT.$("DFT Density Fit: "));
     routeLabels.add(dfLabel);
     dfBox = new JComboBox<String>(DF_LIST);
     routeControls.add(dfBox);
     dfBox.setSelectedIndex(0);
     dfBox.addActionListener(this);
-    
+
     JLabel optsLabel = new JLabel(GT.$("Job Options: "));
     routeLabels.add(optsLabel);
     optsField = new JTextField(20);
     routeControls.add(optsField);
     optsField.setText("opt pop=full gfprint");
     optsField.addActionListener(this);
-    
+
     routePanel.add(routeLabels, BorderLayout.LINE_START);
     routePanel.add(routeControls, BorderLayout.CENTER);
-    
+
     showPanel.add(routePanel, BorderLayout.CENTER);
-    
+
     JPanel molPanel = new JPanel(new BorderLayout());
-    TitledBorder molTitle =
-      BorderFactory.createTitledBorder(GT.$("Molecular Properties"));
+    TitledBorder molTitle = BorderFactory.createTitledBorder(GT
+        .$("Molecular Properties"));
     molPanel.setBorder(molTitle);
-    
-    JPanel molLabels = new JPanel(new GridLayout(3,1));
-    JPanel molControls = new JPanel(new GridLayout(3,1));
-    
+
+    JPanel molLabels = new JPanel(new GridLayout(3, 1));
+    JPanel molControls = new JPanel(new GridLayout(3, 1));
+
     JLabel chargeLabel = new JLabel(GT.$("Total Charge: "));
     molLabels.add(chargeLabel);
     SpinnerModel chargeModel = new SpinnerNumberModel(0, -10, 10, 1);
@@ -312,7 +233,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
     chargeSpinner.setEditor(new JSpinner.NumberEditor(chargeSpinner, "#"));
     molControls.add(chargeSpinner);
     chargeSpinner.addChangeListener(this);
-    
+
     JLabel multLabel = new JLabel(GT.$("Multiplicity: "));
     molLabels.add(multLabel);
     SpinnerModel multModel = new SpinnerNumberModel(1, 0, 10, 1);
@@ -320,52 +241,52 @@ public class GaussianDialog extends JDialog implements ActionListener,
     multSpinner.setEditor(new JSpinner.NumberEditor(multSpinner, "#"));
     molControls.add(multSpinner);
     multSpinner.addChangeListener(this);
-        
+
     molPanel.add(molLabels, BorderLayout.LINE_START);
     molPanel.add(molControls, BorderLayout.CENTER);
 
     showPanel.add(molPanel, BorderLayout.SOUTH);
-    
+
     return showPanel;
   }
-  
+
   private JPanel buildAdvancedPanel() {
-  
-	  JPanel editPanel = new JPanel(new BorderLayout());
-	  TitledBorder editTitle =
-	    BorderFactory.createTitledBorder("Edit Gaussian Input File");
-	  editPanel.setBorder(editTitle);
-	
-	  editArea = new JTextPane();
-	  editArea.setContentType("text/html");
-	  editArea.setFont(new Font("Monospaced", Font.PLAIN, 8));
-	  editArea.addMouseListener(this);
-	  editPane = new JScrollPane(editArea);
-	  editPane.setPreferredSize(new Dimension(150,100));
-	
-	  editPanel.add(editPane, BorderLayout.CENTER);
-	
-	  return editPanel;
-	
+
+    JPanel editPanel = new JPanel(new BorderLayout());
+    TitledBorder editTitle = BorderFactory
+        .createTitledBorder("Edit Gaussian Input File");
+    editPanel.setBorder(editTitle);
+
+    editArea = new JTextPane();
+    editArea.setContentType("text/html");
+    editArea.setFont(new Font("Monospaced", Font.PLAIN, 8));
+    editArea.addMouseListener(this);
+    editPane = new JScrollPane(editArea);
+    editPane.setPreferredSize(new Dimension(150, 100));
+
+    editPanel.add(editPane, BorderLayout.CENTER);
+
+    return editPanel;
+
   }
-  
+
   private JPanel buildFilePanel() {
-	
+
     JPanel showPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    TitledBorder fileTitle =
-	  BorderFactory.createTitledBorder(GT.$("Gaussian Input File Name"));
+    TitledBorder fileTitle = BorderFactory.createTitledBorder(GT
+        .$("Gaussian Input File Name"));
     showPanel.setBorder(fileTitle);
-    
+
     fileField = new JTextField(30);
     showPanel.add(fileField);
     fileField.setText(new File("my_input.com").getAbsolutePath());
     fileButton = new JButton(GT.$("File..."));
     fileButton.addActionListener(this);
     showPanel.add(fileButton);
-    
-	  return showPanel;
+
+    return showPanel;
   }
-  
+
   private JPanel buildButtonPanel() {
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -376,7 +297,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
     selectField.setText("visible");
     buttonPanel.add(selectField);
     selectField.addActionListener(this);
-   
+
     refreshButton = new JButton(GT.$("Refresh"));
     refreshButton.addActionListener(this);
     buttonPanel.add(refreshButton);
@@ -384,15 +305,15 @@ public class GaussianDialog extends JDialog implements ActionListener,
     saveButton = new JButton(GT.$("Save"));
     saveButton.addActionListener(this);
     buttonPanel.add(saveButton);
-    
+
     closeButton = new JButton(GT.$("Close"));
     closeButton.addActionListener(this);
     buttonPanel.add(closeButton);
-  
+
     getRootPane().setDefaultButton(saveButton);
     return buttonPanel;
   }
-  
+
   protected void centerDialog() {
 
     Dimension screenSize = this.getToolkit().getScreenSize();
@@ -407,58 +328,66 @@ public class GaussianDialog extends JDialog implements ActionListener,
   }
 
   private void updateVars() {
-	  check = checkField.getText();
-	  mem = memBox.getSelectedItem().toString();
-	  proc = procSpinner.getValue().toString();
+    check = checkField.getText();
+    mem = memBox.getSelectedItem().toString();
+    proc = procSpinner.getValue().toString();
     select = selectField.getText();
     if (select.length() == 0) {
       select = "visible";
       selectField.setText(select);
     }
-	
-	  charge = chargeSpinner.getValue().toString();
-	  if (charge.equals("")) charge = DEFAULT_CHARGE;
-	  mult = multSpinner.getValue().toString();
-	  if (mult.equals("")) mult = DEFAULT_MULT;
-	
-	  String basis = (String) basisBox.getSelectedItem();
-	  if (basis.equals("")) basis = DEFAULT_BASIS;
-	  meth = methBox.getSelectedItem().toString();
-	  if (meth.equals("")) meth = DEFAULT_METHOD;
-	  if (NOBASIS_LIST.lastIndexOf(meth, NOBASIS_LIST.length()) >= 0) basis = "";
-	  if (!basis.equals("")) basis = "/" + basis;
-	  String df = dfBox.getSelectedItem().toString();
-	  if (DFT_LIST.lastIndexOf(meth, DFT_LIST.length()) < 0) df = "None";
-	  if (df.equals("None")) {
-	    df = "";
-	  } else {
-	    df = "/" + df;
-  	}
-	
-	  file = fileField.getText();
-	  if (file.equals("")) file = "my_input.com";
-	
-  	String opts = optsField.getText();
-	  route = "# " + meth + basis + df + " " + opts;
-	
+
+    charge = chargeSpinner.getValue().toString();
+    if (charge.equals(""))
+      charge = DEFAULT_CHARGE;
+    mult = multSpinner.getValue().toString();
+    if (mult.equals(""))
+      mult = DEFAULT_MULT;
+
+    String basis = (String) basisBox.getSelectedItem();
+    if (basis.equals(""))
+      basis = DEFAULT_BASIS;
+    meth = methBox.getSelectedItem().toString();
+    if (meth.equals(""))
+      meth = DEFAULT_METHOD;
+    if (NOBASIS_LIST.lastIndexOf(meth, NOBASIS_LIST.length()) >= 0)
+      basis = "";
+    if (!basis.equals(""))
+      basis = "/" + basis;
+    String df = dfBox.getSelectedItem().toString();
+    if (DFT_LIST.lastIndexOf(meth, DFT_LIST.length()) < 0)
+      df = "None";
+    if (df.equals("None")) {
+      df = "";
+    } else {
+      df = "/" + df;
+    }
+
+    file = fileField.getText();
+    if (file.equals(""))
+      file = "my_input.com";
+
+    String opts = optsField.getText();
+    route = "# " + meth + basis + df + " " + opts;
+
   }
-  
+
   private void updateUI() {
-	  updateVars();
-	  if (NOBASIS_LIST.lastIndexOf(meth, NOBASIS_LIST.length()) >= 0) {
-	    basisBox.setEnabled(false);
-	  } else {
-	    basisBox.setEnabled(true);
-	  }
-	  if (DFT_LIST.lastIndexOf(meth, DFT_LIST.length()) >= 0) {
+    updateVars();
+    if (NOBASIS_LIST.lastIndexOf(meth, NOBASIS_LIST.length()) >= 0) {
+      basisBox.setEnabled(false);
+    } else {
+      basisBox.setEnabled(true);
+    }
+    if (DFT_LIST.lastIndexOf(meth, DFT_LIST.length()) >= 0) {
       dfBox.setEnabled(true);
     } else {
       dfBox.setEnabled(false);
     }
-	  getCommand(-2, true);
+    getCommand(-2, true);
     return;
   }
-  
+
   private void save() {
 
     //    if (inputTabs.getSelectedIndex() == 0)
@@ -484,24 +413,24 @@ public class GaussianDialog extends JDialog implements ActionListener,
   private void cancel() {
     dispose();
   }
-  
+
   @Override
   public void dispose() {
     vwr.script("select off");
     super.dispose();
   }
-  
+
   private void setFile() {
-	  fileChooser = new JFileChooser();
+    fileChooser = new JFileChooser();
     String fname = fileField.getText();
     fileChooser.setSelectedFile(new File(fname));
-	  int ierr = fileChooser.showDialog(this, "Set");
-	  if (ierr == JFileChooser.APPROVE_OPTION) {
+    int ierr = fileChooser.showDialog(this, "Set");
+    if (ierr == JFileChooser.APPROVE_OPTION) {
       File file = fileChooser.getSelectedFile();
       fileField.setText(file.getAbsolutePath());
     }
   }
-  
+
   //  private void tabSwitched() {
   //	  if (inputTabs.getSelectedIndex() == 1) {
   //      getCommand(-1);
@@ -578,25 +507,25 @@ public class GaussianDialog extends JDialog implements ActionListener,
   @Override
   public void actionPerformed(ActionEvent event) {
     Object c = event.getSource();
-	  if (c == saveButton) {
-	    save();
-	  } else if (c == closeButton) {
-	    cancel();
-	  } else if (c == fileButton) {
-	    setFile();
-	  } else if (c == refreshButton) {
+    if (c == saveButton) {
+      save();
+    } else if (c == closeButton) {
+      cancel();
+    } else if (c == fileButton) {
+      setFile();
+    } else if (c == refreshButton) {
       getCommand(-2, true);
-	  } else {
+    } else {
       updateUI();
-	  }
+    }
   }
-  
-//  @Override
-//  public void stateChanged(ChangeEvent event) {
-//	  if (event.getSource() == inputTabs) {
-//	    tabSwitched();
-//	  }
-//  }
+
+  //  @Override
+  //  public void stateChanged(ChangeEvent event) {
+  //	  if (event.getSource() == inputTabs) {
+  //	    tabSwitched();
+  //	  }
+  //  }
 
   public void updateModel(int iAtom) {
     getCommand(iAtom, true);
@@ -629,7 +558,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
             // 
           }
         }
-    });
+      });
 
     }
   }
@@ -640,7 +569,7 @@ public class GaussianDialog extends JDialog implements ActionListener,
 
   @Override
   public void mouseExited(MouseEvent arg0) {
-   }
+  }
 
   @Override
   public void mousePressed(MouseEvent arg0) {

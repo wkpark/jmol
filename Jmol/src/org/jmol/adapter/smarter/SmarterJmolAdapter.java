@@ -47,6 +47,13 @@ import org.jmol.viewer.Viewer;
 
 public class SmarterJmolAdapter extends JmolAdapter {
 
+  
+  public SmarterJmolAdapter() {}
+  
+  public SmarterJmolAdapter(String string) {
+    // TODO
+  }
+
   /**************************************************************
    * 
    * AtomSetCollectionReader.readData() will close any BufferedReader

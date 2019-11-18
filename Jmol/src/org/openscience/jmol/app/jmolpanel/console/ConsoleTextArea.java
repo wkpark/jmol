@@ -31,6 +31,7 @@ import java.io.PrintStream;
 
 import javax.swing.JTextArea;
 
+import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.jmolpanel.LoopedStreams;
 
 public class ConsoleTextArea extends JTextArea {
@@ -39,27 +40,30 @@ public class ConsoleTextArea extends JTextArea {
     for (int i = 0; i < inStreams.length; ++i) {
       startConsoleReaderThread(inStreams[i]);
     }
-  }    // ConsoleTextArea()
-
+  } // ConsoleTextArea()
 
   public ConsoleTextArea(boolean doRedirect) throws IOException {
 
     final LoopedStreams ls = new LoopedStreams();
 
     String redirect = (doRedirect ? System.getProperty("JmolConsole") : "false");
-    if (redirect == null || redirect.equals("true")) {
+
+    if (!Viewer.isSwingJS)
+      if (redirect == null || redirect.equals("true")) {
         // Redirect System.out & System.err.        
         PrintStream ps = new PrintStream(ls.getOutputStream());
         System.setOut(ps);
         System.setErr(ps);
-    }
-    startConsoleReaderThread(ls.getInputStream());
-  }    // ConsoleTextArea()
+      }
 
+    if (!Viewer.isSwingJS)
+      startConsoleReaderThread(ls.getInputStream());
+  }
 
   private void startConsoleReaderThread(InputStream inStream) {
 
-    final BufferedReader br = new BufferedReader(new InputStreamReader(inStream));
+    final BufferedReader br = new BufferedReader(
+        new InputStreamReader(inStream));
     new Thread(new Runnable() {
       @Override
       public void run() {
@@ -72,8 +76,8 @@ public class ConsoleTextArea extends JTextArea {
             //caretAtEnd = (getCaretPosition() == doc.getLength());
             append(s + "\n");
             //if (caretAtEnd) {
-              //setCaretPosition(doc.getLength());
-           //}
+            //setCaretPosition(doc.getLength());
+            //}
           }
         } catch (Exception e) {
           //

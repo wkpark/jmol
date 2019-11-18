@@ -1,3 +1,4 @@
+
 /* $RCSfile$
  * $Author: hansonr $
  * $Date: 2007-06-02 12:14:13 -0500 (Sat, 02 Jun 2007) $
@@ -58,7 +59,7 @@ final public class OutputManagerAwt extends OutputManager {
     String msg;
     try {
       if (text == null) {
-        Image image = (Image) vwr.getScreenImageBuffer(null, true);
+        Image image = (Image) vwr.getScreenImage();
         AwtClipboard.setClipboard(image);
         msg = "OK image to clipboard: "
             + (image.getWidth(null) * image.getHeight(null));

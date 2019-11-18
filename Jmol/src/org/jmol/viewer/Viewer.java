@@ -3790,6 +3790,10 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     gdata.releaseScreenImage();
   }
 
+  public Object getScreenImage() {
+    return getScreenImageBuffer(null, true);
+  }
+
   /**
    * Image.getJpgImage, ImageCreator.clipImage, getImageBytes,
    * Viewer.renderScreenImageStereo

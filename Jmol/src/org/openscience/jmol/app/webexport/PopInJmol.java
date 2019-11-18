@@ -45,8 +45,7 @@ import org.jmol.viewer.Viewer;
 
 class PopInJmol extends WebPanel implements ChangeListener {
 
-  PopInJmol(Viewer vwr, JFileChooser fc, WebPanel[] webPanels,
-      int panelIndex) {
+  PopInJmol(Viewer vwr, JFileChooser fc, WebPanel[] webPanels, int panelIndex) {
     super(vwr, fc, webPanels, panelIndex);
     panelName = "pop_in";
     listLabel = GT.$("These names will be used as filenames used by JSmol");
@@ -58,13 +57,13 @@ class PopInJmol extends WebPanel implements ChangeListener {
   JPanel appletParamPanel() {
     // Create the appletSize spinner so the user can decide how big
     // the JSmol object should be.
-    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(WebExport
-        .getPopInWidth(), // initial value
+    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(
+        WebExport.getPopInWidth(), // initial value
         50, // min
         1000, // max
         25); // step size
-    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(WebExport
-        .getPopInHeight(), // initial value
+    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(
+        WebExport.getPopInHeight(), // initial value
         50, // min
         1000, // max
         25); // step size
@@ -86,16 +85,18 @@ class PopInJmol extends WebPanel implements ChangeListener {
   String fixHtml(String html) {
     String s = "";
     int nApplets = getInstanceList().getModel().getSize();
-    for (int i=0;i<nApplets;i++){
+    for (int i = 0; i < nApplets; i++) {
       String javaname = getInstanceList().getModel().getElementAt(i).javaname;
-      s+="   var jmolInfo"+i+"=jmolInfo;\n";
-      s+="   jmolInfo"+i+".coverImage=\""+javaname+".png\";\n";
-      s+="   jmolInfo"+i+".coverScript=\"javascript revealPopinWidgets("+i+");\";\n";
-      s+="   jmolInfo"+i+".script=\"load "+javaname+".spt\";\n";
-      s+="   $(\"#Jmol"+i+"\").html(Jmol.getAppletHtml(\"jmolApplet"+i+"\",jmolInfo"+i+"));\n";
-      
+      s += "   var jmolInfo" + i + "=jmolInfo;\n";
+      s += "   jmolInfo" + i + ".coverImage=\"" + javaname + ".png\";\n";
+      s += "   jmolInfo" + i + ".coverScript=\"javascript revealPopinWidgets("
+          + i + ");\";\n";
+      s += "   jmolInfo" + i + ".script=\"load " + javaname + ".spt\";\n";
+      s += "   $(\"#Jmol" + i + "\").html(Jmol.getAppletHtml(\"jmolApplet" + i
+          + "\",jmolInfo" + i + "));\n";
+
     }
-    html = javajs.util.PT.rep(html,"@APPLETINITIALIZATION@",s);
+    html = javajs.util.PT.rep(html, "@APPLETINITIALIZATION@", s);
     return html;
   }
 
@@ -112,13 +113,13 @@ class PopInJmol extends WebPanel implements ChangeListener {
       widgetDefs += "<div id=\"JmolCntl" + i + "\">";
       for (int j = 0; j < nWidgets; j++) {
         if (instance.whichWidgets.get(j)) {
-          widgetDefs += "\n<div class=\"widgetItemPopin\">" 
-              + theWidgets.widgetList[j].getJavaScript(i, instance) 
+          widgetDefs += "\n<div class=\"widgetItemPopin\">"
+              + theWidgets.widgetList[j].getJavaScript(i, instance)
               + "</div>\n"; //each widget in one line
         }
       }
       widgetDefs += "</div>";
-   }
+    }
     String s = htmlAppletTemplate;
     s = PT.rep(s, "@CLASS@", "" + divClass);
     s = PT.rep(s, "@I@", "" + i);
@@ -127,7 +128,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
     s = PT.rep(s, "@NAME@", "&#x201C;" + GT.escapeHTML(name) + "&#x201D;");
     s = PT.rep(s, "@APPLETNAME@", GT.escapeHTML(javaname));
     s = PT.rep(s, "@LEFTWIDGETS@", "");// no left widgets
-                                                         // for now
+                                       // for now
     s = PT.rep(s, "@RIGHTWIDGETS@", widgetDefs);
     appletDefs.append(s);
     return html;
@@ -147,8 +148,7 @@ class PopInJmol extends WebPanel implements ChangeListener {
       if (list.length != 1)// may want to make this work on multiple selections
         return;
       int index = whichList.getSelectedIndex();
-      JmolInstance instance = whichList.getModel().getElementAt(
-          index);
+      JmolInstance instance = whichList.getModel().getElementAt(index);
       instance.width = width;
       instance.height = height;
       Map<String, Object> params = new Hashtable<String, Object>();

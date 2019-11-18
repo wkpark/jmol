@@ -29,7 +29,7 @@ import org.jmol.util.Escape;
 import org.jmol.viewer.Viewer;
 
 public class JmolData {
-  
+
   /*
    * no Java Swing to be found. No implementation of any graphics or 
    * containers at all. No shapes, no export, no writing of images,
@@ -42,7 +42,7 @@ public class JmolData {
 
   public JmolApp jmolApp;
   public Viewer vwr;
-  
+
   public static JmolData getJmol(int width, int height, String commandOptions) {
     JmolApp jmolApp = new JmolApp();
     jmolApp.startupHeight = height;
@@ -69,14 +69,14 @@ public class JmolData {
     if (!jmolApp.isSilent) {
       System.out.println("JmolData using command options " + Escape.e(args));
       System.out.println(jmolApp.info);
-//      if (jmolApp.info.containsKey("noDisplay"))
-//        jmolApp.info.put("noGraphics", Boolean.TRUE);
-//      else
-//        System.out.println("Add -n (no GRAPHICS) for faster performance if you are not creating images.");
+      //      if (jmolApp.info.containsKey("noDisplay"))
+      //        jmolApp.info.put("noGraphics", Boolean.TRUE);
+      //      else
+      //        System.out.println("Add -n (no GRAPHICS) for faster performance if you are not creating images.");
     }
     new JmolData(jmolApp);
   }
-  
+
   private JmolData(JmolApp jmolApp) {
     this.jmolApp = jmolApp;
     vwr = new Viewer(jmolApp.info);
@@ -84,6 +84,5 @@ public class JmolData {
     vwr.setWidthHeightVar();
     jmolApp.startViewer(vwr, null, true);
   }
-  
-}  
 
+}

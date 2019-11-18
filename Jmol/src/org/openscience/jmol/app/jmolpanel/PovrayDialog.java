@@ -56,60 +56,65 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * A dialog for controling the creation of a povray input file from a
- * Chemframe and a display. The actual leg work of writing the file
- * out is done by PovrayWriter.java.
- * <p>Borrows code from org.openscience.jmol.Vibrate (Thanks!).
+ * A dialog for controling the creation of a povray input file from a Chemframe
+ * and a display. The actual leg work of writing the file out is done by
+ * PovrayWriter.java.
+ * <p>
+ * Borrows code from org.openscience.jmol.Vibrate (Thanks!).
+ * 
  * @author Thomas James Grey (tjg1@ch.ic.ac.uk)
  * @author Matthew A. Meineke (mmeineke@nd.edu)
  */
 public class PovrayDialog extends JDialog {
 
   private transient Viewer vwr;
-  
-  protected JButton    povrayPathButton;
+
+  protected JButton povrayPathButton;
   //protected JTextField commandLineField;
-  protected JButton    goButton;
+  protected JButton goButton;
   protected JTextField saveField;
   protected JTextField savePathLabel;
-  private int          outputWidth = -1;
-  private int          outputHeight = -1;
+  private int outputWidth = -1;
+  private int outputHeight = -1;
   protected JTextField povrayPathLabel;
-  
+
   protected JCheckBox runPovCheck;
   //protected JCheckBox useIniCheck;
   protected JCheckBox allFramesCheck;
   protected JCheckBox antiAliasCheck;
   protected JCheckBox displayWhileRenderingCheck;
-  
+
   //private JCheckBox           imageSizeCheck;
-  private JLabel              imageSizeWidth;
+  private JLabel imageSizeWidth;
   private JFormattedTextField imageSizeTextWidth;
-  private JLabel              imageSizeHeight;
+  private JLabel imageSizeHeight;
   private JFormattedTextField imageSizeTextHeight;
-  private JCheckBox	          imageSizeRatioBox;
-  private JComboBox<String>           imageSizeRatioCombo;
-  
+  private JCheckBox imageSizeRatioBox;
+  private JComboBox<String> imageSizeRatioCombo;
+
   private JCheckBox outputFormatCheck;
   private JComboBox<String> outputFormatCombo;
 
   private JCheckBox outputAlphaCheck;
-  
+
   private JCheckBox mosaicPreviewCheck;
-  private JLabel    mosaicPreviewStart;
+  private JLabel mosaicPreviewStart;
   private JComboBox<String> mosaicPreviewComboStart;
-  private JLabel    mosaicPreviewEnd;
+  private JLabel mosaicPreviewEnd;
   private JComboBox<String> mosaicPreviewComboEnd;
 
   private String outputExtension = ".png";
   private String outputFileType = "N";
 
-
   /**
-   * Creates a dialog for getting info related to output frames in
-   *  povray format.
-   * @param f The frame assosiated with the dialog
-   * @param vwr The interacting display we are reproducing (source of view angle info etc)
+   * Creates a dialog for getting info related to output frames in povray
+   * format.
+   * 
+   * @param f
+   *        The frame assosiated with the dialog
+   * @param vwr
+   *        The interacting display we are reproducing (source of view angle
+   *        info etc)
    */
   public PovrayDialog(JFrame f, Viewer vwr) {
 
@@ -118,7 +123,7 @@ public class PovrayDialog extends JDialog {
 
     //
     String text = null;
-    
+
     //Take the height and width settings from the JFrame
     int screenWidth = vwr.getScreenWidth();
     int screenHeight = vwr.getScreenHeight();
@@ -144,23 +149,24 @@ public class PovrayDialog extends JDialog {
         updateScreen();
       }
     };
-    
+
     //Box: Window
     Box windowBox = Box.createVerticalBox();
     getContentPane().add(windowBox);
-    
+
     //Box: Main
     Box mainBox = Box.createVerticalBox();
-    
+
     //GUI for save name selection
     Box justSavingBox = Box.createVerticalBox();
     text = GT.$("Conversion from Jmol to POV-Ray");
     justSavingBox.setBorder(new TitledBorder(text));
-    
+
     Box saveBox = Box.createHorizontalBox();
     text = GT.$("File Name:");
     saveBox.setBorder(new TitledBorder(text));
-    text = GT.$("'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'");
+    text = GT
+        .$("'caffeine.pov' -> 'caffeine.pov', 'caffeine.pov.ini', 'caffeine.pov.spt'");
     saveBox.setToolTipText(text);
     saveField = new JTextField("Jmol.pov", 20);
     saveField.addActionListener(updateActionListener);
@@ -195,7 +201,7 @@ public class PovrayDialog extends JDialog {
     Box povOptionsBox = Box.createVerticalBox();
     text = GT.$("POV-Ray Runtime Options");
     povOptionsBox.setBorder(new TitledBorder(text));
-    
+
     // Run povray option
     Box runPovBox = Box.createHorizontalBox();
     text = GT.$("Run POV-Ray directly");
@@ -207,42 +213,41 @@ public class PovrayDialog extends JDialog {
     runPovBox.add(Box.createGlue());
     povOptionsBox.add(runPovBox);
 
-    
- /*
-    // Use Ini option
-    Box useIniBox = Box.createHorizontalBox();
-    text = GT._("Use .ini file");
-    useIniCheck = new JCheckBox(text, true);
-    text = GT._("Save options in a .ini file");
-    useIniCheck.setToolTipText(text);
-    useIniCheck.addItemListener(updateItemListener);
-    useIniBox.add(useIniCheck);
-    useIniBox.add(Box.createGlue());
-    povOptionsBox.add(useIniBox);
+    /*
+       // Use Ini option
+       Box useIniBox = Box.createHorizontalBox();
+       text = GT._("Use .ini file");
+       useIniCheck = new JCheckBox(text, true);
+       text = GT._("Save options in a .ini file");
+       useIniCheck.setToolTipText(text);
+       useIniCheck.addItemListener(updateItemListener);
+       useIniBox.add(useIniCheck);
+       useIniBox.add(Box.createGlue());
+       povOptionsBox.add(useIniBox);
 
-    // Render all frames options
-    Box allFramesBox = Box.createHorizontalBox();
-    text = GT._("Render all frames");
-    allFramesCheck = new JCheckBox(text, false);
-    text = GT._("Render each model (not only the currently displayed one)");
-    allFramesCheck.setToolTipText(text);
-    allFramesCheck.addItemListener(updateItemListener);
-    allFramesBox.add(allFramesCheck);
-    allFramesBox.add(Box.createGlue());
-    povOptionsBox.add(allFramesBox);
-    
-    // Antialias option
-    Box antiAliasBox = Box.createHorizontalBox();
-    text = GT._("Turn on POV-Ray anti-aliasing");
-    antiAliasCheck = new JCheckBox(text, true);
-    text = GT._("Use povray's slower but higher quality anti-aliasing mode");
-    antiAliasCheck.setToolTipText(text);
-    antiAliasCheck.addItemListener(updateItemListener);
-    antiAliasBox.add(antiAliasCheck);
-    antiAliasBox.add(Box.createGlue());
-    povOptionsBox.add(antiAliasBox);
-    
-*/
+       // Render all frames options
+       Box allFramesBox = Box.createHorizontalBox();
+       text = GT._("Render all frames");
+       allFramesCheck = new JCheckBox(text, false);
+       text = GT._("Render each model (not only the currently displayed one)");
+       allFramesCheck.setToolTipText(text);
+       allFramesCheck.addItemListener(updateItemListener);
+       allFramesBox.add(allFramesCheck);
+       allFramesBox.add(Box.createGlue());
+       povOptionsBox.add(allFramesBox);
+       
+       // Antialias option
+       Box antiAliasBox = Box.createHorizontalBox();
+       text = GT._("Turn on POV-Ray anti-aliasing");
+       antiAliasCheck = new JCheckBox(text, true);
+       text = GT._("Use povray's slower but higher quality anti-aliasing mode");
+       antiAliasCheck.setToolTipText(text);
+       antiAliasCheck.addItemListener(updateItemListener);
+       antiAliasBox.add(antiAliasCheck);
+       antiAliasBox.add(Box.createGlue());
+       povOptionsBox.add(antiAliasBox);
+       
+    */
     // Display when rendering option
     Box displayBox = Box.createHorizontalBox();
     text = GT.$("Display While Rendering");
@@ -270,7 +275,7 @@ public class PovrayDialog extends JDialog {
     imageBox.add(Box.createHorizontalStrut(10));
     Box imageSizeDetailBox = Box.createVerticalBox();
     Box imageSizeXYBox = Box.createHorizontalBox();
-    text = GT.$("width:")+" ";
+    text = GT.$("width:") + " ";
     imageSizeWidth = new JLabel(text);
     text = GT.$("Image width");
     imageSizeWidth.setToolTipText(text);
@@ -278,17 +283,16 @@ public class PovrayDialog extends JDialog {
     imageSizeTextWidth = new JFormattedTextField();
     imageSizeTextWidth.setValue(Integer.valueOf(outputWidth));
     imageSizeTextWidth.addPropertyChangeListener("value",
-      new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent e) {
-          imageSizeChanged();
-          updateCommandLine();
-        }
-      }
-    );
+        new PropertyChangeListener() {
+          @Override
+          public void propertyChange(PropertyChangeEvent e) {
+            imageSizeChanged();
+            updateCommandLine();
+          }
+        });
     imageSizeXYBox.add(imageSizeTextWidth);
     imageSizeXYBox.add(Box.createHorizontalStrut(10));
-    text = GT.$("height:")+" ";
+    text = GT.$("height:") + " ";
     imageSizeHeight = new JLabel(text);
     text = GT.$("Image height");
     imageSizeHeight.setToolTipText(text);
@@ -296,14 +300,13 @@ public class PovrayDialog extends JDialog {
     imageSizeTextHeight = new JFormattedTextField();
     imageSizeTextHeight.setValue(Integer.valueOf(outputHeight));
     imageSizeTextHeight.addPropertyChangeListener("value",
-      new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent e) {
-          imageSizeChanged();
-          updateCommandLine();
-        }
-      }
-    );
+        new PropertyChangeListener() {
+          @Override
+          public void propertyChange(PropertyChangeEvent e) {
+            imageSizeChanged();
+            updateCommandLine();
+          }
+        });
     imageSizeXYBox.add(imageSizeTextHeight);
     imageSizeXYBox.add(Box.createGlue());
     imageSizeDetailBox.add(imageSizeXYBox);
@@ -346,22 +349,22 @@ public class PovrayDialog extends JDialog {
     imageBox.add(Box.createGlue());
     povOptionsBox.add(imageBox);
     imageSizeChanged();
-    
+
     // Output format option
     Box outputBox = Box.createHorizontalBox();
-/*    
-    text = GT._("Output format : ");
-    outputFormatCheck = new JCheckBox(text, true);
-    text = GT._("Select the file format of the output file");
-    outputFormatCheck.setToolTipText(text);
-    outputFormatCheck.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        outputFormatChanged();
-        updateCommandLine();
-      }
-    });
-    outputBox.add(outputFormatCheck);
-*/    
+    /*    
+        text = GT._("Output format : ");
+        outputFormatCheck = new JCheckBox(text, true);
+        text = GT._("Select the file format of the output file");
+        outputFormatCheck.setToolTipText(text);
+        outputFormatCheck.addItemListener(new ItemListener() {
+          public void itemStateChanged(ItemEvent e) {
+            outputFormatChanged();
+            updateCommandLine();
+          }
+        });
+        outputBox.add(outputFormatCheck);
+    */
     outputBox.add(Box.createHorizontalStrut(10));
     outputFormatCombo = new JComboBox<String>();
     //case 0
@@ -404,7 +407,7 @@ public class PovrayDialog extends JDialog {
     alphaBox.add(outputAlphaCheck);
     alphaBox.add(Box.createGlue());
     povOptionsBox.add(alphaBox);
-    
+
     // Mosaic preview option
     Box mosaicBox = Box.createHorizontalBox();
     text = GT.$("Mosaic preview");
@@ -414,8 +417,8 @@ public class PovrayDialog extends JDialog {
     mosaicPreviewCheck.addItemListener(new ItemListener() {
       @Override
       public void itemStateChanged(ItemEvent e) {
-      	mosaicPreviewChanged();
-      	updateCommandLine();
+        mosaicPreviewChanged();
+        updateCommandLine();
       }
     });
     mosaicBox.add(mosaicPreviewCheck);
@@ -427,7 +430,8 @@ public class PovrayDialog extends JDialog {
     mosaicBox.add(mosaicPreviewStart);
     mosaicPreviewComboStart = new JComboBox<String>();
     for (int power = 0; power < 8; power++) {
-    	mosaicPreviewComboStart.addItem(Integer.toString((int)Math.pow(2, power)));
+      mosaicPreviewComboStart
+          .addItem(Integer.toString((int) Math.pow(2, power)));
     }
     mosaicPreviewComboStart.setSelectedIndex(3);
     mosaicPreviewComboStart.addActionListener(new ActionListener() {
@@ -446,7 +450,7 @@ public class PovrayDialog extends JDialog {
     mosaicBox.add(mosaicPreviewEnd);
     mosaicPreviewComboEnd = new JComboBox<String>();
     for (int power = 0; power < 8; power++) {
-    	mosaicPreviewComboEnd.addItem(Integer.toString((int)Math.pow(2, power)));
+      mosaicPreviewComboEnd.addItem(Integer.toString((int) Math.pow(2, power)));
     }
     mosaicPreviewComboEnd.setSelectedIndex(0);
     mosaicPreviewComboEnd.addActionListener(new ActionListener() {
@@ -460,7 +464,7 @@ public class PovrayDialog extends JDialog {
     mosaicBox.add(Box.createGlue());
     povOptionsBox.add(mosaicBox);
     mosaicPreviewChanged();
-  
+
     //GUI for povray path selection
     Box povrayPathBox = Box.createHorizontalBox();
     text = GT.$("Location of the POV-Ray Executable");
@@ -484,7 +488,7 @@ public class PovrayDialog extends JDialog {
     povOptionsBox.add(povrayPathBox);
 
     //GUI for command selection
-    
+
     /*
     Box commandLineBox = Box.createVerticalBox();
     text = GT._("Command Line to Execute");
@@ -497,7 +501,7 @@ public class PovrayDialog extends JDialog {
     commandLineField.addActionListener(updateActionListener);
     commandLineBox.add(commandLineField);
     povOptionsBox.add(commandLineBox);
-*/
+    */
     mainBox.add(povOptionsBox);
 
     //GUI for panel with go, cancel and stop (etc) buttons
@@ -527,7 +531,7 @@ public class PovrayDialog extends JDialog {
       }
     });
     buttonBox.add(cancelButton);
-    
+
     windowBox.add(mainBox);
     windowBox.add(buttonBox);
 
@@ -539,11 +543,14 @@ public class PovrayDialog extends JDialog {
   }
 
   /**
-   *  Sets the output image dimensions. Setting either to &lt;= 0 will
-   *  remove the height and width specification from the commandline- the
-   * resulting behaviour depends on povray!
-   * @param imageWidth The width of the image.
-   * @param imageHeight The height of the image.
+   * Sets the output image dimensions. Setting either to &lt;= 0 will remove the
+   * height and width specification from the commandline- the resulting
+   * behaviour depends on povray!
+   * 
+   * @param imageWidth
+   *        The width of the image.
+   * @param imageHeight
+   *        The height of the image.
    */
   public void setImageDimensions(int imageWidth, int imageHeight) {
     outputWidth = imageWidth;
@@ -608,7 +615,7 @@ public class PovrayDialog extends JDialog {
     setVisible(false);
     saveHistory();
     dispose();
-  }       
+  }
 
   /**
    * Responds to cancel being press- or equivalent eg window closed.
@@ -656,66 +663,66 @@ public class PovrayDialog extends JDialog {
   }
 
   /**
-   * Called when the ImageSize check box is modified 
+   * Called when the ImageSize check box is modified
    */
   void imageSizeChanged() {
-  	//if (imageSizeCheck != null) {
-  	  boolean selected = true;//imageSizeCheck.isSelected();
-  	  boolean enabled = true;//runPovCheck.isSelected() || useIniCheck.isSelected();
-  	  boolean ratioSelected = false;
-  	  //imageSizeCheck.setEnabled(enabled);
-  	  if (imageSizeRatioBox != null) {
-  	    ratioSelected = imageSizeRatioBox.isSelected();
-  	    imageSizeRatioBox.setEnabled(selected && enabled);
-  	  }
-  	  if (imageSizeWidth != null) {
-  	    imageSizeWidth.setEnabled(selected && enabled);
-  	  }
-  	  if (imageSizeTextWidth != null) {
-  	    imageSizeTextWidth.setEnabled(selected && enabled);
-  	  }
-  	  if (imageSizeHeight != null) {
-  	    imageSizeHeight.setEnabled(selected && !ratioSelected && enabled);
-  	  }
-  	  if (imageSizeTextHeight != null) {
-  	    imageSizeTextHeight.setEnabled(selected && !ratioSelected && enabled);
-  	  }
-  	  if (imageSizeRatioCombo != null) {
-  	  	imageSizeRatioCombo.setEnabled(selected && ratioSelected && enabled);
-  	    if ((imageSizeTextWidth != null) && (imageSizeTextHeight != null)) {
-          int width = Integer.parseInt(imageSizeTextWidth.getValue().toString());
-  	      int height;
-  	      switch (imageSizeRatioCombo.getSelectedIndex()) {
-  	      case 0: // Free
-  	        break;
-  	      case 1: // Jmol
-  	        height = (int)(((double) width) * outputHeight / outputWidth);
-  	        imageSizeTextHeight.setValue(Integer.valueOf(height));
-  	        break;
-  	      case 2: // 4/3
-  	        height = (int)(((double) width) * 3 / 4);
-  	        imageSizeTextHeight.setValue(Integer.valueOf(height));
-  	        break;
-  	      case 3: // 16/9
-  	        height = (int)(((double) width) * 9 / 16);
-  	        imageSizeTextHeight.setValue(Integer.valueOf(height));
-  	        break;
-  	      }
-  	    }
-  	  }
-  	//}
+    //if (imageSizeCheck != null) {
+    boolean selected = true;//imageSizeCheck.isSelected();
+    boolean enabled = true;//runPovCheck.isSelected() || useIniCheck.isSelected();
+    boolean ratioSelected = false;
+    //imageSizeCheck.setEnabled(enabled);
+    if (imageSizeRatioBox != null) {
+      ratioSelected = imageSizeRatioBox.isSelected();
+      imageSizeRatioBox.setEnabled(selected && enabled);
+    }
+    if (imageSizeWidth != null) {
+      imageSizeWidth.setEnabled(selected && enabled);
+    }
+    if (imageSizeTextWidth != null) {
+      imageSizeTextWidth.setEnabled(selected && enabled);
+    }
+    if (imageSizeHeight != null) {
+      imageSizeHeight.setEnabled(selected && !ratioSelected && enabled);
+    }
+    if (imageSizeTextHeight != null) {
+      imageSizeTextHeight.setEnabled(selected && !ratioSelected && enabled);
+    }
+    if (imageSizeRatioCombo != null) {
+      imageSizeRatioCombo.setEnabled(selected && ratioSelected && enabled);
+      if ((imageSizeTextWidth != null) && (imageSizeTextHeight != null)) {
+        int width = Integer.parseInt(imageSizeTextWidth.getValue().toString());
+        int height;
+        switch (imageSizeRatioCombo.getSelectedIndex()) {
+        case 0: // Free
+          break;
+        case 1: // Jmol
+          height = (int) (((double) width) * outputHeight / outputWidth);
+          imageSizeTextHeight.setValue(Integer.valueOf(height));
+          break;
+        case 2: // 4/3
+          height = (int) (((double) width) * 3 / 4);
+          imageSizeTextHeight.setValue(Integer.valueOf(height));
+          break;
+        case 3: // 16/9
+          height = (int) (((double) width) * 9 / 16);
+          imageSizeTextHeight.setValue(Integer.valueOf(height));
+          break;
+        }
+      }
+    }
+    //}
   }
-  
+
   /**
-   * Called when the OutputFormat check box is modified 
+   * Called when the OutputFormat check box is modified
    */
   void outputFormatChanged() {
-  	if (outputFormatCheck != null) {
-  	  boolean selected = outputFormatCheck.isSelected();
-  	  boolean enabled = true;//runPovCheck.isSelected() || useIniCheck.isSelected();
-  	  outputFormatCheck.setEnabled(enabled);
-  	  if (outputFormatCombo != null) {
-  	    outputFormatCombo.setEnabled(selected && enabled);
+    if (outputFormatCheck != null) {
+      boolean selected = outputFormatCheck.isSelected();
+      boolean enabled = true;//runPovCheck.isSelected() || useIniCheck.isSelected();
+      outputFormatCheck.setEnabled(enabled);
+      if (outputFormatCombo != null) {
+        outputFormatCombo.setEnabled(selected && enabled);
         switch (outputFormatCombo.getSelectedIndex()) {
         case 0: // PNG
           outputExtension = ".png";
@@ -733,45 +740,45 @@ public class PovrayDialog extends JDialog {
           outputExtension = ".tga";
           outputFileType = "T";
           break;
-        }        
-  	  }
-  	}
+        }
+      }
+    }
   }
-  
+
   /**
-   * Called when the MosaicPreview check box is modified 
+   * Called when the MosaicPreview check box is modified
    */
 
   void mosaicPreviewChanged() {
-  	if (mosaicPreviewCheck != null) {
-  	  boolean selected = mosaicPreviewCheck.isSelected();
-  	  boolean enabled = runPovCheck.isSelected();// || useIniCheck.isSelected();
-  	  mosaicPreviewCheck.setEnabled(enabled);
-  	  if (mosaicPreviewStart != null) {
-  	    mosaicPreviewStart.setEnabled(selected && enabled);
-  	  }
-  	  if (mosaicPreviewComboStart != null) {
-  	    mosaicPreviewComboStart.setEnabled(selected && enabled);
-  	  }
-  	  if (mosaicPreviewEnd != null) {
-  	    mosaicPreviewEnd.setEnabled(selected && enabled);
-  	  }
-  	  if (mosaicPreviewComboEnd != null) {
-  	    mosaicPreviewComboEnd.setEnabled(selected && enabled);
-  	  }
-  	}
+    if (mosaicPreviewCheck != null) {
+      boolean selected = mosaicPreviewCheck.isSelected();
+      boolean enabled = runPovCheck.isSelected();// || useIniCheck.isSelected();
+      mosaicPreviewCheck.setEnabled(enabled);
+      if (mosaicPreviewStart != null) {
+        mosaicPreviewStart.setEnabled(selected && enabled);
+      }
+      if (mosaicPreviewComboStart != null) {
+        mosaicPreviewComboStart.setEnabled(selected && enabled);
+      }
+      if (mosaicPreviewEnd != null) {
+        mosaicPreviewEnd.setEnabled(selected && enabled);
+      }
+      if (mosaicPreviewComboEnd != null) {
+        mosaicPreviewComboEnd.setEnabled(selected && enabled);
+      }
+    }
   }
 
   /**
    * Update screen informations
    */
   protected void updateScreen() {
-  	
-  	// Call povray ?
-  	boolean callPovray = false;
-  	if (runPovCheck != null) {
-  	  callPovray = runPovCheck.isSelected();
-  	}
+
+    // Call povray ?
+    boolean callPovray = false;
+    if (runPovCheck != null) {
+      callPovray = runPovCheck.isSelected();
+    }
     String text = null;
     if (callPovray) {
       text = GT.$("Go!");
@@ -781,14 +788,14 @@ public class PovrayDialog extends JDialog {
     if (goButton != null) {
       goButton.setText(text);
     }
-    
+
     // Use INI ?
     boolean useIni = true;
-/*    
-    if (useIniCheck != null) {
-      useIni = useIniCheck.isSelected();
-    }
-*/    
+    /*    
+        if (useIniCheck != null) {
+          useIni = useIniCheck.isSelected();
+        }
+    */
     // Update state
     if (antiAliasCheck != null) {
       antiAliasCheck.setEnabled(callPovray || useIni);
@@ -796,55 +803,54 @@ public class PovrayDialog extends JDialog {
     if (povrayPathButton != null) {
       povrayPathButton.setEnabled(callPovray || useIni);
     }
-/*    
-    if (displayWhileRenderingCheck != null) {
-      displayWhileRenderingCheck.setEnabled(callPovray || useIni);
-    }
-    if (antiAliasCheck != null) {
-      antiAliasCheck.setEnabled(callPovray || useIni);
-    }
-*/    
+    /*    
+        if (displayWhileRenderingCheck != null) {
+          displayWhileRenderingCheck.setEnabled(callPovray || useIni);
+        }
+        if (antiAliasCheck != null) {
+          antiAliasCheck.setEnabled(callPovray || useIni);
+        }
+    */
     //if (commandLineField != null) {
     //  commandLineField.setEnabled(callPovray && !useIni);
     //}
-    
+
     // Various update
     imageSizeChanged();
     outputFormatChanged();
-//    mosaicPreviewChanged();
-    
-  	// Update command line
+    //    mosaicPreviewChanged();
+
+    // Update command line
     updateCommandLine();
   }
-  
+
   protected void updateCommandLine() {
     //if (commandLineField != null)
-     // commandLineField.setText(getCommandLine());
+    // commandLineField.setText(getCommandLine());
   }
-  
+
   /**
-   * Generates a commandline from the options set for povray path
-   * etc and sets in the textField.
+   * Generates a commandline from the options set for povray path etc and sets
+   * in the textField.
+   * 
    * @return command line
    */
   protected String getCommandLine() {
 
-  	// Check fields
-  	String basename = null;
-  	if (saveField != null) {
-  		basename = saveField.getText();
-  	}
-  	String savePath = null;
-  	if (savePathLabel != null) {
-  	  savePath = savePathLabel.getText();
-  	}
-  	String povrayPath = null;
-  	if (povrayPathLabel != null) {
-  	  povrayPath = povrayPathLabel.getText();
-  	}
-    if ((savePath == null) ||
-        (povrayPath == null) ||
-	    (basename == null)) {
+    // Check fields
+    String basename = null;
+    if (saveField != null) {
+      basename = saveField.getText();
+    }
+    String savePath = null;
+    if (savePathLabel != null) {
+      savePath = savePathLabel.getText();
+    }
+    String povrayPath = null;
+    if (povrayPathLabel != null) {
+      povrayPath = povrayPathLabel.getText();
+    }
+    if ((savePath == null) || (povrayPath == null) || (basename == null)) {
       //if (commandLineField != null) {
       //  commandLineField.setText(GT._("null component string"));
       //}
@@ -856,42 +862,38 @@ public class PovrayDialog extends JDialog {
       savePath += java.io.File.separator;
     }
 
-    String commandLine =
-      doubleQuoteIfContainsSpace(povrayPath) +
-      " +I" + simpleQuoteIfContainsSpace(savePath + basename + ".pov");
+    String commandLine = doubleQuoteIfContainsSpace(povrayPath) + " +I"
+        + simpleQuoteIfContainsSpace(savePath + basename + ".pov");
 
-    commandLine +=
-      " +O" +
-      simpleQuoteIfContainsSpace(savePath + basename + outputExtension) +
-      " +F" + outputFileType;
-    
+    commandLine += " +O"
+        + simpleQuoteIfContainsSpace(savePath + basename + outputExtension)
+        + " +F" + outputFileType;
+
     // Output alpha options
     if ((outputAlphaCheck != null) && (outputAlphaCheck.isSelected())) {
-      commandLine +=
-        " +UA";
+      commandLine += " +UA";
     }
-    
+
     // Image size options
     //if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
-      commandLine +=
-        " +H" + imageSizeTextHeight.getValue() +
-		" +W" + imageSizeTextWidth.getValue();
+    commandLine += " +H" + imageSizeTextHeight.getValue() + " +W"
+        + imageSizeTextWidth.getValue();
     //} else {
     //  if ((outputWidth > 0) && (outputHeight > 0)) {
     //    commandLine +=
-	  // 	  " +H" + outputHeight +
-		//  " +W" + outputWidth;
+    // 	  " +H" + outputHeight +
+    //  " +W" + outputWidth;
     //  }
     //}
 
     // Anti Alias
-//    if ((antiAliasCheck != null) && (antiAliasCheck.isSelected())) {
-      commandLine += " +A0.1";
+    //    if ((antiAliasCheck != null) && (antiAliasCheck.isSelected())) {
+    commandLine += " +A0.1";
     //}
 
     // Display while rendering
-    if ((displayWhileRenderingCheck != null) &&
-        (displayWhileRenderingCheck.isSelected())) {
+    if ((displayWhileRenderingCheck != null)
+        && (displayWhileRenderingCheck.isSelected())) {
       commandLine += " +D +P";
     }
 
@@ -905,42 +907,40 @@ public class PovrayDialog extends JDialog {
 
     // Mosaic preview options
     if ((mosaicPreviewCheck != null) && (mosaicPreviewCheck.isSelected())) {
-      commandLine +=
-        " +SP" + mosaicPreviewComboStart.getSelectedItem() +
-		" +EP" + mosaicPreviewComboEnd.getSelectedItem();
+      commandLine += " +SP" + mosaicPreviewComboStart.getSelectedItem()
+          + " +EP" + mosaicPreviewComboEnd.getSelectedItem();
     }
-  
+
     commandLine += " -V"; // turn off verbose messages ... although it is still rather verbose
 
     return commandLine;
   }
 
-  
   /**
    * Save INI file
    * 
    * @return INI data
    */
-  
 
   private String getINI() {
 
     StringBuilder data = new StringBuilder();
     // Save path
-  	String savePath = savePathLabel.getText();
+    String savePath = savePathLabel.getText();
     if (!savePath.endsWith(java.io.File.separator)) {
       savePath += java.io.File.separator;
     }
     String basename = saveField.getText();
-  	
+
     // Input file
     data.append("Input_File_Name=" + savePath + basename + "\n");
 
     // Output format options
     data.append("Output_to_File=true\n");
     data.append("Output_File_Type=" + outputFileType + "\n");
-    data.append("Output_File_Name=" + savePath + basename + outputExtension + "\n");
-    
+    data.append("Output_File_Name=" + savePath + basename + outputExtension
+        + "\n");
+
     // Image size options
     data.append("Height=" + imageSizeTextHeight.getValue() + "\n");
     data.append("Width=" + imageSizeTextWidth.getValue() + "\n");
@@ -952,29 +952,31 @@ public class PovrayDialog extends JDialog {
       data.append("Initial_Clock=1\n");
       data.append("Final_Clock=" + vwr.ms.mc + "\n");
     }
-    
+
     // Output alpha options
     if ((outputAlphaCheck != null) && (outputAlphaCheck.isSelected())) {
       data.append("Output_Alpha=true\n");
     }
-    
+
     // Anti Alias
-      data.append("Antialias=true\n");
-      data.append("Antialias_Threshold=0.1\n");
+    data.append("Antialias=true\n");
+    data.append("Antialias_Threshold=0.1\n");
 
     // Display while rendering
-    if ((displayWhileRenderingCheck != null) &&
-        (displayWhileRenderingCheck.isSelected())) {
+    if ((displayWhileRenderingCheck != null)
+        && (displayWhileRenderingCheck.isSelected())) {
       data.append("Display=true\n");
       data.append("Pause_When_Done=true\n");
     }
 
     // Mosaic preview options
     if ((mosaicPreviewCheck != null) && (mosaicPreviewCheck.isSelected())) {
-      data.append("Preview_Start_Size=" + mosaicPreviewComboStart.getSelectedItem() + "\n");
-      data.append("Preview_End_Size=" + mosaicPreviewComboEnd.getSelectedItem() + "\n");
+      data.append("Preview_Start_Size="
+          + mosaicPreviewComboStart.getSelectedItem() + "\n");
+      data.append("Preview_End_Size=" + mosaicPreviewComboEnd.getSelectedItem()
+          + "\n");
     }
-    
+
     data.append("Warning_Level=5\n");
     data.append("Verbose=false\n");
     return data.toString();
@@ -983,53 +985,53 @@ public class PovrayDialog extends JDialog {
   /**
    * @return Command line split into arguments
    */
-/*
-  private String[] getCommandLineArgs() {
-  	
-    //Parsing command line
-    String commandLine = commandLineField.getText();
-    List vector = new List();
-    int begin = 0;
-    int end = 0;
-    int doubleQuoteCount = 0;
-    while (end < commandLine.length()) {
-      if (commandLine.charAt(end) == '\"') {
-        doubleQuoteCount++;
-      }
-      if (Character.isSpaceChar(commandLine.charAt(end))) {
-        while ((begin < end) &&
-               (Character.isSpaceChar(commandLine.charAt(begin)))) {
-          begin++;
+  /*
+    private String[] getCommandLineArgs() {
+    	
+      //Parsing command line
+      String commandLine = commandLineField.getText();
+      List vector = new List();
+      int begin = 0;
+      int end = 0;
+      int doubleQuoteCount = 0;
+      while (end < commandLine.length()) {
+        if (commandLine.charAt(end) == '\"') {
+          doubleQuoteCount++;
         }
-        if (end > begin + 1) {
-          if (doubleQuoteCount % 2 == 0) {
-            vector.add(commandLine.substring(begin, end));
-            begin = end;
+        if (Character.isSpaceChar(commandLine.charAt(end))) {
+          while ((begin < end) &&
+                 (Character.isSpaceChar(commandLine.charAt(begin)))) {
+            begin++;
+          }
+          if (end > begin + 1) {
+            if (doubleQuoteCount % 2 == 0) {
+              vector.add(commandLine.substring(begin, end));
+              begin = end;
+            }
           }
         }
+        end++;
       }
-      end++;
-    }
-    while ((begin < end) &&
-           (Character.isSpaceChar(commandLine.charAt(begin)))) {
-      begin++;
-    }
-    if (end > begin + 1) {
-      vector.add(commandLine.substring(begin, end));
-    }
-    
-    //Construct result
-    String[] args = new String[vector.size()];
-    for (int pos = 0; pos < vector.size(); pos++) {
-      args[pos] = vector.get(pos).toString();
-      if ((args[pos].charAt(0) == '\"') &&
-          (args[pos].charAt(args[pos].length() - 1) == '\"')) {
-        args[pos] = args[pos].substring(1, args[pos].length() - 1);
+      while ((begin < end) &&
+             (Character.isSpaceChar(commandLine.charAt(begin)))) {
+        begin++;
       }
+      if (end > begin + 1) {
+        vector.add(commandLine.substring(begin, end));
+      }
+      
+      //Construct result
+      String[] args = new String[vector.size()];
+      for (int pos = 0; pos < vector.size(); pos++) {
+        args[pos] = vector.get(pos).toString();
+        if ((args[pos].charAt(0) == '\"') &&
+            (args[pos].charAt(args[pos].length() - 1) == '\"')) {
+          args[pos] = args[pos].substring(1, args[pos].length() - 1);
+        }
+      }
+      return args;
     }
-    return args;
-  }
-*/  
+  */
   /**
    * Centers the dialog on the screen.
    */
@@ -1053,7 +1055,9 @@ public class PovrayDialog extends JDialog {
 
     /**
      * Closes the dialog when window closing event occurs.
-     * @param e Event
+     * 
+     * @param e
+     *        Event
      */
     @Override
     public void windowClosing(WindowEvent e) {
@@ -1071,14 +1075,14 @@ public class PovrayDialog extends JDialog {
     java.util.Properties props = JmolPanel.historyFile.getProperties();
     if (povrayPathLabel != null) {
       String povrayPath = props.getProperty("povrayPath",
-        System.getProperty("user.home"));
+          System.getProperty("user.home"));
       if (povrayPath != null) {
         povrayPathLabel.setText(povrayPath);
       }
     }
     if (savePathLabel != null) {
       String savePath = props.getProperty("povraySavePath",
-        System.getProperty("user.home"));
+          System.getProperty("user.home"));
       if (savePath != null) {
         savePathLabel.setText(savePath);
       }
@@ -1096,14 +1100,14 @@ public class PovrayDialog extends JDialog {
   }
 
   String doubleQuoteIfContainsSpace(String str) {
-    for (int i = str.length(); --i >= 0; )
+    for (int i = str.length(); --i >= 0;)
       if (str.charAt(i) == ' ')
         return "\"" + str + "\"";
     return str;
   }
 
   String simpleQuoteIfContainsSpace(String str) {
-    for (int i = str.length(); --i >= 0; )
+    for (int i = str.length(); --i >= 0;)
       if (str.charAt(i) == ' ')
         return "\'" + str + "\'";
     return str;

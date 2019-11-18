@@ -25,7 +25,6 @@
 
 package org.openscience.jmol.app.surfacetool;
 
-
 import javajs.util.Measure;
 import javajs.util.P3;
 import javajs.util.P4;
@@ -55,8 +54,7 @@ class Slice {
    * @param result
    *        (Point4f) meeting the Jmol definition of a plane.
    */
-  static void makePlane(float length, float angleXY, float anglefromZ,
-                        P4 result) {
+  static void makePlane(float length, float angleXY, float anglefromZ, P4 result) {
     result.set4((float) (Math.cos(angleXY) * Math.sin(anglefromZ)),
         (float) (Math.sin(angleXY) * Math.sin(anglefromZ)),
         (float) (Math.cos(anglefromZ)), -length);
@@ -112,8 +110,8 @@ class Slice {
       //correct for the offset between the boundbox center and the origin
       P3 pt = P3.new3(middle.x, middle.y, middle.z);
       pt.scaleAdd2(-middle.w, pt, boundBoxCenter);
-      Measure.getPlaneThroughPoint(pt, V3.new3(middle.x, middle.y,
-          middle.z), middle);
+      Measure.getPlaneThroughPoint(pt, V3.new3(middle.x, middle.y, middle.z),
+          middle);
     }
     leftPlane.set4(middle.x, middle.y, middle.z, middle.w);
     leftPlane.w += thickness / 2;

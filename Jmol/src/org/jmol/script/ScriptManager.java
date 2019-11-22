@@ -406,7 +406,7 @@ public class ScriptManager implements JmolScriptManager {
 
   private boolean checkResume(String str) {
     if (str.equalsIgnoreCase("resume")) {
-      vwr.setScriptStatus("", "execution resumed", 0, null);
+      vwr.scriptStatusMsg("", "execution resumed");
       eval.resumePausedExecution();
       return true;
     }
@@ -463,7 +463,7 @@ public class ScriptManager implements JmolScriptManager {
     if (str.equalsIgnoreCase("pause")) {
       vwr.pauseScriptExecution();
       if (vwr.scriptEditorVisible)
-        vwr.setScriptStatus("", "paused -- type RESUME to continue", 0, null);
+        vwr.scriptStatusMsg("", "paused -- type RESUME to continue");
       return true;
     }
     if (str.equalsIgnoreCase("menu")) {

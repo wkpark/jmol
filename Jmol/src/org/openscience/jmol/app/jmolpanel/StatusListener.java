@@ -79,7 +79,7 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   private MainFrame jSpecViewFrame;
   private boolean jSpecViewForceNew;
 
-  void setViewer(Viewer vwr) {
+  public void setViewer(Viewer vwr) {
     this.vwr = vwr;
   }
 

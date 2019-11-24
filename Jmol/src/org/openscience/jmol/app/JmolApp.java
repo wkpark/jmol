@@ -230,6 +230,9 @@ public class JmolApp implements JmolAppAPI {
 
     options.addOption("U", "plugin", true, GT.$("plugin to start initially"));
 
+    options.addOption("G", "Plugin", false,
+        GT.$("jmol is a plugin to some other app"));
+
     options.addOption(
         "w",
         "write",

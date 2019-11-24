@@ -97,15 +97,6 @@ public class LabelSetter extends JPanel {
 
   public void allocateLabelArray(int numAtoms) {
     labelArray = new String[numAtoms];
-    // find minindex in the atom indices : Does labellinfg start at 0 or one?
-    // This seems to vary between JVMs and Jmol versions
-
-    //String jre = System.getProperty("java.version");
-    //if (jre.equals("1.4.2_02")) {
-    //minindex = 1;
-    //}
-
-    //System.out.println("Here minindex" + minindex);
   }
 
   private String getLabelText() {

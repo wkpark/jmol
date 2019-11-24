@@ -76,7 +76,7 @@ class cfRenderer extends DefaultTableCellRenderer {
       setBackground(white); // as a default
       // Expect value to be a Measure object 
       // Dont do colour coding if expVlaue isn't set
-      if (((Measure) value).getExpValue() != null) {
+      if (value != null && ((Measure) value).getExpValue() != null) {
         try {
 
           double myValue = ((Measure) value).getDiff();
@@ -108,7 +108,7 @@ class cfRenderer extends DefaultTableCellRenderer {
 
     // Finally, set actual numerical value
     DecimalFormat df = new DecimalFormat("0.0000");
-    String text = df.format(((Measure) value).getCalcValue().doubleValue());
+    String text = df.format(value == null ? 0 : ((Measure) value).getCalcValue().doubleValue());
     setText(text);
 
     return this;

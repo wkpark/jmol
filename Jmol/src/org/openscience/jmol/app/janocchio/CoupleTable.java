@@ -65,21 +65,20 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
 import org.jmol.i18n.GT;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.exception.CDKException;
+import org.jmol.modelset.Atom;
+import org.jmol.viewer.Viewer;
 
 //import BoxLayout;
 
 public class CoupleTable extends JTabbedPane {
 
   NMR_Viewer viewer;
-  AtomContainer molCDK;
   int natomsPerModel;
   String[] labelArray;
   boolean molCDKuptodate = false;
   DistanceJMolecule calcProps;
   String[][] expCouples;
-  private JTable coupleTable;
+  JTable coupleTable;
   private CoupleTableModel coupleTableModel;
   private ListSelectionModel coupleSelection;
   int[] selectedCoupleRow = new int[2];
@@ -160,6 +159,7 @@ public class CoupleTable extends JTabbedPane {
     coupleTable.setColumnSelectionAllowed(false);
     coupleSelection = coupleTable.getSelectionModel();
     coupleSelection.addListSelectionListener(new ListSelectionListener() {
+      @Override
       public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting())
           return;
@@ -190,20 +190,17 @@ public class CoupleTable extends JTabbedPane {
     coupledeleteButton = new JButton(GT.$("Del"));
     coupledeleteButton.setToolTipText("Delete Selected Couplings");
     coupledeleteButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         // All this necessary to delete more than one row at once
         // need to create array of viewer rows, sort, then delete
         int ndelete = selectedCoupleRow[1] - selectedCoupleRow[0] + 1;
         int[] deletevRows = new int[ndelete];
-        int j = 0;
-        for (int i = selectedCoupleRow[0]; i <= selectedCoupleRow[1]; i++) {
-          int vRow = getViewerRow(i);
-          deletevRows[j] = vRow;
-          j++;
-
+        for (int j = 0, i = selectedCoupleRow[0]; i <= selectedCoupleRow[1]; i++) {
+          deletevRows[j++] = getViewerRow(i);
         }
         Arrays.sort(deletevRows);
-        for (int i = ndelete - 1; i >= 0; i--) {
+        for (int i = ndelete; --i >= 0;) {
           viewer.deleteMeasurement(deletevRows[i]);
         }
 
@@ -215,12 +212,12 @@ public class CoupleTable extends JTabbedPane {
     coupledeleteAllButton = new JButton(GT.$("Del All"));
     coupledeleteAllButton.setToolTipText("Delete All Couplings");
     coupledeleteAllButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
-        for (int i = coupleTable.getRowCount() - 1; i >= 0; i--) {
-          int vRow = getViewerRow(i);
-          viewer.deleteMeasurement(vRow);
-          //updateCoupleTableData();
+        for (int i = coupleTable.getRowCount(); --i >= 0;) {
+          viewer.deleteMeasurement(getViewerRow(i));
         }
+        clearViewerSelection();
         updateCoupleTableData();
       }
     });
@@ -233,12 +230,17 @@ public class CoupleTable extends JTabbedPane {
     return coupleButtonPanel;
   }
 
+  protected void clearViewerSelection() {
+    viewer.script("select none");
+  }
+
   JComponent constructDismissButtonPanel() {
     JPanel dismissButtonPanel = new JPanel();
     dismissButtonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
     JButton dismissButton = new JButton(GT.$("Dismiss"));
     dismissButton.addActionListener(new ActionListener() {
+      @Override
       public void actionPerformed(ActionEvent e) {
         close();
       }
@@ -267,13 +269,14 @@ public class CoupleTable extends JTabbedPane {
 
   public void activate() {
     updateCoupleTableData();
-    show();
+    setVisible(true);
   }
 
   void updateCoupleTableData() {
     coupledeleteAllButton.setEnabled(viewer.getMeasurementCount() > 0);
     coupleTableModel.fireTableDataChanged();
     calcFrameDelta();
+    clearViewerSelection();
   }
 
   public int getRowCount() {
@@ -281,27 +284,28 @@ public class CoupleTable extends JTabbedPane {
   }
 
   public int[] getMeasurementCountPlusIndices(int row) {
-    return coupleTableModel.getMeasurementCountPlusIndices(row);
+    return coupleTableModel.getMeasurementCountPlusIndicesForTableRow(row);
   }
 
   class CoupleListWindowListener extends WindowAdapter {
 
+    @Override
     public void windowClosing(WindowEvent e) {
       close();
     }
   }
-
-  final Class stringClass = "".getClass();
 
   class CoupleTableModel extends AbstractTableModel {
 
     final String[] coupleHeaders = { GT.$("Angle"), GT.$("J"), "Atom 1",
         "Atom 2", "Exp J" };
 
+    @Override
     public String getColumnName(int col) {
       return coupleHeaders[col];
     }
 
+    @Override
     public int getRowCount() {
       natomsPerModel = calcNatomsPerModel();
       int rowCount = 0;
@@ -317,49 +321,38 @@ public class CoupleTable extends JTabbedPane {
       return rowCount;
     }
 
+    @Override
     public int getColumnCount() {
       return 5;
     }
 
-    public Class getColumnClass(int col) {
-      return stringClass;
-      //Object dum = null;
-      //return dum.getClass();
+    @Override
+    public Class<?> getColumnClass(int col) {
+      return String.class;
     }
 
-    public int[] getMeasurementCountPlusIndices(int row) {
-      int vRow = getViewerRow(row);
-      int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
-      return countPlusIndices;
+    public int[] getMeasurementCountPlusIndicesForTableRow(int row) {
+      return viewer.getMeasurementCountPlusIndices(getViewerRow(row));
     }
 
+    @Override
     public Object getValueAt(int row, int col) {
 
       // Always check that the CDK conversion is current  
       if (!molCDKuptodate) {
-        addMolCDK();
+        addMol();
       }
       // Need to convert coupleTable index to viewer index
       int vRow = getViewerRow(row);
-      int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
-      Integer[] numAtom1 = new Integer[1];
-      Integer[] numAtom2 = new Integer[1];
-      Integer[] numAtom3 = new Integer[1];
-      Integer[] numAtom4 = new Integer[1];
-
-      numAtom1[0] = new Integer(countPlusIndices[1]);
-      numAtom2[0] = new Integer(countPlusIndices[2]);
-      numAtom3[0] = new Integer(countPlusIndices[3]);
-      numAtom4[0] = new Integer(countPlusIndices[4]);
-
-      Double[] dihecouple = calcProps.calcCouple(numAtom1, numAtom2, numAtom3,
-          numAtom4);
-      MeasureCouple measure = new MeasureCouple(
-          expCouples[countPlusIndices[1]][countPlusIndices[4]], dihecouple[1]);
+      int[] atoms = getViewerMeasurement(vRow);
+      Double[] dihecouple = calcProps.calcCouple(atoms[0], atoms[1], atoms[2], atoms[3]);
+      MeasureCouple measure = (dihecouple == null ? null : new MeasureCouple(
+          expCouples[atoms[0]][atoms[3]], dihecouple[1]));
       if (col == 0) {
         //return  viewer.getMeasurementStringValue(vRow);
         DecimalFormat df = new DecimalFormat("0.0");
-        double conv = dihecouple[0].doubleValue() / degtorad;
+        double conv = (dihecouple == null ? 0 : dihecouple[0].doubleValue()
+            / degtorad);
         return df.format(conv);
       }
       if (col == 1) {
@@ -369,18 +362,15 @@ public class CoupleTable extends JTabbedPane {
         return measure;
       }
       if (col == 4) {
-        return measure.getExpValue();
+        return (measure == null ? "" : measure.getExpValue());
       }
-      if (col >= countPlusIndices.length) {
-        return null;
-      }
-
-      int atomIndex;
-      if (col == 2) {
-        atomIndex = countPlusIndices[1];
-      } else {
-        atomIndex = countPlusIndices[4];
-      }
+//      if (col >= countPlusIndices.length) {
+//        return null;
+//      }
+//
+      int atomIndex = (col == 2 ? atoms[0] : atoms[3]);
+      if (atomIndex < 0)
+        return "";
 
       String name = labelArray[atomIndex];
       String reserve = "" + viewer.getAtomNumber(atomIndex) + " "
@@ -395,6 +385,7 @@ public class CoupleTable extends JTabbedPane {
       return name;
     }
 
+    @Override
     public void setValueAt(Object value, int row, int col) {
       if (col == 4) {
         String val = (String) value;
@@ -407,7 +398,7 @@ public class CoupleTable extends JTabbedPane {
           val = null;
         }
         int vRow = getViewerRow(row);
-        int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
+        int[] countPlusIndices = getMeasurementCountPlusIndices(vRow);
         expCouples[countPlusIndices[1]][countPlusIndices[4]] = val;
         expCouples[countPlusIndices[4]][countPlusIndices[1]] = val;
         //fireTableDataChanged();
@@ -415,12 +406,9 @@ public class CoupleTable extends JTabbedPane {
       }
     }
 
+    @Override
     public boolean isCellEditable(int row, int col) {
-      if (col == 4) {
-        return true;
-      } else {
-        return false;
-      }
+      return (col == 4);
     }
   }
 
@@ -432,24 +420,62 @@ public class CoupleTable extends JTabbedPane {
       // Use diff set up for frame colouring
       // 
 
-      frameDelta += ((Measure) (coupleTableModel.getValueAt(i, 1))).getDiff();
+      Measure measure = (Measure) (coupleTableModel.getValueAt(i, 1));
+      if (measure != null)
+        frameDelta += measure.getDiff();
 
     }
     frameDeltaDisplay.setFrameDeltaCouple(frameDelta);
+  }
+
+  public int[] getViewerMeasurement(int vRow) {
+    if (vRow < 0)
+      vRow = viewer.getMeasurementCount() - 1;    
+    int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
+    int a1 = countPlusIndices[1];
+    int a2 = countPlusIndices[2];
+    int a3 = countPlusIndices[3];
+    int a4 = countPlusIndices[4];
+
+    int n = countPlusIndices[0];
+    switch (n) {
+    case 0:
+    case 1:
+    case 3:
+      break;
+    case 2:
+      // allow for two H atoms to be clicked if H-X-X-H
+      Atom atom1 = viewer.getAtomAt(a1);
+      Atom atom2 = viewer.getAtomAt(a2);
+      if (!atom1.getElementSymbol().equals("H")
+          || !atom2.getElementSymbol().equals("H"))
+        break;
+      a4 = a2;
+      atom1 = atom1.bonds[0].getOtherAtom(atom1);
+      atom2 = atom2.bonds[0].getOtherAtom(atom2);
+      if (!atom1.isCovalentlyBonded(atom2))
+        break;
+      a2 = atom1.i;
+      a3 = atom2.i;
+      //$FALL-THROUGH$
+    case 4:
+      return new int[] { a1, a2, a3, a4 };
+    }
+    return null;
   }
 
   public void updateTables() {
     updateCoupleTableData();
   }
 
-  private double getdegfromString(String sDist) {
-    int l = sDist.length();
-    String spDist = sDist.substring(0, l - 1);
-    Double dDist = new Double(spDist);
-    return dDist.doubleValue();
-  }
+//  private double getdegfromString(String sDist) {
+//    int l = sDist.length();
+//    String spDist = sDist.substring(0, l - 1);
+//    Double dDist = new Double(spDist);
+//    return dDist.doubleValue();
+//  }
 
-  private int getViewerRow(int row) {
+  int getViewerRow(int row) {
     int vRow = -1;
     int j = -1;
     for (int i = 0; i < viewer.getMeasurementCount(); i++) {
@@ -462,11 +488,11 @@ public class CoupleTable extends JTabbedPane {
         break;
       }
     }
-    System.err.println(vRow + " " + j);
+    //System.err.println(vRow + " " + j);
     return vRow;
   }
 
-  private int calcNatomsPerModel() {
+  int calcNatomsPerModel() {
     int ntot = viewer.getAtomCount();
     int nmodel = viewer.getModelCount();
     int nat;
@@ -480,25 +506,10 @@ public class CoupleTable extends JTabbedPane {
   }
 
   /* This should only be called once the molecule data has been read in */
-  public void addMolCDK() {
-    CdkConvertor convertor = new CdkConvertor();
-
-    AtomContainer mol = new AtomContainer();
-
-    try {
-      mol = convertor.convert(viewer);
-      System.err.println("");
-    } catch (CDKException e) {
-
-      System.err.println("CDK conversion error");
-    }
-
-    this.molCDK = mol;
-    this.calcProps = new DistanceJMolecule(mol, labelArray);
+  public void addMol() {
+    calcProps = Nmr.getDistanceJMolecule(null, viewer, labelArray);
     calcProps.setCHequation(CHequation);
-
     this.molCDKuptodate = true;
-
   }
 
   public void setmolCDKuptodate(boolean value) {

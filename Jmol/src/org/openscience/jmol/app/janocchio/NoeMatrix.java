@@ -26,11 +26,10 @@
  */
 package org.openscience.jmol.app.janocchio;
 
-import javax.swing.*;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.text.NumberFormat;
 
 /**
@@ -308,7 +307,6 @@ public class NoeMatrix {
     atoms[atomCounter].y = y;
     atoms[atomCounter].z = z;
     atoms[atomCounter].methyl = false;
-    System.out.println("Here " + atomCounter + " " + x + " " + y + " " + z);
     atomCounter++;
 
   }
@@ -377,7 +375,6 @@ public class NoeMatrix {
       rho = 0.0;
       for (j = 0; j < nAtoms; j++) {
         // double distSqrd = (atoms[i].x-atoms[j].x)*(atoms[i].x-atoms[j].x) + (atoms[i].y-atoms[j].y)*(atoms[i].y-atoms[j].y) + (atoms[i].z-atoms[j].z)*(atoms[i].z-atoms[j].z);
-        //System.out.println(distSqrd);
         double distSqrd = distanceSqrd(atoms[i], atoms[j]);
         distanceMatrix[i][j] = Math.sqrt(distSqrd);
         double aOverR6;
@@ -395,7 +392,6 @@ public class NoeMatrix {
         }
       }
       relaxMatrix[i][i] = rho + rhoStar;
-      //System.out.println(rho);
     }
   }
 
@@ -407,21 +403,18 @@ public class NoeMatrix {
   private void readAtomsFromFile() {
     atoms = new Atoms[200];
     nAtoms = 0;
+    BufferedReader br = null;
     try {
       //BufferedReader br = new BufferedReader(new FileReader(new File("C:\\noeprom\\minlac.out")));
-      BufferedReader br = new BufferedReader(new FileReader(new File(
+      br = new BufferedReader(new FileReader(new File(
           "/home/u6x8497/pyrrolidine_trial/pyrr_3d.dat")));
       br.readLine();
       System.out.println("found file");
       while (true) {
         //br.readLine();
         String[] linetokens = br.readLine().split("\\s+");
-        //System.out.println("checking " + Integer.toString(linetokens.length) + linetokens[22]);
-
-        //if (linetokens[22].matches(".*H.*")) {
         // DAE changed to match particular H atom types in mm files with no atom names
         if (linetokens[1].matches("41") || linetokens[1].matches("44")) {
-          //System.out.println("found "  + linetokens[14]);
           atoms[nAtoms] = new Atoms();
           atoms[nAtoms].x = Double.valueOf(linetokens[14]).doubleValue();
           atoms[nAtoms].y = Double.valueOf(linetokens[15]).doubleValue();
@@ -432,6 +425,12 @@ public class NoeMatrix {
       }
     } catch (Exception e) {
       System.out.println(e.toString());
+    } finally {
+      if (br != null)
+        try {
+          br.close();
+        } catch (IOException e) {
+        }
     }
 
   }
@@ -456,7 +455,6 @@ public class NoeMatrix {
         }
         noeMatrix[i][j] = sum;
         noeMatrix[j][i] = sum;
-        //System.err.println("Here " + noeMatrix[i][j]);
       }
     }
   }
@@ -477,15 +475,12 @@ public class NoeMatrix {
     }
 
     String state = "ITERATING";
-    //double tolerance = maxOffDiag()*0.0001;
-    //System.out.println("tolerance = " + Double.toString(tolerance));
     int maxIter = 100000;
 
     while (state == "ITERATING") {
       double max = maxOffDiag();
       if (max > 0.0) {
         rotate();
-        //System.out.println("iterating");
         iter++;
         if (iter >= maxIter) {
           state = "STOP";
@@ -542,6 +537,7 @@ public class NoeMatrix {
     }
   }
 
+  @Override
   public String toString() {
     StringBuffer sb;
     NumberFormat nf = NumberFormat.getInstance();
@@ -661,17 +657,15 @@ public class NoeMatrix {
           }
         }
         return Math.pow(dd / (atom1.xa.length * atom2.xa.length), -1.0 / 3.0);
-      } else {
-        double dd = 0.0;
-        for (int i = 0; i < atom1.xa.length; i++) {
-          double x1 = atom1.xa[i] - atom2.x;
-          double y1 = atom1.ya[i] - atom2.y;
-          double z1 = atom1.za[i] - atom2.z;
-          dd += Math.pow((x1 * x1) + (y1 * y1) + (z1 * z1), -3.0);
-        }
-        return Math.pow(dd / atom1.xa.length, -1.0 / 3.0);
       }
-
+      double dd = 0.0;
+      for (int i = 0; i < atom1.xa.length; i++) {
+        double x1 = atom1.xa[i] - atom2.x;
+        double y1 = atom1.ya[i] - atom2.y;
+        double z1 = atom1.za[i] - atom2.z;
+        dd += Math.pow((x1 * x1) + (y1 * y1) + (z1 * z1), -3.0);
+      }
+      return Math.pow(dd / atom1.xa.length, -1.0 / 3.0);
     } else {// normal distance for non equivalent C-H and C-H2 groups
       double x1 = atom1.x - atom2.x;
       double y1 = atom1.y - atom2.y;

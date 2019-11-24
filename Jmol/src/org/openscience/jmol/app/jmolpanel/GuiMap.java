@@ -190,6 +190,7 @@ public class GuiMap {
     labels.put("distanceNanometersScript", GT.$("&Nanometers 1E-9"));
     labels.put("distanceAngstromsScript", GT.$("&Angstroms 1E-10"));
     labels.put("distancePicometersScript", GT.$("&Picometers 1E-12"));
+    labels.put("distanceHzScript", GT.$("&Hz (NMR J-coupling)"));
     labels.put("animateMenu", GT.$("&Animate..."));
     labels.put("vibrateMenu", GT.$("&Vibrate..."));
     // these three are not implemented:

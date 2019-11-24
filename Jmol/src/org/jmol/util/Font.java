@@ -167,5 +167,12 @@ final public class Font {
   public String getInfo() {
     return  fontSizeNominal + " " + fontFace + " " + fontStyle;
   }
+  
+  @Override
+  public String toString() {
+    return "[" + getInfo() + "]";
+  }
 }
+
+
 

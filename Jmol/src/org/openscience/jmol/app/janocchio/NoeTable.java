@@ -51,17 +51,16 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
 import org.jmol.i18n.GT;
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.exception.CDKException;
 
 //import BoxLayout;
 
+
 public class NoeTable extends JTabbedPane {
 
+//  AtomContainer molCDK;
+  
   NMR_Viewer viewer;
-  AtomContainer molCDK;
-
+  
   String[] labelArray;
   boolean molCDKuptodate = false;
   int natomsPerModel;
@@ -422,17 +421,17 @@ public class NoeTable extends JTabbedPane {
     public Object getValueAt(int row, int col) {
       // Always check that the CDK conversion is current  
       if (!molCDKuptodate) {
-        addMolCDK();
+        addMol();
       }
       // Need to convert noeTable index to viewer index
       int vRow = getViewerRow(row);
       int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
 
-      Integer[] numAtom1 = new Integer[1];
-      Integer[] numAtom2 = new Integer[1];
+      int numAtom1;
+      int numAtom2;
 
-      numAtom1[0] = new Integer(countPlusIndices[1]);
-      numAtom2[0] = new Integer(countPlusIndices[2]);
+      numAtom1 = countPlusIndices[1];
+      numAtom2 = countPlusIndices[2];
 
       double noeNP = calcProps.getNoe(countPlusIndices[1], countPlusIndices[2]);
       double noeNPref = 1.0;
@@ -585,10 +584,19 @@ public class NoeTable extends JTabbedPane {
   boolean checkNoe(int[] countPlusIndices) {
 
     if (countPlusIndices.length == 3 && countPlusIndices[1] < natomsPerModel) {
-      Atom a = molCDK.getAtomAt(countPlusIndices[1]);
-      Atom b = molCDK.getAtomAt(countPlusIndices[2]);
-      if ((a.getSymbol()).equals("H") && (b.getSymbol()).equals("H")) {
-        return true;
+      if (Nmr.useCDK) {
+//        Atom a = molCDK.getAtomAt(countPlusIndices[1]);
+//        Atom b = molCDK.getAtomAt(countPlusIndices[2]);
+//        if ((a.getSymbol()).equals("H") && (b.getSymbol()).equals("H")) {
+//          return true;
+//        }
+      } else {
+        org.jmol.modelset.Atom ja = viewer.getAtomAt(countPlusIndices[1]);
+        org.jmol.modelset.Atom jb = viewer.getAtomAt(countPlusIndices[2]);
+        if ((ja.getElementSymbol()).equals("H")
+            && (jb.getElementSymbol()).equals("H")) {
+          return true;
+        }
       }
     }
     return false;
@@ -607,19 +615,8 @@ public class NoeTable extends JTabbedPane {
   }
 
   /* This should only be called once the molecule data has been read in */
-  public void addMolCDK() {
-    CdkConvertor convertor = new CdkConvertor();
-
-    AtomContainer mol = new AtomContainer();
-
-    try {
-      mol = convertor.convert(viewer);
-    } catch (CDKException e) {
-      System.err.println("CDK conversion error");
-    }
-
-    this.molCDK = mol;
-    this.calcProps = new DistanceJMolecule(mol, labelArray);
+  public void addMol() {
+    calcProps = Nmr.getDistanceJMolecule(null, viewer, labelArray);
     calcProps.setCorrelationTime(tau);
     calcProps.setMixingTime(tMix);
     calcProps.setNMRfreq(freq);

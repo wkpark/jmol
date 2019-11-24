@@ -284,6 +284,8 @@ public class Measurement {
             units = "pm";
         }
       }
+      if (units.equals("hz"))
+        return (andRound ? Math.round(dist * 10) / 10f : dist);
       if (units.equals("nm"))
         return (andRound ? Math.round(dist * 100) / 1000f : dist / 10);
       if (units.equals("pm"))

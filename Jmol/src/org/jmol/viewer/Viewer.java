@@ -396,11 +396,27 @@ public class Viewer extends JmolViewer implements AtomDataServer,
         null, JC.SMILES_TYPE_SMARTS);
   }
 
-  public int[][] getSmartsMap(String smarts, BS bsSelected) throws Exception {
+  /**
+   * 
+   * 
+   * @param smilesOrSmarts
+   * @param bsSelected
+   * @param flags
+   *        can be bitwise OR of JC.SMILES_* options, in particular,
+   * 
+   *        JC.SMILES_TYPE_SMARTS, JC.SMILES_TYPE_SMILES, and
+   *        JC.SMILES_MAP_UNIQUE
+   * 
+   * @return map
+   * @throws Exception
+   */
+  public int[][] getSmartsMap(String smilesOrSmarts, BS bsSelected, int flags) throws Exception {
     if (bsSelected == null)
       bsSelected = bsA();
-    return getSmilesMatcher().getCorrelationMaps(smarts, ms.at, ms.ac,
-        bsSelected, JC.SMILES_TYPE_SMARTS);
+    if (flags == 0) 
+      flags = JC.SMILES_TYPE_SMARTS;
+    return getSmilesMatcher().getCorrelationMaps(smilesOrSmarts, ms.at, ms.ac,
+        bsSelected, flags);
   }
 
   @SuppressWarnings({ "unchecked", "null", "unused" })
@@ -8729,11 +8745,9 @@ public class Viewer extends JmolViewer implements AtomDataServer,
     if (addHydrogen)
       bsSelected.or(addHydrogens(bsSelected, isLoad2D, isSilent));
 
-    System.out.println(bsSelected.cardinality() + ">??"
-        + g.minimizationMaxAtoms);
-
-    if (ff.equals("MMFF") && bsSelected.cardinality() > g.minimizationMaxAtoms) {
-      scriptStatusMsg("Too many atoms for minimization (>"
+    int n = bsSelected.cardinality();
+    if (ff.equals("MMFF") && n > g.minimizationMaxAtoms) {
+      scriptStatusMsg("Too many atoms for minimization (" + n + ">"
           + g.minimizationMaxAtoms
           + "); use 'set minimizationMaxAtoms' to increase this limit", "minimization: too many atoms");
       return;

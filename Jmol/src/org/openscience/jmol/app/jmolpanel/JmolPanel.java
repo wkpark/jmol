@@ -169,6 +169,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   protected String windowName;
 
+  protected boolean isPlugin;
+
   protected static int numWindows = 0;
   protected static KioskFrame kioskFrame;
   protected static BannerFrame bannerFrame;
@@ -456,7 +458,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
     ImageIcon jmolIcon = JmolResourceHandler.getIconX("icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
-    frame.addWindowListener(new AppCloser());
+    if (!isPlugin)
+      frame.addWindowListener(new AppCloser());
   }
 
   protected void setupConsole() {
@@ -585,7 +588,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    * implementation. A more self-respecting implementation would at least check
    * to see if a save was needed.
    */
-  protected final class AppCloser extends WindowAdapter {
+  protected class AppCloser extends WindowAdapter {
 
     public AppCloser() {
     }

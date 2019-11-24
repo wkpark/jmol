@@ -35,22 +35,18 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+
+import javajs.util.JSJSONParser;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -71,10 +67,6 @@ import javax.swing.SwingConstants;
 import org.jmol.c.CBK;
 import org.jmol.dialog.FileChooser;
 import org.jmol.i18n.GT;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.openscience.cdk.AtomContainer;
 import org.openscience.jmol.app.Jmol;
 import org.openscience.jmol.app.JmolApp;
 import org.openscience.jmol.app.jmolpanel.DisplayPanel;
@@ -84,7 +76,9 @@ import org.openscience.jmol.app.jmolpanel.JmolResourceHandler;
 import org.openscience.jmol.app.jmolpanel.Splash;
 import org.openscience.jmol.app.jmolpanel.StatusBar;
 import org.openscience.jmol.app.jmolpanel.StatusListener;
-import org.openscience.jmol.app.jmolpanel.console.AppConsole;
+//import org.json.Lst<Object>;
+//import org.json.JSONException;
+//import org.json.JSONObject;
 
 public class NMR_JmolPanel extends JmolPanel {
 
@@ -198,6 +192,10 @@ public class NMR_JmolPanel extends JmolPanel {
     //DAE add extra label
     frameCounter = new FrameCounter((NMR_Viewer) vwr);
     toolbar.add(frameCounter, BorderLayout.EAST);
+    say(GT.$("Initializing Noes..."));
+    noeTable = new NoeTable((NMR_Viewer) vwr, frame);
+    say(GT.$("Initializing Couples..."));
+    coupleTable = new CoupleTable((NMR_Viewer) vwr, frame);
     labelSetter = new LabelSetter((NMR_Viewer) vwr, noeTable, coupleTable);
     toolbar.add(labelSetter, BorderLayout.EAST);
     //Action handler implementation would go here.
@@ -207,6 +205,7 @@ public class NMR_JmolPanel extends JmolPanel {
 
   @Override
   protected void createDisplayAndAddStatusListener() {
+    isPlugin = ((Nmr) jmolApp).isPlugin();
     say(GT.$("Initializing 3D display..."));
     display = nmrDisplay = new NMR_DisplayPanel(this);
     vwrOptions.put("display", display);
@@ -224,6 +223,8 @@ public class NMR_JmolPanel extends JmolPanel {
     vwr = new NMR_Viewer(vwrOptions);
     say(GT.$("Initializing 3D display...5"));
     nmrDisplay.setViewer(vwr);
+    myStatusListener.setViewer(vwr);
+
   }
 
   @Override
@@ -239,11 +240,6 @@ public class NMR_JmolPanel extends JmolPanel {
   @Override
   protected void setupDisplay() {
     super.setupDisplay();
-    say(GT.$("Initializing Noes..."));
-    noeTable = new NoeTable((NMR_Viewer) vwr, frame);
-    say(GT.$("Initializing Couples..."));
-    coupleTable = new CoupleTable((NMR_Viewer) vwr, frame);
-
   }
 
   @Override
@@ -266,7 +262,8 @@ public class NMR_JmolPanel extends JmolPanel {
     mainSplitPane.setOneTouchExpandable(true);
     mainSplitPane.setContinuousLayout(true);
     mainSplitPane.setLeftComponent(this);
-    setMinimumSize(new Dimension(MIN_SIZE, MIN_SIZE));
+//    setMinimumSize(new Dimension(MIN_SIZE, MIN_SIZE));
+    frame.setMinimumSize(new Dimension(startupWidth + 400, 100));
 
     JSplitPane splitPaneRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, null,
         null);
@@ -303,8 +300,8 @@ public class NMR_JmolPanel extends JmolPanel {
     couplePanel.add(populationDisplay, BorderLayout.PAGE_END);
     couplePanel.add(frameDeltaDisplay, BorderLayout.PAGE_END);
 
-    splitPaneRight.setTopComponent(noePanel);
-    splitPaneRight.setBottomComponent(couplePanel);
+    splitPaneRight.setTopComponent(couplePanel);
+    splitPaneRight.setBottomComponent(noePanel);
 
     mainSplitPane.setRightComponent(splitPaneRight);
     splitPaneRight.setMinimumSize(new Dimension(300, 500));
@@ -321,7 +318,8 @@ public class NMR_JmolPanel extends JmolPanel {
     ImageIcon jmolIcon = JmolResourceHandler.getIconX("icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
-    frame.addWindowListener(new AppCloser());
+    if (!((Nmr)jmolApp).isPlugin())
+      frame.addWindowListener(new AppCloser());
 
   }
 
@@ -380,6 +378,18 @@ public class NMR_JmolPanel extends JmolPanel {
       }
     }
     return tokens;
+  }
+
+  @Override
+  protected boolean doClose(boolean saveSize) {
+    if (isPlugin) {
+      frame.setVisible(false);
+      ((Nmr) jmolApp).plugin.setVisible(false);
+    } else {
+      super.doClose(saveSize);
+    }
+    return true;
+    
   }
 
   void setCurrentDirectoryAll(File cDir) {
@@ -461,9 +471,9 @@ public class NMR_JmolPanel extends JmolPanel {
 
   // --- action implementations -----------------------------------
 
-  //	private PdfAction pdfAction;
-  //	private ViewNoeTableAction viewNoeTableAction;
-  //	private ViewCoupleTableAction viewCoupleTableAction;
+  //  private PdfAction pdfAction;
+  //  private ViewNoeTableAction viewNoeTableAction;
+  //  private ViewCoupleTableAction viewCoupleTableAction;
 
   class SaveNmrAction extends AbstractAction {
 
@@ -494,7 +504,7 @@ public class NMR_JmolPanel extends JmolPanel {
           }
 
           try {
-            writeNmrDataJSON(file);
+            new LoadMeasureThreadJSON(NMR_JmolPanel.this, null).writeNmrDataJSON(file);
           } catch (Exception exc) {
             // Help
           }
@@ -504,101 +514,6 @@ public class NMR_JmolPanel extends JmolPanel {
 
     }
 
-  }
-
-  public void writeNmrDataJSON(File file) throws IOException, JSONException {
-    JSONObject data = getNmrDataJSON();
-    PrintWriter out = new PrintWriter(new FileWriter(file));
-    data.write(out);
-
-    out.flush();
-    out.close();
-  }
-
-  public JSONObject getNmrDataJSON() throws JSONException {
-    JSONObject data = new JSONObject();
-    data.put("StructureFile", vwr.getModelSetPathName());
-
-    JSONArray labels = new JSONArray();
-    String[] labelArray = labelSetter.getLabelArray();
-    for (int i = 0; i < labelArray.length; i++) {
-      if (labelArray[i] != null) {
-        JSONObject l = new JSONObject();
-        l.put("index", String.valueOf(i + 1));
-        l.put("label", labelArray[i]);
-        labels.put(l);
-      }
-    }
-    data.put("Labels", labels);
-
-    JSONArray noes = new JSONArray();
-    int noeCount = noeTable.getRowCount();
-    for (int i = 0; i < noeCount; i++) {
-      int[] atomIndices = noeTable.getMeasurementCountPlusIndices(i);
-      JSONObject n = new JSONObject();
-      n.put("a", String.valueOf(atomIndices[1] + 1));
-      n.put("b", String.valueOf(atomIndices[2] + 1));
-      n.put("exp", noeTable.getExpNoe(atomIndices[1], atomIndices[2]));
-      n.put("expd", noeTable.getExpDist(atomIndices[1], atomIndices[2]));
-
-      noes.put(n);
-    }
-    data.put("NOEs", noes);
-
-    int coupleCount = coupleTable.getRowCount();
-    JSONArray couples = new JSONArray();
-    for (int i = 0; i < coupleCount; i++) {
-      int[] atomIndices = coupleTable.getMeasurementCountPlusIndices(i);
-      JSONObject c = new JSONObject();
-      c.put("a", String.valueOf(atomIndices[1] + 1));
-      c.put("b", String.valueOf(atomIndices[2] + 1));
-      c.put("c", String.valueOf(atomIndices[3] + 1));
-      c.put("d", String.valueOf(atomIndices[4] + 1));
-      c.put("exp", coupleTable.getExpCouple(atomIndices[1], atomIndices[4]));
-      couples.put(c);
-    }
-    data.put("Couples", couples);
-
-    int[] noeNPrefIndices = noeTable.getnoeNPrefIndices();
-    JSONObject refNOE = new JSONObject();
-    refNOE.put("a", new Integer(noeNPrefIndices[0]));
-    refNOE.put("b", new Integer(noeNPrefIndices[1]));
-    data.put("RefNOE", refNOE);
-
-    double noeExprefValue = noeTable.getNoeExprefValue();
-    data.put("ExpRefNOEValue", Double.toString(noeExprefValue));
-
-    data.put("CorrelationTime", Double.toString(noeTable.getCorrelationTime()));
-    data.put("MixingTime", Double.toString(noeTable.getMixingTime()));
-    data.put("NMRfreq", Double.toString(noeTable.getNMRfreq()));
-    data.put("Cutoff", Double.toString(noeTable.getCutoff()));
-    data.put("RhoStar", Double.toString(noeTable.getRhoStar()));
-
-    data.put("NoeRedValue", Double.toString(noeTable.getRedValue()));
-    data.put("NoeYellowValue", Double.toString(noeTable.getYellowValue()));
-
-    data.put("CoupleRedValue", Double.toString(coupleTable.getRedValue()));
-    data.put("CoupleYellowValue", Double.toString(coupleTable.getYellowValue()));
-
-    double[] population = populationDisplay.getPopulation();
-    int populationLength = 0;
-    if (population != null) {
-      populationLength = population.length;
-    }
-
-    JSONArray populations = new JSONArray();
-    for (int i = 0; i < populationLength; i++) {
-      if (population[i] > 0.0) {
-        JSONObject p = new JSONObject();
-        p.put("index", i);
-        p.put("p", String.valueOf(population[i]));
-        populations.put(p);
-      }
-
-    }
-    data.put("NamfisPopulation", populations);
-
-    return data;
   }
 
   public void writeNmrData(File file) throws IOException {
@@ -731,9 +646,11 @@ public class NMR_JmolPanel extends JmolPanel {
 
   }
 
-  public void readNmrDataJSON(File file) throws IOException, JSONException {
+  private Map<String, Object> jsonData;
+  
+  public void readNmrDataJSON(File file) throws Exception {
 
-    BufferedReader inp = new BufferedReader(new FileReader(file));
+    //    BufferedReader inp = new BufferedReader(new FileReader(file));
 
     // This routine is problematic because we want to load a structure file,
     // wait for it to load, then load in the measurements.
@@ -745,31 +662,38 @@ public class NMR_JmolPanel extends JmolPanel {
     // loading in separate threads, then have the measurement loading
     // thread wait on the the file loading.
 
-    // Structure File
-    String currentStructureFile = getCurrentStructureFile();
+    if (file != null) {
+      // Structure File
+      String currentStructureFile = getCurrentStructureFile();
 
-    String jsonstring = inp.readLine().trim();
-    inp.close();
+      //    String jsonstring = inp.readLine().trim();
+      //    inp.close();
 
-    JSONObject data = new JSONObject(jsonstring);
-    String structureFile = (String) data.get("StructureFile");
+      String json = vwr.getFileAsString(file.getAbsolutePath());
 
-    if ((currentStructureFile == null) || (currentStructureFile == "zapped")) {
-      int opt = JOptionPane.showConfirmDialog(NMR_JmolPanel.this,
-          "No Structure File currently loaded.\nLoad Structure File "
-              + structureFile + "\ndefined in this NMR Data File?",
-          "No Structure Warning", JOptionPane.YES_NO_OPTION);
-      if (opt == JOptionPane.YES_OPTION) {
-        // viewer.script("load " + line);
-        // It seems to be necessary to load the file in a separate thread
-        // See also LoadMeasuresThread.java
-        ScriptWaitThread thread = new ScriptWaitThread("load \""
-            + structureFile + "\"", ((NMR_Viewer) vwr));
-        thread.start();
-      } else {
+      jsonData = new JSJSONParser().parseMap(json, true);
+
+      //    JSONObject data = new JSONObject(jsonstring);
+      String structureFile = (String) jsonData.get("StructureFile");
+
+      if ((currentStructureFile == null) || (currentStructureFile == "zapped")) {
+        int opt = JOptionPane.showConfirmDialog(NMR_JmolPanel.this,
+            "No Structure File currently loaded.\nLoad Structure File "
+                + structureFile + "\ndefined in this NMR Data File?",
+            "No Structure Warning", JOptionPane.YES_NO_OPTION);
+        if (opt == JOptionPane.YES_OPTION) {
+
+          // viewer.script("load " + line);
+          // It seems to be necessary to load the file in a separate thread
+          // See also LoadMeasuresThread.java
+          //        ScriptWaitThread thread = new ScriptWaitThread("load \""
+          //            + structureFile + "\"", ((NMR_Viewer) vwr));
+          //        thread.start();
+
+          vwr.script("load \"" + structureFile + "\";message NMR-loadData");
+        }
         return;
       }
-    } else {
       if (!currentStructureFile.equals(structureFile)) {
 
         // Warn that the structure data was saved from a different file name from the
@@ -782,14 +706,15 @@ public class NMR_JmolPanel extends JmolPanel {
         if (opt == JOptionPane.NO_OPTION) {
           return;
         }
-
       }
     }
-
+    Map<String, Object> data = jsonData;
+    jsonData = null;
+    new LoadMeasureThreadJSON(this, data).run();
     // Load measurements (and labels) in a separate thread
 
-    LoadMeasureThreadJSON thread = new LoadMeasureThreadJSON(this, data);
-    thread.start();
+    //    LoadMeasureThreadJSON thread = new LoadMeasureThreadJSON(this, jsonData);
+    //    thread.start();
 
   }
 
@@ -802,7 +727,7 @@ public class NMR_JmolPanel extends JmolPanel {
     public void actionPerformed(ActionEvent e) {
       String[] labelArray = labelSetter.getLabelArray();
       String command = new String();
-      //		int minindex = labelSetter.getMinindex();
+      //    int minindex = labelSetter.getMinindex();
       for (int i = 0; i < labelArray.length; i++) {
         // if (labelArray[i] != null) {
         command = command + labelSetter.setLabelString(i, labelArray[i]);
@@ -821,7 +746,7 @@ public class NMR_JmolPanel extends JmolPanel {
     @Override
     public void actionPerformed(ActionEvent e) {
       // ??
-      //			nmrApplet.detach();
+      //      nmrApplet.detach();
     }
 
   }
@@ -834,7 +759,7 @@ public class NMR_JmolPanel extends JmolPanel {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      //			nmrApplet.reattach();
+      //      nmrApplet.reattach();
     }
 
   }
@@ -942,7 +867,7 @@ public class NMR_JmolPanel extends JmolPanel {
           }
 
           try {
-            writeNamfisFiles(name);
+            new LoadMeasureThreadJSON(NMR_JmolPanel.this, null).writeNamfisFiles(name);
           } catch (Exception exc) {
             // Help
           }
@@ -952,252 +877,6 @@ public class NMR_JmolPanel extends JmolPanel {
 
     }
 
-    public void writeNamfisFiles(String name) {
-
-      /*
-       * Namfis file .in1 contains the calculated distances and J's for each conformer
-       * .in2 contains the experimental measurements and uncertainties
-       */
-
-      File namfis1 = new File(name + ".in1");
-      File namfis2 = new File(name + ".in2");
-      File namfis3 = new File(name + ".in3");
-      File namfisout = new File(name + ".out");
-      String parent = namfis1.getParent();
-      File filename = new File(parent + "/filename.dat");
-      File optionfile = new File(parent + "/optionfile");
-      String zipFileName = name + ".zip";
-
-      JSONObject nmrdata;
-      JSONArray noes = new JSONArray();
-      JSONArray couples = new JSONArray();
-      try {
-        nmrdata = getNmrDataJSON();
-        noes = nmrdata.getJSONArray("NOEs");
-        couples = nmrdata.getJSONArray("Couples");
-      } catch (Exception e) {
-        //
-        nmrdata = new JSONObject();
-      }
-      CdkConvertor convertor = new CdkConvertor();
-
-      try {
-        AtomContainer[] mols = convertor.convertAll(((NMR_Viewer) vwr));
-
-        PrintWriter out1 = new PrintWriter(new FileWriter(namfis1));
-        String[] labelArray = labelSetter.getLabelArray();
-        for (int i = 0; i < mols.length; i++) {
-          DistanceJMolecule props = new DistanceJMolecule(mols[i], labelArray);
-          props.calcNOEs();
-
-          for (int n = 0; n < noes.length(); n++) {
-            JSONObject noe = noes.getJSONObject(n);
-            String a = (String) noe.get("a");
-            String b = (String) noe.get("b");
-
-            if (noe.has("expd")) {
-              String exp = (String) noe.get("expd");
-              if (exp != null) {
-                int j = (new Integer(a)).intValue() - 1;
-                int k = (new Integer(b)).intValue() - 1;
-                props.addDistance(j, k);
-              }
-            }
-          }
-
-          for (int n = 0; n < couples.length(); n++) {
-            JSONObject couple = couples.getJSONObject(n);
-            String a = (String) couple.get("a");
-            String b = (String) couple.get("b");
-            String c = (String) couple.get("c");
-            String d = (String) couple.get("d");
-            if (couple.has("exp")) {
-              String exp = (String) couple.get("exp");
-              if (exp != null) {
-                int j = (new Integer(a)).intValue() - 1;
-                int k = (new Integer(b)).intValue() - 1;
-                int l = (new Integer(c)).intValue() - 1;
-                int m = (new Integer(d)).intValue() - 1;
-                props.addCouple(j, k, l, m);
-              }
-            }
-          }
-          // NAMFIS has problems on some systems if there are zero noes or couplings
-          // Always add dummy variable
-          Vector vec = props.getDistances();
-          vec.add(new Double(1.0));
-          writeVector(vec, out1);
-
-          vec = props.getCouples();
-          vec.add(new Double(1.0));
-          writeVector(vec, out1);
-
-        }
-        out1.flush();
-        out1.close();
-
-        PrintWriter out2 = new PrintWriter(new FileWriter(namfis2));
-        DecimalFormat df = new DecimalFormat("#0.00  ");
-        out2.print("-1\n");
-
-        int nnoe = 0;
-        for (int i = 0; i < noes.length(); i++) {
-          JSONObject noe = noes.getJSONObject(i);
-          if (noe.has("expd")) {
-            nnoe++;
-          }
-        }
-        int ncouple = 0;
-        for (int i = 0; i < couples.length(); i++) {
-          JSONObject couple = couples.getJSONObject(i);
-          if (couple.has("exp")) {
-            ncouple++;
-          }
-        }
-
-        // Add dummy variables
-        nnoe++;
-        ncouple++;
-
-        // if (nnoe > 0) {
-        out2.print(ncouple + " " + nnoe + " 0\n");
-        for (int i = 0; i < noes.length(); i++) {
-          JSONObject noe = noes.getJSONObject(i);
-
-          if (noe.has("expd")) {
-            String exp = (String) noe.get("expd");
-            if (exp != null) {
-              out2.print(df.format(Double.valueOf(exp)) + " " + 0.4 + "\n");
-            }
-          }
-
-        }
-        out2.print("1.0 0.4\n"); // Dummy variable
-        // }
-
-        out2.print("\n");
-        for (int i = 0; i < couples.length(); i++) {
-          JSONObject couple = couples.getJSONObject(i);
-          if (couple.has("exp")) {
-            String exp = (String) couple.get("exp");
-            out2.print(exp + " ");
-          }
-        }
-        out2.print(1.0); // Dummy variable
-        out2.print("\n");
-        for (int i = 0; i < couples.length(); i++) {
-          JSONObject couple = couples.getJSONObject(i);
-          if (couple.has("exp")) {
-            out2.print(2.0 + " ");
-          }
-        }
-        out2.print(0.5); // Dummy variable
-
-        out2.print("\n");
-        out2.print("\n");
-        out2.print("1.0 1.0\n");
-        out2.print("5.0\n");
-        out2.print("0\n");
-
-        out2.flush();
-        out2.close();
-
-        PrintWriter out3 = new PrintWriter(new FileWriter(namfis3));
-        out3.flush();
-        out3.close();
-
-        PrintWriter out4 = new PrintWriter(new FileWriter(filename));
-        /*
-         * String head = name.replaceFirst(parent,""); head = head.replaceFirst("/","");
-         * out4.println(head + ".in1"); out4.println(head + ".in2"); out4.println(head +
-         * ".out"); out4.println(head + ".in3");
-         */
-        out4.print(namfis1.getName() + "\n");
-        out4.print(namfis2.getName() + "\n");
-        out4.print(namfisout.getName() + "\n");
-        out4.print(namfis3.getName() + "\n");
-        out4.flush();
-        out4.close();
-
-        PrintWriter out5 = new PrintWriter(new FileWriter(optionfile));
-        out5.print("  Begin\n");
-        out5.print("    NoList\n");
-        out5.print("    Derivative level          3\n");
-        out5.print("    Verify                   No\n");
-        out5.print("    Infinite step size      1.0d+20\n");
-        out5.print("    step limit              1.0d-02\n");
-        out5.print("    Major iterations limit    200\n");
-        out5.print("    Minor iterations limit   2000\n");
-        out5.print("    Major print level         10\n");
-        out5.print("    Function precision        1.0d-20\n");
-        out5.print("    Optimality Tolerance      1.0d-20\n");
-        out5.print("    Linear Feasibility Tolerance 1.0d-2\n");
-        out5.print("  end\n");
-        out5.flush();
-        out5.close();
-
-        // Write zip file
-
-        Vector<String> inputFileNames = new Vector<String>();
-        inputFileNames.add(namfis1.getAbsolutePath());
-        inputFileNames.add(namfis2.getAbsolutePath());
-        inputFileNames.add(namfis3.getAbsolutePath());
-        inputFileNames.add(filename.getAbsolutePath());
-        inputFileNames.add(optionfile.getAbsolutePath());
-
-        writeZip(inputFileNames, zipFileName);
-      } catch (Exception e) {
-        //
-        e.printStackTrace();
-      }
-    }
-
-    private void writeVector(Vector vector, PrintWriter out) {
-      DecimalFormat df = new DecimalFormat("0.000  ");
-      int count = 0;
-      for (int j = 0; j < vector.size(); j++) {
-        out.print(df.format(vector.get(j)));
-        if (count++ == 10) {
-          out.print("\n");
-          count = 0;
-        }
-      }
-      if (count != 0) {
-        out.print("\n");
-      }
-    }
-
-    private void writeZip(Vector<String> v, String outFilename) {
-      // Create a buffer for reading the files
-      byte[] buf = new byte[2048];
-      try {
-        // Create the ZIP file
-        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(
-            outFilename));
-        // Compress the files
-        for (int i = 0; i < v.size(); i++) {
-          FileInputStream in = new FileInputStream(v.get(i));
-
-          // Add ZIP entry to output stream.
-          out.putNextEntry(new ZipEntry(v.get(i)));
-
-          // Transfer bytes from the file to the ZIP file
-          int len;
-          while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-          }
-
-          // Complete the entry
-          out.closeEntry();
-          in.close();
-        }
-        // Complete the ZIP file
-        out.close();
-      } catch (IOException e) {
-        System.out.println("Error Writing zip....");
-        e.printStackTrace();
-      }
-    }
   }
 
   public class JumpBestFrameAction extends AbstractAction {
@@ -1208,108 +887,11 @@ public class NMR_JmolPanel extends JmolPanel {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      jumpBestFrame();
-    }
+      int frame = new LoadMeasureThreadJSON(NMR_JmolPanel.this, null).jumpBestFrame();
+      if (frame >= 0)
+        frameCounter.setFrameNumberChangeViewer(frame);
 
-    public void jumpBestFrame() {
 
-      JSONObject nmrdata;
-      JSONArray noes = new JSONArray();
-      JSONArray couples = new JSONArray();
-
-      try {
-        nmrdata = getNmrDataJSON();
-        noes = nmrdata.getJSONArray("NOEs");
-        couples = nmrdata.getJSONArray("Couples");
-      } catch (Exception e) {
-        //
-        nmrdata = new JSONObject();
-      }
-      CdkConvertor convertor = new CdkConvertor();
-
-      try {
-        AtomContainer[] mols = convertor.convertAll(((NMR_Viewer) vwr));
-
-        String[] labelArray = labelSetter.getLabelArray();
-        double noeWeight = frameDeltaDisplay.getNoeWeight();
-        double coupleWeight = frameDeltaDisplay.getCoupleWeight();
-        boolean lexpNoes = noeTable.getlexpNoes();
-        double minDiff = Double.MAX_VALUE;
-        int minFrame = -1;
-        for (int i = 0; i < mols.length; i++) {
-          DistanceJMolecule props = new DistanceJMolecule(mols[i], labelArray);
-          props.calcNOEs();
-
-          double diffDist = 0.0;
-          double diffNoe = 0.0;
-          double diffCouple = 0.0;
-
-          for (int n = 0; n < noes.length(); n++) {
-            JSONObject noe = noes.getJSONObject(n);
-            String a = (String) noe.get("a");
-            String b = (String) noe.get("b");
-
-            if (noe.has("expd")) {
-              String exp = (String) noe.get("expd");
-              if (exp != null) {
-                int j = (new Integer(a)).intValue() - 1;
-                int k = (new Integer(b)).intValue() - 1;
-                double cDist = props.calcDistance(j, k);
-                MeasureDist measure = new MeasureDist(exp, new Double(cDist));
-                diffDist += measure.getDiff();
-              }
-            }
-            if (noe.has("exp")) {
-              String exp = (String) noe.get("exp");
-              if (exp != null) {
-                int j = (new Integer(a)).intValue() - 1;
-                int k = (new Integer(b)).intValue() - 1;
-                double cNoe = props.getNoe(j, k);
-                MeasureNoe measure = new MeasureNoe(exp, new Double(cNoe));
-                diffNoe += measure.getDiff();
-              }
-            }
-          }
-
-          for (int n = 0; n < couples.length(); n++) {
-            JSONObject couple = couples.getJSONObject(n);
-            String a = (String) couple.get("a");
-            String b = (String) couple.get("b");
-            String c = (String) couple.get("c");
-            String d = (String) couple.get("d");
-            if (couple.has("exp")) {
-              String exp = (String) couple.get("exp");
-              if (exp != null) {
-                int j = (new Integer(a)).intValue() - 1;
-                int k = (new Integer(b)).intValue() - 1;
-                int l = (new Integer(c)).intValue() - 1;
-                int m = (new Integer(d)).intValue() - 1;
-                Double[] cCouple = props.calcCouple(j, k, l, m);
-                MeasureCouple measure = new MeasureCouple(exp, cCouple[1]);
-                diffCouple += measure.getDiff();
-              }
-            }
-          }
-
-          double diff = diffCouple * coupleWeight;
-          if (lexpNoes) {
-            diff += diffNoe * noeWeight;
-
-          } else {
-            diff += diffDist * noeWeight;
-          }
-          if (diff < minDiff) {
-            minDiff = diff;
-            minFrame = i;
-          }
-        }
-        // Now, jump to minFrame
-        frameCounter.setFrameNumberChangeViewer(minFrame + 1);
-
-      } catch (Exception e) {
-        //
-        e.printStackTrace();
-      }
     }
 
   }
@@ -1425,6 +1007,8 @@ public class NMR_JmolPanel extends JmolPanel {
 
   class MyStatusListener extends StatusListener {
 
+    private String defaultFormat = "set measurementUnits hz;measure \"2:%1.1VALUE %UNITS//hz\"";
+
     MyStatusListener(JmolPanel jmol, DisplayPanel display) {
       super(jmol, display);
     }
@@ -1447,12 +1031,14 @@ public class NMR_JmolPanel extends JmolPanel {
 
       int nmodel = ((NMR_Viewer) vwr).getModelCount();
 
+      
       frameCounter.setFrameCount(nmodel);
 
       populationDisplay.setVisible(false);
       frameDeltaDisplay.setVisible(true);
       JCheckBoxMenuItem mi = (JCheckBoxMenuItem) getMenuItem("NMR.frameDeltaDisplayCheck");
       mi.setSelected(true);
+      vwr.script(defaultFormat);
     }
 
     public void notifyFrameChanged(int frameNo) {
@@ -1480,10 +1066,11 @@ public class NMR_JmolPanel extends JmolPanel {
 
       coupleTable.setmolCDKuptodate(false);
       noeTable.setmolCDKuptodate(false);
-      noeTable.addMolCDK();
+      noeTable.addMol();
 
       coupleTable.updateTables();
       noeTable.updateTables();
+      vwr.script(defaultFormat);
 
     }
 
@@ -1525,6 +1112,12 @@ public class NMR_JmolPanel extends JmolPanel {
         break;
       case MEASURE: {
         String mystatus = (String) data[3];
+        if (defaultFormat  != null) {
+          vwr.script(defaultFormat);
+          defaultFormat = null;
+        }
+        if (mystatus.equals("measurePending") || mystatus.equals("measureDeleted"))
+          return;
         if (mystatus.indexOf("Sequence") < 0) {
           if (mystatus.indexOf("Picked") >= 0) {
             // picking mode
@@ -1534,6 +1127,10 @@ public class NMR_JmolPanel extends JmolPanel {
           }
         }
         noeTable.updateTables();
+        if (coupleTable.getViewerMeasurement(-1) == null) {
+          vwr.deleteMeasurement(vwr.getMeasurementCount() - 1);
+          return;
+        }
         coupleTable.updateTables();
       }
         break;

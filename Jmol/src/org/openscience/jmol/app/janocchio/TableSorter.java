@@ -97,11 +97,13 @@ public class TableSorter extends AbstractTableModel {
   private static Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
 
   public static final Comparator COMPARABLE_COMAPRATOR = new Comparator() {
+    @Override
     public int compare(Object o1, Object o2) {
       return ((Comparable) o1).compareTo(o2);
     }
   };
   public static final Comparator LEXICAL_COMPARATOR = new Comparator() {
+    @Override
     public int compare(Object o1, Object o2) {
       return o1.toString().compareTo(o2.toString());
     }
@@ -284,30 +286,37 @@ public class TableSorter extends AbstractTableModel {
 
   // TableModel interface methods 
 
+  @Override
   public int getRowCount() {
     return (tableModel == null) ? 0 : tableModel.getRowCount();
   }
 
+  @Override
   public int getColumnCount() {
     return (tableModel == null) ? 0 : tableModel.getColumnCount();
   }
 
+  @Override
   public String getColumnName(int column) {
     return tableModel.getColumnName(column);
   }
 
+  @Override
   public Class getColumnClass(int column) {
     return tableModel.getColumnClass(column);
   }
 
+  @Override
   public boolean isCellEditable(int row, int column) {
     return tableModel.isCellEditable(modelIndex(row), column);
   }
 
+  @Override
   public Object getValueAt(int row, int column) {
     return tableModel.getValueAt(modelIndex(row), column);
   }
 
+  @Override
   public void setValueAt(Object aValue, int row, int column) {
     tableModel.setValueAt(aValue, modelIndex(row), column);
   }
@@ -321,6 +330,7 @@ public class TableSorter extends AbstractTableModel {
       this.modelIndex = index;
     }
 
+    @Override
     public int compareTo(Object o) {
       int row1 = modelIndex;
       int row2 = ((Row) o).modelIndex;
@@ -351,6 +361,7 @@ public class TableSorter extends AbstractTableModel {
   }
 
   private class TableModelHandler implements TableModelListener {
+    @Override
     public void tableChanged(TableModelEvent e) {
       // If we're not sorting by anything, just pass the event along.             
       if (!isSorting()) {
@@ -404,6 +415,7 @@ public class TableSorter extends AbstractTableModel {
   }
 
   private class MouseHandler extends MouseAdapter {
+    @Override
     public void mouseClicked(MouseEvent e) {
       JTableHeader h = (JTableHeader) e.getSource();
       TableColumnModel columnModel = h.getColumnModel();
@@ -434,6 +446,7 @@ public class TableSorter extends AbstractTableModel {
       this.priority = priority;
     }
 
+    @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
       Color color = c == null ? Color.GRAY : c.getBackground();
       // In a compound sort, make each succesive triangle 20% 
@@ -467,10 +480,12 @@ public class TableSorter extends AbstractTableModel {
       g.translate(-x, -y);
     }
 
+    @Override
     public int getIconWidth() {
       return size;
     }
 
+    @Override
     public int getIconHeight() {
       return size;
     }
@@ -483,6 +498,7 @@ public class TableSorter extends AbstractTableModel {
       this.tableCellRenderer = tableCellRenderer;
     }
 
+    @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected,
                                                    boolean hasFocus, int row,

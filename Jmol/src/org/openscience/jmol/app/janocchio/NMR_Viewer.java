@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.Image;
 import java.util.Map;
 
+import org.jmol.modelset.Atom;
 import org.jmol.viewer.Viewer;
 
 /**
@@ -48,6 +49,10 @@ public class NMR_Viewer extends Viewer {
 
   public Image getScreenImage() {
     return (Image) getScreenImageBuffer(null, true);
+  }
+
+  public Atom getAtomAt(int i) {
+    return ms.at[i];
   }
 
 }

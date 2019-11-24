@@ -28,6 +28,9 @@ package org.openscience.jmol.app.janocchio;
 
 import java.awt.Cursor;
 
+import javajs.api.Interface;
+import javajs.util.BS;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
@@ -35,10 +38,25 @@ import javax.swing.UIManager;
 import org.jmol.dialog.Dialog;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.JmolApp;
 import org.openscience.jmol.app.jmolpanel.Splash;
 
 public class Nmr extends JmolApp {
+
+  static class Molecule {
+
+//    AtomContainer molCDK;
+    BS bsMol;
+
+  }
+
+  /*
+   * set to true for initial testing only
+   */
+  public static final boolean useCDK = false;
+
+  public static final String VERSION = "0.1.0";
 
   public static String path;
   static {
@@ -46,15 +64,30 @@ public class Nmr extends JmolApp {
     path = path.substring(0, path.lastIndexOf(".") + 1);
   }
 
+  private Splash splash;
+  NmrPlugin plugin;
+  JFrame mainFrame;
+  NMR_JmolPanel nmrPanel;
+
+  public boolean isPlugin() { 
+    return plugin != null;
+  }
+  
   public static void main(String[] args) {
     new Nmr(args);
   }
-
-  private Splash splash;
+  public Nmr(String[] args, NmrPlugin plugin) {
+    super(args);
+    this.plugin = plugin;
+    init();
+  }
 
   public Nmr(String[] args) {
     super(args);
-
+    init();
+  }
+  
+  private void init() {
     try {
       if (haveDisplay) {
         Dialog.setupUIManager();
@@ -65,7 +98,7 @@ public class Nmr extends JmolApp {
           System.err.println("Error loading L&F: " + exc);
         }
       }
-      JFrame mainFrame = new JFrame();
+      mainFrame = new JFrame();
       if (jmolPosition != null) {
         mainFrame.setLocation(jmolPosition);
       }
@@ -85,24 +118,17 @@ public class Nmr extends JmolApp {
       if (splash != null)
         splash.showStatus(GT.$("Initializing Jmol..."));
 
-      NMR_JmolPanel panel = new NMR_JmolPanel(this, splash, mainFrame, null,
+      nmrPanel = new NMR_JmolPanel(this, splash, mainFrame, null,
           startupWidth, startupHeight, info, null);
-      //      window.setSize(1000, 600);
-      //      System.out.println(window);
-      //      ((JFrame) window.getTopLevelAncestor()).pack();
-      //      System.out
-      //          .println((frame == window.getTopLevelAncestor()) + " " + window);
-      //      dumpContainer(frame, "");
-      //
       if (haveDisplay)
         mainFrame.setVisible(true);
 
-      startViewer(panel.vwr, splash, false);
+      startViewer(nmrPanel.vwr, splash, false);
 
       if (haveConsole)
-        panel.getJavaConsole();
+        nmrPanel.getJavaConsole();
 
-      panel.vwr.script("set measureAllmodels ON; frank OFF");
+      nmrPanel.vwr.script("set measureAllmodels ON;font measurements 18; font labels 18;measure '2:%1.1VALUE %UNITS//hz'");
 
     } catch (Throwable t) {
       Logger.error("uncaught exception: " + t);
@@ -110,5 +136,69 @@ public class Nmr extends JmolApp {
     }
 
   }
+
+  public static CdkConvertor getCDKConverter() {
+    return (CdkConvertor) Interface
+        .getInterface("org.openscience.jmol.app.janocchio.CdkConvertor");
+
+  }
+
+  public static DistanceJMolecule getDistanceJMolecule(Molecule mol, NMR_Viewer viewer,
+                                                       String[] labelArray) {
+    try {
+      return (
+          
+//          useCDK ? new DistanceJMoleculeCDK().set(
+//          (mol == null ? getMolecule(viewer) : mol).molCDK, labelArray) : 
+            
+            new DistanceJMoleculeNoCDK(
+          (mol == null ? getMolecule(viewer) : mol).bsMol, viewer, labelArray));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  private static Molecule getMolecule(NMR_Viewer viewer) {
+    Molecule m = new Molecule();
+    try {
+      if (useCDK) {
+//        m.molCDK = getCDKConverter().convert(viewer);
+      } else {
+        m.bsMol = viewer.getFrameAtoms();
+      }
+      return m;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+  
+  public static Molecule[] getAllMolecules(NMR_Viewer viewer) {
+    try {
+      Molecule[] mols;
+      if (Nmr.useCDK) {
+//        CdkConvertor convertor = new CdkConvertor();
+//        AtomContainer[] c = convertor.convertAll(viewer);
+//        mols = new Molecule[c.length];
+//        for (int i = c.length; --i >= 0;) {
+//          Molecule mol = mols[i] = new Molecule();
+//          mol.molCDK = c[i];
+//        }
+      } else {
+        int mc = viewer.getModelCount();
+        mols = new Molecule[mc];
+        for (int i = mc; --i >= 0;) {
+          Molecule mol = mols[i] = new Molecule();
+          mol.bsMol = viewer.getModelUndeletedAtomsBitSet(i);
+        }
+      }
+      return mols;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+
 
 }

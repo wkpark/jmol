@@ -33,6 +33,7 @@
 package org.openscience.jmol.app.janocchio;
 
 import java.util.Hashtable;
+import java.util.Map;
 
 import javajs.util.BS;
 import javajs.util.Lst;
@@ -42,55 +43,76 @@ import org.jmol.quantum.NMRCalculation;
 import org.jmol.viewer.JC;
 
 /**
+ * Connection to NMRCalculation allowing for a CDK version as well (which is no
+ * longer supported because of the 25 MB hit from the CDK library and because
+ * Jmol already provides smart ways to group the hydrogen atoms).
  * 
- * @author u6x8497
+ * @author Bob Hanson
  */
 public class DistanceJMoleculeNoCDK extends DistanceJMolecule {
 
-  private int atomCount;
+  NMR_JmolPanel nmrPanel;
   private BS bsMol;
+  private String[] labelArray;
 
   /**
    * 
-   * @param bsMol 
-   * @param viewer
-   * @param labelArray optional array of atom labels, one per atom in the current frame
+   * @param nmrPanel
+   * @param bsMol
+   * @param labelArray
+   *        optional array of atom labels, one per atom in the current frame
    */
-  public DistanceJMoleculeNoCDK(BS bsMol, NMR_Viewer viewer, String[] labelArray) {
-    this.viewer = viewer;
-    this.labelArray = labelArray;
+  public DistanceJMoleculeNoCDK(NMR_JmolPanel nmrPanel, BS bsMol,
+      String[] labelArray) {
+    this.nmrPanel = nmrPanel;
+    viewer = (NMR_Viewer) nmrPanel.vwr;
     this.bsMol = bsMol;
-    atomCount = bsMol.cardinality();
+    this.labelArray = labelArray;
+    addAtomstoMatrix();
+
   }
 
-  
-  private int[][] methyls;
-  private BS bsH;
-  private Hashtable<String, Lst<Atom>> labelMap = new Hashtable<String, Lst<Atom>>();
-  private Lst<Object> hAtoms = new Lst<Object>();
-  private Hashtable<Atom, Integer> indexAtomInMol = new Hashtable<Atom, Integer>();
-  
   @Override
-  protected int[] addAtomstoMatrix() {
+  protected DihedralCouple getDihedralCouple(int numAtom1, int numAtom2,
+                                             int numAtom3, int numAtom4) {
+    return new DihedralCoupleNoCDK(numAtom1, numAtom4);
+  }
 
-    // Converts the visible frame atoms to input for Gary Sharman's implementation of the NoeMatrix class
-    Hashtable<Atom, String> labels = new Hashtable<Atom, String>();
+  /**
+   * Generate noeMatrix and indexAtomInNoeMatrix fields for DistanceJMolecule.
+   * 
+   */
+  protected void addAtomstoMatrix() {
 
-    labelMap = new Hashtable<String, Lst<Atom>>();
-    hAtoms = new Lst<Object>();
-    indexAtomInMol = new Hashtable<Atom, Integer>();
-
-    // Make vector of all hAtoms in molecule
+    int atomCount = bsMol.cardinality();
+    BS bsH = null;
     try {
-      bsH = (bsMol.isEmpty() ? new BS() : viewer.getSmartsMatch("[H]", bsMol));
+      bsH = (atomCount == 0 ? new BS() : viewer.getSmartsMatch("[H]", bsMol));
     } catch (Exception e1) {
-      // not possible
+      // not possible - the SMARTS expression is valid.
     }
 
+    // we will fill these two
+    Map<Atom, String> labels = new Hashtable<Atom, String>();
+    Map<Atom, Integer> indexAtomInMol = new Hashtable<Atom, Integer>();
+
+    Map<String, Lst<Atom>> labelMap = createLabelMapAndIndex(bsH, labels,
+        indexAtomInMol);
+    Lst<Object> hAtoms = createHAtomList(bsH, labels, labelMap);
+    createNOEMatrix(hAtoms, indexAtomInMol, new int[atomCount]);
+  }
+
+  private Map<String, Lst<Atom>> createLabelMapAndIndex(BS bsH,
+                                                        Map<Atom, String> labels,
+                                                        Map<Atom, Integer> indexAtomInMol) {
+
+    Map<String, Lst<Atom>> labelMap = new Hashtable<String, Lst<Atom>>();
+    if (viewer == null)
+      System.out.println("????");
     for (int pt = 0, i = bsMol.nextSetBit(0); i >= 0; i = bsMol
         .nextSetBit(i + 1), pt++) {
       Atom a = viewer.getAtomAt(i);
-      indexAtomInMol.put(a,  Integer.valueOf(pt));      
+      indexAtomInMol.put(a, Integer.valueOf(pt));
       if (labelArray != null) {
         String label = labelArray[pt];
         if (labelArray[pt] == null) {
@@ -108,29 +130,44 @@ public class DistanceJMoleculeNoCDK extends DistanceJMolecule {
         }
       }
     }
-    // Check every H atom to see if it is part of a methyl group
-    // If is, the other two H atoms are removed from the hAtoms vector,
-    // and the methyl group is added
-    // If not, just the H atom is added
+    return labelMap;
+  }
 
+  private Lst<Object> createHAtomList(BS bsH, Map<Atom, String> labels,
+                                      Map<String, Lst<Atom>> labelMap) {
+    /**
+     * 
+     * Create hAtoms list, which can have three possible element types:
+     * 
+     * Atom a hydrogen
+     * 
+     * Atom[3] a methyl group
+     * 
+     * Lst<Atom> otherwise noted as identical by their label
+     * 
+     */
+
+    Lst<Object> hAtoms = new Lst<Object>();
     try {
+      // find and group all methyl groups -- simple unique SMARTS map here:
       if (!bsMol.isEmpty()) {
-        methyls = null;
-        methyls = viewer.getSmartsMap("C({[H]})({[H]}){[H]}", bsMol, JC.SMILES_TYPE_SMARTS | JC.SMILES_MAP_UNIQUE);
+        int[][] methyls = viewer.getSmartsMap("C({[H]})({[H]}){[H]}", bsMol,
+            JC.SMILES_TYPE_SMARTS | JC.SMILES_MAP_UNIQUE);
         for (int i = methyls.length; --i >= 0;) {
-          Atom[] tmpa = new Atom[3];
+          Atom[] methyl = new Atom[3];
           for (int j = 0; j < 3; j++) {
             int pt = methyls[i][j];
-            tmpa[j] = viewer.getAtomAt(pt);
+            methyl[j] = viewer.getAtomAt(pt);
             bsH.clear(pt);
           }
-          hAtoms.addLast(tmpa);
+          hAtoms.addLast(methyl);
         }
       }
     } catch (Exception e) {
       // not possible
     }
 
+    // 
     for (int i = bsH.nextSetBit(0); i >= 0; i = bsH.nextSetBit(i + 1)) {
       Atom a = viewer.getAtomAt(i);
       String label = labels.get(a);
@@ -141,11 +178,23 @@ public class DistanceJMoleculeNoCDK extends DistanceJMolecule {
         hAtoms.addLast(a);
       }
     }
-    nHAtoms = hAtoms.size();
+    return hAtoms;
+  }
+
+  /**
+   * Create noeMatix and indexAtomInNoeMatrix from hAtoms and indexAtomInMol.
+   * 
+   * @param hAtoms
+   * @param indexAtomInMol
+   * @param map
+   */
+  private void createNOEMatrix(Lst<Object> hAtoms,
+                               Map<Atom, Integer> indexAtomInMol,
+                               int[] map) {
+    int nHAtoms = hAtoms.size();
+    indexAtomInNoeMatrix = map;
+    noeMatrix = new NoeMatrix();
     noeMatrix.makeAtomList(nHAtoms);
-
-    int[] indexAtomInNoeMatrix = new int[atomCount];
-
     for (int i = 0; i < nHAtoms; i++) {
       Object aobj = hAtoms.get(i);
       if (aobj instanceof Atom) {
@@ -178,21 +227,18 @@ public class DistanceJMoleculeNoCDK extends DistanceJMolecule {
             a[2].x, a[2].y, a[2].z);
       }
     }
-    return indexAtomInNoeMatrix;
-
-  }
-
-  @Override
-  protected DihedralCouple getDihedralCouple(int numAtom1, int numAtom2,
-                                             int numAtom3, int numAtom4) {
-    return new DihedralCoupleNoCDK(numAtom1, numAtom4);
   }
 
   class DihedralCoupleNoCDK extends DihedralCouple {
 
     DihedralCoupleNoCDK(int numAtom1, int numAtom4) {
-
-      double[] theta_j = NMRCalculation.calc3J(viewer.getAtomAt(numAtom1), viewer.getAtomAt(numAtom4));
+      String CHEquation = nmrPanel.coupleTable.CHequation;
+      double[] theta_j = NMRCalculation.calc3J(viewer.getAtomAt(numAtom1),
+          viewer.getAtomAt(numAtom4), CHEquation);
+      if (theta_j == null) {
+        jvalue = Double.NaN;
+        return;
+      }
       theta = theta_j[0];
       jvalue = theta_j[1];
     }

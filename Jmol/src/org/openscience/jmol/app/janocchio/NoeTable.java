@@ -59,6 +59,7 @@ public class NoeTable extends JTabbedPane {
 
 //  AtomContainer molCDK;
   
+  NMR_JmolPanel nmrPanel;
   NMR_Viewer viewer;
   
   String[] labelArray;
@@ -80,7 +81,7 @@ public class NoeTable extends JTabbedPane {
   double yellowValue = 0.2; // cutoffs on diff for colouring cells. diff = |log(calc/exp)|
   double redValue = 0.4;
   FrameDeltaDisplay frameDeltaDisplay;
-  cfRenderer cf = new cfRenderer();
+  ColorCellRenderer colorCellRenderer = new ColorCellRenderer();
 
   JTable noeTable;
   private NoeTableModel noeTableModel;
@@ -108,13 +109,14 @@ public class NoeTable extends JTabbedPane {
    * 
    * @param parentFrame
    *        the parent frame
-   * @param viewer
+   * @param nmrPanel
    *        the NMRViewer in which the animation will take place (?)
    */
-  public NoeTable(NMR_Viewer viewer, JFrame parentFrame) {
+  public NoeTable(NMR_JmolPanel nmrPanel, JFrame parentFrame) {
 
     //super(parentFrame, GT.$("Noes..."), false);
-    this.viewer = viewer;
+    this.nmrPanel = nmrPanel;
+    viewer = (NMR_Viewer) nmrPanel.vwr;
 
     JPanel mainTable = new JPanel();
     mainTable.setLayout(new BorderLayout());
@@ -153,10 +155,10 @@ public class NoeTable extends JTabbedPane {
 
     setYellowValue(yellowValue);
     setRedValue(redValue);
-    tc.setCellRenderer(cf);
+    tc.setCellRenderer(colorCellRenderer);
     // Colour both NOEs and distances according to their experimental values
     tc = noeTable.getColumnModel().getColumn(0);
-    tc.setCellRenderer(cf);
+    tc.setCellRenderer(colorCellRenderer);
 
     noeTable.setPreferredScrollableViewportSize(new Dimension(300, 100));
 
@@ -347,9 +349,9 @@ public class NoeTable extends JTabbedPane {
     noeTableModel.fireTableStructureChanged();
     // Need to reapply custom rendering, for some reason
     TableColumn tc = noeTable.getColumnModel().getColumn(1);
-    tc.setCellRenderer(cf);
+    tc.setCellRenderer(colorCellRenderer);
     tc = noeTable.getColumnModel().getColumn(0);
-    tc.setCellRenderer(cf);
+    tc.setCellRenderer(colorCellRenderer);
   }
 
   public int getRowCount() {
@@ -582,41 +584,30 @@ public class NoeTable extends JTabbedPane {
   }
 
   boolean checkNoe(int[] countPlusIndices) {
-
     if (countPlusIndices.length == 3 && countPlusIndices[1] < natomsPerModel) {
-      if (Nmr.useCDK) {
-//        Atom a = molCDK.getAtomAt(countPlusIndices[1]);
-//        Atom b = molCDK.getAtomAt(countPlusIndices[2]);
-//        if ((a.getSymbol()).equals("H") && (b.getSymbol()).equals("H")) {
-//          return true;
-//        }
-      } else {
-        org.jmol.modelset.Atom ja = viewer.getAtomAt(countPlusIndices[1]);
-        org.jmol.modelset.Atom jb = viewer.getAtomAt(countPlusIndices[2]);
-        if ((ja.getElementSymbol()).equals("H")
-            && (jb.getElementSymbol()).equals("H")) {
-          return true;
-        }
+      org.jmol.modelset.Atom ja = viewer.getAtomAt(countPlusIndices[1]);
+      org.jmol.modelset.Atom jb = viewer.getAtomAt(countPlusIndices[2]);
+      if ((ja.getElementSymbol()).equals("H")
+          && (jb.getElementSymbol()).equals("H")) {
+        return true;
       }
     }
     return false;
   }
 
+  /**
+   * TODO This assumes we have the same structure in each model.
+   * 
+   * @return average number of atoms per model ??
+   */
   int calcNatomsPerModel() {
-    int ntot = viewer.getAtomCount();
     int nmodel = viewer.getModelCount();
-    int nat;
-    if (nmodel > 0) {
-      nat = ntot / nmodel;
-    } else {
-      nat = 0;
-    }
-    return nat;
+    return (nmodel > 0 ? viewer.getAtomCount() / nmodel : 0);
   }
 
   /* This should only be called once the molecule data has been read in */
   public void addMol() {
-    calcProps = Nmr.getDistanceJMolecule(null, viewer, labelArray);
+    calcProps = nmrPanel.getDistanceJMolecule(null, labelArray);
     calcProps.setCorrelationTime(tau);
     calcProps.setMixingTime(tMix);
     calcProps.setNMRfreq(freq);
@@ -624,7 +615,7 @@ public class NoeTable extends JTabbedPane {
     calcProps.setRhoStar(rhoStar);
     calcProps.setNoesy(noesy);
     calcProps.calcNOEs();
-    this.molCDKuptodate = true;
+    molCDKuptodate = true;
 
   }
 
@@ -775,12 +766,12 @@ public class NoeTable extends JTabbedPane {
 
   public void setRedValue(double value) {
     this.redValue = value;
-    cf.setRedLevel(redValue);
+    colorCellRenderer.setRedLevel(redValue);
   }
 
   public void setYellowValue(double value) {
     this.yellowValue = value;
-    cf.setYellowLevel(yellowValue);
+    colorCellRenderer.setYellowLevel(yellowValue);
   }
 
   public double getRedValue() {

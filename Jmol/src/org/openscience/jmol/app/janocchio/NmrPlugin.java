@@ -32,6 +32,7 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import org.jmol.c.CBK;
 import org.jmol.viewer.Viewer;
@@ -41,14 +42,14 @@ public class NmrPlugin implements JmolPlugin {
 
   Nmr nmrApp;
   Viewer jmolAppViewer;
-  private JFrame jmolFrame;
   boolean started;
   private String jmolUnits;
 
+  static String notification = "The Janocchio plugin is experimental; it has not been fully tested. Double-click and drag to create measurements in Hz.";
+  
   @Override
   public void start(JFrame frame, Viewer vwr, Map<String, Object> jmolOptions) {
     jmolAppViewer = vwr;
-    jmolFrame = frame;
     startApp();
   }
 
@@ -60,6 +61,11 @@ public class NmrPlugin implements JmolPlugin {
 
       @Override
       public void windowOpened(WindowEvent e) {
+        if (notification != null) {
+          JOptionPane.showMessageDialog(nmrApp.mainFrame, notification);
+          nmrApp.nmrPanel.coupleTable.setCHequation("none");
+        }
+        notification = null;
       }
 
       @Override

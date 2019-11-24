@@ -40,20 +40,15 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javajs.util.BS;
 import javajs.util.Lst;
 
 import javax.swing.JCheckBoxMenuItem;
 
 import org.jmol.util.JSONWriter;
-import org.openscience.jmol.app.janocchio.Nmr.Molecule;
 
-//import org.json.Lst<Object>;
-//import org.json.JSONObject;
+public class LoadMeasureThreadJSON extends LoadMeasureThread {
 
-public class LoadMeasureThreadJSON //extends Thread
-{
-
-  NMR_JmolPanel nmrPanel;
   Map<String, Object> data;
 
   public LoadMeasureThreadJSON(NMR_JmolPanel nmrPanel,
@@ -62,215 +57,157 @@ public class LoadMeasureThreadJSON //extends Thread
     this.data = jsonData;
   }
 
-  //  @Override
   @SuppressWarnings("unchecked")
-  public void run() {
-    try {
-
-      //String jre = System.getProperty("java.version");
-      String command = new String();
-      boolean loop = true;
-      // This exception handling loop seems to have desired
-      // effect of holding this thread until the molecule is
-      // loaded and the labels can be set.
-      while (loop) {
-        try {
-          nmrPanel.labelSetter.setLabel(1, "test");
-          nmrPanel.labelSetter.setLabel(1, null);
-          loop = false;
-        } catch (Exception e) {
-          loop = true;
-        }
+  @Override
+  protected void setMore() {
+    if (!data.containsKey("NamfisPopulation"))
+      return;
+    Lst<Object> populations = (Lst<Object>) data.get("NamfisPopulation");
+    if (populations.size() > 0) {
+      int nmodel = ((NMR_Viewer) nmrPanel.vwr).getModelCount();
+      double[] population = new double[nmodel + 1];
+      for (int i = 0; i <= nmodel; i++) {
+        population[i] = 0.0;
       }
-
-      if (data.containsKey("Labels")) {
-        Lst<Object> labels = (Lst<Object>) data.get("Labels");
-        // labels
-
-        for (int i = 0; i < labels.size(); i++) {
-          Map<String, Object> label = (Map<String, Object>) labels.get(i);
-
-          int j = getInt(label, "index");
-          String com = null;
-          loop = true;
-
-          String l = (String) label.get("label");
-          com = nmrPanel.labelSetter.setLabel(j - 1, l);
-
-          command = command + ";" + com;
-        }
-
-        String[] labelArray = nmrPanel.labelSetter.getLabelArray();
-        nmrPanel.noeTable.setLabelArray(labelArray);
-        nmrPanel.coupleTable.setLabelArray(labelArray);
+      for (int i = 0; i < populations.size(); i++) {
+        Map<String, Object> p = (Map<String, Object>) populations.get(i);
+        int index = getInt(p, "index");
+        double pop = getDouble(p, "p");
+        population[index] = pop;
       }
-
-      // The atom indexing in Jmol appears to start from 0 or 1
-      // depending on JVM.
-      // This is the work around
-      int minindex = nmrPanel.getMinindex();
-      int subindex;
-      if (minindex == 0) {
-        subindex = 1;
-      } else {
-        subindex = 0;
-      }
-
-      if (data.containsKey("NOEs")) {
-        Lst<Object> noes = (Lst<Object>) data.get("NOEs");
-        // Noes
-
-        for (int i = 0; i < noes.size(); i++) {
-          Map<String, Object> noe = (Map<String, Object>) noes.get(i);
-          int ia = getInt(noe, "a");
-          int ib = getInt(noe, "b");
-          int pa = ia - subindex;
-          int pb = ib - subindex;
-
-          command = command + ";measure " + pa + " " + pb;
-          if (noe.containsKey("exp")) {
-            String exp = (String) noe.get("exp");
-            if (exp != null) {
-              nmrPanel.noeTable.setExpNoe(exp, ia - 1, ib - 1);
-            }
-          }
-          if (noe.containsKey("expd")) {
-            String exp = (String) noe.get("expd");
-            if (exp != null) {
-              nmrPanel.noeTable.setExpDist(exp, ia - 1, ib - 1);
-            }
-          }
-        }
-      }
-
-      if (data.containsKey("Couples")) {
-        Lst<Object> couples = (Lst<Object>) data.get("Couples");
-        // Couples
-
-        for (int i = 0; i < couples.size(); i++) {
-          Map<String, Object> couple = (Map<String, Object>) couples.get(i);
-          int ia = getInt(couple, "a");
-          int ib = getInt(couple, "b");
-          int ic = getInt(couple, "c");
-          int id = getInt(couple, "d");
-          int pa = ia - subindex;
-          int pb = ib - subindex;
-          int pc = ic - subindex;
-          int pd = id - subindex;
-
-          command = command + ";measure " + pa + " " + pb + " " + pc + " " + pd;
-          if (couple.containsKey("exp")) {
-            String exp = (String) couple.get("exp");
-            if (exp != null) {
-
-              nmrPanel.coupleTable.setExpCouple(exp, ia - 1, id - 1);
-            }
-          }
-        }
-      }
-
-      if (data.containsKey("RefNOE")) {
-        int[] noeNPrefIndices = new int[2];
-
-        Map<String, Object> refNOE = (Map<String, Object>) data.get("RefNOE");
-        noeNPrefIndices[0] = getInt(refNOE, "a");
-        noeNPrefIndices[1] = getInt(refNOE, "b");
-        nmrPanel.noeTable.setNoeNPrefIndices(noeNPrefIndices);
-      }
-
-      if (data.containsKey("ExpRefNOEValue")) {
-        double expRefValue = getDouble(data, "ExpRefNOEValue");
-        nmrPanel.noeTable.setNoeExprefValue(expRefValue);
-      }
-
-      if (data.containsKey("CorrelationTime")) {
-        double dval = getDouble(data, "CorrelationTime");
-        nmrPanel.noeTable.setCorrelationTime(dval);
-        nmrPanel.noeTable.noeParameterSelectionPanel.getTauField().setText(
-            String.valueOf(dval));
-      }
-
-      if (data.containsKey("MixingTime")) {
-        double dval = getDouble(data, "MixingTime");
-        nmrPanel.noeTable.setMixingTime(dval);
-        nmrPanel.noeTable.noeParameterSelectionPanel.gettMixField().setText(
-            String.valueOf(dval));
-      }
-
-      if (data.containsKey("NMRfreq")) {
-        double dval = getDouble(data, "NMRfreq");
-        nmrPanel.noeTable.setNMRfreq(dval);
-        nmrPanel.noeTable.noeParameterSelectionPanel.getFreqField().setText(
-            String.valueOf(dval));
-      }
-
-      if (data.containsKey("RhoStar")) {
-        double dval = getDouble(data, "RhoStar");
-        nmrPanel.noeTable.setRhoStar(dval);
-        nmrPanel.noeTable.noeParameterSelectionPanel.getRhoStarField().setText(
-            String.valueOf(dval));
-      }
-
-      if (data.containsKey("NoeYellowValue")) {
-        double dval = getDouble(data, "NoeYellowValue");
-        nmrPanel.noeTable.setYellowValue(dval);
-        nmrPanel.noeTable.noeColourSelectionPanel.getYellowField().setText(
-            String.valueOf(dval));
-      }
-
-      if (data.containsKey("NoeRedValue")) {
-        double dval = getDouble(data, "NoeRedValue");
-        nmrPanel.noeTable.setRedValue(dval);
-        nmrPanel.noeTable.noeColourSelectionPanel.getRedField().setText(
-            String.valueOf(dval));
-      }
-
-      if (data.containsKey("CoupleYellowValue")) {
-        double dval = getDouble(data, "CoupleYellowValue");
-        nmrPanel.coupleTable.setYellowValue(dval);
-        nmrPanel.coupleTable.coupleColourSelectionPanel.getYellowField()
-            .setText(String.valueOf(dval));
-      }
-
-      if (data.containsKey("CoupleRedValue")) {
-        double dval = getDouble(data, "CoupleRedValue");
-        nmrPanel.coupleTable.setRedValue(dval);
-        nmrPanel.coupleTable.coupleColourSelectionPanel.getRedField().setText(
-            String.valueOf(dval));
-      }
-
-      nmrPanel.noeTable.addMol();
-      nmrPanel.noeTable.updateTables();
-      nmrPanel.coupleTable.addMol();
-      nmrPanel.coupleTable.updateTables();
-      nmrPanel.vwr.scriptWait(command);
-
-      if (data.containsKey("NamfisPopulation")) {
-        Lst<Object> populations = (Lst<Object>) data.get("NamfisPopulation");
-        if (populations.size() > 0) {
-          int nmodel = ((NMR_Viewer) nmrPanel.vwr).getModelCount();
-          double[] population = new double[nmodel + 1];
-          for (int i = 0; i <= nmodel; i++) {
-            population[i] = 0.0;
-          }
-          for (int i = 0; i < populations.size(); i++) {
-            Map<String, Object> p = (Map<String, Object>) populations.get(i);
-            int index = getInt(p, "index");
-            double pop = getDouble(p, "p");
-            population[index] = pop;
-          }
-
-          nmrPanel.populationDisplay.addPopulation(population);
-
-          JCheckBoxMenuItem mi = (JCheckBoxMenuItem) nmrPanel
-              .getMenuItem("NMR.populationDisplayCheck");
-          mi.setSelected(true);
-        }
-      }
-
-    } catch (Exception ie) {
-      // Logger.debug("execution command interrupted!"+ie);
+      nmrPanel.populationDisplay.addPopulation(population);
+      JCheckBoxMenuItem mi = (JCheckBoxMenuItem) nmrPanel
+          .getMenuItem("NMR.populationDisplayCheck");
+      mi.setSelected(true);
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void setNOEs() {
+    if (!data.containsKey("NOEs")) {
+      return;
+    }
+    Lst<Object> noes = (Lst<Object>) data.get("NOEs");
+    // Noes
+
+    for (int i = 0; i < noes.size(); i++) {
+      Map<String, Object> noe = (Map<String, Object>) noes.get(i);
+      int ia = getInt(noe, "a");
+      int ib = getInt(noe, "b");
+      String exp = (String) noe.get("exp");
+      String expd = (String) noe.get("expd");
+      addNOE(ia, ib, exp, expd);
+    }
+    if (data.containsKey("RefNOE")) {
+      int[] noeNPrefIndices = new int[2];
+
+      Map<String, Object> refNOE = (Map<String, Object>) data.get("RefNOE");
+      noeNPrefIndices[0] = getInt(refNOE, "a");
+      noeNPrefIndices[1] = getInt(refNOE, "b");
+      nmrPanel.noeTable.setNoeNPrefIndices(noeNPrefIndices);
+    }
+
+    if (data.containsKey("ExpRefNOEValue")) {
+      double expRefValue = getDouble(data, "ExpRefNOEValue");
+      nmrPanel.noeTable.setNoeExprefValue(expRefValue);
+    }
+
+    if (data.containsKey("CorrelationTime")) {
+      double dval = getDouble(data, "CorrelationTime");
+      nmrPanel.noeTable.setCorrelationTime(dval);
+      nmrPanel.noeTable.noeParameterSelectionPanel.getTauField().setText(
+          String.valueOf(dval));
+    }
+
+    if (data.containsKey("MixingTime")) {
+      double dval = getDouble(data, "MixingTime");
+      nmrPanel.noeTable.setMixingTime(dval);
+      nmrPanel.noeTable.noeParameterSelectionPanel.gettMixField().setText(
+          String.valueOf(dval));
+    }
+
+    if (data.containsKey("NMRfreq")) {
+      double dval = getDouble(data, "NMRfreq");
+      nmrPanel.noeTable.setNMRfreq(dval);
+      nmrPanel.noeTable.noeParameterSelectionPanel.getFreqField().setText(
+          String.valueOf(dval));
+    }
+
+    if (data.containsKey("RhoStar")) {
+      double dval = getDouble(data, "RhoStar");
+      nmrPanel.noeTable.setRhoStar(dval);
+      nmrPanel.noeTable.noeParameterSelectionPanel.getRhoStarField().setText(
+          String.valueOf(dval));
+    }
+
+    if (data.containsKey("NoeYellowValue")) {
+      double dval = getDouble(data, "NoeYellowValue");
+      nmrPanel.noeTable.setYellowValue(dval);
+      nmrPanel.noeTable.noeColourSelectionPanel.getYellowField().setText(
+          String.valueOf(dval));
+    }
+
+    if (data.containsKey("NoeRedValue")) {
+      double dval = getDouble(data, "NoeRedValue");
+      nmrPanel.noeTable.setRedValue(dval);
+      nmrPanel.noeTable.noeColourSelectionPanel.getRedField().setText(
+          String.valueOf(dval));
+    }
+
+    if (data.containsKey("CoupleYellowValue")) {
+      double dval = getDouble(data, "CoupleYellowValue");
+      nmrPanel.coupleTable.setYellowValue(dval);
+      nmrPanel.coupleTable.coupleColourSelectionPanel.getYellowField()
+          .setText(String.valueOf(dval));
+    }
+
+    if (data.containsKey("CoupleRedValue")) {
+      double dval = getDouble(data, "CoupleRedValue");
+      nmrPanel.coupleTable.setRedValue(dval);
+      nmrPanel.coupleTable.coupleColourSelectionPanel.getRedField().setText(
+          String.valueOf(dval));
+    }
+
+
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void setCouples() {
+    if (!data.containsKey("Couples"))
+      return;
+    
+      Lst<Object> couples = (Lst<Object>) data.get("Couples");
+      // Couples
+
+      for (int i = 0; i < couples.size(); i++) {
+        Map<String, Object> couple = (Map<String, Object>) couples.get(i);
+        int ia = getInt(couple, "a");
+        int ib = getInt(couple, "b");
+        int ic = getInt(couple, "c");
+        int id = getInt(couple, "d");
+        String exp = (String) couple.get("exp");
+        addCouple(ia, ib, ic, id, exp, null);
+      }
+
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected boolean setLabels() {
+    if (!data.containsKey("Labels"))
+      return false;
+    Lst<Object> labels = (Lst<Object>) data.get("Labels");
+    // labels
+    for (int i = 0; i < labels.size(); i++) {
+      Map<String, Object> label = (Map<String, Object>) labels.get(i);
+
+      int j = getInt(label, "index");
+      String l = (String) label.get("label");
+      addCommand(j - 1, l);
+    }
+    return true;
   }
 
   private double getDouble(Map<String, Object> p, String key) {
@@ -311,12 +248,12 @@ public class LoadMeasureThreadJSON //extends Thread
     }
 
     try {
-      Molecule[] mols = Nmr.getAllMolecules((NMR_Viewer) nmrPanel.vwr);
+      BS[] mols = nmrPanel.getAllMolecules();
       PrintWriter out1 = new PrintWriter(new FileWriter(namfis1));
       String[] labelArray = nmrPanel.labelSetter.getLabelArray();
       for (int i = 0; i < mols.length; i++) {
-        DistanceJMolecule props = Nmr.getDistanceJMolecule(mols[i],
-            ((NMR_Viewer) nmrPanel.vwr), labelArray);
+        DistanceJMolecule props = nmrPanel.getDistanceJMolecule(mols[i],
+            labelArray);
         props.calcNOEs();
 
         for (int n = 0; n < noes.size(); n++) {
@@ -635,7 +572,7 @@ public class LoadMeasureThreadJSON //extends Thread
     Lst<Object> noes = (Lst<Object>) nmrdata.get("NOEs");
     Lst<Object> couples = (Lst<Object>) nmrdata.get("Couples");
     try {
-      Molecule[] mols = Nmr.getAllMolecules((NMR_Viewer) nmrPanel.vwr);
+      BS[] mols = nmrPanel.getAllMolecules();
       String[] labelArray = nmrPanel.labelSetter.getLabelArray();
       double noeWeight = nmrPanel.frameDeltaDisplay.getNoeWeight();
       double coupleWeight = nmrPanel.frameDeltaDisplay.getCoupleWeight();
@@ -643,14 +580,12 @@ public class LoadMeasureThreadJSON //extends Thread
       double minDiff = Double.MAX_VALUE;
       int minFrame = -1;
       for (int i = 0; i < mols.length; i++) {
-        DistanceJMolecule props = Nmr.getDistanceJMolecule(mols[i],
-            ((NMR_Viewer) nmrPanel.vwr), labelArray);
+        DistanceJMolecule props = nmrPanel.getDistanceJMolecule(mols[i],
+            labelArray);
         props.calcNOEs();
-
         double diffDist = 0.0;
         double diffNoe = 0.0;
         double diffCouple = 0.0;
-
         for (int n = 0; n < noes.size(); n++) {
           Map<String, Object> noe = (Map<String, Object>) noes.get(n);
           String a = (String) noe.get("a");

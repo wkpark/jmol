@@ -41,11 +41,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import javajs.util.BS;
 import javajs.util.JSJSONParser;
 
 import javax.swing.AbstractAction;
@@ -128,16 +130,26 @@ public class NMR_JmolPanel extends JmolPanel {
       htGuiChanges.add(changes[i]);
   }
 
-  /**
-   * The current file.
-   */
-  File currentFile;
-
   public NMR_JmolPanel(JmolApp jmolApp, Splash splash, JFrame frame,
       Jmol parent, int startupWidth, int startupHeight,
       Map<String, Object> vwrOptions, Point loc) {
     super(jmolApp, splash, frame, parent, startupWidth, startupHeight,
         vwrOptions, loc);
+  }
+
+  DistanceJMolecule getDistanceJMolecule(BS mol, String[] labelArray) {
+    return (new DistanceJMoleculeNoCDK(this, (mol == null ? vwr.getFrameAtoms()
+        : mol), labelArray));
+  }
+
+  BS[] getAllMolecules() {
+    BS[] mols;
+    int mc = ((NMR_Viewer) vwr).getModelCount();
+    mols = new BS[mc];
+    for (int i = mc; --i >= 0;) {
+      mols[i] = vwr.getModelUndeletedAtomsBitSet(i);
+    }
+    return mols;
   }
 
   @Override
@@ -193,9 +205,9 @@ public class NMR_JmolPanel extends JmolPanel {
     frameCounter = new FrameCounter((NMR_Viewer) vwr);
     toolbar.add(frameCounter, BorderLayout.EAST);
     say(GT.$("Initializing Noes..."));
-    noeTable = new NoeTable((NMR_Viewer) vwr, frame);
+    noeTable = new NoeTable(this, frame);
     say(GT.$("Initializing Couples..."));
-    coupleTable = new CoupleTable((NMR_Viewer) vwr, frame);
+    coupleTable = new CoupleTable(this, frame);
     labelSetter = new LabelSetter((NMR_Viewer) vwr, noeTable, coupleTable);
     toolbar.add(labelSetter, BorderLayout.EAST);
     //Action handler implementation would go here.
@@ -262,7 +274,7 @@ public class NMR_JmolPanel extends JmolPanel {
     mainSplitPane.setOneTouchExpandable(true);
     mainSplitPane.setContinuousLayout(true);
     mainSplitPane.setLeftComponent(this);
-//    setMinimumSize(new Dimension(MIN_SIZE, MIN_SIZE));
+    //    setMinimumSize(new Dimension(MIN_SIZE, MIN_SIZE));
     frame.setMinimumSize(new Dimension(startupWidth + 400, 100));
 
     JSplitPane splitPaneRight = new JSplitPane(JSplitPane.VERTICAL_SPLIT, null,
@@ -318,7 +330,7 @@ public class NMR_JmolPanel extends JmolPanel {
     ImageIcon jmolIcon = JmolResourceHandler.getIconX("icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
-    if (!((Nmr)jmolApp).isPlugin())
+    if (!((Nmr) jmolApp).isPlugin())
       frame.addWindowListener(new AppCloser());
 
   }
@@ -389,7 +401,7 @@ public class NMR_JmolPanel extends JmolPanel {
       super.doClose(saveSize);
     }
     return true;
-    
+
   }
 
   void setCurrentDirectoryAll(File cDir) {
@@ -504,7 +516,8 @@ public class NMR_JmolPanel extends JmolPanel {
           }
 
           try {
-            new LoadMeasureThreadJSON(NMR_JmolPanel.this, null).writeNmrDataJSON(file);
+            new LoadMeasureThreadJSON(NMR_JmolPanel.this, null)
+                .writeNmrDataJSON(file);
           } catch (Exception exc) {
             // Help
           }
@@ -589,133 +602,56 @@ public class NMR_JmolPanel extends JmolPanel {
 
   }
 
-  public void readNmrData(File file) throws IOException {
-    String line;
-
-    // This routine is problematic because we want to load a structure file,
-    // wait for it to load, then load in the measurements.
-    // Jmol does all scripting commands (e.g. file loading) in a
-    // separate thread. viewer.scriptWait() doesn't work because
-    // this is the main event handling thread, which includes
-    // watching file loading events (I think).
-    // So, it is necessary to start both file loading and measurement
-    // loading in separate threads, then have the measurement loading
-    // thread wait on the the file loading.
-
+  public void readNmrData(File file) throws Exception {
     // Structure File
-    String currentStructureFile = getCurrentStructureFile();
-    BufferedReader inp = new BufferedReader(new FileReader(file));
-    line = inp.readLine().trim();
-    inp.close();
-    if (currentStructureFile == null) {
-      int opt = JOptionPane.showConfirmDialog(NMR_JmolPanel.this,
-          "No Structure File currently loaded.\nLoad Structure File " + line
-              + "\ndefined in this NMR Data File?", "No Structure Warning",
-          JOptionPane.YES_NO_OPTION);
-      if (opt == JOptionPane.YES_OPTION) {
-        // viewer.script("load " + line);
-        // It seems to be necessary to load the file in a separate thread
-        // See also LoadMeasuresThread.java
-        ScriptWaitThread thread = new ScriptWaitThread("load \"" + line + "\"",
-            ((NMR_Viewer) vwr));
-        thread.start();
-      } else {
-        return;
-      }
-    } else {
-      if (!currentStructureFile.equals(line)) {
-
-        // Warn that the structure data was saved from a different file name from the
-        // current model
-        int opt = JOptionPane
-            .showConfirmDialog(
-                NMR_JmolPanel.this,
-                "This NMR Data file was saved from a different structure file from that currently loaded.\nContinue Reading Data?",
-                "Read NMR Data Warning", JOptionPane.YES_NO_OPTION);
-        if (opt == JOptionPane.NO_OPTION) {
-          return;
-        }
-
-      }
-    }
-
-    // Load measurements (and labels) in a separate thread
-
-    LoadMeasureThread thread = new LoadMeasureThread(this, inp);
-    thread.start();
-
+    String fileData = vwr.getFileAsString(file.getAbsolutePath());
+    String structureFile = firstLineOf(fileData);
+    fileData = fileData.substring(structureFile.length()).trim();
+    checkLoadAndRun(structureFile, fileData, "jnc");
   }
-
-  private Map<String, Object> jsonData;
   
   public void readNmrDataJSON(File file) throws Exception {
+    String json = vwr.getFileAsString(file.getAbsolutePath());
+    Map<String, Object> jsonData = new JSJSONParser().parseMap(json, true);
+    String structureFile = (String) jsonData.get("StructureFile");
+    checkLoadAndRun(structureFile, jsonData, "json");
+  }
 
-    //    BufferedReader inp = new BufferedReader(new FileReader(file));
-
-    // This routine is problematic because we want to load a structure file,
-    // wait for it to load, then load in the measurements.
-    // Jmol does all scripting commands (e.g. file loading) in a
-    // separate thread. viewer.scriptWait() doesn't work because
-    // this is the main event handling thread, which includes
-    // watching file loading events (I think).
-    // So, it is necessary to start both file loading and measurement
-    // loading in separate threads, then have the measurement loading
-    // thread wait on the the file loading.
-
-    if (file != null) {
-      // Structure File
-      String currentStructureFile = getCurrentStructureFile();
-
-      //    String jsonstring = inp.readLine().trim();
-      //    inp.close();
-
-      String json = vwr.getFileAsString(file.getAbsolutePath());
-
-      jsonData = new JSJSONParser().parseMap(json, true);
-
-      //    JSONObject data = new JSONObject(jsonstring);
-      String structureFile = (String) jsonData.get("StructureFile");
-
-      if ((currentStructureFile == null) || (currentStructureFile == "zapped")) {
-        int opt = JOptionPane.showConfirmDialog(NMR_JmolPanel.this,
-            "No Structure File currently loaded.\nLoad Structure File "
-                + structureFile + "\ndefined in this NMR Data File?",
-            "No Structure Warning", JOptionPane.YES_NO_OPTION);
-        if (opt == JOptionPane.YES_OPTION) {
-
-          // viewer.script("load " + line);
-          // It seems to be necessary to load the file in a separate thread
-          // See also LoadMeasuresThread.java
-          //        ScriptWaitThread thread = new ScriptWaitThread("load \""
-          //            + structureFile + "\"", ((NMR_Viewer) vwr));
-          //        thread.start();
-
-          vwr.script("load \"" + structureFile + "\";message NMR-loadData");
-        }
+  private void checkLoadAndRun(String structureFile, Object fileData, String fileType) {
+    String currentStructureFile = getCurrentStructureFile();
+    if (currentStructureFile == null) {
+      int opt = JOptionPane.showConfirmDialog(this,
+          "No Structure File currently loaded.\nLoad Structure File " + structureFile
+              + "\ndefined in this NMR Data File?", "No Structure Warning",
+          JOptionPane.YES_NO_OPTION);
+      if (opt != JOptionPane.YES_OPTION)
+        return;
+    } else if (!currentStructureFile.equals(structureFile)) {
+      int opt = JOptionPane
+          .showConfirmDialog(
+              NMR_JmolPanel.this,
+              "This NMR Data file was saved from a different structure file from that currently loaded.\nContinue Reading Data?",
+              "Read NMR Data Warning", JOptionPane.YES_NO_OPTION);
+      if (opt != JOptionPane.YES_OPTION) {
         return;
       }
-      if (!currentStructureFile.equals(structureFile)) {
-
-        // Warn that the structure data was saved from a different file name from the
-        // current model
-        int opt = JOptionPane
-            .showConfirmDialog(
-                NMR_JmolPanel.this,
-                "This NMR Data file was saved from a different structure file from that currently loaded.\nContinue Reading Data?",
-                "Read NMR Data Warning", JOptionPane.YES_NO_OPTION);
-        if (opt == JOptionPane.NO_OPTION) {
-          return;
-        }
-      }
+      structureFile = null;
     }
-    Map<String, Object> data = jsonData;
-    jsonData = null;
-    new LoadMeasureThreadJSON(this, data).run();
-    // Load measurements (and labels) in a separate thread
+    @SuppressWarnings("unchecked")
+    LoadMeasureThread thread = ("jnc".equals(fileType) ? new LoadMeasureThread(this, (String) fileData) : 
+      new LoadMeasureThreadJSON(this, (Map<String, Object>)fileData));
+    if (structureFile == null) {
+      thread.start();
+    } else {
+      thread.loadAndRun(structureFile);
+    }
+  }
 
-    //    LoadMeasureThreadJSON thread = new LoadMeasureThreadJSON(this, jsonData);
-    //    thread.start();
-
+  private static String firstLineOf(String s) {
+    int pt;
+    if ((pt = s.indexOf("\n")) < 0 && (pt = s.indexOf("\r")) < 0)
+      pt = s.length();
+    return s.substring(0, pt).trim();
   }
 
   public class LabelNmrAction extends AbstractAction {
@@ -867,7 +803,8 @@ public class NMR_JmolPanel extends JmolPanel {
           }
 
           try {
-            new LoadMeasureThreadJSON(NMR_JmolPanel.this, null).writeNamfisFiles(name);
+            new LoadMeasureThreadJSON(NMR_JmolPanel.this, null)
+                .writeNamfisFiles(name);
           } catch (Exception exc) {
             // Help
           }
@@ -887,10 +824,10 @@ public class NMR_JmolPanel extends JmolPanel {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      int frame = new LoadMeasureThreadJSON(NMR_JmolPanel.this, null).jumpBestFrame();
+      int frame = new LoadMeasureThreadJSON(NMR_JmolPanel.this, null)
+          .jumpBestFrame();
       if (frame >= 0)
         frameCounter.setFrameNumberChangeViewer(frame);
-
 
     }
 
@@ -1005,6 +942,25 @@ public class NMR_JmolPanel extends JmolPanel {
     }
   }
 
+  protected Map<String, Thread> htMessageCallbacks = new Hashtable<String, Thread>();
+
+  void runScriptWithCallback(Thread t, String command) {
+    String key = "NMR:" + t.getClass().getName();
+    htMessageCallbacks.put(key, t);
+    vwr.script(command);
+    vwr.script("#>NMR>" + key + "<NMR<");
+  }
+  
+  void notifyScriptCallback(String script) {
+    int pt = (script.startsWith("#>NMR>") ? script.indexOf("<NMR<") : -1);
+    if (pt < 0)
+      return;
+    String key = script.substring(6, pt);
+    Thread t = htMessageCallbacks.remove(key);
+    if (t != null)
+      t.start();
+  }
+
   class MyStatusListener extends StatusListener {
 
     private String defaultFormat = "set measurementUnits hz;measure \"2:%1.1VALUE %UNITS//hz\"";
@@ -1031,7 +987,6 @@ public class NMR_JmolPanel extends JmolPanel {
 
       int nmodel = ((NMR_Viewer) vwr).getModelCount();
 
-      
       frameCounter.setFrameCount(nmodel);
 
       populationDisplay.setVisible(false);
@@ -1110,13 +1065,14 @@ public class NMR_JmolPanel extends JmolPanel {
         int atomIndex = ((Integer) data[2]).intValue();
         notifyAtomPicked(atomIndex, strInfo);
         break;
-      case MEASURE: {
+      case MEASURE: 
         String mystatus = (String) data[3];
-        if (defaultFormat  != null) {
+        if (defaultFormat != null) {
           vwr.script(defaultFormat);
           defaultFormat = null;
         }
-        if (mystatus.equals("measurePending") || mystatus.equals("measureDeleted"))
+        if (mystatus.equals("measurePending")
+            || mystatus.equals("measureDeleted"))
           return;
         if (mystatus.indexOf("Sequence") < 0) {
           if (mystatus.indexOf("Picked") >= 0) {
@@ -1132,7 +1088,9 @@ public class NMR_JmolPanel extends JmolPanel {
           return;
         }
         coupleTable.updateTables();
-      }
+        break;
+      case MESSAGE:
+        // this one is totally not helpful. Why doesn't MESSAGE fire this??
         break;
       case APPLETREADY:
         break;
@@ -1154,13 +1112,17 @@ public class NMR_JmolPanel extends JmolPanel {
         break;
       case IMAGE:
         break;
-      case MESSAGE:
-        break;
       case MINIMIZATION:
         break;
       case RESIZE:
         break;
       case SCRIPT:
+        // looking for the script started, which has the script as data[2]
+        // We make sure the script we send is a separate script that is just
+        // the message. 
+        Integer status = (Integer) data[3];
+        if (status.intValue() < -1)
+          notifyScriptCallback(data[2].toString());
         break;
       case SERVICE:
         break;

@@ -66,7 +66,7 @@ import javax.swing.table.TableColumn;
 
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Atom;
-import org.jmol.viewer.Viewer;
+import org.jmol.quantum.NMRCalculation;
 
 //import BoxLayout;
 
@@ -89,22 +89,24 @@ public class CoupleTable extends JTabbedPane {
   double redValue = 3.0;
   FrameDeltaDisplay frameDeltaDisplay;
   String CHequation = "was";
-  cfRenderer cf = new cfRenderer();
+  ColorCellRenderer colorCellRenderer = new ColorCellRenderer();
 
   public CoupleColourSelectionPanel coupleColourSelectionPanel;
+  private NMR_JmolPanel nmrPanel;
 
   /**
    * Constructor
    * 
    * @param parentFrame
    *        the parent frame
-   * @param viewer
+   * @param nmrPanel
    *        the NMRViewer in which the animation will take place (?)
    */
-  public CoupleTable(NMR_Viewer viewer, JFrame parentFrame) {
+  public CoupleTable(NMR_JmolPanel nmrPanel, JFrame parentFrame) {
 
+    this.nmrPanel = nmrPanel;
     //super(parentFrame, GT.$("Coupling Constants..."), false);
-    this.viewer = viewer;
+    viewer = (NMR_Viewer) nmrPanel.vwr;
 
     JPanel mainTable = new JPanel();
 
@@ -144,9 +146,9 @@ public class CoupleTable extends JTabbedPane {
     // Enable colouring by cell value
     TableColumn tc = coupleTable.getColumnModel().getColumn(1);
 
-    cf.setYellowLevel(yellowValue);
-    cf.setRedLevel(redValue);
-    tc.setCellRenderer(cf);
+    colorCellRenderer.setYellowLevel(yellowValue);
+    colorCellRenderer.setRedLevel(redValue);
+    tc.setCellRenderer(colorCellRenderer);
 
     coupleTable.setPreferredScrollableViewportSize(new Dimension(300, 100));
 
@@ -450,13 +452,12 @@ public class CoupleTable extends JTabbedPane {
       if (!atom1.getElementSymbol().equals("H")
           || !atom2.getElementSymbol().equals("H"))
         break;
-      a4 = a2;
-      atom1 = atom1.bonds[0].getOtherAtom(atom1);
-      atom2 = atom2.bonds[0].getOtherAtom(atom2);
-      if (!atom1.isCovalentlyBonded(atom2))
+      double[] data = NMRCalculation.calc3J(atom1, atom2, null);
+      if (data == null)
         break;
-      a2 = atom1.i;
-      a3 = atom2.i;
+      a4 = a2;
+      a2 = (int) data[2];
+      a3 = (int) data[3];
       //$FALL-THROUGH$
     case 4:
       return new int[] { a1, a2, a3, a4 };
@@ -507,7 +508,7 @@ public class CoupleTable extends JTabbedPane {
 
   /* This should only be called once the molecule data has been read in */
   public void addMol() {
-    calcProps = Nmr.getDistanceJMolecule(null, viewer, labelArray);
+    calcProps = nmrPanel.getDistanceJMolecule(null, labelArray);
     calcProps.setCHequation(CHequation);
     this.molCDKuptodate = true;
   }
@@ -542,12 +543,12 @@ public class CoupleTable extends JTabbedPane {
 
   public void setRedValue(double value) {
     this.redValue = value;
-    cf.setRedLevel(redValue);
+    colorCellRenderer.setRedLevel(redValue);
   }
 
   public void setYellowValue(double value) {
     this.yellowValue = value;
-    cf.setYellowLevel(yellowValue);
+    colorCellRenderer.setYellowLevel(yellowValue);
   }
 
   public double getRedValue() {

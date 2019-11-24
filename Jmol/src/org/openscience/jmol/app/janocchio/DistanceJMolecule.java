@@ -45,14 +45,10 @@ abstract public class DistanceJMolecule {
   protected Vector<Double> distances = new Vector<Double>();
   protected Vector<Double> couples = new Vector<Double>();
   protected Vector<DihedralCouple> couplesWhole = new Vector<DihedralCouple>();
-  protected NoeMatrix noeMatrix = new NoeMatrix();
-  protected int nHAtoms;
+  protected NoeMatrix noeMatrix;
   protected double[][] noeM;
   protected int[] indexAtomInNoeMatrix;
-  protected String[] labelArray;
   protected String CHequation = "was";
-
-  abstract protected int[] addAtomstoMatrix();
 
   abstract protected DihedralCouple getDihedralCouple(int numAtom1,
                                                       int numAtom2,
@@ -72,8 +68,6 @@ abstract public class DistanceJMolecule {
 
   public void calcNOEs() {
 
-    indexAtomInNoeMatrix = addAtomstoMatrix();
-
     try {
       noeM = noeMatrix.calcNOEs();
     } catch (Exception e) {
@@ -87,7 +81,8 @@ abstract public class DistanceJMolecule {
     DihedralCouple dihe = getDihedralCouple(numAtom1[0].intValue(),
         numAtom2[0].intValue(), numAtom3[0].intValue(), numAtom4[0].intValue());
     double jvalue = dihe.getJvalue();
-
+    if (Double.isNaN(jvalue))
+      return;
     couples.add(new Double(jvalue));
     couplesWhole.add(dihe);
   }
@@ -95,7 +90,8 @@ abstract public class DistanceJMolecule {
   public void addCouple(int a1, int a2, int a3, int a4) {
     DihedralCouple dihe = getDihedralCouple(a1, a2, a3, a4);
     double jvalue = dihe.getJvalue();
-
+    if (Double.isNaN(jvalue))
+      return;
     couples.add(new Double(jvalue));
     couplesWhole.add(dihe);
   }
@@ -107,9 +103,12 @@ abstract public class DistanceJMolecule {
         numAtom2[0].intValue(), numAtom3[0].intValue(), numAtom4[0].intValue());
     //double jvalue = dihe.getJvalue();
 
+    double jvalue = dihe.getJvalue();
+    if (Double.isNaN(jvalue))
+      return null;
     Double[] dihecouple = new Double[2];
     dihecouple[0] = new Double(dihe.getTheta());
-    dihecouple[1] = new Double(dihe.getJvalue());
+    dihecouple[1] = new Double(jvalue);
     return dihecouple;
   }
 
@@ -120,8 +119,11 @@ abstract public class DistanceJMolecule {
     //double jvalue = dihe.getJvalue();
 
     Double[] dihecouple = new Double[2];
+    double jvalue = dihe.getJvalue();
+    if (Double.isNaN(jvalue))
+      return null;
     dihecouple[0] = new Double(dihe.getTheta());
-    dihecouple[1] = new Double(dihe.getJvalue());
+    dihecouple[1] = new Double(jvalue);
     return dihecouple;
   }
 
@@ -214,7 +216,7 @@ abstract public class DistanceJMolecule {
   abstract protected class DihedralCouple {
 
     protected double theta;
-    protected double jvalue;
+    protected double jvalue = Double.NaN;
 
     public DihedralCouple() {
     }

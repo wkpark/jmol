@@ -44,11 +44,11 @@ import javax.swing.table.DefaultTableCellRenderer;
  * 
  * @author ye91009
  */
-class cfRenderer extends DefaultTableCellRenderer {
+class ColorCellRenderer extends DefaultTableCellRenderer {
   Color red, yellow, green, white;
   double redLevel, yellowLevel;
 
-  public cfRenderer() {
+  public ColorCellRenderer() {
     super();
     red = new Color(255, 200, 200); //RED
     yellow = new Color(255, 255, 200); //YELLOW
@@ -64,6 +64,7 @@ class cfRenderer extends DefaultTableCellRenderer {
     yellowLevel = d;
   }
 
+  @Override
   public Component getTableCellRendererComponent(JTable table, Object value,
                                                  boolean isSelected,
                                                  boolean hasFocus, int row,

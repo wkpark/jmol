@@ -27,114 +27,117 @@
 
 package org.openscience.jmol.app.janocchio;
 
-import javax.swing.*;
-
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 
 public class LoadMeasureThread extends Thread {
 
-  NMR_JmolPanel nmr;
-  BufferedReader inp;
-  int subindex;
+  protected NMR_JmolPanel nmrPanel;
+  protected BufferedReader inp;
 
-  public LoadMeasureThread(NMR_JmolPanel nmr, BufferedReader inp) {
-    this.nmr = nmr;
-    this.inp = inp;
-    int minindex = nmr.getMinindex();
-    if (minindex == 0) {
-      this.subindex = 1;
-    } else {
-      this.subindex = 0;
-    }
+  String command;
+  
+  public LoadMeasureThread() {}
+  
+  public LoadMeasureThread(NMR_JmolPanel nmrPanel, String data) {
+    this.nmrPanel = nmrPanel;
+    this.inp = new BufferedReader(new StringReader(data));
   }
+
+  protected void addCommand(int i, String l) {
+    command += ";" + nmrPanel.labelSetter.setLabel(i, l);
+  }
+
 
   @Override
   public void run() {
-    //setPriority(Thread.MIN_PRIORITY);
+
     try {
-      //sleep(1000);
-
-      String command = new String();
-      String line;
-      boolean loop = true;
-      // This exception handling loop seems to have desired 
-      // effect of holding this thread until the molecule is
-      // loaded and the labels can be set.
-      while (loop) {
-        try {
-          nmr.labelSetter.setLabel(1, "test");
-          nmr.labelSetter.setLabel(1, null);
-          loop = false;
-        } catch (Exception e) {
-          loop = true;
-        }
+      if (setLabels()) {
+        String[] labelArray = nmrPanel.labelSetter.getLabelArray();
+        nmrPanel.noeTable.setLabelArray(labelArray);
+        nmrPanel.coupleTable.setLabelArray(labelArray);
       }
-
-      //labels
-      while ((line = inp.readLine()).trim().length() != 0) {
-        String[] l = line.split("\\s+");
-        int i = (new Integer(l[0])).intValue();
-        String com = null;
-        com = nmr.labelSetter.setLabel(i - 1, l[1]);
-        command = command + ";" + com;
-      }
-      String[] labelArray = nmr.labelSetter.getLabelArray();
-      nmr.noeTable.setLabelArray(labelArray);
-      nmr.coupleTable.setLabelArray(labelArray);
-
-      // The atom indexing in Jmol appears to start from 0 or 1
-      // depending on JVM.
-      // This is the work around 
-      int minindex = nmr.getMinindex();
-      int subindex;
-      if (minindex == 0) {
-        subindex = 1;
-      } else {
-        subindex = 0;
-      }
-
-      // Noes
-      while ((line = inp.readLine()).trim().length() != 0) {
-        String[] l = line.split("\\s+");
-        int ia = (new Integer(l[0])).intValue();
-        int ib = (new Integer(l[1])).intValue();
-        int pa = ia - subindex;
-        int pb = ib - subindex;
-        command = command + ";measure " + pa + " " + pb;
-        if (l[2] != null) {
-          if (!l[2].equals("null")) {
-            nmr.noeTable.setExpNoe(l[2], ia - 1, ib - 1);
-          }
-        }
-      }
-
-      //Couples
-      while ((line = inp.readLine()) != null) {
-        if (line.trim().length() == 0)
-          break;
-        String[] l = line.split("\\s+");
-        int ia = (new Integer(l[0])).intValue();
-        int ib = (new Integer(l[1])).intValue();
-        int ic = (new Integer(l[2])).intValue();
-        int id = (new Integer(l[3])).intValue();
-        int pa = ia - subindex;
-        int pb = ib - subindex;
-        int pc = ic - subindex;
-        int pd = id - subindex;
-        command = command + ";measure " + pa + " " + pb + " " + pc + " " + pd;
-        if (l[4] != null) {
-          if (!l[4].equals("null")) {
-            nmr.coupleTable.setExpCouple(l[4], ia - 1, id - 1);
-          }
-        }
-      }
-
-      nmr.noeTable.updateTables();
-      nmr.coupleTable.updateTables();
-      nmr.vwr.script(command);
-
+      setCouples();
+      setNOEs();
+      setMore();
+      nmrPanel.noeTable.addMol();
+      nmrPanel.noeTable.updateTables();
+      nmrPanel.coupleTable.addMol();
+      nmrPanel.coupleTable.updateTables();
+      nmrPanel.vwr.scriptWait(command);
     } catch (Exception ie) {
       //Logger.debug("execution command interrupted!"+ie);
+    } finally {
+      try {
+        inp.close();
+      } catch (IOException e) {
+      }
     }
+  }
+
+  protected void setMore() {
+  }
+
+  protected void setCouples() throws Exception {
+    //Couples
+    String line;
+    while ((line = inp.readLine()) != null) {
+      if (line.trim().length() == 0)
+        break;
+      String[] l = line.split("\\s+");
+      int ia = (new Integer(l[0])).intValue();
+      int ib = (new Integer(l[1])).intValue();
+      int ic = (new Integer(l[2])).intValue();
+      int id = (new Integer(l[3])).intValue();
+      addCouple(ia, ib, ic, id, l[4], null);
+    }
+  }
+
+  protected void addCouple(int ia, int ib, int ic, int id, String exp,
+                         String expd) {
+    command = command + ";measure @@" + ia + " @@" + ib + " @@" + ic + " @@" + id;
+    if (exp != null && !exp.equals("null")) {
+        nmrPanel.coupleTable.setExpCouple(exp, ia - 1, id - 1);
+    }
+  }
+
+  protected void setNOEs() throws Exception {
+    String line;
+    while ((line = inp.readLine()).trim().length() != 0) {
+      String[] l = line.split("\\s+");
+      int ia = (new Integer(l[0])).intValue();
+      int ib = (new Integer(l[1])).intValue();
+      addNOE(ia, ib, l[2], null);
+    }
+  }
+
+  protected void addNOE(int ia, int ib, String exp, String expd) {
+    command += ";measure @@" + ia + " @@" + ib;
+    if (exp != null && !exp.equals("null")) {
+        nmrPanel.noeTable.setExpNoe(exp, ia - 1, ib - 1);
+    }
+    command = command + ";measure @@" + ia + " @@" + ib;
+    if (exp != null) {
+      nmrPanel.noeTable.setExpNoe(exp, ia - 1, ib - 1);
+    }
+    if (expd != null) {
+      nmrPanel.noeTable.setExpDist(expd, ia - 1, ib - 1);
+    }
+  }
+
+  protected boolean setLabels() throws Exception {
+    String line;
+    while ((line = inp.readLine()).trim().length() != 0) {
+      String[] l = line.split("\\s+");
+      int i = (new Integer(l[0])).intValue();
+      command += ";" + nmrPanel.labelSetter.setLabel(i - 1, l[1]);
+    }
+    return true;
+  }
+
+  public void loadAndRun(String structureFile) {
+    nmrPanel.runScriptWithCallback(this, "load \"structureFile\"");
   }
 }

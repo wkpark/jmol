@@ -208,8 +208,12 @@ public class NMRCalculation implements JmolNMRInterface {
                                Tensor isc) {
     if (isc == null) {
       String type = getISCtype(a1, units);
-      if (type == null || a1.mi != a2.mi)
-        return (units.equals("hz") ? (float)calc3J(a1, a2)[1] : 0);
+      if (type == null || a1.mi != a2.mi) {
+        if (!units.equals("hz"))
+          return 0;
+        double[] data = calc3J(a1, a2, null); // H-H only here
+        return (data == null ? Float.NaN : (float) data[1]);
+      }
       BS bs = new BS();
       bs.set(a1.i);
       bs.set(a2.i);
@@ -530,7 +534,7 @@ public class NMRCalculation implements JmolNMRInterface {
     if (subElements[0][2] != null && subElements[1][2] != null) {
       if (elements[0].equals("H") && elements[3].equals("H")) {
         if (elements[1].equals("C") && elements[2].equals("C"))
-          return calc3JHH(subElements, subVectors, v21, v34, v23,
+          return calc3JHHOnly(subElements, subVectors, v21, v34, v23,
               theta);
       } else if ((elements[0].equals("C") && elements[3].equals("H"))
           || (elements[0].equals("H") && elements[3].equals("C"))) {
@@ -633,7 +637,7 @@ public class NMRCalculation implements JmolNMRInterface {
    * @param theta  dihedral angle  hA-cA-cB-hB
    * @return estimated coupling constant
    */
-  private static double calc3JHH(String[][] subElements, V3[][] subVectors, V3 v21, V3 v34, V3 v23, double theta) {
+  private static double calc3JHHOnly(String[][] subElements, V3[][] subVectors, V3 v21, V3 v34, V3 v23, double theta) {
     // Substituents on atoms A and B
     // Check number of substituents
 
@@ -758,15 +762,41 @@ public class NMRCalculation implements JmolNMRInterface {
     return sign;
   }
 
-  public static double[] calc3J(Atom atom1, Atom atom4) {
-    Atom atom2 = atom1.bonds[0].getOtherAtom(atom1);
-    Atom atom3 = atom4.bonds[0].getOtherAtom(atom4);
-    if (!atom2.isCovalentlyBonded(atom3))
-      return new double[2];
-
+  /**
+   * Calculate a 3-bond coupling constant;
+   * 
+   * @param atom1
+   * @param atom4
+   * @return [theta, jvalue, atom2.i, atom3.i] or null if there is no 3-bond
+   *         connection
+   */
+  public static double[] calc3J(Atom atom1, Atom atom4, String CHEquation) {
+    if (atom1.isCovalentlyBonded(atom4))
+      return null;
+    boolean allowCH = (CHEquation != null);
+    Atom atom2 = null, atom3 = null;
+    Bond[] bonds1 = atom1.bonds;
+    Bond[] bonds4 = atom4.bonds;
+    for (int i = 0; i < bonds1.length; i++) {
+      atom2 = bonds1[i].getOtherAtom(atom1);
+      for (int j = 0; j < bonds4.length; j++) {
+        atom3 = bonds4[i].getOtherAtom(atom4);
+        if (atom2.isCovalentlyBonded(atom3))
+          break;
+        atom3 = null;
+      }
+    }
+    if (atom3 == null)
+      return null;
     String[] elements = new String[] { atom1.getElementSymbol(),
         atom2.getElementSymbol(), atom3.getElementSymbol(),
         atom4.getElementSymbol() };
+    // allow only H---H, H---C, C---H
+    if (elements[0].equals("H") ? 
+        !elements[3].equals("H") && (!allowCH || !elements[3].equals("C")) 
+        : !elements[3].equals("H") && (!allowCH || !elements[0].equals("C"))) {
+      return null;
+    }
     String[][] subElements = new String[2][3];
     V3[][] subVectors = new V3[2][3];
 
@@ -775,7 +805,7 @@ public class NMRCalculation implements JmolNMRInterface {
     V3 v34 = V3.newVsub(atom4, atom3);
 
     Lst<Atom> subs = new Lst<Atom>();
-    
+
     Bond[] bonds = atom2.bonds;
     for (int pt = 0, i = Math.min(bonds.length, 4); --i >= 0;) {
       Atom sub = bonds[i].getOtherAtom(atom2);
@@ -797,8 +827,9 @@ public class NMRCalculation implements JmolNMRInterface {
     }
 
     double theta = NMRCalculation.calcTheta(v21, v34, v23);
-    double jvalue = NMRCalculation.calcJ3(elements, subElements, subVectors, v21, v34, v23, theta, null);
-    return new double[] { theta, jvalue };
+    double jvalue = NMRCalculation.calcJ3(elements, subElements, subVectors,
+        v21, v34, v23, theta, null);
+    return new double[] { theta, jvalue, atom2.i, atom3.i };
   }
 
 }

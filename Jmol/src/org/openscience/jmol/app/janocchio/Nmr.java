@@ -28,7 +28,6 @@ package org.openscience.jmol.app.janocchio;
 
 import java.awt.Cursor;
 
-import javajs.api.Interface;
 import javajs.util.BS;
 
 import javax.swing.ImageIcon;
@@ -38,23 +37,10 @@ import javax.swing.UIManager;
 import org.jmol.dialog.Dialog;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
-import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.JmolApp;
 import org.openscience.jmol.app.jmolpanel.Splash;
 
 public class Nmr extends JmolApp {
-
-  static class Molecule {
-
-//    AtomContainer molCDK;
-    BS bsMol;
-
-  }
-
-  /*
-   * set to true for initial testing only
-   */
-  public static final boolean useCDK = false;
 
   public static final String VERSION = "0.1.0";
 
@@ -137,67 +123,11 @@ public class Nmr extends JmolApp {
 
   }
 
-  public static CdkConvertor getCDKConverter() {
-    return (CdkConvertor) Interface
-        .getInterface("org.openscience.jmol.app.janocchio.CdkConvertor");
-
-  }
-
-  public static DistanceJMolecule getDistanceJMolecule(Molecule mol, NMR_Viewer viewer,
-                                                       String[] labelArray) {
-    try {
-      return (
-          
-//          useCDK ? new DistanceJMoleculeCDK().set(
-//          (mol == null ? getMolecule(viewer) : mol).molCDK, labelArray) : 
-            
-            new DistanceJMoleculeNoCDK(
-          (mol == null ? getMolecule(viewer) : mol).bsMol, viewer, labelArray));
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  private static Molecule getMolecule(NMR_Viewer viewer) {
-    Molecule m = new Molecule();
-    try {
-      if (useCDK) {
-//        m.molCDK = getCDKConverter().convert(viewer);
-      } else {
-        m.bsMol = viewer.getFrameAtoms();
-      }
-      return m;
-    } catch (Exception e) {
-      return null;
-    }
-  }
-  
-  public static Molecule[] getAllMolecules(NMR_Viewer viewer) {
-    try {
-      Molecule[] mols;
-      if (Nmr.useCDK) {
-//        CdkConvertor convertor = new CdkConvertor();
-//        AtomContainer[] c = convertor.convertAll(viewer);
-//        mols = new Molecule[c.length];
-//        for (int i = c.length; --i >= 0;) {
-//          Molecule mol = mols[i] = new Molecule();
-//          mol.molCDK = c[i];
-//        }
-      } else {
-        int mc = viewer.getModelCount();
-        mols = new Molecule[mc];
-        for (int i = mc; --i >= 0;) {
-          Molecule mol = mols[i] = new Molecule();
-          mol.bsMol = viewer.getModelUndeletedAtomsBitSet(i);
-        }
-      }
-      return mols;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
+//  public static CdkConvertor getCDKConverter() {
+//    return (CdkConvertor) Interface
+//        .getInterface("org.openscience.jmol.app.janocchio.CdkConvertor");
+//
+//  }
 
 
 

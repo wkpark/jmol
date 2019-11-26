@@ -33,11 +33,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.NumberFormat;
+//import java.text.NumberFormat;
 import java.util.Hashtable;
 import java.util.Map;
 
 import javajs.util.BS;
+import javajs.util.DF;
 import javajs.util.Lst;
 
 import org.jmol.modelset.Atom;
@@ -616,11 +617,11 @@ public class NMRNoeMatrix {
     }
   }
 
-  static NumberFormat nf = NumberFormat.getInstance();
-  static {
-    nf.setMinimumFractionDigits(4);
-    nf.setMaximumFractionDigits(4);
-  }
+//  static NumberFormat nf = NumberFormat.getInstance();
+//  static {
+//    nf.setMinimumFractionDigits(4);
+//    nf.setMaximumFractionDigits(4);
+//  }
   
   @Override
   public String toString() {
@@ -628,7 +629,7 @@ public class NMRNoeMatrix {
     sb = new StringBuffer();
     for (i = 0; i < nHAtoms; i++) {
       for (j = 0; j < nHAtoms; j++) {
-        sb.append(nf.format(noeM[i][j]) + "\t");
+        sb.append(DF.formatDecimalDbl(noeM[i][j], 4) + "\t");
 
       }
       sb.append("\n");
@@ -639,14 +640,14 @@ public class NMRNoeMatrix {
 
   public String toStringNormRow() {
     StringBuffer sb;
-    NumberFormat nf = NumberFormat.getInstance();
-    nf.setMinimumFractionDigits(4);
-    nf.setMaximumFractionDigits(4);
+//    NumberFormat nf = NumberFormat.getInstance();
+//    nf.setMinimumFractionDigits(4);
+//    nf.setMaximumFractionDigits(4);
     sb = new StringBuffer();
     for (i = 0; i < nHAtoms; i++) {
       for (j = 0; j < nHAtoms; j++) {
         double val = noeM[i][j] / noeM[i][i];
-        sb.append(nf.format(val) + "\t");
+        sb.append(DF.formatDecimalDbl(val, 4) + "\t");
 
       }
       sb.append("\n");
@@ -754,77 +755,77 @@ public class NMRNoeMatrix {
     }
   }
 
-  private void doItAll(File file) {
-
-    System.out.println("starting");
-    readAtomsFromFile(file);
-    relaxMatrix = new double[nHAtoms][nHAtoms];
-    eigenValues = new double[nHAtoms][nHAtoms];
-    eigenVectors = new double[nHAtoms][nHAtoms];
-    noeM = new double[nHAtoms][nHAtoms];
-    System.out.println("read atoms: " + Integer.toString(nHAtoms));
-    calcRelaxMatrix();
-    System.out.println("built matrix");
-    System.out.println("total iterations = " + Integer.toString(Diagonalise()));
-    System.out.println("diagonalised matrix");
-    calcNoeMatrix();
-    System.out.println("calculated NOE matrix");
-    System.out.println(toString());
-    System.out.println("");
-    System.out.println(toStringNormRow());
-    try {
-      calcNOEs();
-    } catch (Exception e) {
-      System.out.println(e.toString());
-    }
-    //    System.out.println(params.getNMRfreqMHz());
-    //    System.out.println(params.getCorrelationTimeTauPS());
-  }
-
-  private void readAtomsFromFile(File file) {
-    atoms = new NOEAtom[200];
-    nHAtoms = 0;
-    BufferedReader br = null;
-    try {
-      br = new BufferedReader(new FileReader(file));
-      br.readLine();
-      System.out.println("found file");
-      while (true) {
-        //br.readLine();
-        String[] linetokens = br.readLine().split("\\s+");
-        // DAE changed to match particular H atom types in mm files with no atom names
-        if (linetokens[1].matches("41") || linetokens[1].matches("44")) {
-          atoms[nHAtoms] = new NOEAtom();
-          atoms[nHAtoms].x = Double.valueOf(linetokens[14]).doubleValue();
-          atoms[nHAtoms].y = Double.valueOf(linetokens[15]).doubleValue();
-          atoms[nHAtoms].z = Double.valueOf(linetokens[16]).doubleValue();
-          atoms[nHAtoms].methyl = false;
-          nHAtoms++;
-        }
-      }
-    } catch (Exception e) {
-      System.out.println(e.toString());
-    } finally {
-      if (br != null)
-        try {
-          br.close();
-        } catch (IOException e) {
-        }
-    }
-
-  }
-
-  public static void main(String args[]) {
-    NOEParams params = new NOEParams();
-    params.setNMRfreqMHz(500);
-    params.setCorrelationTimeTauPS(80.0);
-    params.setMixingTimeSec(0.5);
-    params.setCutoffAng(10.0);
-    params.setRhoStar(0.1);
-    params.setNoesy(true);
-    new NMRNoeMatrix(params).doItAll(new File(args[0]));
-  }
-
+//  private void doItAll(File file) {
+//
+//    System.out.println("starting");
+//    readAtomsFromFile(file);
+//    relaxMatrix = new double[nHAtoms][nHAtoms];
+//    eigenValues = new double[nHAtoms][nHAtoms];
+//    eigenVectors = new double[nHAtoms][nHAtoms];
+//    noeM = new double[nHAtoms][nHAtoms];
+//    System.out.println("read atoms: " + Integer.toString(nHAtoms));
+//    calcRelaxMatrix();
+//    System.out.println("built matrix");
+//    System.out.println("total iterations = " + Integer.toString(Diagonalise()));
+//    System.out.println("diagonalised matrix");
+//    calcNoeMatrix();
+//    System.out.println("calculated NOE matrix");
+//    System.out.println(toString());
+//    System.out.println("");
+//    System.out.println(toStringNormRow());
+//    try {
+//      calcNOEs();
+//    } catch (Exception e) {
+//      System.out.println(e.toString());
+//    }
+//    //    System.out.println(params.getNMRfreqMHz());
+//    //    System.out.println(params.getCorrelationTimeTauPS());
+//  }
+//
+//  private void readAtomsFromFile(File file) {
+//    atoms = new NOEAtom[200];
+//    nHAtoms = 0;
+//    BufferedReader br = null;
+//    try {
+//      br = new BufferedReader(new FileReader(file));
+//      br.readLine();
+//      System.out.println("found file");
+//      while (true) {
+//        //br.readLine();
+//        String[] linetokens = br.readLine().split("\\s+");
+//        // DAE changed to match particular H atom types in mm files with no atom names
+//        if (linetokens[1].matches("41") || linetokens[1].matches("44")) {
+//          atoms[nHAtoms] = new NOEAtom();
+//          atoms[nHAtoms].x = Double.valueOf(linetokens[14]).doubleValue();
+//          atoms[nHAtoms].y = Double.valueOf(linetokens[15]).doubleValue();
+//          atoms[nHAtoms].z = Double.valueOf(linetokens[16]).doubleValue();
+//          atoms[nHAtoms].methyl = false;
+//          nHAtoms++;
+//        }
+//      }
+//    } catch (Exception e) {
+//      System.out.println(e.toString());
+//    } finally {
+//      if (br != null)
+//        try {
+//          br.close();
+//        } catch (IOException e) {
+//        }
+//    }
+//
+//  }
+//
+//  public static void main(String args[]) {
+//    NOEParams params = new NOEParams();
+//    params.setNMRfreqMHz(500);
+//    params.setCorrelationTimeTauPS(80.0);
+//    params.setMixingTimeSec(0.5);
+//    params.setCutoffAng(10.0);
+//    params.setRhoStar(0.1);
+//    params.setNoesy(true);
+//    new NMRNoeMatrix(params).doItAll(new File(args[0]));
+//  }
+//
   static class NOEAtom {
 
     double x, y, z, x1, y1, z1, x2, y2, z2;

@@ -44,11 +44,11 @@ import javax.swing.table.DefaultTableCellRenderer;
  * 
  * @author ye91009
  */
-class ColorCellRenderer extends DefaultTableCellRenderer {
+class NMRTableCellRenderer extends DefaultTableCellRenderer {
   Color red, yellow, green, white;
   double redLevel, yellowLevel;
 
-  public ColorCellRenderer() {
+  public NMRTableCellRenderer() {
     super();
     red = new Color(255, 200, 200); //RED
     yellow = new Color(255, 255, 200); //YELLOW
@@ -107,10 +107,7 @@ class ColorCellRenderer extends DefaultTableCellRenderer {
       setBorder(noFocusBorder);
     }
 
-    // Finally, set actual numerical value
-    DecimalFormat df = new DecimalFormat("0.0000");
-    String text = df.format(value == null ? 0 : ((Measure) value).getCalcValue().doubleValue());
-    setText(text);
+    setText(((Measure) value).round());
 
     return this;
   }

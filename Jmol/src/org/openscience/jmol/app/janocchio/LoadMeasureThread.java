@@ -82,6 +82,8 @@ public class LoadMeasureThread extends Thread {
 
   protected void setCouples() throws Exception {
     //Couples
+    // ia ib ic id one-word-label
+    
     String line;
     while ((line = inp.readLine()) != null) {
       if (line.trim().length() == 0)
@@ -91,13 +93,20 @@ public class LoadMeasureThread extends Thread {
       int ib = (new Integer(l[1])).intValue();
       int ic = (new Integer(l[2])).intValue();
       int id = (new Integer(l[3])).intValue();
-      addCouple(ia, ib, ic, id, l[4], null);
+      addCouple(ia, ib, ic, id, l[4]);
     }
   }
 
-  protected void addCouple(int ia, int ib, int ic, int id, String exp,
-                         String expd) {
-    command = command + ";measure @@" + ia + " @@" + ib + " @@" + ic + " @@" + id;
+  /**
+   * 
+   * @param ia
+   * @param ib
+   * @param ic
+   * @param id
+   * @param exp
+   */
+  protected void addCouple(int ia, int ib, int ic, int id, String exp) {
+    command += ";measure @@" + ia + " @@" + ib + " @@" + ic + " @@" + id;
     if (exp != null && !exp.equals("null")) {
         nmrPanel.coupleTable.setExpCouple(exp, ia - 1, id - 1);
     }
@@ -105,6 +114,7 @@ public class LoadMeasureThread extends Thread {
 
   protected void setNOEs() throws Exception {
     String line;
+    // ia ib one-word-label
     while ((line = inp.readLine()).trim().length() != 0) {
       String[] l = line.split("\\s+");
       int ia = (new Integer(l[0])).intValue();
@@ -138,6 +148,6 @@ public class LoadMeasureThread extends Thread {
   }
 
   public void loadAndRun(String structureFile) {
-    nmrPanel.runScriptWithCallback(this, "load \"structureFile\"");
+    nmrPanel.runScriptWithCallback(this, "load \"" + structureFile + "\"");
   }
 }

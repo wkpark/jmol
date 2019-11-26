@@ -27,34 +27,47 @@
 
 package org.openscience.jmol.app.janocchio;
 
-import javax.swing.*;
+import java.text.DecimalFormat;
 
-public class Measure implements Comparable {
-  String expValue = new String();
-  Double calcValue;
-  double diff;
 
-  Measure(String expValue, Double calcValue) {
+public class Measure implements Comparable<Measure> {
+  private String expValue = "";
+  private double calcValue;
+  protected double diff;
+  private int type;
+  
+  final static int TYPE_DISTANCE = 0; //00
+  final static int TYPE_J        = 1; //0
+  final static int TYPE_NOE      = 2; //0000
+  final static int TYPE_EXP_NOE  = 0; //00
+
+  static final DecimalFormat[] df = new DecimalFormat[] { 
+    new DecimalFormat("0.00"), new DecimalFormat("0.0"), new DecimalFormat("0.0000") 
+  };
+
+
+  Measure(String expValue, double calcValue, int type) {
     this.expValue = expValue;
     this.calcValue = calcValue;
+    this.type = type;
   }
 
   public String getExpValue() {
-    return this.expValue;
+    return expValue;
   }
 
-  public Double getCalcValue() {
-    return this.calcValue;
+  public double getCalcValue() {
+    return calcValue;
   }
 
   public double getDiff() {
-    return this.diff;
+    return diff;
   }
 
   // This method allows the values to be sorted in the data tables
-  public int compareTo(Object anotherMeasure) {
-    double dcomp = this.calcValue.doubleValue()
-        - ((Measure) anotherMeasure).getCalcValue().doubleValue();
+  @Override
+  public int compareTo(Measure m) {
+    double dcomp = calcValue - m.getCalcValue();
     if (dcomp > 0) {
       return 1;
     } else if (dcomp < 0) {
@@ -64,8 +77,29 @@ public class Measure implements Comparable {
     }
   }
 
+  @Override
   public String toString() {
-    return this.getCalcValue().toString();
+    return "" + calcValue;
+  }
+
+  public String round() {
+    return df[type].format(calcValue);
+  }
+
+  public static String formatDistance(double d) {
+    return df[TYPE_DISTANCE].format(d);
+  }
+
+  public static String formatJ(double d) {
+    return df[TYPE_J].format(d);
+  }
+
+  public static String formatNOE(double d) {
+    return df[TYPE_NOE].format(d);
+  }
+
+  public static String formatExpNOE(double d) {
+    return df[TYPE_EXP_NOE].format(d);
   }
 
 }

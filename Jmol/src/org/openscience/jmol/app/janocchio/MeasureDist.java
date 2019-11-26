@@ -27,22 +27,16 @@
 
 package org.openscience.jmol.app.janocchio;
 
-import javax.swing.*;
 
-// Calculates the difference between calculated and experimental values for coloring table    
+ /**
+  * Calculates the difference between calculated and experimental values for coloring table    
+  */
 public class MeasureDist extends Measure {
-  // Calculates the difference between calculated and experimental values for coloring table    
 
-  public MeasureDist(String expValue, Double calcValue) {
-    super(expValue, calcValue);
-    if (expValue != null) {
-      double dexp = (Double.valueOf(expValue)).doubleValue();
-      double dcalc = calcValue.doubleValue();
-      // work around case where measured value is close to zero i.e. couldn't be integrated
-      this.diff = Math.abs(dexp - dcalc);
-    } else {
-      this.diff = 0.0;
-    }
+  public MeasureDist(String expValue, double calcValue) {
+    super(expValue, calcValue, Measure.TYPE_DISTANCE);
+    // work around case where measured value is close to zero i.e. couldn't be integrated
+    diff = (expValue == null ? 0 : Math.abs((Double.valueOf(expValue)).doubleValue() - calcValue));
   }
 
 }

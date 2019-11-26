@@ -69,6 +69,9 @@ import javax.swing.SwingConstants;
 import org.jmol.c.CBK;
 import org.jmol.dialog.FileChooser;
 import org.jmol.i18n.GT;
+import org.jmol.modelset.Atom;
+import org.jmol.quantum.NMRCalculation;
+import org.jmol.quantum.NMRNoeMatrix;
 import org.openscience.jmol.app.Jmol;
 import org.openscience.jmol.app.JmolApp;
 import org.openscience.jmol.app.jmolpanel.DisplayPanel;
@@ -95,8 +98,6 @@ public class NMR_JmolPanel extends JmolPanel {
   public LabelSetter labelSetter;
   public PopulationDisplay populationDisplay;
   public FrameDeltaDisplay frameDeltaDisplay;
-
-  int nAtomsPerModel;
 
   protected static File currentDir;
 
@@ -137,9 +138,9 @@ public class NMR_JmolPanel extends JmolPanel {
         vwrOptions, loc);
   }
 
-  DistanceJMolecule getDistanceJMolecule(BS mol, String[] labelArray) {
-    return (new DistanceJMoleculeNoCDK(this, (mol == null ? vwr.getFrameAtoms()
-        : mol), labelArray));
+  NmrMolecule getDistanceJMolecule(BS mol, String[] labelArray, boolean forNOE) {
+    return new NmrMolecule(this, (mol == null ? vwr.getFrameAtoms()
+        : mol), labelArray, forNOE);
   }
 
   BS[] getAllMolecules() {
@@ -963,7 +964,7 @@ public class NMR_JmolPanel extends JmolPanel {
 
   class MyStatusListener extends StatusListener {
 
-    private String defaultFormat = "set measurementUnits hz;measure \"2:%1.1VALUE %UNITS//hz\"";
+    private String defaultFormat = "set measurementUnits noe_hz";
 
     MyStatusListener(JmolPanel jmol, DisplayPanel display) {
       super(jmol, display);
@@ -993,31 +994,27 @@ public class NMR_JmolPanel extends JmolPanel {
       frameDeltaDisplay.setVisible(true);
       JCheckBoxMenuItem mi = (JCheckBoxMenuItem) getMenuItem("NMR.frameDeltaDisplayCheck");
       mi.setSelected(true);
-      vwr.script(defaultFormat);
+      if (defaultFormat != null)
+        vwr.script(defaultFormat);
     }
 
-    public void notifyFrameChanged(int frameNo) {
-      if (vwr == null)
+    public void notifyFrameChanged(int modelIndex) {
+      if (vwr == null || modelIndex < 0)
         return;
-      int ntot = ((NMR_Viewer) vwr).getAtomCount();
-      int nmodel = ((NMR_Viewer) vwr).getModelCount();
-      int natpm = 0;
-      if (nmodel > 0) {
-        natpm = ntot / nmodel;
-      }
-      if (natpm != nAtomsPerModel) {
-        // new molecule loaded, need to allocate new label array
-        nAtomsPerModel = natpm;
-        labelSetter.allocateLabelArray(nAtomsPerModel);
+      if (modelIndex == Integer.MIN_VALUE)
+        modelIndex = ((NMR_Viewer) vwr).getCurrentModelIndex();
+      int modelAtomCount = getFrameAtomCount();
+      if (labelSetter.getLabelArray() == null || modelAtomCount != labelSetter.getLabelArray().length) {
+        labelSetter.allocateLabelArray(modelAtomCount);
 
-        noeTable.allocateLabelArray(nAtomsPerModel);
-        noeTable.allocateExpNoes(nAtomsPerModel);
-        coupleTable.allocateLabelArray(nAtomsPerModel);
-        coupleTable.allocateExpCouples(nAtomsPerModel);
+        noeTable.allocateLabelArray(modelAtomCount);
+        noeTable.allocateExpNoes(modelAtomCount);
+        coupleTable.allocateLabelArray(modelAtomCount);
+        coupleTable.allocateExpCouples(modelAtomCount);
       }
 
-      frameCounter.setFrameNumberFromViewer(frameNo + 1);
-      populationDisplay.setFrameNumberFromViewer(frameNo + 1);
+      frameCounter.setFrameNumberFromViewer(modelIndex + 1);
+      populationDisplay.setFrameNumberFromViewer(modelIndex + 1);
 
       coupleTable.setmolCDKuptodate(false);
       noeTable.setmolCDKuptodate(false);
@@ -1025,8 +1022,6 @@ public class NMR_JmolPanel extends JmolPanel {
 
       coupleTable.updateTables();
       noeTable.updateTables();
-      vwr.script(defaultFormat);
-
     }
 
     /**
@@ -1034,14 +1029,14 @@ public class NMR_JmolPanel extends JmolPanel {
      * @param strInfo
      */
     public void notifyAtomPicked(int atomIndex, String strInfo) {
-      int iModel = atomIndex / nAtomsPerModel;
-      int firstModelAtomIndex = atomIndex - iModel * nAtomsPerModel;
-      labelSetter.setSelectedAtomIndex(firstModelAtomIndex);
-
-      int minindex = labelSetter.getMinindex();
-
-      String command = "set display SELECTED; select (atomno="
-          + String.valueOf(firstModelAtomIndex + minindex) + ")";
+      if (atomIndex < 0) {
+        // bond picked;
+        return;
+      }
+      int atomNo = ((NMR_Viewer) vwr).getAtomNumber(atomIndex);
+      labelSetter.setSelectedAtomIndex(atomNo - 1);
+      String command = "set display SELECTED; select (atomindex="
+          + atomIndex + ")";
       vwr.script(command);
     }
 
@@ -1050,6 +1045,7 @@ public class NMR_JmolPanel extends JmolPanel {
       String strInfo = (data == null || data[1] == null ? null : data[1]
           .toString());
 
+//      System.out.println("NMR_JmolPanel notifyCallback "+type + " " + strInfo + " " + data[2]);
       super.notifyCallback(type, data);
       switch (type) {
       case LOADSTRUCT:
@@ -1082,11 +1078,15 @@ public class NMR_JmolPanel extends JmolPanel {
               notifyAtomPicked(picked.intValue(), strInfo);
           }
         }
-        noeTable.updateTables();
-        if (coupleTable.getViewerMeasurement(-1) == null) {
-          vwr.deleteMeasurement(vwr.getMeasurementCount() - 1);
+        int n = vwr.getMeasurementCount() - 1;
+        System.out.println("checking for measurement " + n);
+        if (getViewerMeasurement(n, NMRCalculation.MODE_CALC_J) == null 
+            && getViewerMeasurement(n, NMRCalculation.MODE_CALC_NOE) == null) {
+          vwr.deleteMeasurement(n);
           return;
         }
+        System.out.println("updating for measurement " + n);
+        noeTable.updateTables();
         coupleTable.updateTables();
         break;
       case MESSAGE:
@@ -1127,6 +1127,7 @@ public class NMR_JmolPanel extends JmolPanel {
       case SERVICE:
         break;
       case STRUCTUREMODIFIED:
+        notifyStructureModified();
         break;
       case SYNC:
         break;
@@ -1136,6 +1137,43 @@ public class NMR_JmolPanel extends JmolPanel {
 
     }
 
+    public void notifyStructureModified() {    
+      vwr.deleteMeasurement(vwr.getMeasurementCount() - 1);
+      notifyFrameChanged(Integer.MIN_VALUE);
+    }
+
+
   }
+
+  public int getFrameAtomCount() {
+    return vwr.getFrameAtoms().cardinality();
+  }
+
+  Atom[] getViewerMeasurement(int vRow, int type) {
+    int[] m = vwr.getMeasurementCountPlusIndices(vRow);
+    if (m[0] != 2)
+      return null;
+    Atom[] atoms = new Atom[] { ((NMR_Viewer)vwr).getAtomAt(m[1]), null, null,
+        ((NMR_Viewer)vwr).getAtomAt(m[2]) };
+    return (NMRCalculation.getCalcType(atoms, null, type) == NMRCalculation.MODE_CALC_INVALID ? null
+        : atoms);
+  }
+
+  int getViewerRow(int row, int type) {
+    for (int j = -1, i = 0; i < vwr.getMeasurementCount(); i++) {
+      if (getViewerMeasurement(i, type) == null)
+        continue;
+     if (++j == row) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  void clearViewerSelection() {
+    vwr.script("select none");
+  }
+
+
 
 }

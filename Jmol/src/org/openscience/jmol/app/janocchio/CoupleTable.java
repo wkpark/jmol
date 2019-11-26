@@ -48,7 +48,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -76,23 +75,23 @@ public class CoupleTable extends JTabbedPane {
   int natomsPerModel;
   String[] labelArray;
   boolean molCDKuptodate = false;
-  DistanceJMolecule calcProps;
+  NmrMolecule calcProps;
   String[][] expCouples;
   JTable coupleTable;
   private CoupleTableModel coupleTableModel;
   private ListSelectionModel coupleSelection;
   int[] selectedCoupleRow = new int[2];
-  JButton coupledeleteButton;
+  JButton coupledeleteButton, coupleAddAllButton;
   private JButton coupledeleteAllButton;
   final double degtorad = Math.PI / 180;
   double yellowValue = 2.0; // cutoffs on diff for colouring cells. diff = |calc-exp|
   double redValue = 3.0;
   FrameDeltaDisplay frameDeltaDisplay;
   String CHequation = "was";
-  ColorCellRenderer colorCellRenderer = new ColorCellRenderer();
+  NMRTableCellRenderer colorCellRenderer = new NMRTableCellRenderer();
 
   public CoupleColourSelectionPanel coupleColourSelectionPanel;
-  private NMR_JmolPanel nmrPanel;
+  protected NMR_JmolPanel nmrPanel;
 
   /**
    * Constructor
@@ -189,6 +188,19 @@ public class CoupleTable extends JTabbedPane {
     JPanel coupleButtonPanel = new JPanel();
     coupleButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
+    coupleAddAllButton = new JButton(GT.$("Add All"));
+    coupleAddAllButton.setToolTipText("Add all 1H-1H Couplings");
+    coupleAddAllButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        // All this necessary to delete more than one row at once
+        // need to create array of viewer rows, sort, then delete
+        viewer.scriptWait("measure search '{[H]}CC{[H]}'");
+        updateCoupleTableData();
+      }
+    });
+    coupleAddAllButton.setEnabled(true);
+    
     coupledeleteButton = new JButton(GT.$("Del"));
     coupledeleteButton.setToolTipText("Delete Selected Couplings");
     coupledeleteButton.addActionListener(new ActionListener() {
@@ -219,7 +231,6 @@ public class CoupleTable extends JTabbedPane {
         for (int i = coupleTable.getRowCount(); --i >= 0;) {
           viewer.deleteMeasurement(getViewerRow(i));
         }
-        clearViewerSelection();
         updateCoupleTableData();
       }
     });
@@ -227,13 +238,14 @@ public class CoupleTable extends JTabbedPane {
 
     //coupleButtonPanel.add(couplesetRefButton); 
 
+    coupleButtonPanel.add(coupleAddAllButton);
     coupleButtonPanel.add(coupledeleteButton);
     coupleButtonPanel.add(coupledeleteAllButton);
     return coupleButtonPanel;
   }
 
-  protected void clearViewerSelection() {
-    viewer.script("select none");
+  protected int getViewerRow(int i) {
+    return nmrPanel.getViewerRow(i, NMRCalculation.MODE_CALC_J);
   }
 
   JComponent constructDismissButtonPanel() {
@@ -278,7 +290,7 @@ public class CoupleTable extends JTabbedPane {
     coupledeleteAllButton.setEnabled(viewer.getMeasurementCount() > 0);
     coupleTableModel.fireTableDataChanged();
     calcFrameDelta();
-    clearViewerSelection();
+    nmrPanel.clearViewerSelection();
   }
 
   public int getRowCount() {
@@ -313,10 +325,7 @@ public class CoupleTable extends JTabbedPane {
       int rowCount = 0;
 
       for (int i = 0; i < viewer.getMeasurementCount(); i++) {
-
-        int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(i);
-        if (countPlusIndices.length == 5
-            && countPlusIndices[1] < natomsPerModel) {
+        if (nmrPanel.getViewerMeasurement(i,  NMRCalculation.MODE_CALC_J) != null) {
           ++rowCount;
         }
       }
@@ -346,16 +355,14 @@ public class CoupleTable extends JTabbedPane {
       }
       // Need to convert coupleTable index to viewer index
       int vRow = getViewerRow(row);
-      int[] atoms = getViewerMeasurement(vRow);
-      Double[] dihecouple = calcProps.calcCouple(atoms[0], atoms[1], atoms[2], atoms[3]);
+      Atom[] atoms = nmrPanel.getViewerMeasurement(vRow, NMRCalculation.MODE_CALC_J);
+      double[] dihecouple = calcProps.calcCouple(atoms);
       MeasureCouple measure = (dihecouple == null ? null : new MeasureCouple(
-          expCouples[atoms[0]][atoms[3]], dihecouple[1]));
+          expCouples[viewer.indexInFrame(atoms[0])][viewer.indexInFrame(atoms[3])], dihecouple[1]));
       if (col == 0) {
         //return  viewer.getMeasurementStringValue(vRow);
-        DecimalFormat df = new DecimalFormat("0.0");
-        double conv = (dihecouple == null ? 0 : dihecouple[0].doubleValue()
+        return Measure.formatDistance(dihecouple == null ? 0 : dihecouple[0]
             / degtorad);
-        return df.format(conv);
       }
       if (col == 1) {
 
@@ -370,7 +377,7 @@ public class CoupleTable extends JTabbedPane {
 //        return null;
 //      }
 //
-      int atomIndex = (col == 2 ? atoms[0] : atoms[3]);
+      int atomIndex = (col == 2 ? atoms[0].i : atoms[3].i);
       if (atomIndex < 0)
         return "";
 
@@ -430,85 +437,24 @@ public class CoupleTable extends JTabbedPane {
     frameDeltaDisplay.setFrameDeltaCouple(frameDelta);
   }
 
-  public int[] getViewerMeasurement(int vRow) {
-    if (vRow < 0)
-      vRow = viewer.getMeasurementCount() - 1;    
-    int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
-    int a1 = countPlusIndices[1];
-    int a2 = countPlusIndices[2];
-    int a3 = countPlusIndices[3];
-    int a4 = countPlusIndices[4];
-
-    int n = countPlusIndices[0];
-    switch (n) {
-    case 0:
-    case 1:
-    case 3:
-      break;
-    case 2:
-      // allow for two H atoms to be clicked if H-X-X-H
-      Atom atom1 = viewer.getAtomAt(a1);
-      Atom atom2 = viewer.getAtomAt(a2);
-      if (!atom1.getElementSymbol().equals("H")
-          || !atom2.getElementSymbol().equals("H"))
-        break;
-      double[] data = NMRCalculation.calc3J(atom1, atom2, null);
-      if (data == null)
-        break;
-      a4 = a2;
-      a2 = (int) data[2];
-      a3 = (int) data[3];
-      //$FALL-THROUGH$
-    case 4:
-      return new int[] { a1, a2, a3, a4 };
-    }
-    return null;
-  }
-
   public void updateTables() {
     updateCoupleTableData();
   }
 
-//  private double getdegfromString(String sDist) {
-//    int l = sDist.length();
-//    String spDist = sDist.substring(0, l - 1);
-//    Double dDist = new Double(spDist);
-//    return dDist.doubleValue();
-//  }
-
-  int getViewerRow(int row) {
-    int vRow = -1;
-    int j = -1;
-    for (int i = 0; i < viewer.getMeasurementCount(); i++) {
-      int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(i);
-      if (countPlusIndices.length == 5 && countPlusIndices[1] < natomsPerModel) {
-        ++j;
-      }
-      if (j == row) {
-        vRow = i;
-        break;
-      }
-    }
-    //System.err.println(vRow + " " + j);
-    return vRow;
-  }
+  //  private double getdegfromString(String sDist) {
+  //    int l = sDist.length();
+  //    String spDist = sDist.substring(0, l - 1);
+  //    Double dDist = new Double(spDist);
+  //    return dDist.doubleValue();
+  //  }
 
   int calcNatomsPerModel() {
-    int ntot = viewer.getAtomCount();
-    int nmodel = viewer.getModelCount();
-    int nat;
-    if (nmodel > 0) {
-      nat = ntot / nmodel;
-    } else {
-      nat = 0;
-    }
-
-    return nat;
+    return nmrPanel.getFrameAtomCount();
   }
 
   /* This should only be called once the molecule data has been read in */
   public void addMol() {
-    calcProps = nmrPanel.getDistanceJMolecule(null, labelArray);
+    calcProps = nmrPanel.getDistanceJMolecule(null, labelArray, false);
     calcProps.setCHequation(CHequation);
     this.molCDKuptodate = true;
   }

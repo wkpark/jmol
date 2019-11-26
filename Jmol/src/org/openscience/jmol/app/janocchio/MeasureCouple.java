@@ -33,14 +33,9 @@ import javax.swing.*;
 public class MeasureCouple extends Measure {
   // Calculates the difference between calculated and experimental values for coloring table    
 
-  public MeasureCouple(String expValue, Double calcValue) {
-    super(expValue, calcValue);
-    if (expValue != null) {
-      this.diff = Math.abs(calcValue.doubleValue()
-          - Double.valueOf(expValue).doubleValue());
-    } else {
-      this.diff = 0.0;
-    }
+  public MeasureCouple(String expValue, double calcValue) {
+    super(expValue, calcValue, Measure.TYPE_J);
+    diff = (expValue == null ? 0 : Math.abs(calcValue - Double.valueOf(expValue).doubleValue()));
   }
 
 }

@@ -188,7 +188,7 @@ public class LoadMeasureThreadJSON extends LoadMeasureThread {
         int ic = getInt(couple, "c");
         int id = getInt(couple, "d");
         String exp = (String) couple.get("exp");
-        addCouple(ia, ib, ic, id, exp, null);
+        addCouple(ia, ib, ic, id, exp);
       }
 
   }
@@ -251,9 +251,9 @@ public class LoadMeasureThreadJSON extends LoadMeasureThread {
       BS[] mols = nmrPanel.getAllMolecules();
       PrintWriter out1 = new PrintWriter(new FileWriter(namfis1));
       String[] labelArray = nmrPanel.labelSetter.getLabelArray();
-      for (int i = 0; i < mols.length; i++) {
-        DistanceJMolecule props = nmrPanel.getDistanceJMolecule(mols[i],
-            labelArray);
+      for (int base = 0, i = 0; i < mols.length; base += mols[i].cardinality(), i++) {
+        NmrMolecule props = nmrPanel.getDistanceJMolecule(mols[i],
+            labelArray, true);
         props.calcNOEs();
 
         for (int n = 0; n < noes.size(); n++) {
@@ -266,7 +266,7 @@ public class LoadMeasureThreadJSON extends LoadMeasureThread {
             if (exp != null) {
               int j = (new Integer(a)).intValue() - 1;
               int k = (new Integer(b)).intValue() - 1;
-              props.addDistance(j, k);
+              props.addJmolDistance(j + base, k + base);
             }
           }
         }
@@ -284,7 +284,7 @@ public class LoadMeasureThreadJSON extends LoadMeasureThread {
               int k = (new Integer(b)).intValue() - 1;
               int l = (new Integer(c)).intValue() - 1;
               int m = (new Integer(d)).intValue() - 1;
-              props.addCouple(j, k, l, m);
+              props.addJmolCouple(j + base, k + base, l + base, m + base);
             }
           }
         }
@@ -579,9 +579,9 @@ public class LoadMeasureThreadJSON extends LoadMeasureThread {
       boolean lexpNoes = nmrPanel.noeTable.getlexpNoes();
       double minDiff = Double.MAX_VALUE;
       int minFrame = -1;
-      for (int i = 0; i < mols.length; i++) {
-        DistanceJMolecule props = nmrPanel.getDistanceJMolecule(mols[i],
-            labelArray);
+      for (int base = 0, i = 0; i < mols.length; base += mols[i].cardinality(), i++) {
+        NmrMolecule props = nmrPanel.getDistanceJMolecule(mols[i],
+            labelArray, true);
         props.calcNOEs();
         double diffDist = 0.0;
         double diffNoe = 0.0;
@@ -596,8 +596,8 @@ public class LoadMeasureThreadJSON extends LoadMeasureThread {
             if (exp != null) {
               int j = (new Integer(a)).intValue() - 1;
               int k = (new Integer(b)).intValue() - 1;
-              double cDist = props.calcDistance(j, k);
-              MeasureDist measure = new MeasureDist(exp, new Double(cDist));
+              double cDist = props.getJmolDistance(j + base, k + base);
+              MeasureDist measure = new MeasureDist(exp, cDist);
               diffDist += measure.getDiff();
             }
           }
@@ -606,8 +606,8 @@ public class LoadMeasureThreadJSON extends LoadMeasureThread {
             if (exp != null) {
               int j = (new Integer(a)).intValue() - 1;
               int k = (new Integer(b)).intValue() - 1;
-              double cNoe = props.getNoe(j, k);
-              MeasureNoe measure = new MeasureNoe(exp, new Double(cNoe));
+              double cNoe = props.getJmolNoe(j + base, k + base);
+              MeasureNoe measure = new MeasureNoe(exp, cNoe);
               diffNoe += measure.getDiff();
             }
           }
@@ -626,7 +626,7 @@ public class LoadMeasureThreadJSON extends LoadMeasureThread {
               int k = (new Integer(b)).intValue() - 1;
               int l = (new Integer(c)).intValue() - 1;
               int m = (new Integer(d)).intValue() - 1;
-              Double[] cCouple = props.calcCouple(j, k, l, m);
+              double[] cCouple = props.calcJmolCouple(j + base, k + base, l + base, m + base);
               MeasureCouple measure = new MeasureCouple(exp, cCouple[1]);
               diffCouple += measure.getDiff();
             }

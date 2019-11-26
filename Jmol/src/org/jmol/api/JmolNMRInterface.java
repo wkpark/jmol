@@ -87,5 +87,7 @@ public interface JmolNMRInterface {
   public Map<String, Integer> getMinDistances(MeasurementData md);
 
   public boolean getState(SB sb);
-  
+
+  public double[] getNOEorJHH(Atom[] atoms, int mode);
+
 }

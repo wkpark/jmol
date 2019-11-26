@@ -23,34 +23,28 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * distanceJMolecule.java
+ *
+ * Created on 03 April 2006, 17:05
+ *
  */
 
 package org.openscience.jmol.app.janocchio;
 
-public class MeasureNoe extends Measure {
- 
-  public MeasureNoe(String expValue, double calcValue) {
-    super(expValue, calcValue, Measure.TYPE_NOE);
-    if (expValue != null) {
-      double dexp = Math.abs((Double.valueOf(expValue)).doubleValue());
-      double dcalc = Math.abs(calcValue);
-      // work around case where measured value is close to zero i.e. couldn't be integrated
-      if (dexp < 0.005) {
-        if (dcalc < 0.03) {
-          this.diff = 0.0;
-        }
-        // hack - basically forcing the colour based on the default thresholds
-        else if (dcalc > 0.03 && dcalc < 0.05) {
-          this.diff = 0.2 + 0.5 * (0.4 - 0.2);
-        } else {
-          this.diff = 0.4 + 1.0;
-        }
-      } else {
-        this.diff = Math.abs(Math.log(Math.abs(dcalc / dexp)) / Math.log(10.0));
-      }
-    } else {
-      this.diff = 0.0;
-    }
-  }
+import javajs.util.BS;
+
+import org.jmol.modelset.Atom;
+import org.jmol.quantum.NMRCalculation;
+import org.jmol.quantum.NoeMatrix;
+
+/**
+ * Connection to NMRCalculation allowing for a CDK version as well (which is no
+ * longer supported because of the 25 MB hit from the CDK library and because
+ * Jmol already provides smart ways to group the hydrogen atoms).
+ * 
+ * @author Bob Hanson
+ */
+public class DistanceJMoleculeNoCDK extends DistanceJMolecule {
 
 }

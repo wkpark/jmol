@@ -47,7 +47,7 @@ public class CoupleParameterSelectionPanel extends JPanel {
   public CoupleParameterSelectionPanel(CoupleTable coupleTable) {
     this.coupleTable = coupleTable;
     initComponents();
-    eq1RadioButton.setSelected(true);
+    eq0RadioButton.setSelected(true);
   }
 
   /**
@@ -63,6 +63,7 @@ public class CoupleParameterSelectionPanel extends JPanel {
     jLabel1 = new JLabel();
     jLabel3 = new JLabel();
     jLabel4 = new JLabel();
+    eq0RadioButton = new JRadioButton();
     eq1RadioButton = new JRadioButton();
     eq2RadioButton = new JRadioButton();
     eq3RadioButton = new JRadioButton();
@@ -80,6 +81,16 @@ public class CoupleParameterSelectionPanel extends JPanel {
         .setToolTipText("-90<theta<90: 8.5*cos(theta)^2 - 0.28;else 9.5*cos(theta)^2 - 0.28");
 
     jLabel4.setText("3JCH:");
+
+    chButtonGroup.add(eq0RadioButton);
+    eq0RadioButton.setText("none");
+    eq0RadioButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    eq0RadioButton.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    eq0RadioButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        eq0RadioButtonActionPerformed(evt);
+      }
+    });
 
     chButtonGroup.add(eq1RadioButton);
     eq1RadioButton.setText("Wasylichen");
@@ -162,6 +173,8 @@ public class CoupleParameterSelectionPanel extends JPanel {
                                                             .addComponent(
                                                                 eq2RadioButton)
                                                             .addComponent(
+                                                                eq0RadioButton)
+                                                            .addComponent(
                                                                 eq1RadioButton)
                                                             .addComponent(
                                                                 eq3RadioButton))
@@ -182,13 +195,21 @@ public class CoupleParameterSelectionPanel extends JPanel {
                 .addGap(10, 10, 10)
                 .addGroup(
                     layout.createParallelGroup(Alignment.BASELINE)
-                        .addComponent(jLabel4).addComponent(eq1RadioButton))
+                        .addComponent(jLabel4)
+                .addComponent(eq0RadioButton))
+                .addPreferredGap(ComponentPlacement.RELATED)
+                .addComponent(eq1RadioButton)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(eq2RadioButton)
                 .addPreferredGap(ComponentPlacement.RELATED)
                 .addComponent(eq3RadioButton)
                 .addContainerGap(63, Short.MAX_VALUE)));
   }// </editor-fold>//GEN-END:initComponents
+
+  private void eq0RadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eq1RadioButtonActionPerformed
+  // TODO add your handling code here:
+    coupleTable.setCHequation("none");
+  }//GEN-LAST:event_eq1RadioButtonActionPerformed
 
   private void eq1RadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eq1RadioButtonActionPerformed
   // TODO add your handling code here:
@@ -207,7 +228,7 @@ public class CoupleParameterSelectionPanel extends JPanel {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private ButtonGroup chButtonGroup;
-  private JRadioButton eq1RadioButton;
+  private JRadioButton eq0RadioButton, eq1RadioButton;
   private JRadioButton eq2RadioButton;
   private JRadioButton eq3RadioButton;
   private JLabel jLabel1;

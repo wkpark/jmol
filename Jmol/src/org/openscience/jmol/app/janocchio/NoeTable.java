@@ -51,6 +51,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
 import org.jmol.i18n.GT;
+import org.jmol.quantum.NMRCalculation;
 
 //import BoxLayout;
 
@@ -68,7 +69,7 @@ public class NoeTable extends JTabbedPane {
   String[][] expNoes;
   String[][] expDists; // expNoes and expDists are separate user inputs. You can use one, both or neither
   boolean lexpNoes = true;
-  DistanceJMolecule calcProps;
+  NmrMolecule calcProps;
   // NMR parameters for NoeMatrix
   // These are the defaults
   double freq = 400; // Spec. frequency/MHz
@@ -81,7 +82,7 @@ public class NoeTable extends JTabbedPane {
   double yellowValue = 0.2; // cutoffs on diff for colouring cells. diff = |log(calc/exp)|
   double redValue = 0.4;
   FrameDeltaDisplay frameDeltaDisplay;
-  ColorCellRenderer colorCellRenderer = new ColorCellRenderer();
+  NMRTableCellRenderer colorCellRenderer = new NMRTableCellRenderer();
 
   JTable noeTable;
   private NoeTableModel noeTableModel;
@@ -209,19 +210,18 @@ public class NoeTable extends JTabbedPane {
         // need to create array of viewer rows, sort, then delete
         int ndelete = selectedNoeRow[1] - selectedNoeRow[0] + 1;
         int[] deletevRows = new int[ndelete];
-        int j = 0;
-        for (int i = selectedNoeRow[0]; i <= selectedNoeRow[1]; i++) {
+        for (int pt = 0, n = selectedNoeRow[1], i = selectedNoeRow[0]; i <= n; i++) {
           int vRow = getViewerRow(i);
-          deletevRows[j] = vRow;
-          j++;
+          deletevRows[pt] = vRow;
+          pt++;
 
         }
         Arrays.sort(deletevRows);
         for (int i = ndelete - 1; i >= 0; i--) {
           viewer.deleteMeasurement(deletevRows[i]);
         }
-
         updateNoeTableData();
+        viewer.script("background white");
       }
     });
     noedeleteButton.setEnabled(false);
@@ -237,7 +237,7 @@ public class NoeTable extends JTabbedPane {
         int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
         noeNPrefIndices[0] = countPlusIndices[1];
         noeNPrefIndices[1] = countPlusIndices[2];
-        noeNPrefValue = calcProps.getNoe(countPlusIndices[1],
+        noeNPrefValue = calcProps.getJmolNoe(countPlusIndices[1],
             countPlusIndices[2]);
 
         String val = expNoes[countPlusIndices[1]][countPlusIndices[2]];
@@ -339,9 +339,9 @@ public class NoeTable extends JTabbedPane {
 
   void updateNoeTableData() {
     noedeleteAllButton.setEnabled(viewer.getMeasurementCount() > 0);
-
     noeTableModel.fireTableDataChanged();
     calcFrameDelta();
+    nmrPanel.clearViewerSelection();
   }
 
   void updateNoeTableStructure() {
@@ -388,13 +388,14 @@ public class NoeTable extends JTabbedPane {
 
     @Override
     public int getRowCount() {
-      natomsPerModel = calcNatomsPerModel();
+      
+      natomsPerModel = nmrPanel.getFrameAtomCount();
       int rowCount = 0;
 
       for (int i = 0; i < viewer.getMeasurementCount(); i++) {
 
-        int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(i);
-        if (checkNoe(countPlusIndices)) {
+//        int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(i);
+        if (checkNoe(i)) {
           ++rowCount;
         }
       }
@@ -427,29 +428,32 @@ public class NoeTable extends JTabbedPane {
       }
       // Need to convert noeTable index to viewer index
       int vRow = getViewerRow(row);
-      int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
+      int[] m = viewer.getMeasurementCountPlusIndices(vRow);
 
-      int numAtom1;
-      int numAtom2;
+      int a1 = m[1];
+      int a2 = m[2];
 
-      numAtom1 = countPlusIndices[1];
-      numAtom2 = countPlusIndices[2];
-
-      double noeNP = calcProps.getNoe(countPlusIndices[1], countPlusIndices[2]);
+      double noeNP = calcProps.getJmolNoe(a1, a2);
       double noeNPref = 1.0;
+      
+      int base = viewer.getFrameBase(a1);
+      
+      int f1 = a1 - base;
+      int f2 = a2 - base;
+      
 
       // Normalise to selected single measurment
       if (lrefSingle) {
         if (noeNPrefIndices[0] != -1 && noeNPrefIndices[1] != -1) {
-          noeNPref = calcProps.getNoe(noeNPrefIndices[0], noeNPrefIndices[1]);
+          noeNPref = calcProps.getJmolNoe(noeNPrefIndices[0], noeNPrefIndices[1]);
         }
       } else {
         // Normalise to diagonal
-        noeNPref = calcProps.getNoe(countPlusIndices[1], countPlusIndices[1]);
+        noeNPref = noeNP;
       }
       noeNP /= noeNPref;
-      String expNOE = expNoes[countPlusIndices[1]][countPlusIndices[2]];
-      String expDist = expDists[countPlusIndices[1]][countPlusIndices[2]];
+      String expNOE = expNoes[f1][f2];
+      String expDist = expDists[f1][f2];
 
       double dExpNOE;
       try {
@@ -457,15 +461,14 @@ public class NoeTable extends JTabbedPane {
         if (lrefSingle) {
           dExpNOE /= noeExprefValue;
         }
-        DecimalFormat df = new DecimalFormat("0.00");
-        expNOE = df.format(dExpNOE);
+        expNOE = Measure.formatExpNOE(dExpNOE);
       } catch (Exception e) {
         //return expNOE;
       }
 
-      double distNP = calcProps.calcDistance(numAtom1, numAtom2);
-      MeasureNoe measure = new MeasureNoe(expNOE, new Double(noeNP));
-      MeasureDist measured = new MeasureDist(expDist, new Double(distNP));
+      double distNP = calcProps.getJmolDistance(a1, a2);
+      MeasureNoe measure = new MeasureNoe(expNOE, noeNP);
+      MeasureDist measured = new MeasureDist(expDist, distNP);
 
       if (col == 0) {
         /*double d = calcProps.calcDistance(numAtom1, numAtom2);
@@ -482,23 +485,14 @@ public class NoeTable extends JTabbedPane {
         }
         return measured.getExpValue();
       }
-      if (col >= countPlusIndices.length + 2)
+      if (col >= m[0] + 2)
         return null;
 
-      int atomIndex = countPlusIndices[col - 1];
-      //return ("" + viewer.getAtomNumber(atomIndex) +
-      //       " " + viewer.getAtomName(atomIndex));
+      int atomIndex = m[col - 1];
       String name = labelArray[atomIndex];
       String reserve = "" + viewer.getAtomNumber(atomIndex) + " "
           + viewer.getAtomName(atomIndex);
-      if (name == null) {
-        name = reserve;
-        return name;
-      } else if (name.trim().length() == 0) {
-        name = reserve;
-
-      }
-      return name;
+      return (name == null || name.trim().length() == 0 ? reserve : name.trim());
     }
 
     @Override
@@ -514,13 +508,13 @@ public class NoeTable extends JTabbedPane {
           val = null;
         }
         int vRow = getViewerRow(row);
-        int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(vRow);
+        int[] m = viewer.getMeasurementCountPlusIndices(vRow);
         if (lexpNoes) {
-          expNoes[countPlusIndices[1]][countPlusIndices[2]] = val;
-          expNoes[countPlusIndices[2]][countPlusIndices[1]] = val;
+          expNoes[m[1]][m[2]] = val;
+          expNoes[m[2]][m[1]] = val;
         } else {
-          expDists[countPlusIndices[1]][countPlusIndices[2]] = val;
-          expDists[countPlusIndices[2]][countPlusIndices[1]] = val;
+          expDists[m[1]][m[2]] = val;
+          expDists[m[2]][m[1]] = val;
         }
         //fireTableDataChanged();
         updateNoeTableData();
@@ -566,33 +560,26 @@ public class NoeTable extends JTabbedPane {
   //    return dDist.doubleValue();
   //  }
 
-  int getViewerRow(int row) {
-    int vRow = -1;
-    int j = -1;
-    for (int i = 0; i < viewer.getMeasurementCount(); i++) {
-      int[] countPlusIndices = viewer.getMeasurementCountPlusIndices(i);
-      if (checkNoe(countPlusIndices)) {
-        ++j;
-      }
-      if (j == row) {
-        vRow = i;
-        break;
-      }
-    }
-    System.err.println(vRow + " " + j);
-    return vRow;
+  protected int getViewerRow(int i) {
+    return nmrPanel.getViewerRow(i, NMRCalculation.MODE_CALC_NOE);
   }
 
-  boolean checkNoe(int[] countPlusIndices) {
-    if (countPlusIndices.length == 3 && countPlusIndices[1] < natomsPerModel) {
-      org.jmol.modelset.Atom ja = viewer.getAtomAt(countPlusIndices[1]);
-      org.jmol.modelset.Atom jb = viewer.getAtomAt(countPlusIndices[2]);
-      if ((ja.getElementSymbol()).equals("H")
-          && (jb.getElementSymbol()).equals("H")) {
-        return true;
-      }
-    }
-    return false;
+  boolean checkNoe(int i) {
+    return (nmrPanel.getViewerMeasurement(i, NMRCalculation.MODE_CALC_NOE) != null); 
+                   
+    
+//    
+//                   int[] countPlusIndices = 
+//    
+//    if (countPlusIndices[0] == 2 && countPlusIndices[1] < natomsPerModel) {
+//      org.jmol.modelset.Atom ja = viewer.getAtomAt(countPlusIndices[1]);
+//      org.jmol.modelset.Atom jb = viewer.getAtomAt(countPlusIndices[2]);
+//      if ((ja.getElementSymbol()).equals("H") 
+//          && (jb.getElementSymbol()).equals("H")) {
+//        return true;
+//      }
+//    }
+//    return false;
   }
 
   /**
@@ -607,11 +594,11 @@ public class NoeTable extends JTabbedPane {
 
   /* This should only be called once the molecule data has been read in */
   public void addMol() {
-    calcProps = nmrPanel.getDistanceJMolecule(null, labelArray);
-    calcProps.setCorrelationTime(tau);
-    calcProps.setMixingTime(tMix);
-    calcProps.setNMRfreq(freq);
-    calcProps.setCutoff(cutoff);
+    calcProps = nmrPanel.getDistanceJMolecule(null, labelArray, true);
+    calcProps.setCorrelationTimeTauPS(tau);
+    calcProps.setMixingTimeSec(tMix);
+    calcProps.setNMRfreqMHz(freq);
+    calcProps.setCutoffAng(cutoff);
     calcProps.setRhoStar(rhoStar);
     calcProps.setNoesy(noesy);
     calcProps.calcNOEs();

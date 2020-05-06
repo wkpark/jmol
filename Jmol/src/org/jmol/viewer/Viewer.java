@@ -1699,6 +1699,8 @@ public class Viewer extends JmolViewer implements AtomDataServer,
                                   SB sOptions, int tokType, String filecat) {
     if (htParams == null)
       htParams = setLoadParameters(null, isAppend);
+    if (tokType != T.nada)
+      htParams.put("dataType", T.nameOf(tokType));
     if (filecat != " ")
       htParams.put("concatenate", Boolean.TRUE);
     Object atomSetCollection;

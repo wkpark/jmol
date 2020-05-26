@@ -25,13 +25,7 @@ package org.jmol.modelset;
 
 import java.util.Map;
 
-import javajs.util.A4;
-import javajs.util.Lst;
-import javajs.util.Measure;
-import javajs.util.P3;
-import javajs.util.PT;
-import javajs.util.SB;
-
+import org.jmol.api.JmolDataManager;
 import org.jmol.atomdata.RadiusData;
 import org.jmol.atomdata.RadiusData.EnumType;
 import org.jmol.c.VDW;
@@ -40,6 +34,13 @@ import org.jmol.util.Escape;
 import org.jmol.util.Point3fi;
 import org.jmol.viewer.JC;
 import org.jmol.viewer.Viewer;
+
+import javajs.util.A4;
+import javajs.util.Lst;
+import javajs.util.Measure;
+import javajs.util.P3;
+import javajs.util.PT;
+import javajs.util.SB;
 
 public class Measurement {
 
@@ -67,6 +68,9 @@ public class Measurement {
   public float value;
   
   public String strFormat;
+  public String property;
+  public String units;
+  
   public Text text;
 
   private Viewer vwr;
@@ -79,6 +83,8 @@ public class Measurement {
   public A4 renderAxis;
   public P3 renderArc;
   private String newUnits;
+  public float fixedValue = Float.NaN;
+  private boolean isPending;
   
   public boolean isTainted() {
     return (tainted && !(tainted = false));
@@ -98,6 +104,11 @@ public class Measurement {
       mad = m.mad;
       thisID = m.thisID;
       text = m.text;
+      property = m.property;
+      units = m.units;
+      if (property == null && "+hz".equals(units)) {
+        property = "property_J";
+      }
       if (thisID != null && text != null)
         labelColix = text.colix;
     }
@@ -109,7 +120,8 @@ public class Measurement {
       System.arraycopy(indices, 0, countPlusIndices, 0, count + 1);
       isTrajectory = modelSet.isTrajectoryMeasurement(countPlusIndices);
     }
-    this.value = (Float.isNaN(value) || isTrajectory ? getMeasurement(null) : value);
+    isPending = Float.isNaN(value);
+    this.value = (isPending || isTrajectory ? getMeasurement(null) : value);
     formatMeasurement(null);
     return this;
   }
@@ -151,7 +163,12 @@ public class Measurement {
     return strMeasurement;
   }
 
-  public String getStringUsing(Viewer vwr, String strFormat, String units) {
+  @Override
+  public String toString() {
+    return getString();
+  }
+  
+  String getStringUsing(Viewer vwr, String strFormat, String units) {
     this.vwr = vwr;
     value = getMeasurement(null);
     formatMeasurementAs(strFormat, units, true);
@@ -221,20 +238,32 @@ public class Measurement {
       formatMeasurement(null);
   }
 
+  /**
+   * 
+   * @param units from MEASURE or measure()
+   * @return
+   */
   private String formatDistance(String units) {
     String label = getLabelString();
     if (label == null)
       return "";
+    int pt = strFormat.indexOf("//");
     if (units == null) {
-      int pt = strFormat.indexOf("//");
-      units = (pt >= 0 ? strFormat.substring(pt + 2) : null);
+      units = this.units;
       if (units == null) {
-        units = vwr.g.measureDistanceUnits;
-        strFormat += "//" + units;
-      }
+        if (pt >= 0) {
+        units = strFormat.substring(pt + 2);
+        strFormat = strFormat.substring(0, pt);
+        } else {
+            units = (property == null ? vwr.g.measureDistanceUnits : "");
+        }
+      } 
+    } else if (pt >= 0){
+      strFormat = strFormat.substring(0, pt);
     }
+    strFormat += "//" + units;
     units = fixUnits(units);
-    int pt = label.indexOf("//");
+    pt = label.indexOf("//");
     if (pt >= 0) {
       label = label.substring(0, pt);
       if (label.length() == 0)
@@ -256,14 +285,28 @@ public class Measurement {
     return units;
   }
 
+  /**
+   * 
+   * @param units  final units
+   * @param andRound
+   * @return  float value
+   */
   public float fixValue(String units, boolean andRound) {
+    checkJ(units);
+    if(units != null && units.startsWith("+")) {
+      if (!isPending)
+        value = Math.abs(value);
+      units = units.substring(1);
+    }
     newUnits = units;
     if (count != 2)
       return value;
     float dist = value;
+    if (units == null && property != null)
+      units = "";
     if (units != null) {
       boolean isPercent = units.equals("%");
-      if (isPercent || units.endsWith("hz")) {
+      if (property == null && (isPercent || units.endsWith("hz"))) {
         int i1 = getAtomIndex(1);
         int i2 = getAtomIndex(2);
         if (i1 >= 0 && i2 >= 0) {
@@ -294,6 +337,8 @@ public class Measurement {
             units = "pm";
         }
       }
+      if (Float.isNaN(dist))
+        return Float.NaN;
       if (units.equals("hz"))
         return (andRound ? Math.round(dist * 10) / 10f : dist);
       if (units.equals("noe"))
@@ -309,6 +354,17 @@ public class Measurement {
         return (andRound ? Math.round(dist / 10) / 100f : dist / 1000);
     }
     return (andRound ? Math.round(dist * 100) / 100f : dist);
+  }
+
+  private void checkJ(String units) {
+    if (property != null || units != null || this.units != null)
+      return;
+//    if (units == null && (units = this.units) == null)
+      units = vwr.g.measureDistanceUnits;
+    if ("+hz".equals(units)) {
+      property = "property_J";
+      this.units = units;
+    }
   }
 
   public final static int NMR_NOT = 0;
@@ -389,7 +445,34 @@ public class Measurement {
     return sameAsIJ(countPlusIndices, pts, i, j);
   }
 
+  
+  public float getPropMeasurement(Point3fi[] pts) {
+    if (countPlusIndices == null || count != 2)
+      return Float.NaN;
+    for (int i = count; --i >= 0;)
+      if (countPlusIndices[i + 1] < 0) {
+        return Float.NaN;
+      }
+    try {
+     Atom ptA = (Atom) (pts == null ? getAtom(1) : pts[0]);
+     Atom ptB = (Atom) (pts == null ? getAtom(2) : pts[1]);
+    float[][] props = (float[][]) vwr.getDataObj(property, null,
+        JmolDataManager.DATA_TYPE_AFF);
+    int ia = ptA.i;
+    int ib = ptB.i;
+    return (props == null || ib >= props.length || ia >= props.length ? Float.NaN : props[ia][ib]);
+    } catch (Throwable t) {
+      return Float.NaN;
+    }
+  }
+
+
   public float getMeasurement(Point3fi[] pts) {
+    checkJ(null);
+    if (!Float.isNaN(fixedValue))
+      return fixedValue;
+    if (property != null)
+      return getPropMeasurement(pts);
     if (countPlusIndices == null)
       return Float.NaN;
     if (count < 2)
@@ -469,7 +552,7 @@ public class Measurement {
   public String getInfoAsString(String units) {
     float f = fixValue(units, true);
     SB sb = new SB();
-    sb.append(count == 2 ? (type == null ? "distance" : type) : count == 3 ? "angle" : "dihedral");
+    sb.append(count == 2 ? (property != null ? property : type == null ? "distance" : type) : count == 3 ? "angle" : "dihedral");
     sb.append(" \t").appendF(f);
     sb.append(" \t").append(PT.esc(strMeasurement));
     for (int i = 1; i <= count; i++)
@@ -516,6 +599,12 @@ public class Measurement {
     String key = (n1.compareTo(n2) < 0 ? n1 + n2 : n2 + n1);
     Integer min = htMin.get(key);
     return (min != null && d == min.intValue());
+  }
+
+  public static boolean isUnits(String s) {
+    return (PT.isOneOf((s.startsWith("+") ? s.substring(1) : s).toLowerCase(),
+      ";nm;nanometers;pm;picometers;angstroms;angstroms;ang;\u00C5;au;vanderwaals;vdw;%;noe;")
+      || s.indexOf(" ") < 0 && s.endsWith("hz"));
   }
 
 }

@@ -1667,6 +1667,30 @@ public class SV extends T implements JSONEncodable {
     return list;
   }
 
+  public static int getArrayDepth(T x) {
+    int n = 0;
+    Lst<SV> sv;
+    while (x.tok == varray && (sv = ((SV) x).getList()).size() > 0) {
+      n++;
+      x = sv.get(0);
+    }
+    return n;
+  }
+  
+  public static float[][] fflistValue(T x, int nMin) {
+    if (x.tok != varray)
+      return new float[][] { new float[] {fValue(x)} };
+    Lst<SV> sv = ((SV) x).getList();
+    int svlen = sv.size();
+    float[][] list;
+    list = AU.newFloat2(svlen);
+    if (nMin == 0)
+      nMin = list.length;
+    for (int i = list.length; --i >= 0;)
+      list[i] = flistValue(i >= svlen ? null : sv.get(i), 0);
+    return list;
+  }
+  
   public static float[] flistValue(T x, int nMin) {
     if (x.tok != varray)
       return new float[] { fValue(x) };

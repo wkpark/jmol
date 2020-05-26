@@ -953,6 +953,9 @@ public class StateCreator extends JmolStateCreator {
     app(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++) {
       Measurement m = mList.get(i);
+      boolean isProperty = (m.property != null);
+      if (isProperty && Float.isNaN(m.value))
+        continue;
       int count = m.count;
       SB sb = new SB().append("measure");
       if (m.thisID != null)
@@ -975,10 +978,12 @@ public class StateCreator extends JmolStateCreator {
         addTickInfo(sb, tickInfo, true);
       for (int j = 1; j <= count; j++)
         sb.append(" ").append(m.getLabel(j, true, true));
-      sb.append("; # " + shape.getInfoAsString(i));
+      if (isProperty)
+        sb.append(" " + m.property + " value " + (Float.isNaN(m.value) ? 0f : m.value))
+        .append(" " + PT.esc(m.getString()));
+      //sb.append("; # " + shape.getInfoAsString(i));
       app(commands, sb.toString());
     }
-    app(commands, "select *; set measures " + vwr.g.measureDistanceUnits);
     app(commands, Shape.getFontCommand("measures", font3d));
     int nHidden = 0;
     Map<String, BS> temp = new Hashtable<String, BS>();
@@ -992,8 +997,7 @@ public class StateCreator extends JmolStateCreator {
       if (shape.bsColixSet != null && shape.bsColixSet.get(i))
         BSUtil.setMapBitSet(temp, i, i, Shape.getColorCommandUnk("measure",
             m.colix, shape.translucentAllowed));
-      if (m.strFormat != null)
-        BSUtil.setMapBitSet(temp, i, i, "measure " + PT.esc(m.strFormat));
+        
     }
     if (nHidden > 0)
       if (nHidden == measurementCount)

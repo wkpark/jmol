@@ -7995,8 +7995,10 @@ public class ScriptEval extends ScriptExpr {
     bs = (isSelected ? vwr.bsA()
         : iToken + 1 < slen ? atomExpressionAt(++iToken) : null);
     checkLast(iToken);
-    if (!chk)
+    if (!chk) {
       vwr.translate(xyz, amount, type, bs);
+      refresh(false);
+    }
   }
 
   private void cmdUnbind() throws ScriptException {

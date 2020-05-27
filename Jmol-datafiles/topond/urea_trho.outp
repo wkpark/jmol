@@ -1,0 +1,1757 @@
+executable used: /home/casassa/SVN_DEV1143/bin/Linux-ifort_openmpi_i64_clut/std
+output data in /home/casassa/SVN_DEV1143/test/Topond/urea_trho.outp
+Pproperties executable in /home/casassa/SVN_DEV1143/bin/Linux-ifort_openmpi_i64_clut/std
+input data in /home/casassa/SVN_DEV1143/test/Topond/urea_trho.d3
+creating temporary directories /data/casassa/807011 on each node
+copying Pproperties executable on each node
+copying input file on each node
+scf guess from /home/casassa/SVN_DEV1143/test/Topond/urea.f9
+TOPO
+TRHO
+-1
+2,0,1,0,20,8,8.,8.
+END
+Tue Oct  9 11:44:26 CEST 2018
+ PROCESS            1  OF            8  WORKING
+ PROCESS            2  OF            8  WORKING
+ PROCESS            6  OF            8  WORKING
+ PROCESS            4  OF            8  WORKING
+ PROCESS            7  OF            8  WORKING
+ PROCESS            0  OF            8  WORKING
+ PROCESS            5  OF            8  WORKING
+ PROCESS            3  OF            8  WORKING
+
+         
+ *******************************************************************************
+ *                                                                             *
+ *                               CRYSTAL17                                     *
+ *                      public : 1.0.1 - Feb 1st, 2017                         *
+ *                       HTTP://WWW.CRYSTAL.UNITO.IT                           *
+ *                                                                             *
+ *                              MAIN AUTHORS                                   *
+ *                                                                             *
+ *  R. DOVESI(1,11), V.R. SAUNDERS(2), C. ROETTI(1,11), R. ORLANDO(1,11),      *
+ *  C.M. ZICOVICH-WILSON(1,3), F. PASCALE(4), B. CIVALLERI(1,11),              *
+ *  K. DOLL(5), N.M. HARRISON(2,6), I.J. BUSH(7), Ph. D'ARCO(8),               *
+ *  M. LLUNELL(9), M. CAUSA'(10), Y. NOEL(8), L. MASCHIO(1,11), A. ERBA(1,11)  *
+ *  M. RE'RAT(14), S. CASASSA(1,11)                                            *
+ *                                                                             *
+ *        CONTRIBUTIONS TO THE CODE HAVE ALSO BEEN GIVEN BY                    *
+ *                                                                             *
+ *  M. FERRABONE(1,11), M. DE LA PIERRE(1,11), M. FERRERO(1,11),               *
+ *  J. BAIMA(1,11), E. ALBANESE(1,11), M.F. PEINTINGER(12), R. BAST(13),       *
+ *  B. KIRTMAN(15), V. LACIVITA(1,11), R. DEMICHELIS(1,16)                     *
+ *  G. BRANDEBURG(17), S. SALUSTRO(1,11), G. SANSONE(1,11)                     *
+ *  M.T. RUGGIERO(18)                                                          *
+ *                                                                             *
+ * (1) THEORETICAL CHEMISTRY GROUP - UNIVERSITA' DI TORINO - TORINO (ITALY)    *
+
+ * (2) COMPUTATIONAL SCIENCE & ENGINEERING DEPARTMENT - STFC DARESBURY (UK)    *
+ * (3) UNIVERSIDAD AUTONOMA DEL ESTADO DE MORELOS - CUERNAVACA (MEXICO)        *
+ * (4) UNIVERSITE' DE LORRAINE - NANCY (FRANCE)                                *
+ * (5) UNIVERSITAET STUTTGART- STUTTGART (GERMANY)                             *
+ * (6) IMPERIAL COLLEGE - LONDON (UK)                                          *
+ * (7) OXFORD E-RESEARCH CENTRE - OXFORD (UK)                                  *
+ * (8) UPMC - SORBONNE UNIVERSITES - PARIS (FRANCE)                            *
+ * (9) UNIVERSIDAD DE BARCELONA - BARCELONA (SPAIN)                            *
+ *(10) UNIVERSITA' DI NAPOLI "FEDERICO II" - NAPOLI (ITALY)                    *
+ *(11) NIS - NANOSTRUCTURED INTERFACES AND SURFACES - TORINO (ITALY)           *
+ *(12) MPI FUER CHEMISCHE ENERGIEKONVERSION - MUELHEIM AN DER RUHR (GERMANY)   *
+ *(13) UNIVERSITY OF TROMSO - TROMSO (NORWAY)                                  *
+ *(14) UNIVERSITE' DE PAU ET DES PAYS DE L'ADOUR - PAU (FRANCE)                *
+ *(15) UNIVERSITY OF CALIFORNIA SANTA BARBARA - SANTA BARBARA (USA)            *
+ *(16) CURTIN UNIVERSITY - PERTH (AUSTRALIA)                                   *
+ *(17) UNIVERSITY COLLEGE LONDON - LONDON (UK)                                 *
+ *(18) CAMBRIDGE UNIVERSITY - CAMBRIDGE (UK)                                   *
+ *                                                                             *
+ *******************************************************************************
+ EEEEEEEEEE STARTING  DATE 09 10 2018 TIME 11:44:28.0
+
+ *******************************************************************************
+ TEST12 - UREA BULK BASE 6-21 + POLARIZATION                                     
+ CRYSTAL - PROPERTIES - TYPE OF CALCULATION :  RESTRICTED CLOSED SHELL
+ *******************************************************************************
+ HARTREE-FOCK HAMILTONIAN
+
+ DIRECT LATTICE VECTOR COMPONENTS (ANGSTROM)
+         5.56500    0.00000    0.00000
+         0.00000    5.56500    0.00000
+         0.00000    0.00000    4.68400
+
+ LATTICE PARAMETERS  (ANGSTROM AND DEGREES) - PRIMITIVE CELL
+       A          B          C         ALPHA      BETA     GAMMA        VOLUME
+    5.56500    5.56500    4.68400     90.0000   90.0000   90.0000     145.05985
+ *******************************************************************************
+ N. OF ATOMS PER CELL        16 COULOMB OVERLAP TOL          (T1) 10**   -6
+ NUMBER OF SHELLS            56 COULOMB PENETRATION TOL      (T2) 10**   -6
+ NUMBER OF AO               152 EXCHANGE OVERLAP TOL         (T3) 10**   -6
+ N. OF ELECTRONS PER CELL    64 EXCHANGE PSEUDO OVP (F(G))   (T4) 10**   -6
+ CORE ELECTRONS PER CELL     16 EXCHANGE PSEUDO OVP (P(G))   (T5) 10**  -12
+ N. OF SYMMETRY OPERATORS     8 POLE ORDER IN MONO ZONE                   4
+ *******************************************************************************
+   ATOM N.AT.  SHELL    X(A)      Y(A)      Z(A)      EXAD       N.ELECT.
+ *******************************************************************************
+    1    6 C     4     0.000    -2.783     1.527   8.000E-01       4.804
+    2    8 O     4     0.000    -2.783     2.788   8.000E-01       8.780
+    3    7 N     4     0.812    -1.971     0.827   8.000E-01       7.749
+    4    7 N     4    -0.812    -3.594     0.827   8.000E-01       7.749
+    5    1 H     3     0.802    -1.981    -0.178   1.100E+00       0.729
+    6    1 H     3     1.433    -1.350     1.324   1.100E+00       0.730
+    7    1 H     3    -0.802    -3.584    -0.178   1.100E+00       0.729
+    8    1 H     3    -1.433    -4.215     1.324   1.100E+00       0.730
+    9    6 C     4    -2.783     0.000    -1.527   8.000E-01       4.804
+   10    8 O     4    -2.783     0.000    -2.788   8.000E-01       8.780
+   11    7 N     4    -1.971    -0.812    -0.827   8.000E-01       7.749
+   12    7 N     4    -3.594     0.812    -0.827   8.000E-01       7.749
+   13    1 H     3    -1.981    -0.802     0.178   1.100E+00       0.729
+   14    1 H     3    -1.350    -1.433    -1.324   1.100E+00       0.730
+   15    1 H     3    -3.584     0.802     0.178   1.100E+00       0.729
+   16    1 H     3    -4.215     1.433    -1.324   1.100E+00       0.730
+ *******************************************************************************
+ DE(K)                   0.000E+00  ENERGY LEVEL SHIFTING        0.00000
+ TOTAL ENERGY -4.4768124599318E+02  CONVERGENCE ON ENER       -6.812E-08
+ KIN. ENERGY   4.4702069660941E+02  VIR. COEFF.           9.99261710E-01
+ N. OF SCF CYCLES                9  FERMI ENERGY              -0.384E+00
+ WEIGHT OF F(I) IN F(I+1)      30
+ SHRINK. FACT.(MONKH.)     2  2  2  SHRINKING FACTOR(GILAT NET)        2
+ NUMBER OF K POINTS IN THE IBZ   6  CELL VOLUME (A.U.)        978.912403
+ *******************************************************************************
+
+ GCALCO - MAX INDICES DIRECT LATTICE VECTOR    14    14    16
+ NO.OF VECTORS CREATED 6999 STARS  525 RMAX   117.81283 BOHR
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT gordsh1     TELAPSE        1.16 TCPU        0.14
+
+ MATRIX SIZE: P(G)  108364, F(G)   18098, P(G) IRR   10907, F(G) IRR    4245
+ MAX G-VECTOR INDEX FOR 1- AND 2-ELECTRON INTEGRALS 113
+
+
+ CAPPA:IS1  2;IS2  2;IS3  2; K PTS MONK NET   6; SYMMOPS:K SPACE  16;G SPACE   8
+
+ *******************************************************************************
+ *                                                                             *
+ *                              T O P O N D  2 0 1 3                           *
+ *                                                                             *
+ *           AN ELECTRON DENSITY TOPOLOGICAL ANALYSIS PROGRAM FOR              *
+ *                 SYSTEMS PERIODIC IN N (N=0-3) DIMENSIONS                    *
+ *                                                                             *
+ *               USER MANUAL BY CARLO GATTI AND SILVIA CASASSA                 *
+ *                                                                             *
+ *            CNR-ISTM, ISTITUTO DI SCIENZE E TECNOLOGIE MOLECOLARI            *
+ *                   VIA GOLGI 19  - I-20133 MILANO - ITALIA                   *
+ *                     E-MAIL: c.gatti@istm.cnr.it                             *
+ *                                                                             *
+ *******************************************************************************
+
+  TOPOND PARAMETER 
+
+  LIM016 [INF24]        =       1000
+  LIM015 [INF20]        =         56
+  LIM035 [LIM016*INF5]  =     525000
+  NTOMAX [LIM016*INF5]  =     525000
+  INF79  [INF79]        =       6999
+  MAXGSTAR [INF2*INF5]  =        384
+
+ *******************************************************************************
+
+CRYSTAL INFORMATION ON THE REFERENCE SYSTEM:
+
+ DIRECT LATTICE VECTOR COMPONENTS (BOHR)
+        10.51633    0.00000    0.00000
+         0.00000   10.51633    0.00000
+         0.00000    0.00000    8.85148
+
+ LATTICE PARAMETERS  (BOHR AND DEGREES) - PRIMITIVE CELL
+        A           B           C        ALPHA        BETA       GAMMA       VOLUME
+    10.51633    10.51633     8.85148    90.00000    90.00000    90.00000   978.91240
+ *******************************************************************************
+ N. OF ATOMS PER CELL       16  COULOMB OVERLAP TOL         (T1) 10** -6
+ NUMBER OF SHELLS           56  COULOMB PENETRATION TOL     (T2) 10** -6
+ NUMBER OF AO              152  EXCHANGE OVERLAP TOL        (T3) 10** -6
+ N. OF ELECTRONS PER CELL    64 EXCHANGE PSEUDO OVP (F(G))  (T4) 10** -6
+ CORE ELECTRONS PER CELL    16  EXCHANGE PSEUDO OVP (P(G))  (T5) 10**-12
+ N. OF SYMMETRY OPERATORS    8  POLE ORDER IN MONO ZONE                4
+ *******************************************************************************
+  ATOM  SHEL    X(AU)     Y(AU)     Z(AU)
+ *******************************************************************************
+    6 C    4     0.000    -5.258     2.886
+    8 O    4     0.000    -5.258     5.269
+    7 N    4     1.534    -3.724     1.563
+    7 N    4    -1.534    -6.792     1.563
+    1 H    3     1.515    -3.743    -0.336
+    1 H    3     2.708    -2.550     2.502
+    1 H    3    -1.515    -6.774    -0.336
+    1 H    3    -2.708    -7.966     2.502
+    6 C    4    -5.258     0.000    -2.886
+    8 O    4    -5.258     0.000    -5.269
+    7 N    4    -3.724    -1.534    -1.563
+    7 N    4    -6.792     1.534    -1.563
+    1 H    3    -3.743    -1.515     0.336
+    1 H    3    -2.550    -2.708    -2.502
+    1 H    3    -6.774     1.515     0.336
+    1 H    3    -7.966     2.708    -2.502
+ *******************************************************************************
+ DE(K)                  0.000E+00  CONVERGENCE ON EIGENVALUES   10**-17
+ WEIGHT OF F(I) IN F(I+1)     30%  CONVERGENCE ON ENERGY        10**- 7
+ TOTAL ENERGY     -4.47681246E+02  FERMI ENERGY              -3.844E-01
+ KIN. ENERGY       4.47020697E+02  VIR. COEFF.           9.99261710E-01
+ SHRINK. FACT.(MONKH.)    2  2  2  STARS FOR FOURIER EXP. OF E(K)     1
+ SHRINKING FACTOR (GILAT NET)   2  NUMBER OF K POINTS IN THE IBZ      6
+ CELL VOLUME (A.U.)         978.912N. OF SCF CYCLES                   9
+ ENERGY LEVEL SHIFTING    0.00000
+ *******************************************************************************
+ INFORMATION **** TOPAN **** IEXT.LT.2 FOR TOPOND INTERFACED TO CRYSTAL13
+
+ NEIGHBORS OF THE NON-EQUIVALENT ATOMS
+
+ N = NUMBER OF NEIGHBORS AT DISTANCE R
+    ATOM  N     R/ANG      R/AU   NEIGHBORS (ATOM LABELS AND CELL INDICES)
+
+   1 C    1     1.2614     2.3837   2 O    0 0 0
+   1 C    2     1.3447     2.5411   3 N    0 0 0   4 N    0 0 0
+   1 C    2     2.0367     3.8488   6 H    0 0 0   8 H    0 0 0
+   1 C    2     2.0477     3.8696   5 H    0 0 0   7 H    0 0 0
+   1 C    2     2.6461     5.0004  14 H    0 0 1  16 H    1-1 1
+   1 C    2     3.1089     5.8750  13 H    0 0 0  15 H    1-1 0
+   1 C    2     3.1876     6.0237   5 H    0 0 1   7 H    0 0 1
+   1 C    1     3.4226     6.4678   2 O    0 0-1
+
+   2 O    1     1.2614     2.3837   1 C    0 0 0
+   2 O    2     1.9922     3.7647  14 H    0 0 1  16 H    1-1 1
+   2 O    2     2.0582     3.8895   5 H    0 0 1   7 H    0 0 1
+   2 O    2     2.2726     4.2946   3 N    0 0 0   4 N    0 0 0
+   2 O    2     2.5002     4.7246   6 H    0 0 0   8 H    0 0 0
+   2 O    2     2.9550     5.5842   3 N    0 0 1   4 N    0 0 1
+   2 O    2     2.9846     5.6401  11 N    0 0 1  12 N    1-1 1
+   2 O    2     3.1758     6.0013   5 H    0 0 0   7 H    0 0 0
+
+   3 N    1     1.0053     1.8997   5 H    0 0 0
+   3 N    1     1.0092     1.9070   6 H    0 0 0
+   3 N    1     1.3447     2.5411   1 C    0 0 0
+   3 N    1     2.2726     4.2946   2 O    0 0 0
+   3 N    1     2.2965     4.3397   4 N    0 0 0
+   3 N    1     2.4939     4.7127   7 H    0 0 0
+   3 N    1     2.9550     5.5842   2 O    0 0-1
+   3 N    1     2.9846     5.6401  10 O    1 0 1
+
+   5 H    1     1.0053     1.8997   3 N    0 0 0
+   5 H    1     1.7473     3.3019   6 H    0 0 0
+   5 H    1     2.0477     3.8696   1 C    0 0 0
+   5 H    1     2.0582     3.8895   2 O    0 0-1
+   5 H    1     2.2682     4.2862   7 H    0 0 0
+   5 H    1     2.4939     4.7127   4 N    0 0 0
+   5 H    2     2.4984     4.7214  14 H    0 0 0  16 H    1-1 0
+   5 H    4     3.0427     5.7500  13 H    0 0 0  13 H    1 0 0  15 H    1-1 0
+                                   15 H    1 0 0
+
+   6 H    1     1.0092     1.9070   3 N    0 0 0
+   6 H    1     1.7473     3.3019   5 H    0 0 0
+   6 H    1     1.9922     3.7647  10 O    1 0 1
+   6 H    1     2.0367     3.8488   1 C    0 0 0
+   6 H    2     2.4984     4.7214  13 H    1 0 0  15 H    1 0 0
+   6 H    1     2.5002     4.7246   2 O    0 0 0
+   6 H    1     2.6461     5.0004   9 C    1 0 1
+   6 H    2     3.0966     5.8518  11 N    1 0 0  12 N    1 0 0
+
+ CLUSTERS AROUND EACH OF THE NON-EQUIVALENT ATOMS
+
+ NON-EQUIV. ATOM       1 C (N.      1 IN THE UNIT CELL), CLUSTER OF     14 ATOMS
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       2       0     0     0    8        0.000  -5.258   5.269          1.261
+     2       3       0     0     0    7        1.534  -3.724   1.563          1.345
+     3       4       0     0     0    7       -1.534  -6.792   1.563          1.345
+     4       6       0     0     0    1        2.708  -2.550   2.502          2.037
+     5       8       0     0     0    1       -2.708  -7.966   2.502          2.037
+     6       5       0     0     0    1        1.515  -3.743  -0.336          2.048
+     7       7       0     0     0    1       -1.515  -6.774  -0.336          2.048
+     8      14       0     0     1    1       -2.550  -2.708   6.349          2.646
+     9      16       1    -1     1    1        2.550  -7.808   6.349          2.646
+    10      13       0     0     0    1       -3.743  -1.515   0.336          3.109
+    11      15       1    -1     0    1        3.743  -9.001   0.336          3.109
+    12       5       0     0     1    1        1.515  -3.743   8.515          3.188
+    13       7       0     0     1    1       -1.515  -6.774   8.515          3.188
+    14       2       0     0    -1    8        0.000  -5.258  -3.582          3.423
+
+ NON-EQUIV. ATOM       2 O (N.      2 IN THE UNIT CELL), CLUSTER OF     15 ATOMS
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       1       0     0     0    6        0.000  -5.258   2.886          1.261
+     2      14       0     0     1    1       -2.550  -2.708   6.349          1.992
+     3      16       1    -1     1    1        2.550  -7.808   6.349          1.992
+     4       5       0     0     1    1        1.515  -3.743   8.515          2.058
+     5       7       0     0     1    1       -1.515  -6.774   8.515          2.058
+     6       3       0     0     0    7        1.534  -3.724   1.563          2.273
+     7       4       0     0     0    7       -1.534  -6.792   1.563          2.273
+     8       6       0     0     0    1        2.708  -2.550   2.502          2.500
+     9       8       0     0     0    1       -2.708  -7.966   2.502          2.500
+    10       3       0     0     1    7        1.534  -3.724  10.415          2.955
+    11       4       0     0     1    7       -1.534  -6.792  10.415          2.955
+    12      11       0     0     1    7       -3.724  -1.534   7.288          2.985
+    13      12       1    -1     1    7        3.724  -8.982   7.288          2.985
+    14       5       0     0     0    1        1.515  -3.743  -0.336          3.176
+    15       7       0     0     0    1       -1.515  -6.774  -0.336          3.176
+
+ NON-EQUIV. ATOM       3 N (N.      3 IN THE UNIT CELL), CLUSTER OF      8 ATOMS
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       5       0     0     0    1        1.515  -3.743  -0.336          1.005
+     2       6       0     0     0    1        2.708  -2.550   2.502          1.009
+     3       1       0     0     0    6        0.000  -5.258   2.886          1.345
+     4       2       0     0     0    8        0.000  -5.258   5.269          2.273
+     5       4       0     0     0    7       -1.534  -6.792   1.563          2.296
+     6       7       0     0     0    1       -1.515  -6.774  -0.336          2.494
+     7       2       0     0    -1    8        0.000  -5.258  -3.582          2.955
+     8      10       1     0     1    8        5.258   0.000   3.582          2.985
+
+ NON-EQUIV. ATOM       4 H (N.      5 IN THE UNIT CELL), CLUSTER OF     12 ATOMS
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       3       0     0     0    7        1.534  -3.724   1.563          1.005
+     2       6       0     0     0    1        2.708  -2.550   2.502          1.747
+     3       1       0     0     0    6        0.000  -5.258   2.886          2.048
+     4       2       0     0    -1    8        0.000  -5.258  -3.582          2.058
+     5       7       0     0     0    1       -1.515  -6.774  -0.336          2.268
+     6       4       0     0     0    7       -1.534  -6.792   1.563          2.494
+     7      14       0     0     0    1       -2.550  -2.708  -2.502          2.498
+     8      16       1    -1     0    1        2.550  -7.808  -2.502          2.498
+     9      13       0     0     0    1       -3.743  -1.515   0.336          3.043
+    10      13       1     0     0    1        6.774  -1.515   0.336          3.043
+    11      15       1     0     0    1        3.743   1.515   0.336          3.043
+    12      15       1    -1     0    1        3.743  -9.001   0.336          3.043
+
+ NON-EQUIV. ATOM       5 H (N.      6 IN THE UNIT CELL), CLUSTER OF     10 ATOMS
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       3       0     0     0    7        1.534  -3.724   1.563          1.009
+     2       5       0     0     0    1        1.515  -3.743  -0.336          1.747
+     3      10       1     0     1    8        5.258   0.000   3.582          1.992
+     4       1       0     0     0    6        0.000  -5.258   2.886          2.037
+     5      13       1     0     0    1        6.774  -1.515   0.336          2.498
+     6      15       1     0     0    1        3.743   1.515   0.336          2.498
+     7       2       0     0     0    8        0.000  -5.258   5.269          2.500
+     8       9       1     0     1    6        5.258   0.000   5.966          2.646
+     9      11       1     0     0    7        6.792  -1.534  -1.563          3.097
+    10      12       1     0     0    7        3.724   1.534  -1.563          3.097
+
+ *******************************************************************************
+         TOPOLOGICAL ANALYSIS OF RHO : UNIQUE ATOM PAIRS CONSIDERED
+ *******************************************************************************
+
+ NON EQUIV. ATOM       1  C 
+
+  NEW   SYM  OLD   CELL           COORD. (AU)         DISTANCE (ANG)
+      1    O        2        0     0     0      0.000  -5.258   5.269         1.261
+      2    N        3        0     0     0      1.534  -3.724   1.563         1.345
+      4    H        6        0     0     0      2.708  -2.550   2.502         2.037
+      6    H        5        0     0     0      1.515  -3.743  -0.336         2.048
+      8    H       14        0     0     1     -2.550  -2.708   6.349         2.646
+     10    H       13        0     0     0     -3.743  -1.515   0.336         3.109
+     12    H        5        0     0     1      1.515  -3.743   8.515         3.188
+     14    O        2        0     0    -1      0.000  -5.258  -3.582         3.423
+
+ NON EQUIV. ATOM       2  O 
+
+  NEW   SYM  OLD   CELL           COORD. (AU)         DISTANCE (ANG)
+      2    H       14        0     0     1     -2.550  -2.708   6.349         1.992
+      4    H        5        0     0     1      1.515  -3.743   8.515         2.058
+      6    N        3        0     0     0      1.534  -3.724   1.563         2.273
+      8    H        6        0     0     0      2.708  -2.550   2.502         2.500
+     10    N        3        0     0     1      1.534  -3.724  10.415         2.955
+     12    N       11        0     0     1     -3.724  -1.534   7.288         2.985
+     14    H        5        0     0     0      1.515  -3.743  -0.336         3.176
+
+ NON EQUIV. ATOM       3  N 
+
+  NEW   SYM  OLD   CELL           COORD. (AU)         DISTANCE (ANG)
+      1    H        5        0     0     0      1.515  -3.743  -0.336         1.005
+      2    H        6        0     0     0      2.708  -2.550   2.502         1.009
+      5    N        4        0     0     0     -1.534  -6.792   1.563         2.296
+      6    H        7        0     0     0     -1.515  -6.774  -0.336         2.494
+
+ NON EQUIV. ATOM       4  H 
+
+  NEW   SYM  OLD   CELL           COORD. (AU)         DISTANCE (ANG)
+      2    H        6        0     0     0      2.708  -2.550   2.502         1.747
+      5    H        7        0     0     0     -1.515  -6.774  -0.336         2.268
+      7    H       14        0     0     0     -2.550  -2.708  -2.502         2.498
+      9    H       13        0     0     0     -3.743  -1.515   0.336         3.043
+
+ NON EQUIV. ATOM       5  H 
+
+  NEW   SYM  OLD   CELL           COORD. (AU)         DISTANCE (ANG)
+      9    N       11        1     0     0      6.792  -1.534  -1.563         3.097
+
+
+ ************* T O P O L O G I C A L  A N A L I S Y S  O F  R H O *************
+
+
+ COMPUTATIONAL CONDITIONS :
+                           IAUTO                                     :    -1
+                           ALGORITHM FOR CP SEARCH                   :    EF
+                           DETERMINATION OF BOND PATH ATTRACTORS     :     T
+                           MAX.NUM. OF N.R. OR EIG. FOL. STEPS       :    20
+                           NEIGHBORS OF EACH NON-EQUIVALENT ATOM     :     8
+                           THRESHOLD ON INTERNUC. DISTANCES (ANG)    :   8.0
+                           PRINT N.RAPH OR E.FOL. OR PAR. EQ. SEARCH :     F
+                           TOTAL NUMBER OF PAIRS CONSIDERED          :    24
+
+
+ ********************
+ SEARCH OF (3,-3) CPS
+ ********************
+
+ CP N.      1
+ *********
+
+ CP TYPE                        :  (3,-3)
+ COORD(AU)  (X  Y  Z)           : -4.2081E-22 -5.2582E+00  2.8856E+00
+ COORD FRACT. CONV. CELL        : -4.0015E-23 -5.0000E-01  3.2600E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.1795E+02  6.7408E-12 -4.3488E+05
+ KINETIC ENERGY DENSITIES (G,K) :  3.0285E+00  1.0872E+05
+ VIRIAL DENSITY                 : -1.0873E+05
+ ELF(PAA)                       :  1.0000E+00
+ PEZLSD  CORR. FUNCT.           : -1.3481E+01
+ VWNLSD  CORR. FUNCT.           : -1.3516E+01
+ VBHLSD  CORR. FUNCT.           : -1.5283E+01
+ PWALSD  CORR. FUNCT.           : -1.3457E+01
+ CSAGGA  CORR. FUNCT.           :  7.5850E+00
+ VLEGGA  CORR. FUNCT.           : -2.3691E+01
+ P86GGA  CORR. FUNCT.           : -1.3481E+01
+ P91GGA  CORR. FUNCT.           : -1.3481E+01
+ PWAGGA  CORR. FUNCT.           : -1.3457E+01
+ BECGGA  CORR. FUNCT.           : -6.5711E+00
+ PBEGGA  CORR. FUNCT.           : -1.3457E+01
+ LYPGGA  CORR. FUNCT.           :  2.2987E+01
+ LDAXLSD EXCH. FUNCT.           : -4.2723E+02
+ VBHXLSD EXCH. FUNCT.           : -4.2722E+02
+ PBEXGGA EXCH. FUNCT.           : -4.2723E+02
+ BECXGGA EXCH. FUNCT.           : -4.2723E+02
+ PWAXGGA EXCH. FUNCT.           : -4.2723E+02
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -1.4496E+05 -1.4496E+05 -1.4496E+05
+ EIGENVECTORS                   : -7.0711E-01  0.0000E+00  7.0711E-01
+                                   7.0711E-01  1.8102E-16  7.0711E-01
+                                  -1.2800E-16  1.0000E+00 -1.2800E-16
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       1       0     0     0    6        0.000  -5.258   2.886          0.000
+     2       2       0     0     0    8        0.000  -5.258   5.269          1.261
+     3       3       0     0     0    7        1.534  -3.724   1.563          1.345
+     4       4       0     0     0    7       -1.534  -6.792   1.563          1.345
+     5       8       0     0     0    1       -2.708  -7.966   2.502          2.037
+     6       6       0     0     0    1        2.708  -2.550   2.502          2.037
+     7       5       0     0     0    1        1.515  -3.743  -0.336          2.048
+     8       7       0     0     0    1       -1.515  -6.774  -0.336          2.048
+
+ CP N.      2
+ *********
+
+ CP TYPE                        :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.9362E-21 -5.2582E+00  5.2693E+00
+ COORD FRACT. CONV. CELL        :  1.8411E-22 -5.0000E-01 -4.0470E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  2.9153E+02  2.3272E-10 -1.9267E+06
+ KINETIC ENERGY DENSITIES (G,K) :  3.0184E+01  4.8171E+05
+ VIRIAL DENSITY                 : -4.8174E+05
+ ELF(PAA)                       :  1.0000E+00
+ PEZLSD  CORR. FUNCT.           : -3.5919E+01
+ VWNLSD  CORR. FUNCT.           : -3.5940E+01
+ VBHLSD  CORR. FUNCT.           : -3.9978E+01
+ PWALSD  CORR. FUNCT.           : -3.5805E+01
+ CSAGGA  CORR. FUNCT.           :  1.8875E+01
+ VLEGGA  CORR. FUNCT.           : -5.9075E+01
+ P86GGA  CORR. FUNCT.           : -3.5919E+01
+ P91GGA  CORR. FUNCT.           : -3.5919E+01
+ PWAGGA  CORR. FUNCT.           : -3.5805E+01
+ BECGGA  CORR. FUNCT.           : -1.6686E+01
+ PBEGGA  CORR. FUNCT.           : -3.5805E+01
+ LYPGGA  CORR. FUNCT.           :  5.7282E+01
+ LDAXLSD EXCH. FUNCT.           : -1.4277E+03
+ VBHXLSD EXCH. FUNCT.           : -1.4276E+03
+ PBEXGGA EXCH. FUNCT.           : -1.4277E+03
+ BECXGGA EXCH. FUNCT.           : -1.4277E+03
+ PWAXGGA EXCH. FUNCT.           : -1.4277E+03
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -6.4225E+05 -6.4224E+05 -6.4224E+05
+ EIGENVECTORS                   :  0.0000E+00  7.0711E-01  7.0711E-01
+                                  -2.3603E-16 -7.0711E-01  7.0711E-01
+                                   1.0000E+00 -1.6690E-16  1.6690E-16
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       2       0     0     0    8        0.000  -5.258   5.269          0.000
+     2       1       0     0     0    6        0.000  -5.258   2.886          1.261
+     3      16       1    -1     1    1        2.550  -7.808   6.349          1.992
+     4      14       0     0     1    1       -2.550  -2.708   6.349          1.992
+     5       5       0     0     1    1        1.515  -3.743   8.515          2.058
+     6       7       0     0     1    1       -1.515  -6.774   8.515          2.058
+     7       4       0     0     0    7       -1.534  -6.792   1.563          2.273
+     8       3       0     0     0    7        1.534  -3.724   1.563          2.273
+
+ CP N.      3
+ *********
+
+ CP TYPE                        :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.5343E+00 -3.7238E+00  1.5632E+00
+ COORD FRACT. CONV. CELL        :  1.4590E-01 -3.5410E-01  1.7660E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.9130E+02  3.8243E-10 -9.6288E+05
+ KINETIC ENERGY DENSITIES (G,K) :  1.1388E+01  2.4073E+05
+ VIRIAL DENSITY                 : -2.4074E+05
+ ELF(PAA)                       :  1.0000E+00
+ PEZLSD  CORR. FUNCT.           : -2.2774E+01
+ VWNLSD  CORR. FUNCT.           : -2.2807E+01
+ VBHLSD  CORR. FUNCT.           : -2.5560E+01
+ PWALSD  CORR. FUNCT.           : -2.2715E+01
+ CSAGGA  CORR. FUNCT.           :  1.2352E+01
+ VLEGGA  CORR. FUNCT.           : -3.8618E+01
+ P86GGA  CORR. FUNCT.           : -2.2774E+01
+ P91GGA  CORR. FUNCT.           : -2.2774E+01
+ PWAGGA  CORR. FUNCT.           : -2.2715E+01
+ BECGGA  CORR. FUNCT.           : -1.0822E+01
+ PBEGGA  CORR. FUNCT.           : -2.2715E+01
+ LYPGGA  CORR. FUNCT.           :  3.7461E+01
+ LDAXLSD EXCH. FUNCT.           : -8.1411E+02
+ VBHXLSD EXCH. FUNCT.           : -8.1409E+02
+ PBEXGGA EXCH. FUNCT.           : -8.1411E+02
+ BECXGGA EXCH. FUNCT.           : -8.1411E+02
+ PWAXGGA EXCH. FUNCT.           : -8.1411E+02
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -3.2096E+05 -3.2096E+05 -3.2096E+05
+ EIGENVECTORS                   :  5.9713E-01 -3.7874E-01  7.0711E-01
+                                   5.9713E-01 -3.7874E-01 -7.0711E-01
+                                  -5.3561E-01 -8.4446E-01  9.2745E-14
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       3       0     0     0    7        1.534  -3.724   1.563          0.000
+     2       5       0     0     0    1        1.515  -3.743  -0.336          1.005
+     3       6       0     0     0    1        2.708  -2.550   2.502          1.009
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.345
+     5       2       0     0     0    8        0.000  -5.258   5.269          2.273
+     6       4       0     0     0    7       -1.534  -6.792   1.563          2.296
+     7       7       0     0     0    1       -1.515  -6.774  -0.336          2.494
+     8       2       0     0    -1    8        0.000  -5.258  -3.582          2.955
+
+ CP N.      4
+ *********
+
+ CP TYPE                        :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.5168E+00 -3.7414E+00 -1.6092E-01
+ COORD FRACT. CONV. CELL        :  1.4423E-01 -3.5577E-01 -1.8179E-02
+ PROPERTIES (RHO,GRHO,LAP)      :  3.6761E-01  8.0527E-10 -6.2415E+00
+ KINETIC ENERGY DENSITIES (G,K) :  2.3524E-02  1.5839E+00
+ VIRIAL DENSITY                 : -1.6074E+00
+ ELF(PAA)                       :  9.9812E-01
+ PEZLSD  CORR. FUNCT.           : -2.3075E-02
+ VWNLSD  CORR. FUNCT.           : -2.3315E-02
+ VBHLSD  CORR. FUNCT.           : -3.0143E-02
+ PWALSD  CORR. FUNCT.           : -2.3207E-02
+ CSAGGA  CORR. FUNCT.           : -7.6336E-03
+ VLEGGA  CORR. FUNCT.           : -6.1609E-02
+ P86GGA  CORR. FUNCT.           : -2.3075E-02
+ P91GGA  CORR. FUNCT.           : -2.3075E-02
+ PWAGGA  CORR. FUNCT.           : -2.3207E-02
+ BECGGA  CORR. FUNCT.           : -1.3354E-02
+ PBEGGA  CORR. FUNCT.           : -2.3207E-02
+ LYPGGA  CORR. FUNCT.           : -4.5184E-03
+ LDAXLSD EXCH. FUNCT.           : -1.9449E-01
+ VBHXLSD EXCH. FUNCT.           : -1.9448E-01
+ PBEXGGA EXCH. FUNCT.           : -1.9449E-01
+ BECXGGA EXCH. FUNCT.           : -1.9449E-01
+ PWAXGGA EXCH. FUNCT.           : -1.9449E-01
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -2.4984E+00 -2.4593E+00 -1.2839E+00
+ EIGENVECTORS                   : -7.0708E-01 -7.0711E-01  6.6415E-03
+                                  -7.0708E-01  7.0711E-01  6.6415E-03
+                                   9.3925E-03  1.6653E-16  9.9996E-01
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       5       0     0     0    1        1.515  -3.743  -0.336          0.093
+     2       3       0     0     0    7        1.534  -3.724   1.563          0.912
+     3       6       0     0     0    1        2.708  -2.550   2.502          1.668
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.972
+     5       2       0     0    -1    8        0.000  -5.258  -3.582          2.137
+     6       7       0     0     0    1       -1.515  -6.774  -0.336          2.271
+     7       4       0     0     0    7       -1.534  -6.792   1.563          2.459
+     8      16       1    -1     0    1        2.550  -7.808  -2.502          2.543
+
+ CP N.      5
+ *********
+
+ CP TYPE                        :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  2.5984E+00 -2.6597E+00  2.4164E+00
+ COORD FRACT. CONV. CELL        :  2.4708E-01 -2.5292E-01  2.7299E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  3.6193E-01  2.0027E-11 -6.1101E+00
+ KINETIC ENERGY DENSITIES (G,K) :  2.3783E-02  1.5513E+00
+ VIRIAL DENSITY                 : -1.5751E+00
+ ELF(PAA)                       :  9.9797E-01
+ PEZLSD  CORR. FUNCT.           : -2.2676E-02
+ VWNLSD  CORR. FUNCT.           : -2.2910E-02
+ VBHLSD  CORR. FUNCT.           : -2.9632E-02
+ PWALSD  CORR. FUNCT.           : -2.2804E-02
+ CSAGGA  CORR. FUNCT.           : -7.4949E-03
+ VLEGGA  CORR. FUNCT.           : -6.0596E-02
+ P86GGA  CORR. FUNCT.           : -2.2676E-02
+ P91GGA  CORR. FUNCT.           : -2.2676E-02
+ PWAGGA  CORR. FUNCT.           : -2.2804E-02
+ BECGGA  CORR. FUNCT.           : -1.3130E-02
+ PBEGGA  CORR. FUNCT.           : -2.2804E-02
+ LYPGGA  CORR. FUNCT.           : -4.4050E-03
+ LDAXLSD EXCH. FUNCT.           : -1.9049E-01
+ VBHXLSD EXCH. FUNCT.           : -1.9049E-01
+ PBEXGGA EXCH. FUNCT.           : -1.9049E-01
+ BECXGGA EXCH. FUNCT.           : -1.9049E-01
+ PWAXGGA EXCH. FUNCT.           : -1.9049E-01
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -2.4529E+00 -2.4141E+00 -1.2431E+00
+ EIGENVECTORS                   : -3.4404E-01  7.0711E-01  6.1777E-01
+                                  -3.4404E-01 -7.0711E-01  6.1777E-01
+                                   8.7366E-01  2.2204E-16  4.8654E-01
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       6       0     0     0    1        2.708  -2.550   2.502          0.094
+     2       3       0     0     0    7        1.534  -3.724   1.563          0.915
+     3       5       0     0     0    1        1.515  -3.743  -0.336          1.667
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.960
+     5      10       1     0     1    8        5.258   0.000   3.582          2.084
+     6       2       0     0     0    8        0.000  -5.258   5.269          2.462
+     7      15       1     0     0    1        3.743   1.515   0.336          2.542
+     8      13       1     0     0    1        6.774  -1.515   0.336          2.542
+
+
+ ********************
+ SEARCH OF (3,-1) CPS
+ ********************
+
+
+ *********** CP SEARCH AMONG ATOM PAIRS WITH NON-EQUIV. ATOM     1 C  ***********
+
+
+ CP N.      6
+ *********
+
+ CP TYPE                        :  (3,-1)
+ COORD(AU)  (X  Y  Z)           :  5.3834E-01 -4.7198E+00  2.4153E+00
+ COORD FRACT. CONV. CELL        :  5.1191E-02 -4.4881E-01  2.7287E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  3.4227E-01  7.0230E-17 -9.5220E-01
+ KINETIC ENERGY DENSITIES (G,K) :  2.4550E-01  4.8355E-01
+ VIRIAL DENSITY                 : -7.2906E-01
+ ELF(PAA)                       :  7.9323E-01
+ PEZLSD  CORR. FUNCT.           : -2.1301E-02
+ VWNLSD  CORR. FUNCT.           : -2.1513E-02
+ VBHLSD  CORR. FUNCT.           : -2.7869E-02
+ PWALSD  CORR. FUNCT.           : -2.1415E-02
+ CSAGGA  CORR. FUNCT.           : -1.2002E-02
+ VLEGGA  CORR. FUNCT.           : -5.7096E-02
+ P86GGA  CORR. FUNCT.           : -2.1301E-02
+ P91GGA  CORR. FUNCT.           : -2.1301E-02
+ PWAGGA  CORR. FUNCT.           : -2.1415E-02
+ BECGGA  CORR. FUNCT.           : -1.4997E-02
+ PBEGGA  CORR. FUNCT.           : -2.1415E-02
+ LYPGGA  CORR. FUNCT.           : -1.2482E-02
+ LDAXLSD EXCH. FUNCT.           : -1.7682E-01
+ VBHXLSD EXCH. FUNCT.           : -1.7682E-01
+ PBEXGGA EXCH. FUNCT.           : -1.7682E-01
+ BECXGGA EXCH. FUNCT.           : -1.7682E-01
+ PWAXGGA EXCH. FUNCT.           : -1.7682E-01
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -8.9258E-01 -7.8059E-01  7.2097E-01
+ EIGENVECTORS                   :  3.6903E-01  7.0711E-01  6.0317E-01
+                                   3.6903E-01 -7.0711E-01  6.0317E-01
+                                   8.5302E-01 -4.4409E-16 -5.2189E-01
+
+ ELLIPTICITY                    :  1.4347E-01
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       1       0     0     0    6        0.000  -5.258   2.886          0.474
+     2       3       0     0     0    7        1.534  -3.724   1.563          0.871
+     3       2       0     0     0    8        0.000  -5.258   5.269          1.563
+     4       4       0     0     0    7       -1.534  -6.792   1.563          1.615
+     5       6       0     0     0    1        2.708  -2.550   2.502          1.624
+     6       5       0     0     0    1        1.515  -3.743  -0.336          1.629
+     7       7       0     0     0    1       -1.515  -6.774  -0.336          2.117
+     8       8       0     0     0    1       -2.708  -7.966   2.502          2.430
+
+ ******************************
+ SEARCH OF BOND PATH ATTRACTORS
+ ******************************
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.5343E+00 -3.7238E+00  1.5632E+00
+ COORD FRACT. CONV. CELL        :  1.4590E-01 -3.5410E-01  1.7660E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.9130E+02  5.8936E-11 -9.6288E+05
+ TRAJECTORY LENGTH(ANG)         :  8.7116E-01
+ INTEGRATION STEPS              :      50
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       3       0     0     0    7        1.534  -3.724   1.563          0.000
+     2       5       0     0     0    1        1.515  -3.743  -0.336          1.005
+     3       6       0     0     0    1        2.708  -2.550   2.502          1.009
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.345
+
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           : -7.9264E-20 -5.2582E+00  2.8856E+00
+ COORD FRACT. CONV. CELL        : -7.5372E-21 -5.0000E-01  3.2600E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.1795E+02  6.7408E-12 -4.3488E+05
+ TRAJECTORY LENGTH(ANG)         :  4.7355E-01
+ INTEGRATION STEPS              :      45
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       1       0     0     0    6        0.000  -5.258   2.886          0.000
+     2       2       0     0     0    8        0.000  -5.258   5.269          1.261
+     3       3       0     0     0    7        1.534  -3.724   1.563          1.345
+     4       4       0     0     0    7       -1.534  -6.792   1.563          1.345
+
+
+ BPL (ANG) ; RAB ; (BPL/RAB)    :  1.3447E+00  1.3447E+00  1.0000E+00
+
+ CP N.      7
+ *********
+
+ CP TYPE                        :  (3,-1)
+ COORD(AU)  (X  Y  Z)           : -2.6486E+00 -4.1322E+00 -5.9518E-02
+ COORD FRACT. CONV. CELL        : -2.5185E-01 -3.9293E-01 -6.7241E-03
+ PROPERTIES (RHO,GRHO,LAP)      :  3.6447E-03  1.0735E-17  2.0720E-02
+ KINETIC ENERGY DENSITIES (G,K) :  4.0799E-03 -1.1000E-03
+ VIRIAL DENSITY                 : -2.9799E-03
+ ELF(PAA)                       :  3.6766E-03
+ PEZLSD  CORR. FUNCT.           : -1.1634E-04
+ VWNLSD  CORR. FUNCT.           : -1.1537E-04
+ VBHLSD  CORR. FUNCT.           : -1.7030E-04
+ PWALSD  CORR. FUNCT.           : -1.1567E-04
+ CSAGGA  CORR. FUNCT.           : -1.6256E-04
+ VLEGGA  CORR. FUNCT.           : -3.5751E-04
+ P86GGA  CORR. FUNCT.           : -1.1634E-04
+ P91GGA  CORR. FUNCT.           : -1.1634E-04
+ PWAGGA  CORR. FUNCT.           : -1.1567E-04
+ BECGGA  CORR. FUNCT.           : -5.1458E-04
+ PBEGGA  CORR. FUNCT.           : -1.1567E-04
+ LYPGGA  CORR. FUNCT.           : -1.5661E-04
+ LDAXLSD EXCH. FUNCT.           : -4.1426E-04
+ VBHXLSD EXCH. FUNCT.           : -4.1424E-04
+ PBEXGGA EXCH. FUNCT.           : -4.1426E-04
+ BECXGGA EXCH. FUNCT.           : -4.1426E-04
+ PWAXGGA EXCH. FUNCT.           : -4.1426E-04
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -2.8944E-03 -1.1049E-03  2.4719E-02
+ EIGENVECTORS                   :  9.1587E-01  2.1420E-01  3.3955E-01
+                                   4.0077E-01 -4.3798E-01 -8.0471E-01
+                                   2.3652E-02 -8.7309E-01  4.8698E-01
+
+ ELLIPTICITY                    :  1.6197E+00
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1      14       0     0     0    1       -2.550  -2.708  -2.502          1.497
+     2      13       0     0     0    1       -3.743  -1.515   0.336          1.515
+     3       7       0     0     0    1       -1.515  -6.774  -0.336          1.528
+     4      11       0     0     0    7       -3.724  -1.534  -1.563          1.687
+     5       4       0     0     0    7       -1.534  -6.792   1.563          1.751
+     6       1       0     0     0    6        0.000  -5.258   2.886          2.179
+     7       5       0     0     0    1        1.515  -3.743  -0.336          2.218
+     8       3       0     0     0    7        1.534  -3.724   1.563          2.384
+
+ ******************************
+ SEARCH OF BOND PATH ATTRACTORS
+ ******************************
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           : -1.5343E+00 -6.7925E+00  1.5632E+00
+ COORD FRACT. CONV. CELL        : -1.4590E-01  3.5410E-01  1.7660E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.9130E+02  8.6474E-11 -9.6288E+05
+ TRAJECTORY LENGTH(ANG)         :  1.7535E+00
+ INTEGRATION STEPS              :      63
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       4       0     0     0    7       -1.534  -6.792   1.563          0.000
+     2       7       0     0     0    1       -1.515  -6.774  -0.336          1.005
+     3       8       0     0     0    1       -2.708  -7.966   2.502          1.009
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.345
+
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           : -3.7238E+00 -1.5343E+00 -1.5632E+00
+ COORD FRACT. CONV. CELL        : -3.5410E-01 -1.4590E-01 -1.7660E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.9130E+02  5.8935E-11 -9.6288E+05
+ TRAJECTORY LENGTH(ANG)         :  1.6895E+00
+ INTEGRATION STEPS              :      61
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1      11       0     0     0    7       -3.724  -1.534  -1.563          0.000
+     2      13       0     0     0    1       -3.743  -1.515   0.336          1.005
+     3      14       0     0     0    1       -2.550  -2.708  -2.502          1.009
+     4       9       0     0     0    6       -5.258   0.000  -2.886          1.345
+
+
+ BPL (ANG) ; RAB ; (BPL/RAB)    :  3.4431E+00  3.4383E+00  1.0014E+00
+
+ CP N.      8
+ *********
+
+ CP TYPE                        :  (3,-1)
+ COORD(AU)  (X  Y  Z)           :  9.2681E-01 -4.3314E+00  7.3730E+00
+ COORD FRACT. CONV. CELL        :  8.8131E-02 -4.1187E-01 -1.6703E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.9191E-02  6.6622E-17  8.0203E-02
+ KINETIC ENERGY DENSITIES (G,K) :  1.9687E-02 -3.6336E-04
+ VIRIAL DENSITY                 : -1.9324E-02
+ ELF(PAA)                       :  3.8690E-02
+ PEZLSD  CORR. FUNCT.           : -8.0908E-04
+ VWNLSD  CORR. FUNCT.           : -8.0261E-04
+ VBHLSD  CORR. FUNCT.           : -1.1296E-03
+ PWALSD  CORR. FUNCT.           : -8.0285E-04
+ CSAGGA  CORR. FUNCT.           : -8.6243E-04
+ VLEGGA  CORR. FUNCT.           : -2.4276E-03
+ P86GGA  CORR. FUNCT.           : -8.0908E-04
+ P91GGA  CORR. FUNCT.           : -8.0908E-04
+ PWAGGA  CORR. FUNCT.           : -8.0285E-04
+ BECGGA  CORR. FUNCT.           : -1.4458E-03
+ PBEGGA  CORR. FUNCT.           : -8.0285E-04
+ LYPGGA  CORR. FUNCT.           : -8.2708E-04
+ LDAXLSD EXCH. FUNCT.           : -3.7947E-03
+ VBHXLSD EXCH. FUNCT.           : -3.7945E-03
+ PBEXGGA EXCH. FUNCT.           : -3.7947E-03
+ BECXGGA EXCH. FUNCT.           : -3.7947E-03
+ PWAXGGA EXCH. FUNCT.           : -3.7947E-03
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -2.5369E-02 -2.4534E-02  1.3011E-01
+ EIGENVECTORS                   : -6.2329E-01  7.0711E-01  3.3393E-01
+                                  -6.2329E-01 -7.0711E-01  3.3393E-01
+                                   4.7224E-01 -1.8208E-14  8.8147E-01
+
+ ELLIPTICITY                    :  3.4018E-02
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       5       0     0     1    1        1.515  -3.743   8.515          0.748
+     2       2       0     0     0    8        0.000  -5.258   5.269          1.312
+     3       3       0     0     1    7        1.534  -3.724  10.415          1.673
+     4       7       0     0     1    1       -1.515  -6.774   8.515          1.925
+     5      14       0     0     1    1       -2.550  -2.708   6.349          2.102
+     6      16       1    -1     1    1        2.550  -7.808   6.349          2.102
+     7       1       0     0     1    6        0.000  -5.258  11.737          2.411
+     8       4       0     0     1    7       -1.534  -6.792  10.415          2.446
+
+ ******************************
+ SEARCH OF BOND PATH ATTRACTORS
+ ******************************
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.5168E+00 -3.7414E+00  8.6906E+00
+ COORD FRACT. CONV. CELL        :  1.4423E-01 -3.5577E-01 -1.8179E-02
+ PROPERTIES (RHO,GRHO,LAP)      :  3.6761E-01  1.6122E-12 -6.2415E+00
+ TRAJECTORY LENGTH(ANG)         :  8.2941E-01
+ INTEGRATION STEPS              :      30
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       5       0     0     1    1        1.515  -3.743   8.515          0.093
+     2       3       0     0     1    7        1.534  -3.724  10.415          0.912
+     3       6       0     0     1    1        2.708  -2.550  11.354          1.668
+     4       1       0     0     1    6        0.000  -5.258  11.737          1.972
+
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  5.6370E-18 -5.2582E+00  5.2693E+00
+ COORD FRACT. CONV. CELL        :  5.3602E-19 -5.0000E-01 -4.0470E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  2.9153E+02  2.3275E-10 -1.9267E+06
+ TRAJECTORY LENGTH(ANG)         :  1.3149E+00
+ INTEGRATION STEPS              :      54
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       2       0     0     0    8        0.000  -5.258   5.269          0.000
+     2       1       0     0     0    6        0.000  -5.258   2.886          1.261
+     3      16       1    -1     1    1        2.550  -7.808   6.349          1.992
+     4      14       0     0     1    1       -2.550  -2.708   6.349          1.992
+
+
+ BPL (ANG) ; RAB ; (BPL/RAB)    :  2.1443E+00  2.0582E+00  1.0418E+00
+
+
+ *********** CP SEARCH AMONG ATOM PAIRS WITH NON-EQUIV. ATOM     2 O  ***********
+
+
+ CP N.      9
+ *********
+
+ CP TYPE                        :  (3,-1)
+ COORD(AU)  (X  Y  Z)           : -1.6680E+00 -3.5901E+00  5.9977E+00
+ COORD FRACT. CONV. CELL        : -1.5861E-01 -3.4139E-01 -3.2241E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  2.3071E-02  1.2635E-17  8.1439E-02
+ KINETIC ENERGY DENSITIES (G,K) :  2.1395E-02  1.0355E-03
+ VIRIAL DENSITY                 : -2.2431E-02
+ ELF(PAA)                       :  5.9231E-02
+ PEZLSD  CORR. FUNCT.           : -1.0007E-03
+ VWNLSD  CORR. FUNCT.           : -9.9310E-04
+ VBHLSD  CORR. FUNCT.           : -1.3902E-03
+ PWALSD  CORR. FUNCT.           : -9.9306E-04
+ CSAGGA  CORR. FUNCT.           : -9.7554E-04
+ VLEGGA  CORR. FUNCT.           : -2.9882E-03
+ P86GGA  CORR. FUNCT.           : -1.0007E-03
+ P91GGA  CORR. FUNCT.           : -1.0007E-03
+ PWAGGA  CORR. FUNCT.           : -9.9306E-04
+ BECGGA  CORR. FUNCT.           : -1.5423E-03
+ PBEGGA  CORR. FUNCT.           : -9.9306E-04
+ LYPGGA  CORR. FUNCT.           : -9.4019E-04
+ LDAXLSD EXCH. FUNCT.           : -4.8508E-03
+ VBHXLSD EXCH. FUNCT.           : -4.8506E-03
+ PBEXGGA EXCH. FUNCT.           : -4.8508E-03
+ BECXGGA EXCH. FUNCT.           : -4.8508E-03
+ PWAXGGA EXCH. FUNCT.           : -4.8508E-03
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -3.1195E-02 -3.0463E-02  1.4310E-01
+ EIGENVECTORS                   :  2.3070E-01 -7.0711E-01  6.6841E-01
+                                  -2.3070E-01 -7.0711E-01 -6.6841E-01
+                                   9.4528E-01 -1.5079E-07 -3.2626E-01
+
+ ELLIPTICITY                    :  2.4032E-02
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1      14       0     0     1    1       -2.550  -2.708   6.349          0.686
+     2       2       0     0     0    8        0.000  -5.258   5.269          1.306
+     3      11       0     0     1    7       -3.724  -1.534   7.288          1.683
+     4       1       0     0     0    6        0.000  -5.258   2.886          2.066
+     5       5       0     0     1    1        1.515  -3.743   8.515          2.149
+     6       7       0     0     1    1       -1.515  -6.774   8.515          2.149
+     7      13       0     0     1    1       -3.743  -1.515   9.188          2.294
+     8       9       0     0     1    6       -5.258   0.000   5.966          2.687
+
+ ******************************
+ SEARCH OF BOND PATH ATTRACTORS
+ ******************************
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           : -5.2593E-18 -5.2582E+00  5.2693E+00
+ COORD FRACT. CONV. CELL        : -5.0011E-19 -5.0000E-01 -4.0470E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  2.9153E+02  2.3275E-10 -1.9267E+06
+ TRAJECTORY LENGTH(ANG)         :  1.3068E+00
+ INTEGRATION STEPS              :      54
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       2       0     0     0    8        0.000  -5.258   5.269          0.000
+     2       1       0     0     0    6        0.000  -5.258   2.886          1.261
+     3      16       1    -1     1    1        2.550  -7.808   6.349          1.992
+     4      14       0     0     1    1       -2.550  -2.708   6.349          1.992
+
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           : -2.6597E+00 -2.5984E+00  6.4351E+00
+ COORD FRACT. CONV. CELL        : -2.5292E-01 -2.4708E-01 -2.7299E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  3.6193E-01  1.6675E-12 -6.1101E+00
+ TRAJECTORY LENGTH(ANG)         :  7.7806E-01
+ INTEGRATION STEPS              :      28
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1      14       0     0     1    1       -2.550  -2.708   6.349          0.094
+     2      11       0     0     1    7       -3.724  -1.534   7.288          0.915
+     3      13       0     0     1    1       -3.743  -1.515   9.188          1.667
+     4       9       0     0     1    6       -5.258   0.000   5.966          1.960
+
+
+ BPL (ANG) ; RAB ; (BPL/RAB)    :  2.0849E+00  1.9922E+00  1.0465E+00
+
+ CP N.     10
+ *********
+
+ CP TYPE                        :  (3,-1)
+ COORD(AU)  (X  Y  Z)           :  1.5501E-14 -5.2582E+00  3.7020E+00
+ COORD FRACT. CONV. CELL        :  1.4740E-15 -5.0000E-01  4.1824E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  3.7430E-01  7.1839E-13 -5.5085E-01
+ KINETIC ENERGY DENSITIES (G,K) :  4.3622E-01  5.7393E-01
+ VIRIAL DENSITY                 : -1.0101E+00
+ ELF(PAA)                       :  6.2082E-01
+ PEZLSD  CORR. FUNCT.           : -2.3545E-02
+ VWNLSD  CORR. FUNCT.           : -2.3793E-02
+ VBHLSD  CORR. FUNCT.           : -3.0746E-02
+ PWALSD  CORR. FUNCT.           : -2.3682E-02
+ CSAGGA  CORR. FUNCT.           : -1.4569E-02
+ VLEGGA  CORR. FUNCT.           : -6.2803E-02
+ P86GGA  CORR. FUNCT.           : -2.3545E-02
+ P91GGA  CORR. FUNCT.           : -2.3545E-02
+ PWAGGA  CORR. FUNCT.           : -2.3682E-02
+ BECGGA  CORR. FUNCT.           : -1.8318E-02
+ PBEGGA  CORR. FUNCT.           : -2.3682E-02
+ LYPGGA  CORR. FUNCT.           : -1.4757E-02
+ LDAXLSD EXCH. FUNCT.           : -1.9922E-01
+ VBHXLSD EXCH. FUNCT.           : -1.9922E-01
+ PBEXGGA EXCH. FUNCT.           : -1.9922E-01
+ BECXGGA EXCH. FUNCT.           : -1.9922E-01
+ PWAXGGA EXCH. FUNCT.           : -1.9922E-01
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -9.9847E-01 -9.6191E-01  1.4095E+00
+ EIGENVECTORS                   : -7.0711E-01  7.0711E-01  0.0000E+00
+                                  -7.0711E-01 -7.0711E-01  1.1076E-12
+                                   7.8317E-13  7.8317E-13  1.0000E+00
+
+ ELLIPTICITY                    :  3.8011E-02
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       1       0     0     0    6        0.000  -5.258   2.886          0.432
+     2       2       0     0     0    8        0.000  -5.258   5.269          0.829
+     3       3       0     0     0    7        1.534  -3.724   1.563          1.612
+     4       4       0     0     0    7       -1.534  -6.792   1.563          1.612
+     5       6       0     0     0    1        2.708  -2.550   2.502          2.124
+     6       8       0     0     0    1       -2.708  -7.966   2.502          2.124
+     7      16       1    -1     1    1        2.550  -7.808   6.349          2.367
+     8      14       0     0     1    1       -2.550  -2.708   6.349          2.367
+
+ ******************************
+ SEARCH OF BOND PATH ATTRACTORS
+ ******************************
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.9302E-21 -5.2582E+00  5.2693E+00
+ COORD FRACT. CONV. CELL        :  1.8355E-22 -5.0000E-01 -4.0470E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  2.9153E+02  2.3272E-10 -1.9267E+06
+ TRAJECTORY LENGTH(ANG)         :  8.2934E-01
+ INTEGRATION STEPS              :      56
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       2       0     0     0    8        0.000  -5.258   5.269          0.000
+     2       1       0     0     0    6        0.000  -5.258   2.886          1.261
+     3      16       1    -1     1    1        2.550  -7.808   6.349          1.992
+     4      14       0     0     1    1       -2.550  -2.708   6.349          1.992
+
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  3.7608E-23 -5.2582E+00  2.8856E+00
+ COORD FRACT. CONV. CELL        :  3.5762E-24 -5.0000E-01  3.2600E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.1795E+02  6.7408E-12 -4.3488E+05
+ TRAJECTORY LENGTH(ANG)         :  4.3206E-01
+ INTEGRATION STEPS              :      47
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       1       0     0     0    6        0.000  -5.258   2.886          0.000
+     2       2       0     0     0    8        0.000  -5.258   5.269          1.261
+     3       3       0     0     0    7        1.534  -3.724   1.563          1.345
+     4       4       0     0     0    7       -1.534  -6.792   1.563          1.345
+
+
+ BPL (ANG) ; RAB ; (BPL/RAB)    :  1.2614E+00  1.2614E+00  1.0000E+00
+
+
+ *********** CP SEARCH AMONG ATOM PAIRS WITH NON-EQUIV. ATOM     3 N  ***********
+
+
+ CP N.     11
+ *********
+
+ CP TYPE                        :  (3,-1)
+ COORD(AU)  (X  Y  Z)           :  1.5188E+00 -3.7394E+00  1.2932E-01
+ COORD FRACT. CONV. CELL        :  1.4442E-01 -3.5558E-01  1.4610E-02
+ PROPERTIES (RHO,GRHO,LAP)      :  3.5182E-01  2.8135E-16 -2.0045E+00
+ KINETIC ENERGY DENSITIES (G,K) :  4.9913E-02  5.5105E-01
+ VIRIAL DENSITY                 : -6.0096E-01
+ ELF(PAA)                       :  9.9027E-01
+ PEZLSD  CORR. FUNCT.           : -2.1968E-02
+ VWNLSD  CORR. FUNCT.           : -2.2190E-02
+ VBHLSD  CORR. FUNCT.           : -2.8724E-02
+ PWALSD  CORR. FUNCT.           : -2.2089E-02
+ CSAGGA  CORR. FUNCT.           : -1.0351E-02
+ VLEGGA  CORR. FUNCT.           : -5.8795E-02
+ P86GGA  CORR. FUNCT.           : -2.1968E-02
+ P91GGA  CORR. FUNCT.           : -2.1968E-02
+ PWAGGA  CORR. FUNCT.           : -2.2089E-02
+ BECGGA  CORR. FUNCT.           : -1.3035E-02
+ PBEGGA  CORR. FUNCT.           : -2.2089E-02
+ LYPGGA  CORR. FUNCT.           : -1.1084E-02
+ LDAXLSD EXCH. FUNCT.           : -1.8343E-01
+ VBHXLSD EXCH. FUNCT.           : -1.8342E-01
+ PBEXGGA EXCH. FUNCT.           : -1.8343E-01
+ BECXGGA EXCH. FUNCT.           : -1.8343E-01
+ PWAXGGA EXCH. FUNCT.           : -1.8343E-01
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -1.4755E+00 -1.4028E+00  8.7378E-01
+ EIGENVECTORS                   : -7.0707E-01 -7.0711E-01  6.8124E-03
+                                  -7.0707E-01  7.0711E-01  6.8124E-03
+                                   9.6342E-03 -2.7756E-16  9.9995E-01
+
+ ELLIPTICITY                    :  5.1846E-02
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       5       0     0     0    1        1.515  -3.743  -0.336          0.246
+     2       3       0     0     0    7        1.534  -3.724   1.563          0.759
+     3       6       0     0     0    1        2.708  -2.550   2.502          1.539
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.849
+     5       2       0     0    -1    8        0.000  -5.258  -3.582          2.269
+     6       7       0     0     0    1       -1.515  -6.774  -0.336          2.284
+     7       4       0     0     0    7       -1.534  -6.792   1.563          2.408
+     8      14       0     0     0    1       -2.550  -2.708  -2.502          2.622
+
+ ******************************
+ SEARCH OF BOND PATH ATTRACTORS
+ ******************************
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.5343E+00 -3.7238E+00  1.5632E+00
+ COORD FRACT. CONV. CELL        :  1.4590E-01 -3.5410E-01  1.7660E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.9130E+02  5.8936E-11 -9.6288E+05
+ TRAJECTORY LENGTH(ANG)         :  7.5887E-01
+ INTEGRATION STEPS              :      50
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       3       0     0     0    7        1.534  -3.724   1.563          0.000
+     2       5       0     0     0    1        1.515  -3.743  -0.336          1.005
+     3       6       0     0     0    1        2.708  -2.550   2.502          1.009
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.345
+
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.5168E+00 -3.7414E+00 -1.6092E-01
+ COORD FRACT. CONV. CELL        :  1.4423E-01 -3.5577E-01 -1.8179E-02
+ PROPERTIES (RHO,GRHO,LAP)      :  3.6761E-01  8.1350E-14 -6.2415E+00
+ TRAJECTORY LENGTH(ANG)         :  1.5359E-01
+ INTEGRATION STEPS              :      18
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       5       0     0     0    1        1.515  -3.743  -0.336          0.093
+     2       3       0     0     0    7        1.534  -3.724   1.563          0.912
+     3       6       0     0     0    1        2.708  -2.550   2.502          1.668
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.972
+
+
+ BPL (ANG) ; RAB ; (BPL/RAB)    :  9.1246E-01  1.0053E+00  9.0766E-01
+
+ CP N.     12
+ *********
+
+ CP TYPE                        :  (3,-1)
+ COORD(AU)  (X  Y  Z)           :  2.4232E+00 -2.8349E+00  2.2781E+00
+ COORD FRACT. CONV. CELL        :  2.3043E-01 -2.6957E-01  2.5737E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  3.4724E-01  2.2386E-16 -2.0049E+00
+ KINETIC ENERGY DENSITIES (G,K) :  4.8230E-02  5.4946E-01
+ VIRIAL DENSITY                 : -5.9769E-01
+ ELF(PAA)                       :  9.9050E-01
+ PEZLSD  CORR. FUNCT.           : -2.1648E-02
+ VWNLSD  CORR. FUNCT.           : -2.1865E-02
+ VBHLSD  CORR. FUNCT.           : -2.8313E-02
+ PWALSD  CORR. FUNCT.           : -2.1766E-02
+ CSAGGA  CORR. FUNCT.           : -1.0166E-02
+ VLEGGA  CORR. FUNCT.           : -5.7980E-02
+ P86GGA  CORR. FUNCT.           : -2.1648E-02
+ P91GGA  CORR. FUNCT.           : -2.1648E-02
+ PWAGGA  CORR. FUNCT.           : -2.1766E-02
+ BECGGA  CORR. FUNCT.           : -1.2835E-02
+ PBEGGA  CORR. FUNCT.           : -2.1766E-02
+ LYPGGA  CORR. FUNCT.           : -1.0846E-02
+ LDAXLSD EXCH. FUNCT.           : -1.8025E-01
+ VBHXLSD EXCH. FUNCT.           : -1.8025E-01
+ PBEXGGA EXCH. FUNCT.           : -1.8025E-01
+ BECXGGA EXCH. FUNCT.           : -1.8025E-01
+ PWAXGGA EXCH. FUNCT.           : -1.8025E-01
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -1.4682E+00 -1.3970E+00  8.6029E-01
+ EIGENVECTORS                   : -3.4516E-01  7.0711E-01  6.1714E-01
+                                  -3.4516E-01 -7.0711E-01  6.1714E-01
+                                   8.7277E-01  1.8874E-15  4.8812E-01
+
+ ELLIPTICITY                    :  5.0941E-02
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       6       0     0     0    1        2.708  -2.550   2.502          0.244
+     2       3       0     0     0    7        1.534  -3.724   1.563          0.765
+     3       5       0     0     0    1        1.515  -3.743  -0.336          1.541
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.842
+     5      10       1     0     1    8        5.258   0.000   3.582          2.231
+     6       2       0     0     0    8        0.000  -5.258   5.269          2.407
+     7      15       1     0     0    1        3.743   1.515   0.336          2.616
+     8      13       1     0     0    1        6.774  -1.515   0.336          2.616
+
+ ******************************
+ SEARCH OF BOND PATH ATTRACTORS
+ ******************************
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  2.5984E+00 -2.6597E+00  2.4164E+00
+ COORD FRACT. CONV. CELL        :  2.4708E-01 -2.5292E-01  2.7299E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  3.6193E-01  3.9213E-13 -6.1101E+00
+ TRAJECTORY LENGTH(ANG)         :  1.5015E-01
+ INTEGRATION STEPS              :      17
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       6       0     0     0    1        2.708  -2.550   2.502          0.094
+     2       3       0     0     0    7        1.534  -3.724   1.563          0.915
+     3       5       0     0     0    1        1.515  -3.743  -0.336          1.667
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.960
+
+
+ ATTRACTOR CP TYPE              :  (3,-3)
+ COORD(AU)  (X  Y  Z)           :  1.5343E+00 -3.7238E+00  1.5632E+00
+ COORD FRACT. CONV. CELL        :  1.4590E-01 -3.5410E-01  1.7660E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  1.9130E+02  5.8936E-11 -9.6288E+05
+ TRAJECTORY LENGTH(ANG)         :  7.6529E-01
+ INTEGRATION STEPS              :      49
+
+ CLUSTER OF ATOMS AROUND THE TERMINUS OF THE PATH 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       3       0     0     0    7        1.534  -3.724   1.563          0.000
+     2       5       0     0     0    1        1.515  -3.743  -0.336          1.005
+     3       6       0     0     0    1        2.708  -2.550   2.502          1.009
+     4       1       0     0     0    6        0.000  -5.258   2.886          1.345
+
+
+ BPL (ANG) ; RAB ; (BPL/RAB)    :  9.1544E-01  1.0092E+00  9.0713E-01
+
+
+ *********** CP SEARCH AMONG ATOM PAIRS WITH NON-EQUIV. ATOM     4 H  ***********
+
+
+
+ *********** CP SEARCH AMONG ATOM PAIRS WITH NON-EQUIV. ATOM     5 H  ***********
+
+
+
+ ********************
+ SEARCH OF (3,+1) CPS
+ ********************
+
+ CP N.     13
+ *********
+
+ CP TYPE                        :  (3,+1)
+ COORD(AU)  (X  Y  Z)           :  2.5835E+00 -2.6747E+00  5.7675E+00
+ COORD FRACT. CONV. CELL        :  2.4566E-01 -2.5434E-01 -3.4841E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  8.0292E-04  7.6592E-14  5.1417E-03
+ KINETIC ENERGY DENSITIES (G,K) :  7.9403E-04 -4.9138E-04
+ VIRIAL DENSITY                 : -3.0265E-04
+ ELF(PAA)                       :  6.2867E-04
+ PEZLSD  CORR. FUNCT.           : -1.9217E-05
+ VWNLSD  CORR. FUNCT.           : -1.9121E-05
+ VBHLSD  CORR. FUNCT.           : -2.9358E-05
+ PWALSD  CORR. FUNCT.           : -1.9174E-05
+ CSAGGA  CORR. FUNCT.           : -2.3158E-05
+ VLEGGA  CORR. FUNCT.           : -5.8496E-05
+ P86GGA  CORR. FUNCT.           : -1.9217E-05
+ P91GGA  CORR. FUNCT.           : -1.9217E-05
+ PWAGGA  CORR. FUNCT.           : -1.9174E-05
+ BECGGA  CORR. FUNCT.           : -1.7952E-04
+ PBEGGA  CORR. FUNCT.           : -1.9174E-05
+ LYPGGA  CORR. FUNCT.           : -2.4041E-05
+ LDAXLSD EXCH. FUNCT.           : -5.5116E-05
+ VBHXLSD EXCH. FUNCT.           : -5.5114E-05
+ PBEXGGA EXCH. FUNCT.           : -5.5116E-05
+ BECXGGA EXCH. FUNCT.           : -5.5116E-05
+ PWAXGGA EXCH. FUNCT.           : -5.5116E-05
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -5.5276E-04  1.0598E-03  4.6346E-03
+ EIGENVECTORS                   :  7.0711E-01 -2.9144E-02  7.0651E-01
+                                  -7.0711E-01 -2.9144E-02  7.0651E-01
+                                   1.1416E-12  9.9915E-01  4.1216E-02
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       5       0     0     1    1        1.515  -3.743   8.515          1.659
+     2       6       0     0     0    1        2.708  -2.550   2.502          1.730
+     3       2       0     0     0    8        0.000  -5.258   5.269          1.951
+     4       9       1     0     1    6        5.258   0.000   5.966          2.004
+     5      10       1     0     1    8        5.258   0.000   3.582          2.312
+     6       3       0     0     0    7        1.534  -3.724   1.563          2.359
+     7      11       1     0     1    7        6.792  -1.534   7.288          2.444
+     8      12       1     0     1    7        3.724   1.534   7.288          2.444
+
+ CP N.     14
+ *********
+
+ CP TYPE                        :  (3,+1)
+ COORD(AU)  (X  Y  Z)           :  1.5497E-16 -5.2582E+00 -6.8464E-01
+ COORD FRACT. CONV. CELL        :  1.4736E-17 -5.0000E-01 -7.7347E-02
+ PROPERTIES (RHO,GRHO,LAP)      :  7.6232E-03  3.5443E-16  5.2546E-02
+ KINETIC ENERGY DENSITIES (G,K) :  1.0176E-02 -2.9606E-03
+ VIRIAL DENSITY                 : -7.2154E-03
+ ELF(PAA)                       :  6.8934E-03
+ PEZLSD  CORR. FUNCT.           : -2.7671E-04
+ VWNLSD  CORR. FUNCT.           : -2.7425E-04
+ VBHLSD  CORR. FUNCT.           : -3.9649E-04
+ PWALSD  CORR. FUNCT.           : -2.7474E-04
+ CSAGGA  CORR. FUNCT.           : -4.1413E-04
+ VLEGGA  CORR. FUNCT.           : -8.4509E-04
+ P86GGA  CORR. FUNCT.           : -2.7671E-04
+ P91GGA  CORR. FUNCT.           : -2.7671E-04
+ PWAGGA  CORR. FUNCT.           : -2.7474E-04
+ BECGGA  CORR. FUNCT.           : -9.5790E-04
+ PBEGGA  CORR. FUNCT.           : -2.7474E-04
+ LYPGGA  CORR. FUNCT.           : -4.0504E-04
+ LDAXLSD EXCH. FUNCT.           : -1.1081E-03
+ VBHXLSD EXCH. FUNCT.           : -1.1080E-03
+ PBEXGGA EXCH. FUNCT.           : -1.1081E-03
+ BECXGGA EXCH. FUNCT.           : -1.1081E-03
+ PWAXGGA EXCH. FUNCT.           : -1.1081E-03
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -7.2426E-03  2.9692E-02  3.0097E-02
+ EIGENVECTORS                   : -7.0711E-01  7.0711E-01  0.0000E+00
+                                   7.0711E-01  7.0711E-01 -4.4466E-16
+                                   3.1442E-16  3.1442E-16  1.0000E+00
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       5       0     0     0    1        1.515  -3.743  -0.336          1.149
+     2       7       0     0     0    1       -1.515  -6.774  -0.336          1.149
+     3       2       0     0    -1    8        0.000  -5.258  -3.582          1.533
+     4       3       0     0     0    7        1.534  -3.724   1.563          1.653
+     5       4       0     0     0    7       -1.534  -6.792   1.563          1.653
+     6       1       0     0     0    6        0.000  -5.258   2.886          1.889
+     7      16       1    -1     0    1        2.550  -7.808  -2.502          2.137
+     8      14       0     0     0    1       -2.550  -2.708  -2.502          2.137
+
+ CP N.     15
+ *********
+
+ CP TYPE                        :  (3,+1)
+ COORD(AU)  (X  Y  Z)           : -1.8671E+00 -3.3911E+00  4.7517E-01
+ COORD FRACT. CONV. CELL        : -1.7754E-01 -3.2246E-01  5.3683E-02
+ PROPERTIES (RHO,GRHO,LAP)      :  2.9477E-03  2.0517E-13  1.8687E-02
+ KINETIC ENERGY DENSITIES (G,K) :  3.4997E-03 -1.1719E-03
+ VIRIAL DENSITY                 : -2.3278E-03
+ ELF(PAA)                       :  2.4657E-03
+ PEZLSD  CORR. FUNCT.           : -9.0546E-05
+ VWNLSD  CORR. FUNCT.           : -8.9815E-05
+ VBHLSD  CORR. FUNCT.           : -1.3336E-04
+ PWALSD  CORR. FUNCT.           : -9.0063E-05
+ CSAGGA  CORR. FUNCT.           : -1.3378E-04
+ VLEGGA  CORR. FUNCT.           : -2.7836E-04
+ P86GGA  CORR. FUNCT.           : -9.0546E-05
+ P91GGA  CORR. FUNCT.           : -9.0546E-05
+ PWAGGA  CORR. FUNCT.           : -9.0063E-05
+ BECGGA  CORR. FUNCT.           : -4.7532E-04
+ PBEGGA  CORR. FUNCT.           : -9.0063E-05
+ LYPGGA  CORR. FUNCT.           : -1.3060E-04
+ LDAXLSD EXCH. FUNCT.           : -3.1215E-04
+ VBHXLSD EXCH. FUNCT.           : -3.1214E-04
+ PBEXGGA EXCH. FUNCT.           : -3.1215E-04
+ BECXGGA EXCH. FUNCT.           : -3.1215E-04
+ PWAXGGA EXCH. FUNCT.           : -3.1215E-04
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -9.3785E-04  2.9171E-03  1.6707E-02
+ EIGENVECTORS                   : -3.6706E-01 -7.0711E-01  6.0438E-01
+                                   3.6706E-01 -7.0711E-01 -6.0438E-01
+                                   8.5472E-01 -2.4183E-12  5.1910E-01
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1      13       0     0     0    1       -3.743  -1.515   0.336          1.406
+     2      14       0     0     0    1       -2.550  -2.708  -2.502          1.656
+     3      11       0     0     0    7       -3.724  -1.534  -1.563          1.759
+     4       7       0     0     0    1       -1.515  -6.774  -0.336          1.850
+     5       5       0     0     0    1        1.515  -3.743  -0.336          1.850
+     6       1       0     0     0    6        0.000  -5.258   2.886          1.892
+     7       4       0     0     0    7       -1.534  -6.792   1.563          1.898
+     8       3       0     0     0    7        1.534  -3.724   1.563          1.898
+
+ CP N.     16
+ *********
+
+ CP TYPE                        :  (3,+3)
+ COORD(AU)  (X  Y  Z)           :  5.2582E+00 -5.2582E+00  4.4257E+00
+ COORD FRACT. CONV. CELL        : -5.0000E-01 -5.0000E-01  5.0000E-01
+ PROPERTIES (RHO,GRHO,LAP)      :  4.1313E-05  1.0430E-13  4.2340E-04
+ KINETIC ENERGY DENSITIES (G,K) :  6.3084E-05 -4.2765E-05
+ VIRIAL DENSITY                 : -2.0319E-05
+ ELF(PAA)                       :  5.0494E-06
+ PEZLSD  CORR. FUNCT.           : -5.1374E-07
+ VWNLSD  CORR. FUNCT.           : -5.1562E-07
+ VBHLSD  CORR. FUNCT.           : -8.3392E-07
+ PWALSD  CORR. FUNCT.           : -5.1504E-07
+ CSAGGA  CORR. FUNCT.           : -2.2020E-07
+ VLEGGA  CORR. FUNCT.           : -1.4354E-06
+ P86GGA  CORR. FUNCT.           : -5.1374E-07
+ P91GGA  CORR. FUNCT.           : -5.1374E-07
+ PWAGGA  CORR. FUNCT.           : -5.1504E-07
+ BECGGA  CORR. FUNCT.           : -4.4005E-05
+ PBEGGA  CORR. FUNCT.           : -5.1504E-07
+ LYPGGA  CORR. FUNCT.           : -2.2290E-07
+ LDAXLSD EXCH. FUNCT.           : -1.0548E-06
+ VBHXLSD EXCH. FUNCT.           : -1.0547E-06
+ PBEXGGA EXCH. FUNCT.           : -1.0548E-06
+ BECXGGA EXCH. FUNCT.           : -1.0548E-06
+ PWAXGGA EXCH. FUNCT.           : -1.0548E-06
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         :  9.6221E-05  1.6359E-04  1.6359E-04
+ EIGENVECTORS                   :  0.0000E+00  0.0000E+00  1.0000E+00
+                                  -2.9498E-07 -1.0000E+00  0.0000E+00
+                                   1.0000E+00 -2.9498E-07  0.0000E+00
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1       8       1     0     0    1        7.808  -7.966   2.502          2.216
+     2       6       0     0     0    1        2.708  -2.550   2.502          2.216
+     3      16       1    -1     1    1        2.550  -7.808   6.349          2.216
+     4      14       1     0     1    1        7.966  -2.708   6.349          2.216
+     5       4       1     0     0    7        8.982  -6.792   1.563          2.615
+     6       3       0     0     0    7        1.534  -3.724   1.563          2.615
+     7      12       1    -1     1    7        3.724  -8.982   7.288          2.615
+     8      11       1     0     1    7        6.792  -1.534   7.288          2.615
+
+ CP N.     17
+ *********
+
+ CP TYPE                        :  (3,+1)
+ COORD(AU)  (X  Y  Z)           : -7.7968E-01 -3.0283E+00  7.9778E+00
+ COORD FRACT. CONV. CELL        : -7.4140E-02 -2.8796E-01 -9.8699E-02
+ PROPERTIES (RHO,GRHO,LAP)      :  3.3813E-03  4.3339E-18  2.0926E-02
+ KINETIC ENERGY DENSITIES (G,K) :  3.7544E-03 -1.4770E-03
+ VIRIAL DENSITY                 : -2.2774E-03
+ ELF(PAA)                       :  3.3823E-03
+ PEZLSD  CORR. FUNCT.           : -1.0649E-04
+ VWNLSD  CORR. FUNCT.           : -1.0561E-04
+ VBHLSD  CORR. FUNCT.           : -1.5622E-04
+ PWALSD  CORR. FUNCT.           : -1.0589E-04
+ CSAGGA  CORR. FUNCT.           : -1.5195E-04
+ VLEGGA  CORR. FUNCT.           : -3.2730E-04
+ P86GGA  CORR. FUNCT.           : -1.0649E-04
+ P91GGA  CORR. FUNCT.           : -1.0649E-04
+ PWAGGA  CORR. FUNCT.           : -1.0589E-04
+ BECGGA  CORR. FUNCT.           : -4.8733E-04
+ PBEGGA  CORR. FUNCT.           : -1.0589E-04
+ LYPGGA  CORR. FUNCT.           : -1.5135E-04
+ LDAXLSD EXCH. FUNCT.           : -3.7483E-04
+ VBHXLSD EXCH. FUNCT.           : -3.7482E-04
+ PBEXGGA EXCH. FUNCT.           : -3.7483E-04
+ BECXGGA EXCH. FUNCT.           : -3.7483E-04
+ PWAXGGA EXCH. FUNCT.           : -3.7483E-04
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         : -2.7971E-03  2.5427E-03  2.1180E-02
+ EIGENVECTORS                   :  4.9588E-01  3.0297E-01  8.1383E-01
+                                   7.9136E-01 -5.4355E-01 -2.7983E-01
+                                  -3.5757E-01 -7.8279E-01  5.0930E-01
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1      14       0     0     1    1       -2.550  -2.708   6.349          1.284
+     2       5       0     0     1    1        1.515  -3.743   8.515          1.303
+     3      11       0     0     1    7       -3.724  -1.534   7.288          1.785
+     4       3       0     0     1    7        1.534  -3.724  10.415          1.816
+     5      13       0     0     1    1       -3.743  -1.515   9.188          1.873
+     6       2       0     0     0    8        0.000  -5.258   5.269          1.902
+     7       7       0     0     1    1       -1.515  -6.774   8.515          2.040
+     8       1       0     0     1    6        0.000  -5.258  11.737          2.349
+
+
+ ********************
+ SEARCH OF (3,+3) CPS
+ ********************
+
+ CP N.     18
+ *********
+
+ CP TYPE                        :  (3,+3)
+ COORD(AU)  (X  Y  Z)           : -1.3847E+00 -3.8734E+00 -5.0524E-01
+ COORD FRACT. CONV. CELL        : -1.3168E-01 -3.6832E-01 -5.7080E-02
+ PROPERTIES (RHO,GRHO,LAP)      :  2.6313E-03  1.1299E-14  1.8507E-02
+ KINETIC ENERGY DENSITIES (G,K) :  3.3449E-03 -1.2817E-03
+ VIRIAL DENSITY                 : -2.0631E-03
+ ELF(PAA)                       :  1.8499E-03
+ PEZLSD  CORR. FUNCT.           : -7.9161E-05
+ VWNLSD  CORR. FUNCT.           : -7.8538E-05
+ VBHLSD  CORR. FUNCT.           : -1.1698E-04
+ PWALSD  CORR. FUNCT.           : -7.8759E-05
+ CSAGGA  CORR. FUNCT.           : -1.2376E-04
+ VLEGGA  CORR. FUNCT.           : -2.4336E-04
+ P86GGA  CORR. FUNCT.           : -7.9161E-05
+ P91GGA  CORR. FUNCT.           : -7.9161E-05
+ PWAGGA  CORR. FUNCT.           : -7.8759E-05
+ BECGGA  CORR. FUNCT.           : -4.7178E-04
+ PBEGGA  CORR. FUNCT.           : -7.8759E-05
+ LYPGGA  CORR. FUNCT.           : -1.2210E-04
+ LDAXLSD EXCH. FUNCT.           : -2.6829E-04
+ VBHXLSD EXCH. FUNCT.           : -2.6829E-04
+ PBEXGGA EXCH. FUNCT.           : -2.6829E-04
+ BECXGGA EXCH. FUNCT.           : -2.6829E-04
+ PWAXGGA EXCH. FUNCT.           : -2.6829E-04
+
+ SPECTRAL DECOMP. OF THE HESSIAN OF RHO
+
+ EIGENVALUES (L1 L2 L3)         :  2.1748E-03  3.7498E-03  1.2582E-02
+ EIGENVECTORS                   : -4.4259E-01 -7.0711E-01  5.5147E-01
+                                   4.4259E-01 -7.0711E-01 -5.5147E-01
+                                   7.7989E-01 -1.0748E-11  6.2592E-01
+
+
+ CLUSTER OF ATOMS AROUND THE CP 
+ NEW  OLD   CELL  AT. NU.         COORD.(AU)             DISTANCE (ANG)
+     1      14       0     0     0    1       -2.550  -2.708  -2.502          1.370
+     2       7       0     0     0    1       -1.515  -6.774  -0.336          1.539
+     3       5       0     0     0    1        1.515  -3.743  -0.336          1.539
+     4      13       0     0     0    1       -3.743  -1.515   0.336          1.820
+     5      11       0     0     0    7       -3.724  -1.534  -1.563          1.838
+     6       4       0     0     0    7       -1.534  -6.792   1.563          1.895
+     7       3       0     0     0    7        1.534  -3.724   1.563          1.895
+     8       2       0     0    -1    8        0.000  -5.258  -3.582          1.930
+
+
+ NUMBER OF ATOM PAIRS INVESTIGATED:    24
+ NUMBER OF UNIQUE CRI. POINT FOUND:    18
+
+
+        ********** C R I T I C A L  P O I N T S  F O U N D **********
+
+
+ CP N.  X(ANG)  Y(ANG)  Z(ANG)  TYPE      RHO    LAPL    L1(V1)  L2(V2)  L3(V3) ELLIP
+
+ ************************************************************************************
+    1) -0.000  -2.783   1.527  (3,-3)  117.954-999.999-999.999-999.999-999.999
+                                                        -0.707   0.000   0.707
+                                                         0.707   0.000   0.707
+                                                        -0.000   1.000  -0.000
+
+
+    2)  0.000  -2.783   2.788  (3,-3)  291.530-999.999-999.999-999.999-999.999
+                                                         0.000   0.707   0.707
+                                                        -0.000  -0.707   0.707
+                                                         1.000  -0.000   0.000
+
+
+    3)  0.812  -1.971   0.827  (3,-3)  191.305-999.999-999.999-999.999-999.999
+                                                         0.597  -0.379   0.707
+                                                         0.597  -0.379  -0.707
+                                                        -0.536  -0.844   0.000
+
+
+    4)  0.803  -1.980  -0.085  (3,-3)    0.368  -6.242  -2.498  -2.459  -1.284
+                                                        -0.707  -0.707   0.007
+                                                        -0.707   0.707   0.007
+                                                         0.009   0.000   1.000
+
+
+    5)  1.375  -1.407   1.279  (3,-3)    0.362  -6.110  -2.453  -2.414  -1.243
+                                                        -0.344   0.707   0.618
+                                                        -0.344  -0.707   0.618
+                                                         0.874   0.000   0.487
+
+
+    6)  0.285  -2.498   1.278  (3,-1)    0.342  -0.952  -0.893  -0.781   0.721  0.143
+
+       ( C     1       0      0      0   0.895  ANG)     0.369   0.707   0.603
+       ( N     3       0      0      0   1.646  ANG)     0.369  -0.707   0.603
+                                                         0.853  -0.000  -0.522
+
+
+    7) -1.402  -2.187  -0.031  (3,-1)    0.004   0.021  -0.003  -0.001   0.025  1.620
+
+       ( N    11       0      0      0   3.193  ANG)     0.916   0.214   0.340
+       ( N     4       0      0      0   3.314  ANG)     0.401  -0.438  -0.805
+                                                         0.024  -0.873   0.487
+
+
+    8)  0.490  -2.292   3.902  (3,-1)    0.019   0.080  -0.025  -0.025   0.130  0.034
+
+       ( H     5       0      0      1   1.567  ANG)    -0.623   0.707   0.334
+       ( O     2       0      0      0   2.485  ANG)    -0.623  -0.707   0.334
+                                                         0.472  -0.000   0.881
+
+
+    9) -0.883  -1.900   3.174  (3,-1)    0.023   0.081  -0.031  -0.030   0.143  0.024
+
+       ( H    14       0      0      1   1.470  ANG)     0.231  -0.707   0.668
+       ( O     2       0      0      0   2.470  ANG)    -0.231  -0.707  -0.668
+                                                         0.945  -0.000  -0.326
+
+
+   10)  0.000  -2.782   1.959  (3,-1)    0.374  -0.551  -0.998  -0.962   1.410  0.038
+
+       ( C     1       0      0      0   0.816  ANG)    -0.707   0.707   0.000
+       ( O     2       0      0      0   1.567  ANG)    -0.707  -0.707   0.000
+                                                         0.000   0.000   1.000
+
+
+   11)  0.804  -1.979   0.068  (3,-1)    0.352  -2.005  -1.476  -1.403   0.874  0.052
+
+       ( H     5       0      0      0   0.290  ANG)    -0.707  -0.707   0.007
+       ( N     3       0      0      0   1.434  ANG)    -0.707   0.707   0.007
+                                                         0.010  -0.000   1.000
+
+
+   12)  1.282  -1.500   1.205  (3,-1)    0.347  -2.005  -1.468  -1.397   0.860  0.051
+
+       ( H     6       0      0      0   0.284  ANG)    -0.345   0.707   0.617
+       ( N     3       0      0      0   1.446  ANG)    -0.345  -0.707   0.617
+                                                         0.873   0.000   0.488
+
+
+   13)  1.367  -1.415   3.052  (3,+1)    0.001   0.005  -0.001   0.001   0.005
+                                                         0.707  -0.029   0.707
+                                                        -0.707  -0.029   0.707
+                                                         0.000   0.999   0.041
+
+
+   14)  0.000  -2.783  -0.362  (3,+1)    0.008   0.053  -0.007   0.030   0.030
+                                                        -0.707   0.707   0.000
+                                                         0.707   0.707  -0.000
+                                                         0.000   0.000   1.000
+
+
+   15) -0.988  -1.794   0.251  (3,+1)    0.003   0.019  -0.001   0.003   0.017
+                                                        -0.367  -0.707   0.604
+                                                         0.367  -0.707  -0.604
+                                                         0.855  -0.000   0.519
+
+
+   16)  2.783  -2.783   2.342  (3,+3)    0.000   0.000   0.000   0.000   0.000
+                                                         0.000   0.000   1.000
+                                                        -0.000  -1.000   0.000
+                                                         1.000  -0.000   0.000
+
+
+   17) -0.413  -1.603   4.222  (3,+1)    0.003   0.021  -0.003   0.003   0.021
+                                                         0.496   0.303   0.814
+                                                         0.791  -0.544  -0.280
+                                                        -0.358  -0.783   0.509
+
+
+   18) -0.733  -2.050  -0.267  (3,+3)    0.003   0.019   0.002   0.004   0.013
+                                                        -0.443  -0.707   0.551
+                                                         0.443  -0.707  -0.551
+                                                         0.780  -0.000   0.626
+
+
+ ************************************************************************************
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT TRHO        TELAPSE       81.62 TCPU       80.61
+ TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT END         TELAPSE       81.62 TCPU       80.61
+ EEEEEEEEEE TERMINATION  DATE 09 10 2018 TIME 11:45:48.5
+NODE    0 CPU TIME =        80.609
+NODE    1 CPU TIME =        80.613
+NODE    2 CPU TIME =        80.613
+NODE    3 CPU TIME =        80.601
+NODE    4 CPU TIME =        80.613
+NODE    5 CPU TIME =        80.613
+NODE    6 CPU TIME =        80.617
+NODE    7 CPU TIME =        80.613
+    TOTAL CPU TIME =       644.892
+Tue Oct  9 11:45:48 CEST 2018
+Contents of temporary directory in master node node79:
+total 36656
+-rw-r--r-- 1 casassa users       36 Oct  9 11:44 INPUT
+-rwxr-xr-x 1 casassa users 27880361 Oct  9 11:44 Pproperties
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.10.pe0
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.10.pe1
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.10.pe2
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.10.pe3
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.10.pe4
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.10.pe5
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.10.pe6
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.10.pe7
+-rw------- 1 casassa users      686 Oct  9 11:45 fort.100
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.11.pe0
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.11.pe1
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.11.pe2
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.11.pe3
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.11.pe4
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.11.pe5
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.11.pe6
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.11.pe7
+-rw------- 1 casassa users   866920 Oct  9 11:44 fort.13.pe0
+-rw------- 1 casassa users   866920 Oct  9 11:44 fort.13.pe1
+-rw------- 1 casassa users   866920 Oct  9 11:44 fort.13.pe2
+-rw------- 1 casassa users   866920 Oct  9 11:44 fort.13.pe3
+-rw------- 1 casassa users   866920 Oct  9 11:44 fort.13.pe4
+-rw------- 1 casassa users   866920 Oct  9 11:44 fort.13.pe5
+-rw------- 1 casassa users   866920 Oct  9 11:44 fort.13.pe6
+-rw------- 1 casassa users   866920 Oct  9 11:44 fort.13.pe7
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.15.pe0
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.15.pe1
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.15.pe2
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.15.pe3
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.15.pe4
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.15.pe5
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.15.pe6
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.15.pe7
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.26.pe0
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.26.pe1
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.26.pe2
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.26.pe3
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.26.pe4
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.26.pe5
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.26.pe6
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.26.pe7
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.3.pe0
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.3.pe1
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.3.pe2
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.3.pe3
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.3.pe4
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.3.pe5
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.3.pe6
+-rw------- 1 casassa users   144792 Oct  9 11:44 fort.3.pe7
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.61.pe0
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.61.pe1
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.61.pe2
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.61.pe3
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.61.pe4
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.61.pe5
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.61.pe6
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.61.pe7
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.62.pe0
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.62.pe1
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.62.pe2
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.62.pe3
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.62.pe4
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.62.pe5
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.62.pe6
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.62.pe7
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.8.pe0
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.8.pe1
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.8.pe2
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.8.pe3
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.8.pe4
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.8.pe5
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.8.pe6
+-rw------- 1 casassa users        0 Oct  9 11:44 fort.8.pe7
+-rw------- 1 casassa users   336100 Oct  9 11:44 fort.9
+file fort.100 saved as /home/casassa/SVN_DEV1143/test/Topond/urea.f100
+removing temporary directories /data/casassa/807011 from each node

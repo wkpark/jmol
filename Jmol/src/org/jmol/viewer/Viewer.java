@@ -8251,7 +8251,7 @@ public class Viewer extends JmolViewer implements AtomDataServer,
 
   @Override
   public void syncScript(String script, String applet, int port) {
-    getStateCreator().syncScript(script, applet, port);
+    sm.syncScript(script, applet, port);
   }
 
   @Override

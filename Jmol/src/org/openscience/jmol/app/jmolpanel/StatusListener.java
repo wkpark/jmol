@@ -32,9 +32,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
 
-import javajs.util.PT;
-import jspecview.application.MainFrame;
-
 import org.jmol.api.JSVInterface;
 import org.jmol.api.JmolAppConsoleInterface;
 import org.jmol.api.JmolCallbackListener;
@@ -49,8 +46,10 @@ import org.openscience.jmol.app.JmolPlugin;
 import org.openscience.jmol.app.jmolpanel.console.AppConsole;
 import org.openscience.jmol.app.webexport.WebExport;
 
-public class StatusListener implements JmolStatusListener, JmolSyncInterface,
-    JSVInterface {
+import javajs.util.PT;
+import jspecview.application.MainFrame;
+
+public class StatusListener implements JmolStatusListener, JmolSyncInterface, JSVInterface {
 
   /*
    * starting with Jmol 11.7.27, JmolStatusListener extends JmolCallbackListener
@@ -78,43 +77,45 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   private Viewer vwr;
   private MainFrame jSpecViewFrame;
   private boolean jSpecViewForceNew;
-
+  
+  
   public void setViewer(Viewer vwr) {
     this.vwr = vwr;
   }
-
+  
   public StatusListener(JmolPanel jmolPanel, DisplayPanel display) {
     // just required for Jmol application's particular callbacks
     this.jmolPanel = jmolPanel;
-    this.display = display;
+    this.display = display;  
   }
-
+  
   // / JmolCallbackListener interface ///
   @Override
   public boolean notifyEnabled(CBK type) {
     switch (type) {
     case ANIMFRAME:
-    case ECHO:
-    case IMAGE:
     case LOADSTRUCT:
     case STRUCTUREMODIFIED:
     case MEASURE:
-    case MESSAGE:
     case SERVICE:
     case PICK:
     case SCRIPT:
     case SYNC:
-      return true;
-    case AUDIO:
-    case EVAL:
-    case ATOMMOVED:
+      // enabled only for SYNC 
+    case ECHO:
     case CLICK:
     case DRAGDROP:
     case ERROR:
-    case HOVER:
+    case MESSAGE:
     case MINIMIZATION:
     case RESIZE:
+      return true;
     case APPLETREADY:
+    case ATOMMOVED:
+    case AUDIO:
+    case EVAL:
+    case HOVER:
+    case IMAGE:
       // applet only (but you could change this for your listener)
       break;
     }
@@ -122,7 +123,7 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   }
 
   private Map<String, Object> nboOptions;
-
+  
   @SuppressWarnings("unchecked")
   @Override
   public void notifyCallback(CBK type, Object[] data) {
@@ -130,21 +131,45 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
       // during initialization
       return;
     }
-    if (!jmolPanel.plugins.isEmpty())
+    if (jmolPanel.isServer() && data != null && "SYNC".equals(data[0])) {
+      data[0] = type.toString();
+      jmolPanel.sendNioSyncRequest(data, JmolPanel.OUTSOCKET, null);
+    }
+    if (jmolPanel.plugins.isEmpty())
       for (JmolPlugin p : jmolPanel.plugins.values())
         p.notifyCallback(type, data);
     String strInfo = (data == null || data[1] == null ? null : data[1]
         .toString());
     Map<String, Object> info;
     switch (type) {
+    case MESSAGE:
+      // deprecated
+      return;
+    case SERVICE:
+      if (display == null)
+        return;
+      info = (Map<String, Object>) data[1];
+      try {
+        String service = (String) info.get("service");
+        if ("nbo".equals(service)) {
+          if ("showPanel".equals(info.get("action")))
+            jmolPanel.startNBO(info);
+          //else
+          //jmol.getNBOService().processRequest(info, 0);
+        }
+      } catch (Exception e) {
+        // ignore
+      }
+      return;
     case LOADSTRUCT:
       notifyFileLoaded(strInfo, (String) data[2], (String) data[3],
           (String) data[4], (Boolean) data[8]);
       if (jmolPanel.gaussianDialog != null)
         jmolPanel.gaussianDialog.updateModel(-2);
-      return;
+      break;
     case ANIMFRAME:
       int[] iData = (int[]) data[1];
+      strInfo = PT.toJSON(null, iData);
       int modelIndex = iData[0];
       if (modelIndex <= -2)
         modelIndex = -2 - modelIndex; // animation is running
@@ -168,15 +193,14 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
         //        if (jSpecViewFrame != null)
         //          setJSpecView("", true);
       }
-      return;
+      break;
     case SCRIPT:
       int msWalltime = ((Integer) data[3]).intValue();
       if (msWalltime == 0) {
-        if (data[2] != null && display.haveDisplay)
+        if (data[2] != null && display.haveDisplay) {
           jmolPanel.setStatus(1, (String) data[2]);
-      }
-      return;
-    case ECHO:
+        }
+      }      
       break;
     case MEASURE:
       String mystatus = (String) data[3];
@@ -189,24 +213,6 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
           return;
       }
       break;
-    case MESSAGE:
-      break;
-    case SERVICE:
-      if (display == null)
-        return;
-      info = (Map<String, Object>) data[1];
-      try {
-        String service = (String) info.get("service");
-        if ("nbo".equals(service)) {
-          if ("showPanel".equals(info.get("action")))
-            jmolPanel.startNBO(info);
-          //else
-          //jmol.getNBOService().processRequest(info, 0);
-        }
-      } catch (Exception e) {
-        // ignore
-      }
-      return;
     case PICK:
       notifyAtomPicked(strInfo);
       if (jmolPanel.gaussianDialog != null)
@@ -235,30 +241,32 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
       }
       if (strInfo != null && strInfo.toLowerCase().startsWith("nbo:")) {
         if (nboOptions == null)
-          nboOptions = new Hashtable<String, Object>();
+          nboOptions= new Hashtable<String, Object>();
         nboOptions.put("options", strInfo);
         jmolPanel.startNBO(nboOptions);
         return;
       }
-      jmolPanel.sendNioMessage(((Integer) data[3]).intValue(), strInfo);
+      jmolPanel.sendNioSyncRequest(null, ((Integer) data[3]).intValue(), strInfo);
       return;
     case AUDIO:
-    case DRAGDROP:
-    case ERROR:
     case HOVER:
     case IMAGE:
-    case MINIMIZATION:
-    case RESIZE:
     case EVAL:
     case ATOMMOVED:
-    case CLICK:
     case APPLETREADY:
       // see above -- not implemented in Jmol.jar
       return;
+      // passed on to listener
+    case DRAGDROP:
+    case ERROR:
+    case ECHO:
+    case MINIMIZATION:
+    case RESIZE:
+    case CLICK:
+      break;
     }
-    // cases that fail to return are sent to the console for processing
-    if (jmolPanel.service != null)
-      jmolPanel.service.scriptCallback(strInfo);
+    if (jmolPanel.isServer())
+      jmolPanel.sendNioSyncRequest(null, JmolPanel.OUTSOCKET, (type + ":" + strInfo).trim());
     JmolCallbackListener appConsole = (JmolCallbackListener) vwr.getProperty(
         "DATA_API", "getAppConsole", null);
     if (appConsole != null)
@@ -266,9 +274,9 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   }
 
   /**
-   * @param atomIndex
-   * @param modelIndex
-   * @param mode
+   * @param atomIndex  
+   * @param modelIndex 
+   * @param mode 
    */
   private void notifyStructureModified(int atomIndex, int modelIndex, int mode) {
     modificationMode = mode;
@@ -298,8 +306,8 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
       return;
     }
     //if (callbackType.equalsIgnoreCase("menu")) {
-    //jmol.setupNewFrame(vi/ewer);
-    //return;
+      //jmol.setupNewFrame(vi/ewer);
+      //return;
     //}
     if (callbackType.equalsIgnoreCase("language")) {
       JmolResourceHandler.clear();
@@ -322,9 +330,8 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
 
   @Override
   public String eval(String strEval) {
-    String msg = "# this funcationality is implemented only for the applet.\n"
-        + strEval;
-    sendConsoleMessage(msg);
+   String msg = "# this funcationality is implemented only for the applet.\n" + strEval;
+   sendConsoleMessage(msg);
     return msg;
   }
 
@@ -349,14 +356,13 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   }
 
   private void notifyFileLoaded(String fullPathName, String fileName,
-                                String modelName, String errorMsg,
-                                Boolean isAsync) {
+                                String modelName, String errorMsg, Boolean isAsync) {
     if (errorMsg != null) {
       return;
     }
     if (!display.haveDisplay)
       return;
-    //System.out.println("StatusListener notifyFileLoaded: " + fileName);
+//System.out.println("StatusListener notifyFileLoaded: " + fileName);
     // this code presumes only ptLoad = -1 (error), 0 (zap), or 3 (completed)
     String title = "Jmol";
     if (fileName != null && fileName.startsWith("DROP_"))
@@ -367,13 +373,12 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
       title = fileName;
     else if (modelName != null)
       title = modelName;
-    jmolPanel.notifyFileOpen(fullPathName == null ? null : fullPathName
-        + (isAsync == Boolean.TRUE ? " (*)" : ""), title);
+    jmolPanel.notifyFileOpen(fullPathName == null ? null : fullPathName + (isAsync == Boolean.TRUE ? " (*)" : ""), title);
     checkJSpecView(fullPathName == null);
   }
 
   private int modificationMode;
-
+  
   private void sendConsoleMessage(String strStatus) {
     JmolAppConsoleInterface appConsole = (JmolAppConsoleInterface) vwr
         .getProperty("DATA_API", "getAppConsole", null);
@@ -470,7 +475,7 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   }
 
   private String lastSimulate;
-
+  
   private void checkJSpecView(boolean closeAll) {
     if (jSpecViewFrame != null && modificationMode <= 0) {
       jSpecViewForceNew = jSpecViewFrame.isVisible();
@@ -500,13 +505,10 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
         return;
     }
     if (jSpecViewFrame == null) {
-      jSpecViewFrame = new MainFrame(
-          vwr.getBoolean(T.jmolinjspecview) ? (Component) vwr.display : null,
-          this);
-      jSpecViewFrame.setSize(Math.max(1000, jmolPanel.frame.getWidth() + 50),
-          600);
-      jSpecViewFrame.setLocation(jmolPanel.frame.getLocation().x + 10,
-          jmolPanel.frame.getLocation().y + 100);
+      jSpecViewFrame = new MainFrame(vwr.getBoolean(T.jmolinjspecview) ? (Component) vwr.display : null, this);
+      jSpecViewFrame.setSize(Math.max(1000, jmolPanel.frame.getWidth() + 50), 600);
+      jSpecViewFrame.setLocation(jmolPanel.frame.getLocation().x + 10, jmolPanel.frame
+          .getLocation().y + 100);
       jSpecViewFrame.register("Jmol", this);
       vwr.setBooleanProperty("_jspecview", true);
       if (isStartup) {
@@ -520,8 +522,7 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
         String file = "" + vwr.getP("_modelFile");
         if (file.indexOf("/") < 0)
           return;
-        peaks = "hidden true; load CHECK " + PT.esc(file) + ";hidden false"
-            + (newSim && isC13 ? ";scaleby 0.5" : null);
+        peaks = "hidden true; load CHECK " + PT.esc(file) + ";hidden false" + (newSim && isC13 ? ";scaleby 0.5" : null);
       } else if (isFileLoad && !jSpecViewForceNew && !newSim) {
         return;
       } else {
@@ -533,10 +534,8 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
           peaks = "hidden false";
         } else {
           data = PT.replaceAllCharacters(data, "&", "_");
-          peaks = "hidden true; load CHECK "
-              + (peaks.equals("H1Simulate:") ? "H1 " : "C13 ")
-              + PT.esc("id='~" + model + "';" + data)
-              + ";hidden false #SYNC_PEAKS";
+          peaks = "hidden true; load CHECK " + (peaks.equals("H1Simulate:") ? "H1 " : "C13 ")
+              + PT.esc("id='~" + model + "';" + data) + ";hidden false #SYNC_PEAKS";
         }
         isStartup = false;
       }
@@ -562,11 +561,12 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   @Override
   public void syncScript(String script) {
     // called from JSpecView to send "Select: <Peaks...." script
-    jmolPanel.syncScript(script);
+    jmolPanel.syncScript(script);    
   }
 
+  
   // -- JSVInterface -- 
-
+  
   private static String propertiesFileName = "jspecview.properties";
 
   @Override
@@ -589,8 +589,8 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   }
 
   /**
-   * @param withDialog
-   * @param frame
+   * @param withDialog  
+   * @param frame 
    */
   @Override
   public void exitJSpecView(boolean withDialog, Object frame) {
@@ -600,12 +600,12 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
   /**
    * no queuing here -- called by MainFrame
    * 
-   * @param script
+   * @param script 
    */
   @Override
   public void runScript(String script) {
     jSpecViewFrame.runScriptNow(script);
-
+    
   }
 
   /**
@@ -621,11 +621,10 @@ public class StatusListener implements JmolStatusListener, JmolSyncInterface,
     if (type.toLowerCase().startsWith("jspecview")) {
       type = type.substring(9);
       if (type.startsWith(":"))
-        type = type.substring(1);
-      return (jSpecViewFrame == null ? null : jSpecViewFrame
-          .getJSpecViewProperty(type));
+          type = type.substring(1);
+      return (jSpecViewFrame == null ? null : jSpecViewFrame.getJSpecViewProperty(type));
     }
     return null;
   }
-
+  
 }

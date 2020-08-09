@@ -175,6 +175,8 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   protected boolean isPlugin;
 
+  private JMenuBar menubar;
+
   protected static int numWindows = 0;
   protected static KioskFrame kioskFrame;
   protected static BannerFrame bannerFrame;
@@ -412,7 +414,7 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       JPanel panel = new JPanel();
       menuItems = new Hashtable<String, JMenuItem>();
       say(GT.$("Building Menubar..."));
-      JMenuBar menubar = createMenubar();
+      menubar = createMenubar();
       add("North", menubar);
       panel.setLayout(new BorderLayout());
       if (toolbar != null)
@@ -1746,9 +1748,9 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       status.setPreferredSize(d);
     if (toolbar != null)
       toolbar.setPreferredSize(d);
+    menubar.setPreferredSize(new Dimension(width, menubar.getHeight()));
     Platform.getWindow(this).pack();
-    d = new Dimension(width, height);
-    System.out.println("resizeDisplay " + display.getSize(d).width);
+    System.out.println("resizeDisplay " + display.getSize());
   }
 
   void updateLabels() {

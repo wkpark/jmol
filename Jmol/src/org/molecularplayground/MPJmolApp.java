@@ -438,14 +438,24 @@ public class MPJmolApp implements JsonNioClient {
   private String terminatorMessage = "NEXT_SCRIPT";
   private String resetMessage = "RESET_SCRIPT";
 
+  private final String MYTYPES = 
+      "reply....." + // 0
+      "command..." + // 10
+      "banner...." + // 20
+      "content..." + // 30
+      "move......" + // 40
+      "sync......" + // 50
+      "touch....." + // 60
+      "";
+  
   @Override
   public void processNioMessage(byte[] packet) throws Exception {
     setEnabled();
     Map<String, Object> json = JsonNioService.toMap(packet);
-    switch (JsonNioService.getString(json, "type")) {
-    case "reply":
+    switch (MYTYPES.indexOf(JsonNioService.getString(json, "type"))) {
+    case 0://"reply":
       break;
-    case "command":
+    case 10://"command":
       if (contentDisabled)
         break;
       if (json.containsKey("var") && json.containsKey("data"))
@@ -453,7 +463,7 @@ public class MPJmolApp implements JsonNioClient {
             SV.getVariable(json.get("data")));
       sendScript(json.get("command").toString());
       break;
-    case "banner":
+    case 20://"banner":
       if (contentDisabled)
         break;
       setBanner((json.containsKey("text") ? (String) json.get("text")
@@ -461,7 +471,7 @@ public class MPJmolApp implements JsonNioClient {
               : ""),
           false);
       break;
-    case "content":
+    case 30://"content":
       if (contentDisabled) {
         nioRunContent(true);
         break;
@@ -507,9 +517,9 @@ public class MPJmolApp implements JsonNioClient {
       setBanner(getString(contentJSON, "banner").equals("off") ? null
           : getString(contentJSON, "banner_text"), true);
       break;
-    case "move":
-    case "sync":
-    case "touch":
+    case 40://"move":
+    case 50://"sync":
+    case 60://"touch":
       if (motionDisabled)
         break;
       ((JmolPanel) vwr.display).nioSync(json, touchHandler);

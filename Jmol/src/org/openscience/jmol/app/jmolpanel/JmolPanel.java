@@ -1967,34 +1967,46 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
 
   }
 
+  final private String TYPES = 
+  "reply....." +  // 0
+  "quit......" +  // 10
+  "command..." +  // 20
+  "move......" +  // 30
+  "rotate...." +  // 40
+  "translate." +  // 50
+  "zoom......" +  // 60
+  "sync......" +  // 70
+  "touch....." +  // 80
+  "";
+
   @Override
   public synchronized void processNioMessage(byte[] packet) throws Exception {
     String msg = new String(packet);
     if (Logger.debugging)
       Logger.debug(msg);
     Map<String, Object> json = new JSJSONParser().parseMap(msg, false);
-    switch ("" + json.get("type")) {
-    case "reply":
+    switch (TYPES.indexOf("" + json.get("type"))) {
+    case 0://"reply":
       break;
-    case "quit":
+    case 10://"quit":
       vwr.evalString("exitjmol");
       break;
-    case "command":
+    case 20://"command":
       vwr.evalString((String) json.get("command"));
       break;
-    case "move":
-      switch (JsonNioService.getString(json, "style")) {
-      case "rotate":
+    case 30://"move":
+      switch (TYPES.indexOf(JsonNioService.getString(json, "style"))) {
+      case 40://"rotate":
         break;
-      case "translate":
-      case "zoom":
+      case 50://"translate":
+      case 60://"zoom":
         //        if (!params.isPaused)
         //          pauseScript(true);
         break;
       }
       //$FALL-THROUGH$
-    case "sync":
-    case "touch":
+    case 70://"sync":
+    case 80://"touch":
       if (touchHandler == null)
         touchHandler = new TouchHandler();
       nioSync(json, touchHandler);
@@ -2021,11 +2033,21 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
    * @throws Exception
    */
   public void nioSync(Map<String, Object> json, TouchHandler handler) throws Exception {    
-  switch (JsonNioService.getString(json, "type")) {
-  case "move":
+//    "reply....." +  // 0
+//        "quit......" +  // 10
+//        "command..." +  // 20
+//        "move......" +  // 30
+//        "rotate...." +  // 40
+//        "translate." +  // 50
+//        "zoom......" +  // 60
+//        "sync......" +  // 70
+//        "touch....." +  // 80
+
+  switch (TYPES.indexOf(JsonNioService.getString(json, "type"))) {
+  case 30://"move":
     long now = handler.latestMoveTime = System.currentTimeMillis();
-    switch (JsonNioService.getString(json, "style")) {
-    case "rotate":
+    switch (TYPES.indexOf(JsonNioService.getString(json, "style"))) {
+    case 40://"rotate":
       float dx = (float) JsonNioService.getDouble(json, "x");
       float dy = (float) JsonNioService.getDouble(json, "y");
       float dxdy = dx * dx + dy * dy;
@@ -2059,13 +2081,13 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       }
       handler.previousMoveTime = now;
       break;
-    case "translate":
+    case 50://"translate":
       if (!handler.isPaused)
         handler.pauseScript(vwr, true);
       syncScript("Mouse: translateXYBy " + JsonNioService.getString(json, "x") + " "
           + JsonNioService.getString(json, "y"));
       break;
-    case "zoom":
+    case 60://"zoom":
       if (!handler.isPaused)
         handler.pauseScript(vwr, true);
       float zoomFactor = (float) (JsonNioService.getDouble(json, "scale")
@@ -2074,11 +2096,11 @@ public class JmolPanel extends JPanel implements SplashInterface, JsonNioClient 
       break;
     }
     break;
-  case "sync":
+  case 70://"sync":
     //sync -3000;sync slave;sync 3000 '{"type":"sync","sync":"rotateZBy 30"}'
     syncScript("Mouse: " + JsonNioService.getString(json, "sync"));
     break;
-  case "touch":
+  case 80://"touch":
     // raw touch event
     vwr.acm.processMultitouchEvent(
         0, JsonNioService.getInt(json, "eventType"), JsonNioService.getInt(json, "touchID"),

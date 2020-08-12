@@ -406,6 +406,10 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     }
   }
 
+  private final String ROLES = 
+      "out......." + // 0
+      "in........" + // 10
+      "quit......";  // 20
   protected void processMessage(byte[] packet, NIOSocket socket) {
     try {
       Logger.info("JNIOS received " + packet.length + " bytes from socket "
@@ -413,14 +417,15 @@ public class JsonNioService extends NIOService implements JsonNioServer {
       if (packet.length < 100) {
         Map<String, Object> json = toMap(packet);
         if ("JmolApp".equals(json.get("magic"))) {
-          switch (getString(json, "role")) {
-          case "out":
+        
+          switch (ROLES.indexOf(getString(json, "role"))) {
+          case 0://"out":
             outSocket = socket;
             if (inSocket == null)
               inSocket = outSocket;
             reply(OUTSOCKET, "OK");
             break;
-          case "in":
+          case 10://"in":
             inSocket = socket;
             if (outSocket == null)
               outSocket = inSocket;
@@ -429,8 +434,8 @@ public class JsonNioService extends NIOService implements JsonNioServer {
           }
 
         } else {
-          switch (getString(json, "type")) {
-          case "quit":
+          switch (ROLES.indexOf(getString(json, "type"))) {
+          case 20: //"quit":
             halt = true;
             reply(OUTSOCKET, "JsonNioService" + myName + " closing");
             Logger.info("JsonNiosService quitting");
@@ -465,7 +470,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
           msg += "\n";
         out = clean(msg.getBytes("UTF-8"));
       } else {
-        map = new LinkedHashMap<>();
+        map = new LinkedHashMap<String, Object>();
         map.put("type", "command");
         map.put("command", msg);
         out = toJSONBytes(map);
@@ -483,7 +488,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
     SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<String, Object>();
         map.put("type", "reply");
         map.put("reply", data);
         sendMessage(map, null, outSocket);
@@ -564,7 +569,7 @@ public class JsonNioService extends NIOService implements JsonNioServer {
 
   protected void initialize(String role, NIOSocket nioSocket) {
     Logger.info("JsonNioService" + myName + " initialize " + role);
-    Map<String, Object> json = new LinkedHashMap<>();
+    Map<String, Object> json = new LinkedHashMap<String, Object>();
     json.put("magic", "JmolApp");
     json.put("role", role);
     json.put("from", hashCode() + myName);

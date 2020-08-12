@@ -243,7 +243,7 @@ public class StatusManager {
     return list;
   }
 
-  private Map<String, String> jmolScriptCallbacks = new Hashtable<>();
+  private Map<String, String> jmolScriptCallbacks = new Hashtable<String, String>();
 
   private String jmolScriptCallback(CBK callback) {
     String s = jmolScriptCallbacks.get(callback.name());

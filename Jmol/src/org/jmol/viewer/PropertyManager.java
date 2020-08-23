@@ -900,13 +900,13 @@ public class PropertyManager implements JmolPropertyManager {
     if (objHeader == null)
       return ht;
     boolean haveType = (type != null && type.length() > 0);
-    if (objHeader instanceof Map) {
+    if (objHeader instanceof Map)
       return (haveType ? ((Map<?, ?>) objHeader).get(type) : objHeader);
-    }
     String[] lines = PT.split((String) objHeader, "\n");
     // this is meant to be for PDB files only
+    // will be "[zapped]" if there is no file loaded
     if (lines.length == 0
-        || lines[0].length() < 6
+        || lines[0].length() < 7
         || lines[0].charAt(6) != ' '
         || !lines[0].substring(0, 6).equals(
             lines[0].substring(0, 6).toUpperCase())) {

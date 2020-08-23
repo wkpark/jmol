@@ -77,7 +77,7 @@ public class IsosurfaceMesh extends Mesh {
 
   /**
    * @param vwr 
-   * @j2sIgnoreSuperConstructor
+   * @XXXXj2sIgnoreSuperConstructor
    * 
    * @param thisID
    * @param colix
@@ -424,6 +424,7 @@ public class IsosurfaceMesh extends Mesh {
   
   BS bsVdw;
   public boolean colorPhased;
+  public float[] probeValues;
 
   public void setDiscreteColixes(float[] values, short[] colixes) {
     if (values != null)

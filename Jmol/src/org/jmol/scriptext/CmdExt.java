@@ -1556,9 +1556,9 @@ public class CmdExt extends ScriptExt {
     Boolean intramolecular = null;
     int tokAction = T.opToggle;
     String strFormat = null;
-    Font font = null;
     String property = null;
     String units = null;
+    Font font = null;
 
     Lst<Object> points = new Lst<Object>();
     BS bs = new BS();
@@ -3620,7 +3620,7 @@ public class CmdExt extends ScriptExt {
           invArg();
         needsGenerating = true;
         faces = getIntArray2(i);
-        points = getAllPoints(eval.iToken + 1);
+        points = getAllPoints(eval.iToken + 1, 3);
         i = eval.iToken;
         if (points[0] instanceof Atom)
           setShapeProperty(JC.SHAPE_POLYHEDRA, "model", Integer.valueOf(((Atom) points[0]).getModelIndex()));

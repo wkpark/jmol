@@ -1772,8 +1772,8 @@ public class MathExt {
             vwr.shm.getShapePropertyData(shapeID, "index", data);
             if (data[1] != null && !pname.equals("index")) {
               int index = ((Integer) data[1]).intValue();
-              data[1] = vwr.shm.getShapePropertyIndex(shapeID, pname.intern(),
-                  index);
+                data[1] = vwr.shm.getShapePropertyIndex(shapeID, pname.intern(),
+                    index);
             }
           }
         } else {

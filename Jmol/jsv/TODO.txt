@@ -2,8 +2,8 @@
 Feel free to add to this file any time! Don't worry about sync problems.
 Put new items at top, please.
 
-Jmol.___JSVDate="$Date: 2017-04-14 11:34:29 -0500 (Fri, 14 Apr 2017) $"
-Jmol.___JSVSvnRev="$LastChangedRevision: 1764 $"
+Jmol.___JSVDate="$Date: 2019-04-24 19:21:45 -0500 (Wed, 24 Apr 2019) $"
+Jmol.___JSVSvnRev="$LastChangedRevision$"
 Jmol.___JSVVersion="14.2.8"
 
 Note:
@@ -34,8 +34,11 @@ todo:
 
 add JSME to St. Olaf 24/7 OleNMR system portal for comparisons.
 
-RL 04/25/2019
+RL 04/24/2019
   - update to About dialog box
+
+BH 03/23/2018
+ -feature: generate SwingJS-ready jar files
 
 BH 04/13/2017
  -feature: Allow JSpecView to close when embedded
@@ -63,6 +66,7 @@ BH 01/14/2017
    
 RL 01/13/2017
   - update to About dialog box
+  
 
  -bug fix: dialog titles should be truncated if too long
  -update About dialog for 2017

@@ -14,36 +14,26 @@
 
 	svn+ssh://svn.code.sf.net/p/smol/code, Trunk:trunk
 	svn+ssh://svn.code.sf.net/p/jsmol/code, Trunk:trunk
-	svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecView
-	svn+ssh://svn.code.sf.net/p/jspecview/svn:dev2/JSpecViewLib
 
 	Relevant files created in this project by build scripts in those projects include:
 
 	  appletweb/jsmol.zip
-	  jars/JSpecView.jar
 	  
 	  appletweb/jsmol.zip is created using:
 
 	   JSmol/build_11_fromjmol.xml
-	   JSmol/build_12_fromjspecview.xml 
+	   JSmol/build_12_tosite.xml 
 	   [eclipse refresh required]
-	   JSmol/build_13_tojs.xml
+	   JSmol/build_13_tojscore.xml
 	   
-	  jars/JSpecView.jar is created using 
-
-	   JSpecviewLib/build.xml
-	   JSpecview/build.xml
-
 	Note that if you modify Jmol source without also running the JSmol build scripts, 
 	then JSmol will not reflect your modifications.
 
 	The overall sequence for full HTML5 code creation
 	when the Jmol or JSpecView code is modified, is as follows:
 
-	1) Do all coding modifications in the Jmol and JSpecView projects. Never modify JSmol/src.
+	1) Do all coding modifications in the Jmol project. Never modify JSmol/src.
 	2) use jmol/buildmin.xml to create the JAR files.
-	2) Build JSpecViewLib and JSpecView if there are changes there. 
-	   The JSpecView*.jar files will be copied into this project.
 	3) Build JSmol using the build_11.., build_12.., build_13.. 
 	   jsmol.zip will be created and copied to jmol/appletweb/.
 
@@ -297,8 +287,6 @@
         <include name="Jmol.jar" />
         <include name="JmolData.jar" />
         <include name="JmolLib.jar" />
-      </fileset>
-      <fileset dir="jars">
         <include name="JSpecView.jar" />
       </fileset>
       <fileset dir=".">
@@ -354,7 +342,9 @@
 
     <copy todir="build/dist/jmol-${version}/src" >
       <fileset dir="src" />
+      <!--
       <fileset dir="srcjsv" />
+      -->
     </copy>
 
     <copy todir="build/dist/jmol-${version}/ca-cert" >

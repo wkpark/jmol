@@ -61,7 +61,6 @@ import org.jmol.viewer.Viewer;
  */
 public class ScriptMathProcessor {
 
-  // required by ScriptExt
   public boolean wasX;
   public boolean asBitSet;
   public int oPt = -1; // used in asynchronous load to mark which file is being loaded
@@ -1138,13 +1137,17 @@ public class ScriptMathProcessor {
       return addXBs(BSUtil.toggleInPlace(BSUtil.copy((BS) x1.value),
           (BS) x2.value));
     case T.opLE:
-      return addXBool(x1.asFloat() <= x2.asFloat());
+      return addXBool(x1.tok == T.integer && x1.tok == T.integer ? 
+          x1.intValue <= x2.intValue : x1.asFloat() <= x2.asFloat());
     case T.opGE:
-      return addXBool(x1.asFloat() >= x2.asFloat());
+      return addXBool(x1.tok == T.integer && x1.tok == T.integer ? 
+          x1.intValue >= x2.intValue : x1.asFloat() >= x2.asFloat());
     case T.opGT:
-      return addXBool(x1.asFloat() > x2.asFloat());
+      return addXBool(x1.tok == T.integer && x1.tok == T.integer ? 
+          x1.intValue > x2.intValue : x1.asFloat() > x2.asFloat());
     case T.opLT:
-      return addXBool(x1.asFloat() < x2.asFloat());
+      return addXBool(x1.tok == T.integer && x1.tok == T.integer ? 
+          x1.intValue < x2.intValue : x1.asFloat() < x2.asFloat());
     case T.opEQ:
       return addXBool(SV.areEqual(x1, x2));
     case T.opNE:
@@ -1722,7 +1725,7 @@ public class ScriptMathProcessor {
       case T.fuz:
       case T.fuxyz:
         P3 ptfu = P3.newP((P3) x2.value);
-        vwr.toFractional(ptfu, false);
+        vwr.toFractional(ptfu, true);
         return (op.intValue == T.fuxyz ? addXPt(ptfu)
             : addXFloat(op.intValue == T.fux ? ptfu.x
                 : op.intValue == T.fuy ? ptfu.y : ptfu.z));

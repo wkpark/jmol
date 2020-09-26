@@ -2639,16 +2639,42 @@ public class MathExt {
     // point(pt, false) // from screen coord
     // point(x, y, z)
     // point(x, y, z, w)
-    
+    // point(["{1,2,3", "{2,3,4}"])
+
     switch (args.length) {
     default:
       return false;
     case 1:
       if (args[0].tok == T.decimal || args[0].tok == T.integer)
         return mp.addXInt(args[0].asInt());
-      String s = SV.sValue(args[0]);
-      if (args[0].tok == T.varray)
-        s = "{" + s + "}";
+      String s = null;
+      if (args[0].tok == T.varray) {
+        Lst<SV> list = args[0].getList();
+        int len = list.size();
+        if (len == 0) {
+          return false;
+        }
+        switch (list.get(0).tok) {
+        case T.integer:
+        case T.decimal:
+          break;
+        case T.string:
+          s = (String) list.get(0).value;
+          if (!s.startsWith("{")
+              || Escape.uP(s) instanceof String) {
+            s = null;
+            break;
+          }
+          Lst<SV> a = new Lst<SV>();
+          for (int i = 0; i < len; i++) {
+            a.addLast(SV.getVariable(Escape.uP(SV.sValue(list.get(i)))));
+          }
+          return mp.addXList(a);
+        }
+        s = "{" + SV.sValue(args[0]) + "}";
+      }
+      if (s == null)
+        s = SV.sValue(args[0]);
       Object pt = Escape.uP(s);
       return (pt instanceof P3 ? mp.addXPt((P3) pt) : mp.addXStr("" + pt));
     case 2:

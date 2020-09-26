@@ -4,7 +4,7 @@ Put new items at top, please.
 
 Jmol.___JSVDate="$Date$"
 Jmol.___JSVSvnRev="$LastChangedRevision$"
-Jmol.___JSVVersion="14.21.8"
+Jmol.___JSVVersion="14.31.8"
 
 Note:
 security.fileuri.strict_origin_policy
@@ -33,6 +33,12 @@ todo:
  that clicking on a peak will highlight appropriately in JSmol/JSME
 
 add JSME to St. Olaf 24/7 OleNMR system portal for comparisons.
+
+
+BH 2020.09.26
+
+workaround: JSpecview applies ##SHIFTREFERENCE as HZ for data in PPM
+bug fix: JSpecview must ignore ##SHIFTREFERENCE for JEOL, at least for $$ JEOL NMR v1.10
 
 RL 04/24/2019
   - update to About dialog box

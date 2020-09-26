@@ -4,7 +4,7 @@ Put new items at top, please.
 
 Jmol.___JSVDate="$Date$"
 Jmol.___JSVSvnRev="$LastChangedRevision$"
-Jmol.___JSVVersion="14.31.6"
+Jmol.___JSVVersion="14.31.8"
 
 Note:
 security.fileuri.strict_origin_policy
